@@ -1,0 +1,80 @@
+----------------------------------------
+Blockers before next release:
+
+----------------------------------------
+Others:
+
+- implement MouseLook, like in "The Castle"
+- free setting of preferHomeUpForRotations/Moving from menu
+
+- allow to change RendererOptimization at runtime
+  (instead only using --renderer-optimization at startup),
+  this would be nice.
+
+  Save in config file default RendererOptimization.
+
+- CameraRadius powinna byc ustalana na podstawie
+  FocalDistance kamery VRML'a,a nie zawsze na podstawie Box3dAvgSize.
+
+  Hmm, some improvement: right now it's adjusted based on
+  NavigationInfo.speed. Combine with focalDistance ?
+  Look what is the default focalDistance val, I don't remember now.
+
+- Dac userowi mozliwosc przelaczania sie na inna kamere zdefiniowana w
+  pliku VRML (to jest problematyczne bo bedziemy musieli wchodzic
+  w nieaktywne czesci grafu VRMLa zeby wziac inna kamere;
+  ale wlasnie taki sposob podawania wielu kamer w pliku jest sugerowany
+  przez specyfikacje VRMLa 1.0 i niektore modele w VRMLu, a takze moj konwerter
+  z 3ds->VRML w Object3dAsVRML, uzywaja tego).
+  Wyswietlac wtedy nazwe node'a aktualnej kamery.
+
+- klawisz/element menu w rodzaju "bring entire model to view" albo przynajmniej
+  "look into direction of model center".
+
+- Tesselator_test_vanity - zle wyglada swiatlo ?
+
+- command "reset camera to default view of this scene"
+
+- "wireframe with depth test on" mode
+
+- ui to set up cameraradius when loading scene using menu item "Open".
+  Add to docs that --camera-radius only initializes them.
+
+- uzywaj pozostalych pol camera - focalDistance, height
+
+- scene changing on WWWAnchor click
+  (some visual indication that mouse is over WWWAnchor -- cursor := crHand
+  and some status text "link to ...")
+
+- maybe change NavigatorKind in LoadScene based on whether
+  model has some camera node (then nkWalk would be most appropriate)
+  or not (then nkExamine).
+
+  This is not so useful now, that I have good control over
+  NavigatorKind using NavigationInfo node. Redign ?
+
+- when loading new scene fails, old scene should remain as is
+  (instead of being resetted to clear)
+
+- better welcome_scene.wrl
+  (and add to last_update.php that we have nice welcome_scene)
+
+- it would be nice to have all --scene-changes available after loading of
+  model. So it would be nice to have
+    TVRMLFlatSceneGL.Attrib_IgnoreModelNormals (=false)
+    TVRMLFlatSceneGL.Attrib_NoSolidObjects (=false)
+    TVRMLFlatSceneGL.Attrib_NoConvexFaces (=false)
+
+- allow changing OctreeMaxDepth / MaxLeafItemsCount when program is running.
+  1. In menu "Configure scene loading"
+  2. make also menu item "Recalculate octree"
+
+- save some user settings to file:
+  PickingMessageShowTexture
+  PickingMessageShowMaterial
+  PickingMessageShowShadows
+  ... and some others ? ...
+  use FPC's xmlcfg
+
+- Transform to using Lazarus form, with some OpenGL component wrapping
+  GtkGLExt inside.
