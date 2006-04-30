@@ -743,14 +743,16 @@ begin
         if NavigationNode.FdType.Items[I] = 'WALK' then
         begin
           SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferHomeUp := true;
+          MatrixWalker.PreferHomeUpForRotations := true;
+          MatrixWalker.PreferHomeUpForMoving := true;
           MatrixWalker.Gravity := true;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'FLY' then
         begin
           SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferHomeUp := true;
+          MatrixWalker.PreferHomeUpForRotations := true;
+          MatrixWalker.PreferHomeUpForMoving := false;
           MatrixWalker.Gravity := false;
           Break;
         end else

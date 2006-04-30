@@ -94,10 +94,7 @@ uses ParseParametersUnit;
 
 const
   NavigatorClasses: array[TNavigatorKind]of TMatrixNavigatorClass =
-   (TMatrixExaminer, TMatrixWalker);
-
-  NavigatorCreated: array[TNavigatorKind]of boolean =
-   (true, true);
+  (TMatrixExaminer, TMatrixWalker);
 
 var
   FNavigatorKind: TNavigatorKind = nkExaminer;
@@ -111,8 +108,6 @@ procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated; value: TNavigatorK
 begin
  FNavigatorKind := value;
  glwin.Navigator := Navigators[FNavigatorKind];
- if FNavigatorKind in [nkWalker, nkFreeWalker] then
-  glwin.NavWalker.PreferHomeUp := FNavigatorKind = nkWalker;
 end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
@@ -122,15 +117,7 @@ var nk: TNavigatorKind;
 begin
  { create navigators }
  for nk := Low(nk) to High(nk) do
-  if NavigatorCreated[nk] then
    Navigators[nk] := NavigatorClasses[nk].Create(glwin.PostRedisplayOnMatrixChanged);
-
- { FreeWalker to ten sam obiekt co Walker; bedziemy mu tylko zmieniac
-   PreferHomeUp gdy user bedzie zmienial navigatora; w ten sposob
-   (zamiast robic osobne obiekty na Walker i FreeWalker) wartosci CameraPos/Dir/Up
-   beda zawsze takie same dla nawigatorow Walker i FreeWalker (bo to bedzie tak
-   naprawde jeden nawigator). }
- Navigators[nkFreeWalker] := Navigators[nkWalker];
 
  TMatrixWalker(Navigators[nkWalker]).OnMoveAllowed := MoveAllowed;
  TMatrixWalker(Navigators[nkWalker]).OnGetCameraHeight := GetCameraHeight;
@@ -208,7 +195,6 @@ procedure Fini;
 var nk: TNavigatorKind;
 begin
  for nk := Low(nk) to High(nk) do
-  if NavigatorCreated[nk] then
    FreeAndNil(Navigators[nk]);
 end;
 
