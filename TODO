@@ -5,7 +5,6 @@ Blockers before next release:
 Others:
 
 - implement MouseLook, like in "The Castle"
-- free setting of preferHomeUpForRotations/Moving from menu
 
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),

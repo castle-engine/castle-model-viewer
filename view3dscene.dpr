@@ -619,6 +619,8 @@ var
     Same for MenuGravity. }
   MenuHeadlight: TMenuItemChecked;
   MenuGravity: TMenuItemChecked;
+  MenuPreferHomeUpForRotations: TMenuItemChecked;
+  MenuPreferHomeUpForMoving: TMenuItemChecked;
 
 { Frees (and sets to some null values) "scene global variables".
 
@@ -764,6 +766,10 @@ begin
 
     if MenuGravity <> nil then
       MenuGravity.Checked := MatrixWalker.Gravity;
+    if MenuPreferHomeUpForRotations <> nil then
+      MenuPreferHomeUpForRotations.Checked := MatrixWalker.PreferHomeUpForRotations;
+    if MenuPreferHomeUpForMoving <> nil then
+      MenuPreferHomeUpForMoving.Checked := MatrixWalker.PreferHomeUpForMoving;
 
     { Beware: constructing octrees will cause progress drawing,
       and progress drawing may cause FlushRedisplay,
@@ -1102,6 +1108,8 @@ begin
   163: PickingMessageShowShadows := not PickingMessageShowShadows;
 
   201: MatrixWalker.Gravity := not MatrixWalker.Gravity;
+  202: MatrixWalker.PreferHomeUpForRotations := not MatrixWalker.PreferHomeUpForRotations;
+  203: MatrixWalker.PreferHomeUpForMoving := not MatrixWalker.PreferHomeUpForMoving;
 
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), Scene);
@@ -1211,6 +1219,14 @@ begin
      '_Gravity (in Walk mode) on/off',                       201, 'g',
      MatrixWalker.Gravity, true);
    M.Append(MenuGravity);
+   MenuPreferHomeUpForRotations := TMenuItemChecked.Create(
+     'Rotations are versus stable (initial) camera up',      202,
+     MatrixWalker.PreferHomeUpForRotations, true);
+   M.Append(MenuPreferHomeUpForRotations);
+   MenuPreferHomeUpForMoving := TMenuItemChecked.Create(
+     'Moving is versus stable (initial) camera up',          203,
+     MatrixWalker.PreferHomeUpForMoving, true);
+   M.Append(MenuPreferHomeUpForMoving);
    M.Append(TMenuItem.Create('Change camera up vector ...',  124));
    Result.Append(M);
  M := TMenu.Create('_Console');
@@ -1255,7 +1271,7 @@ var
   Param_SceneFileName: string;
 
 const
-  Version = '1.2.2';
+  Version = '1.2.3';
   DisplayProgramName = 'view3dscene';
   Options: array[0..16] of TOption =
   (
