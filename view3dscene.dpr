@@ -40,9 +40,9 @@ program view3dscene;
   - render scene using TVRMLFlatSceneGL
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation methods
-    (three navigation methods available : Examine, Walk and FreeWalk)
+    (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
-    Walk/FreeWalk navigation and to allow raytracer
+    Walk navigation and to allow raytracer
   - build TVRMLShapeStateOctree to allow frustum culling using
     octree by TVRMLFlatSceneGL
   - use VRMLRayTracer embedded in RaytraceToWindow module to allow
@@ -116,7 +116,7 @@ var
     lifetime of this program, i.e. when I load new scene (from "Open"
     menu item) I DO NOT free and create new Scene object.
     Instead I'm only freeing and creating new value for Scene.RootNode.
-    This way I'm preserving values of all Attrib_Xxx when opening new scene
+    This way I'm preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
   Scene: TVRMLFlatSceneGL;
   SceneFilename: string;
@@ -219,7 +219,7 @@ begin
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[Scene.Attrib_UseLights];
+   s := BoolToStrOO[Scene.Attributes.UseLights];
   strs.Append(Format('Use scene lights: %s, Color modulator : %s',
     [ s, ColorModulatorInfos[ColorModulatorType].Name ]));
 
@@ -418,7 +418,7 @@ begin
 end;
 
 const
-  SOnlyInWalker = 'You must be in ''Walk'' or ''FreeWalk'' navigation style '+
+  SOnlyInWalker = 'You must be in ''Walk'' navigation style '+
     'to use this function.';
 
 procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
@@ -995,15 +995,15 @@ begin
 
   81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;
-  83: with Scene do Attrib_SmoothShading := not Attrib_SmoothShading;
+  83: with Scene do Attributes.SmoothShading := not Attributes.SmoothShading;
   84: if glwin.ColorDialog(BGColor) then BGColorChanged;
-  85: with Scene do Attrib_UseFog := not Attrib_UseFog;
-  86: with Scene do Attrib_Blending := not Attrib_Blending;
+  85: with Scene do Attributes.UseFog := not Attributes.UseFog;
+  86: with Scene do Attributes.Blending := not Attributes.Blending;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
-  93: with Scene do Attrib_UseLights := not Attrib_UseLights;
-  94: with Scene do Attrib_EnableTextures := not Attrib_EnableTextures;
+  93: with Scene do Attributes.UseLights := not Attributes.UseLights;
+  94: with Scene do Attributes.EnableTextures := not Attributes.EnableTextures;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
   97: begin
@@ -1158,12 +1158,12 @@ begin
    M.Append(TMenuItemChecked.Create('Show/hide _bounding box', 82, 'b',
      ShowBBox, true));
    M.Append(TMenuItemChecked.Create('_Smooth shading on/off',  83, 's',
-     Scene.Attrib_SmoothShading, true));
+     Scene.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change background color ...',   84));
    M.Append(TMenuItemChecked.Create('_Fog on/off',             85, 'f',
-     Scene.Attrib_UseFog, true));
+     Scene.Attributes.UseFog, true));
    M.Append(TMenuItemChecked.Create('Blending on/off',        86, CtrlB,
-     Scene.Attrib_Blending, true));
+     Scene.Attributes.Blending, true));
    M2 := TMenu.Create('Change scene colors');
      for Cmt := Low(Cmt) to High(Cmt) do
       M2.Append(TMenuItem.Create(
@@ -1178,10 +1178,10 @@ begin
      Headlight, true);
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use scene lights on/off',   93,
-     Scene.Attrib_UseLights, true));
+     Scene.Attributes.UseLights, true));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Textures on/off',           94, 't',
-     Scene.Attrib_EnableTextures, true));
+     Scene.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Change texture minification method');
      for TexMin := Low(TexMin) to High(TexMin) do
       M2.Append(TMenuItem.Create(
@@ -1213,7 +1213,7 @@ begin
      M2.Append(TMenuItem.Create('Next',                      111, 'v'));
      M.Append(M2);
    M.Append(TMenuItemChecked.Create(
-     '_Collision checking (in Walk|FreeWalk modes) on/off',  123, 'c',
+     '_Collision checking (in Walk mode) on/off',  123, 'c',
        CollisionCheck, true));
    MenuGravity := TMenuItemChecked.Create(
      '_Gravity (in Walk mode) on/off',                       201, 'g',
@@ -1438,8 +1438,8 @@ begin
  { init "scene global variables" to null values }
  Scene := TVRMLFlatSceneGL.Create(nil, false, Param_RendererOptimization);
  try
-  { in view3dscene Scene.Attrib_UseLights default value is true }
-  Scene.Attrib_UseLights := true;
+  { in view3dscene Scene.Attributes.UseLights default value is true }
+  Scene.Attributes.UseLights := true;
   InitColorModulator(Scene);
   InitTextureFilters(Scene);
 

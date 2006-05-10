@@ -70,7 +70,7 @@ begin
     HeadLight := NavigationNode.FdHeadlight.Value else
     HeadLight := SceneLightsCount = 0;
 
-  Scene.Attrib_FirstGLFreeLight := 1;
+  Scene.Attributes.FirstGLFreeLight := 1;
 end;
 
 procedure BeginRenderSceneWithLights;

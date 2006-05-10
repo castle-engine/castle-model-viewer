@@ -94,8 +94,8 @@ procedure SetColorModulatorType(Value: TColorModulatorType;
   scene: TVRMLFlatSceneGL);
 begin
  FColorModulatorType := Value;
- scene.Attrib_ColorModulatorSingle := @ColorModulatorPrivateInfos[Value].SingleFunc;
- scene.Attrib_ColorModulatorByte   := @ColorModulatorPrivateInfos[Value].ByteFunc;
+ scene.Attributes.ColorModulatorSingle := @ColorModulatorPrivateInfos[Value].SingleFunc;
+ scene.Attributes.ColorModulatorByte   := @ColorModulatorPrivateInfos[Value].ByteFunc;
 end;
 
 function ColorModulatorType: TColorModulatorType;

@@ -80,13 +80,13 @@ end;
 procedure SetTextureMinFilter(Value:TTextureMinFilter; scene:TVRMLFlatSceneGL);
 begin
  FTextureMinFilter:=value;
- scene.Attrib_TextureMinFilter:=TextureMinFilterToGL[Value];
+ scene.Attributes.TextureMinFilter:=TextureMinFilterToGL[Value];
 end;
 
 procedure SetTextureMagFilter(Value:TTextureMagFilter; scene:TVRMLFlatSceneGL);
 begin
  FTextureMagFilter:=value;
- scene.Attrib_TextureMagFilter:=TextureMagFilterToGL[Value];
+ scene.Attributes.TextureMagFilter:=TextureMagFilterToGL[Value];
 end;
 
 function TextureMinFilter:TTextureMinFilter;
