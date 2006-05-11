@@ -4,8 +4,6 @@ Blockers before next release:
 ----------------------------------------
 Others:
 
-- implement MouseLook, like in "The Castle"
-
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),
   this would be nice.

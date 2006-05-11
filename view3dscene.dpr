@@ -1102,7 +1102,10 @@ begin
         MessageOK(glwin, SOnlyInWalker);
   126: Glw.SwapFullScreen;
   127: glwin.SaveScreenDialog(FNameAutoInc('view3dscene_screen_%d.png'));
-
+  128: begin
+         MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
+         Glw.UpdateMouseLook;
+       end;
   161: PickingMessageShowTexture := not PickingMessageShowTexture;
   162: PickingMessageShowMaterial := not PickingMessageShowMaterial;
   163: PickingMessageShowShadows := not PickingMessageShowShadows;
@@ -1153,16 +1156,16 @@ begin
    M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
    Result.Append(M);
  M := TMenu.Create('_View');
-   M.Append(TMenuItemChecked.Create('_Wireframe on/off',       81, 'w',
+   M.Append(TMenuItemChecked.Create('_Wireframe',              81, 'w',
      Wireframe, true));
-   M.Append(TMenuItemChecked.Create('Show/hide _bounding box', 82, 'b',
+   M.Append(TMenuItemChecked.Create('Show _bounding box',      82, 'b',
      ShowBBox, true));
-   M.Append(TMenuItemChecked.Create('_Smooth shading on/off',  83, 's',
+   M.Append(TMenuItemChecked.Create('_Smooth shading',         83, 's',
      Scene.Attributes.SmoothShading, true));
-   M.Append(TMenuItem.Create('Change background color ...',   84));
-   M.Append(TMenuItemChecked.Create('_Fog on/off',             85, 'f',
+   M.Append(TMenuItem.Create('Change background color ...',    84));
+   M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
      Scene.Attributes.UseFog, true));
-   M.Append(TMenuItemChecked.Create('Blending on/off',        86, CtrlB,
+   M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      Scene.Attributes.Blending, true));
    M2 := TMenu.Create('Change scene colors');
      for Cmt := Low(Cmt) to High(Cmt) do
@@ -1172,15 +1175,15 @@ begin
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
-     '_Lighting calculate (GL__LIGHTING enabled) on/off',          91, 'l',
+     '_Lighting calculate (GL__LIGHTING enabled)',         91, 'l',
      LightCalculate, true));
-   MenuHeadlight := TMenuItemChecked.Create('_Head light on/off', 92, 'h',
+   MenuHeadlight := TMenuItemChecked.Create('_Head light', 92, 'h',
      Headlight, true);
    M.Append(MenuHeadlight);
-   M.Append(TMenuItemChecked.Create('Use scene lights on/off',   93,
+   M.Append(TMenuItemChecked.Create('Use scene lights',    93,
      Scene.Attributes.UseLights, true));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Textures on/off',           94, 't',
+   M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
      Scene.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Change texture minification method');
      for TexMin := Low(TexMin) to High(TexMin) do
@@ -1212,11 +1215,14 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Next',                      111, 'v'));
      M.Append(M2);
+  M.Append(TMenuItemChecked.Create(
+     '_Use mouse look (in Walk mode)',                       128, 'm',
+       MatrixWalker.MouseLook, true));
    M.Append(TMenuItemChecked.Create(
-     '_Collision checking (in Walk mode) on/off',  123, 'c',
+     '_Collision checking (in Walk mode)',                   123, 'c',
        CollisionCheck, true));
    MenuGravity := TMenuItemChecked.Create(
-     '_Gravity (in Walk mode) on/off',                       201, 'g',
+     '_Gravity (in Walk mode)',                              201, 'g',
      MatrixWalker.Gravity, true);
    M.Append(MenuGravity);
    MenuPreferHomeUpForRotations := TMenuItemChecked.Create(
@@ -1243,7 +1249,7 @@ begin
    M.Append(TMenuItem.Create('Print scene _bounding box as VRML node', 110));
    Result.Append(M);
  M := TMenu.Create('_Other');
-   M.Append(TMenuItemChecked.Create('Show/hide status _text', 122, K_F1,
+   M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
       ShowStatus, true));
    M2 := TMenu.Create('When picking with left mouse button, show ...');
      M2.Append(TMenuItemChecked.Create('_Texture info',            161,
@@ -1254,7 +1260,7 @@ begin
        PickingMessageShowShadows, true));
      M.Append(M2);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
-   M.Append(TMenuItemChecked.Create('_FullScreen on/off',     126, K_F11,
+   M.Append(TMenuItemChecked.Create('_FullScreen',            126, K_F11,
      Glw.FullScreen, true));
    M.Append(TMenuItem.Create('_Save screen to PNG',           127, K_F5));
    Result.Append(M);

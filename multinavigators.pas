@@ -106,8 +106,9 @@ procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated; value: TNavigatorK
   This procedure does not do some things that SetNavigatorKind does
   because this is used from InitMultiNavigators. }
 begin
- FNavigatorKind := value;
- glwin.Navigator := Navigators[FNavigatorKind];
+  FNavigatorKind := value;
+  Glwin.Navigator := Navigators[FNavigatorKind];
+  Glwin.UpdateMouseLook;
 end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
