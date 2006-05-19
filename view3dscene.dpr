@@ -1277,7 +1277,7 @@ var
   Param_SceneFileName: string;
 
 const
-  Version = '1.2.3';
+  Version = '1.2.4';
   DisplayProgramName = 'view3dscene';
   Options: array[0..16] of TOption =
   (
