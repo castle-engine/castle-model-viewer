@@ -369,7 +369,7 @@ begin
     procedure. }
   glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_DEPTH_TEST);
-    SwitchGLTo2dScreen(DrawStatus, 0);
+    glProjectionPushPopOrtho2D(DrawStatus, 0, 0, Glwin.Width, 0, Glwin.Height);
   glPopAttrib;
  end;
 end;
