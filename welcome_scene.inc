@@ -1,8 +1,9 @@
-{ Automatically generated from welcome_scene.wrl }
-'#VRML V1.0 ascii' +nl+
-'' +nl+
-'Group { ' +nl+
-'  # TODO: In the near future I plan to add here some nice "welcome scene"' +nl+
-'  # AsciiText { string "Welcome to view3dscene" }' +nl+
-'}' +nl+
+{ -*- buffer-read-only: t -*- }
+{ DON'T EDIT -- this file was automatically generated from "welcome_scene.wrl" }
+'#VRML V1.0 ascii' + LineEnding + 
+'' + LineEnding + 
+'Group { ' + LineEnding + 
+'  # TODO: In the near future I plan to add here some nice "welcome scene"' + LineEnding + 
+'  # AsciiText { string [ "Welcome to", "view3dscene" ] }' + LineEnding + 
+'}' + LineEnding + 
 ''
