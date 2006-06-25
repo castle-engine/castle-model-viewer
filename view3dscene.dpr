@@ -92,7 +92,8 @@ var
   PickingMessageShowMaterial: boolean = false;
   PickingMessageShowShadows: boolean = false;
 
-  { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia wykrywanie kolizji: }
+  { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia
+    wykrywanie kolizji: }
   CollisionCheck: boolean = true;
 
   { ustalane w Init, finalizowane w Close }
@@ -102,7 +103,8 @@ var
   AngleOfViewX: Single = 60;
 
   { These are so-called "scene global variables".
-    Modified only by LoadScene and FreeScene.
+    Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
+    and FreeScene.
     Also note that Glw.Caption (and FPSBaseCaption) also should be modified
     only by those procedures.
 
@@ -613,7 +615,7 @@ var
     DefShapeStateOctreeMaxLeafItemsCount;
 
   { This is set to non-nil by CreateMainMenu.
-    It is used there and it is also used from LoadScene, since
+    It is used there and it is also used from LoadSceneCore, since
     loading a scene may change value of HeadLight so we have to update
     MenuHeadlight.Checked state.
     Same for MenuGravity. }
@@ -647,8 +649,24 @@ begin
  SceneFileName := '';
 end;
 
-{ This is something like LoadScene, see docs of LoadScene below
-  for details. But this procedure does not really open any file
+procedure LoadClearScene; forward;
+
+{ Calls FreeScene and then inits "scene global variables".
+  Pass here ACameraRadius = 0.0 to say that CameraRadius should be
+  somehow calculated (guessed) based on loaded Scene data.
+
+  Camera settings for scene are inited from VRML defaults and
+  from camera node in scene, as defined in view3dscene html docs.
+  Also you can override some of those settings using
+  CameraOverride (e.g. you can force some specific value of CameraPos,
+  regardless of camera node in the scene).
+
+  Exceptions: if this function will raise any exception you should assume
+  that scene loading failed for some reason and "scene global variables"
+  are set to their "null values". I.e. everything is in a "clean" state
+  like after FreeScene.
+
+  This procedure does not really open any file
   (so ASceneFileName need not be a name of existing file,
   in fact it does not need to even be a valid filename).
   Instead in uses already created RootNode to init
@@ -805,27 +823,43 @@ begin
   end;
 end;
 
-{ Calls FreeScene and then inits "scene global variables".
-  Pass here ACameraRadius = 0.0 to say that CameraRadius should be
-  somehow calculated (guessed) based on loaded Scene data.
+{ This loads the scene from file (using LoadAsVRML) and
+  then inits our scene variables by LoadSceneCore.
 
-  Camera settings for scene are inited from VRML defaults and
-  from camera node in scene, as defined in view3dscene html docs.
-  Also you can override some of those settings using
-  CameraOverride (e.g. you can force some specific value of CameraPos,
-  regardless of camera node in the scene).
-
-  Exceptions: if this function will raise any exception you should assume
-  that scene loading failed for some reason and "scene global variables"
-  are set to their "null values". I.e. everything is in a "clean" state
-  like after FreeScene.
-}
+  If it fails, it tries to preserve current scene
+  (if it can't preserve current scene, only then it resets it to clear scene).
+  Also, it shows the error message using MessageOK
+  (so Glw must be already open). }
 procedure LoadScene(const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   const CameraOverride: TCameraSettingsOverride);
+var
+  RootNode: TVRMLNode;
 begin
- LoadSceneCore(LoadAsVRML(ASceneFileName, true),
-   ASceneFileName, SceneChanges, ACameraRadius, CameraOverride);
+  try
+    RootNode := LoadAsVRML(ASceneFileName, true);
+  except
+    on E: Exception do
+    begin
+      MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+        E.Message, taLeft);
+      { In this case we can preserve current scene. }
+      Exit;
+    end;
+  end;
+
+  try
+    LoadSceneCore(RootNode,
+      ASceneFileName, SceneChanges, ACameraRadius, CameraOverride);
+  except
+    on E: Exception do
+    begin
+      MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+        E.Message, taLeft);
+      LoadClearScene;
+      Exit;
+    end;
+  end;
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -958,18 +992,7 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true) then
-       begin
-        try
          LoadScene(s, SceneChanges, 0.0, CameraNoOverride);
-        except
-         on E: Exception do
-         begin
-          MessageOK(glw, 'Error while loading scene from "' +s+ '": '
-            +E.Message, taLeft);
-          LoadClearScene;
-         end;
-        end;
-       end;
       end;
   11: begin
        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
@@ -1450,10 +1473,7 @@ begin
   InitTextureFilters(Scene);
 
   { init "scene global variables" to non-null values }
-  if WasParam_SceneFileName then
-   LoadScene(Param_SceneFileName, SceneChanges, Param_CameraRadius,
-     Params_CameraOverride) else
-   LoadWelcomeScene;
+  LoadClearScene;
   try
 
    GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
@@ -1469,7 +1489,14 @@ begin
 
    Glw.SetDemoOptions(K_None, #0, true);
 
-   Glw.InitLoop;
+   Glw.Init;
+
+   if WasParam_SceneFileName then
+     LoadScene(Param_SceneFileName, SceneChanges, Param_CameraRadius,
+       Params_CameraOverride) else
+     LoadWelcomeScene;
+
+   Glwm.Loop;
   finally FreeScene end;
  finally FreeAndNil(Scene) end;
 end.
