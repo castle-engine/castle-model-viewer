@@ -552,15 +552,15 @@ end;
 type
   TDummy = class
     class function MoveAllowed(Navigator: TMatrixWalker;
-      const ProposedNewPos: TVector3Single; var NewPos: TVector3Single;
+      const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
       const BecauseOfGravity: boolean): boolean;
 
     class procedure GetCameraHeight(Navigator: TMatrixWalker;
-      var IsAboveTheGround: boolean; var SqrHeightAboveTheGround: Single);
+      out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
   end;
 
 class function TDummy.MoveAllowed(Navigator: TMatrixWalker;
-  const ProposedNewPos: TVector3Single; var NewPos: TVector3Single;
+  const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
   const BecauseOfGravity: boolean): boolean;
 begin
   if CollisionCheck then
@@ -588,7 +588,7 @@ begin
 end;
 
 class procedure TDummy.GetCameraHeight(Navigator: TMatrixWalker;
-  var IsAboveTheGround: boolean; var SqrHeightAboveTheGround: Single);
+  out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
 begin
   Scene.DefaultTriangleOctree.GetCameraHeight(
     TMatrixWalker(Navigator).CameraPos,
