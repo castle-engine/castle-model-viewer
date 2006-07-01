@@ -64,7 +64,7 @@ program view3dscene;
 
 uses
   KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
-  ProgressConsole, BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
+  BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils,
   { OpenGL related units: }
@@ -1468,7 +1468,11 @@ begin
   Exit;
  end;
 
- Progress.UserInterface := ProgressConsoleInterface;
+ { This is for loading default clean scene.
+   LoadClearScene should be lighting fast always,
+   so progress should not be needed in this case anyway
+   (and we don't want to clutter stdout). }
+ Progress.UserInterface := ProgressNullInterface;
 
  InitMultiNavigators(glw, TDummy.MoveAllowed, TDummy.GetCameraHeight);
 
