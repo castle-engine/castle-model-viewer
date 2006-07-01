@@ -721,8 +721,6 @@ begin
       VisibilityLimit := NavigationNode.FdVisibilityLimit.Value else
       VisibilityLimit := 0;
 
-    Scene.WritelnSceneInfo(true, true);
-
     { evaluate HomeCameraPos/Dir/Up i CameraKind na podstawie
       (w/g rosnacego priorytetu) :
       1. Domyslnych ustawien VRMLa
@@ -986,6 +984,12 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     Include(SceneChanges, SC);
   end;
 
+  procedure ShowAndWrite(const S: string);
+  begin
+    Write(S);
+    MessageOK(Glw, S, taLeft);
+  end;
+
 var s: string;
 begin
  case MenuItem.IntData of
@@ -1113,6 +1117,9 @@ begin
 
   111: ChangeNavigatorKind(glw, +1);
 
+  121: ShowAndWrite(
+         'Scene "' + SceneFilename + '" information:' + NL + NL +
+          Scene.Info(true, true));
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
   124: ChangeCameraUp;
@@ -1272,6 +1279,7 @@ begin
    M.Append(TMenuItem.Create('Print scene _bounding box as VRML node', 110));
    Result.Append(M);
  M := TMenu.Create('_Other');
+   M.Append(TMenuItem.Create('Scene information',                  121));
    M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
       ShowStatus, true));
    M2 := TMenu.Create('When picking with left mouse button, show ...');
