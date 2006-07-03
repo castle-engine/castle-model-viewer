@@ -921,6 +921,10 @@ end;
 
 { menu things ------------------------------------------------------------ }
 
+const
+  Version = '1.2.5';
+  DisplayProgramName = 'view3dscene';
+
 var
   SceneChanges: TSceneChanges = [];
 
@@ -986,7 +990,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ShowAndWrite(const S: string);
   begin
-    Write(S);
+    Writeln(S);
     MessageOK(Glw, S, taLeft);
   end;
 
@@ -1136,6 +1140,18 @@ begin
          MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
          Glw.UpdateMouseLook;
        end;
+
+  131: begin
+         ShowAndWrite(
+           'view3dscene - extensive VRML and 3DS viewer.' + NL +
+           'Version ' + Version + '.' + NL +
+           'By Michalis Kamburelis.' + NL +
+           NL +
+           '[http://www.camelot.homedns.org/~michalis/view3dscene.php]' + NL +
+           NL +
+           'Compiled with ' + SCompilerDescription +'.');
+       end;
+
   161: PickingMessageShowTexture := not PickingMessageShowTexture;
   162: PickingMessageShowMaterial := not PickingMessageShowMaterial;
   163: PickingMessageShowShadows := not PickingMessageShowShadows;
@@ -1279,6 +1295,12 @@ begin
    M.Append(TMenuItem.Create('Print scene _bounding box as VRML node', 110));
    Result.Append(M);
  M := TMenu.Create('_Other');
+   M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
+   M.Append(TMenuItemChecked.Create('_FullScreen',            126, K_F11,
+     Glw.FullScreen, true));
+   M.Append(TMenuItem.Create('_Save screen to PNG',           127, K_F5));
+   Result.Append(M);
+ M := TMenu.Create('_Help');
    M.Append(TMenuItem.Create('Scene information',                  121));
    M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
       ShowStatus, true));
@@ -1290,10 +1312,8 @@ begin
      M2.Append(TMenuItemChecked.Create('_Lights and shadows info', 163,
        PickingMessageShowShadows, true));
      M.Append(M2);
-   M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
-   M.Append(TMenuItemChecked.Create('_FullScreen',            126, K_F11,
-     Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Save screen to PNG',           127, K_F5));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
 end;
 
@@ -1308,8 +1328,6 @@ var
   Param_SceneFileName: string;
 
 const
-  Version = '1.2.4';
-  DisplayProgramName = 'view3dscene';
   Options: array[0..16] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
