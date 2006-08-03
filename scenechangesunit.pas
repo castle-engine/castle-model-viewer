@@ -117,7 +117,7 @@ begin
  (* stworz newRootNode : Group, jego chidren to
    ShapeHints { faceType UNKNOWN_FACE_TYPE }
    i dotychczasowy root node sceny. *)
- newRootNode := TNodeGroup.Create('', scene.RootNode.WWWBasePath);
+ newRootNode := TNodeGroup_1.Create('', scene.RootNode.WWWBasePath);
  newRootNode.AddChild(TNodeShapeHints.Create('', scene.RootNode.WWWBasePath));
  TNodeShapeHints(newRootNode.Children[0]).FdFaceType.Value := FACETYPE_UNKNOWN;
  newRootNode.AddChild(scene.RootNode);

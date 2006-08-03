@@ -74,7 +74,7 @@ uses
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
   VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
-  VRMLCameraUtils,
+  VRMLCameraUtils, VRMLErrors,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera;
@@ -875,7 +875,7 @@ begin
    implementation of view3dscene more diffucult (I would have
    to be careful in many places and check whether Scene.RootNode <> nil),
    without any gains in functionality. }
- RootNode := TNodeGroup.Create('', '');
+ RootNode := TNodeGroup_1.Create('', '');
  LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0, CameraNoOverride);
 end;
 
