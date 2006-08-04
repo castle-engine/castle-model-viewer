@@ -55,7 +55,7 @@ type
     procedure DoNode(node: TVRMLNode);
   end;
   procedure TNormalIndexEraser.DoNode(node: TVRMLNode);
-  begin TNodeGeneralIndexed(node).FdNormalIndex.Items.SetLength(0) end;
+  begin TNodeGeneralIndexed_1(node).FdNormalIndex.Items.SetLength(0) end;
 
 type
   TNoSolidMaker = class
@@ -98,7 +98,7 @@ const onlyFromActivePart = false;
 begin
  RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
  RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
- scene.RootNode.EnumNodes(TNodeGeneralIndexed, TNormalIndexEraser.DoNode, 
+ scene.RootNode.EnumNodes(TNodeGeneralIndexed_1, TNormalIndexEraser.DoNode, 
    onlyFromActivePart);
  scene.ChangedAll;
 end;
