@@ -99,20 +99,20 @@ begin
  RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
  RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
  scene.RootNode.EnumNodes(TNodeGeneralIndexed_1, TNormalIndexEraser.DoNode, 
-   onlyFromActivePart);
+   onlyFromActivePart, true);
  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoSolidObjects(scene: TVRMLFlatScene);
 begin
- scene.RootNode.EnumNodes(TNodeShapeHints, TNoSolidMaker.DoNode, false);
+ scene.RootNode.EnumNodes(TNodeShapeHints, TNoSolidMaker.DoNode, false, true);
  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoConvexFaces(scene: TVRMLFlatScene);
 var newRootNode: TVRMLNode;
 begin
- scene.RootNode.EnumNodes(TNodeShapeHints, TNoConvexMaker.DoNode, false);
+ scene.RootNode.EnumNodes(TNodeShapeHints, TNoConvexMaker.DoNode, false, true);
 
  (* stworz newRootNode : Group, jego chidren to
    ShapeHints { faceType UNKNOWN_FACE_TYPE }
