@@ -64,7 +64,7 @@ procedure SceneInitLights(scene: TVRMLFlatSceneGL;
 begin
   if Scene.RootNode = nil then
     SceneLightsCount := 0 else
-    SceneLightsCount := Scene.RootNode.CountNodes(TNodeGeneralLight, true, true);
+    SceneLightsCount := Scene.RootNode.NodesCount(TNodeGeneralLight, true);
 
   if NavigationNode <> nil then
     HeadLight := NavigationNode.FdHeadlight.Value else

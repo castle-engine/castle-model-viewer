@@ -26,7 +26,7 @@ uses VRMLFlatScene, VRMLNodes, KambiUtils;
 
 type
   { When adding new item to TSceneChange you can also consider adding
-    new option to view3dscene (--scene-change-). 
+    new option to view3dscene (--scene-change-).
     All other necessary changes after extending TSceneChange will be enforced
     by the compiler. }
   TSceneChange = (
@@ -71,7 +71,7 @@ type
   procedure TNoConvexMaker.DoNode(node: TVRMLNode);
   begin TNodeShapeHints(node).FdFaceType.Value := FACETYPE_UNKNOWN end;
 
-procedure RemoveNodeClass(RootNode: TVRMLNode; 
+procedure RemoveNodeClass(RootNode: TVRMLNode;
   NodeClass: TVRMLNodeClass; onlyFromActivePart: boolean);
 var node: TVRMLNode;
 begin
@@ -98,21 +98,21 @@ const onlyFromActivePart = false;
 begin
  RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
  RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
- scene.RootNode.EnumNodes(TNodeGeneralIndexed_1, TNormalIndexEraser.DoNode, 
-   onlyFromActivePart, true);
+ scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
+   TNormalIndexEraser.DoNode, onlyFromActivePart);
  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoSolidObjects(scene: TVRMLFlatScene);
 begin
- scene.RootNode.EnumNodes(TNodeShapeHints, TNoSolidMaker.DoNode, false, true);
+ scene.RootNode.EnumerateNodes(TNodeShapeHints, TNoSolidMaker.DoNode, false);
  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoConvexFaces(scene: TVRMLFlatScene);
 var newRootNode: TVRMLNode;
 begin
- scene.RootNode.EnumNodes(TNodeShapeHints, TNoConvexMaker.DoNode, false, true);
+ scene.RootNode.EnumerateNodes(TNodeShapeHints, TNoConvexMaker.DoNode, false);
 
  (* stworz newRootNode : Group, jego chidren to
    ShapeHints { faceType UNKNOWN_FACE_TYPE }
@@ -141,7 +141,7 @@ const
 procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
 var sc: TSceneChange;
 begin
- for sc := Low(sc) to High(sc) do 
+ for sc := Low(sc) to High(sc) do
   if sc in SceneChanges then
    SCFunctions[sc](Scene);
 end;
