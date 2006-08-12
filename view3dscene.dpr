@@ -496,11 +496,12 @@ begin
    begin
     s += Format(nl +nl+
            'Node''s texture : %s.',
-           [IntersectItem.State.LastNodes.Texture2.TextureDescription]);
+           [IntersectItem.State.Texture.TextureDescription]);
    end;
 
    if PickingMessageShowMaterial then
    begin
+    { TODO: this is VRML 1.0-specific, fix }
     s += Format(nl +nl+
            'Material name : %s' +nl+
            'Material ambient[0] : %s' +nl+
