@@ -727,8 +727,7 @@ begin
       1. Domyslnych ustawien VRMLa
       2. Node'a camery zapisanego w VRMLu
       3. CameraOverride }
-    Scene.GetCamera(TNodeGeneralCamera,
-      CameraKind, HomeCameraPos, HomeCameraDir, HomeCameraUp);
+    Scene.GetViewpoint(CameraKind, HomeCameraPos, HomeCameraDir, HomeCameraUp);
     ApplyOverride(CameraOverride,
       CameraKind, HomeCameraPos, HomeCameraDir, HomeCameraUp);
     { zmien dlugosc HomeCameraDir,
@@ -832,11 +831,22 @@ end;
 procedure LoadScene(const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   const CameraOverride: TCameraSettingsOverride);
+
+{ It's useful to undefine it only for debug purposes:
+  FPC dumps then backtrace of where exception happened,
+  which is often enough to trace the error.
+  In release versions this should be defined to produce a nice
+  message box in case of errors (instead of just a crash). }
+{$define CATCH_EXCEPTIONS}
+
 var
   RootNode: TVRMLNode;
 begin
+  {$ifdef CATCH_EXCEPTIONS}
   try
+  {$endif CATCH_EXCEPTIONS}
     RootNode := LoadAsVRML(ASceneFileName, true);
+  {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
     begin
@@ -846,10 +856,14 @@ begin
       Exit;
     end;
   end;
+  {$endif CATCH_EXCEPTIONS}
 
+  {$ifdef CATCH_EXCEPTIONS}
   try
+  {$endif CATCH_EXCEPTIONS}
     LoadSceneCore(RootNode,
       ASceneFileName, SceneChanges, ACameraRadius, CameraOverride);
+  {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
     begin
@@ -859,6 +873,7 @@ begin
       Exit;
     end;
   end;
+  {$endif CATCH_EXCEPTIONS}
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1072,19 +1087,14 @@ begin
 
   106: Writeln(Format(
          'Current camera settings are :' +nl+
-         '  %s {' +nl+
-         '    position %s' +nl+
-         '    orientation %s' +nl+
-         '  }' +nl+
-         'or (using Michalis'' non-standard VRML 1.0 extensions) :' +nl+
-         '  %0:s {' +nl+
-         '    position %1:s' +nl+
-         '    direction %3:s' +nl+
-         '    up %4:s' +nl+
-         '  }' +nl+
-         '# TODO: printing "focalDistance" and "height" fields is not yet implemented' ,
-         [ VRMLCameraKindToVRMLNodeName[CameraKind],
-           VectorToRawStr(MatrixWalker.CameraPos),
+         'Viewpoint  {' +nl+
+         '  position %s' +nl+
+         '  orientation %s' +nl+
+         '  # alternative representation of "orientation" :' +nl+
+         '  # direction %s' +nl+
+         '  # up %s' +nl+
+         '}',
+         [ VectorToRawStr(MatrixWalker.CameraPos),
            VectorToRawStr( CamDirUp2Orient(MatrixWalker.CameraDir,
              MatrixWalker.CameraUp) ),
            VectorToRawStr(MatrixWalker.CameraDir),
@@ -1379,12 +1389,12 @@ const
     10: WasParam_WriteToVRML := true;
     11: AngleOfViewX := StrToFloat(Argument);
     12: begin
-         Include(Params_CameraOverride.OverrideSettings, csCameraKind);
-         case ArrayPosStr(Argument, ['perspective', 'orthographic']) of
-          0: Params_CameraOverride.CameraKind := ckPerspective;
-          1: Params_CameraOverride.CameraKind := ckOrthographic;
-          else raise EInvalidParams.Create('Invalid argument for --camera-kind');
-         end;
+          Include(Params_CameraOverride.OverrideSettings, csCameraKind);
+          case ArrayPosStr(Argument, ['perspective', 'orthographic']) of
+            0: Params_CameraOverride.CameraKind := ckPerspective;
+            1: Params_CameraOverride.CameraKind := ckOrthographic;
+            else raise EInvalidParams.Create('Invalid argument for --camera-kind');
+          end;
         end;
     13: begin
          InfoWrite(
