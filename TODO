@@ -30,8 +30,6 @@ Others:
 
 - Tesselator_test_vanity - zle wyglada swiatlo ?
 
-- command "reset camera to default view of this scene"
-
 - "wireframe with depth test on" mode
 
 - ui to set up cameraradius when loading scene using menu item "Open".
