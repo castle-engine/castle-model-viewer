@@ -66,7 +66,7 @@ uses
   KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
-  KambiStringUtils, KambiFilesUtils,
+  KambiStringUtils, KambiFilesUtils, Math,
   { OpenGL related units: }
   OpenGLh, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL,
@@ -128,6 +128,7 @@ var
   { 0.0 means "no limit". }
   VisibilityLimit: Single = 0.0;
   NavigationNode: TNodeNavigationInfo;
+  ViewpointNode: TNodeGeneralViewpoint;
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
 
@@ -386,9 +387,20 @@ procedure Resize(glwin: TGLWindow);
    MatrixWalker.ProjectionMatrix := ProjectionMatrix;
   end;
 
-var MaxSize, zNear, zFar: TGLdouble;
+var
+  MaxSize, zNear, zFar: TGLdouble;
+  FieldOfView: Single;
 begin
  glViewport(0, 0, glwin.Width, glwin.Height);
+
+ { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
+ if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
+   FieldOfView := TNodeViewpoint(ViewpointNode).FdFieldOfView.Value else
+   FieldOfView := Pi / 4 { VRML Viewpoint.fieldOfView default value };
+ AngleOfViewX := RadToDeg(TNodeViewpoint.ViewpointAngleOfView(
+   FieldOfView, Glw.Width / Glw.Height));
+ { Tests:
+   Writeln(Format('Angle of view: x %f, y %f', [AngleOfViewX, AngleOfViewY])); }
 
  { Zeby zminimalizowac bledy depth buffera trzeba uzaleznic zNear/zFar
    od wielkosci obiektu.
@@ -653,6 +665,7 @@ begin
    ViewpointsList.MakeMenuJumpToViewpoint;
 
  NavigationNode := nil;
+ ViewpointNode := nil;
 
  SceneFileName := '';
 end;
@@ -669,7 +682,7 @@ var
   HomeCameraDir: TVector3Single;
   HomeCameraUp: TVector3Single;
 begin
-  ViewpointsList.GetViewpoint(Index, CameraKind,
+  ViewpointNode := ViewpointsList.GetViewpoint(Index, CameraKind,
     HomeCameraPos, HomeCameraDir, HomeCameraUp);
 
   { zmien dlugosc HomeCameraDir,

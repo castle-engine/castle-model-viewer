@@ -53,11 +53,13 @@ type
 
     procedure MakeMenuJumpToViewpoint;
 
-    { Calculate viewpoint given by Index.
-      If Index is outside 0..High, we return default VRML camera. }
-    procedure GetViewpoint(Index: Integer;
+    { Calculate viewpoint given by Index (and return it).
+      If Index is outside 0..High, we calculate default VRML camera
+      properties (and return nil). }
+    function GetViewpoint(Index: Integer;
       out CameraKind: TVRMLCameraKind;
-      out CameraPos, CameraDir, CameraUp: TVector3Single);
+      out CameraPos, CameraDir, CameraUp: TVector3Single):
+        TNodeGeneralViewpoint;
   end;
 
 var
@@ -120,19 +122,20 @@ begin
   end;
 end;
 
-procedure TViewpointsList.GetViewpoint(
-  Index: Integer;
-  out CameraKind: TVRMLCameraKind;
-  out CameraPos, CameraDir, CameraUp: TVector3Single);
+function TViewpointsList.GetViewpoint(
+  Index: Integer; out CameraKind: TVRMLCameraKind;
+  out CameraPos, CameraDir, CameraUp: TVector3Single): TNodeGeneralViewpoint;
 begin
   if Between(Index, 0, High) then
   begin
-    ViewpointsList.Items[Index].Node.GetCameraVectors(
+    Result := ViewpointsList.Items[Index].Node;
+    Result.GetCameraVectors(
       ViewpointsList.Items[Index].Transform,
       CameraPos, CameraDir, CameraUp);
-    CameraKind := ViewpointsList.Items[Index].Node.CameraKind;
+    CameraKind := Result.CameraKind;
   end else
   begin
+    Result := nil;
     CameraPos := StdVRMLCamPos_1;
     CameraDir := StdVRMLCamDir;
     CameraUp := StdVRMLCamUp;
