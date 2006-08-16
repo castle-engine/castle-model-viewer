@@ -18,56 +18,141 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 }
 
+{ }
 unit V3DSceneCamera;
 
 interface
 
-uses VectorMath, VRMLNodes;
+uses VectorMath, VRMLNodes, GLWindow, GLW_Navigated, KambiUtils;
+
+{$define read_interface}
+
+var
+  AngleOfViewX: Single = 60;
+
+function AngleOfViewY: Single;
+
+{ Return S with newlines replaced with spaces and trimmed to
+  sensible number of characters. This is useful when you
+  want to use some user-supplied string (e.g. in VRML
+  SFString field) in your UI (e.g. as menu or window caption). }
+function SForCaption(const S: string): string;
 
 type
-  TCameraSetting = (
-    csCameraKind, csHomeCameraPos, csHomeCameraDir, csHomeCameraUp);
-  TCameraSettings = set of TCameraSetting;
+  TViewpointInfo = record
+    Node: TNodeGeneralViewpoint;
+    Transform: TMatrix4Single;
+  end;
+  PViewpointInfo = ^TViewpointInfo;
 
-  TCameraSettingsOverride = record
-    OverrideSettings: TCameraSettings;
-    { From fields below, only those are meaningfull that have
-      csXxx in OverrideSettings. Rest of them can have undefined value. }
-    CameraKind: TVRMLCameraKind;
-    HomeCameraPos: TVector3Single;
-    HomeCameraDir: TVector3Single;
-    HomeCameraUp: TVector3Single;
+  TDynArrayItem_1 = TViewpointInfo;
+  PDynArrayItem_1 = PViewpointInfo;
+  {$define DYNARRAY_1_IS_STRUCT}
+  {$I dynarray_1.inc}
+  TViewpointsList = class(TDynArray_1)
+  public
+    MenuJumpToViewpoint: TMenu;
+
+    procedure AddNodeTransform(Node: TNodeGeneralViewpoint;
+      const Transform: TMatrix4Single);
+
+    procedure MakeMenuJumpToViewpoint;
+
+    { Calculate viewpoint given by Index.
+      If Index is outside 0..High, we return default VRML camera. }
+    procedure GetViewpoint(Index: Integer;
+      out CameraKind: TVRMLCameraKind;
+      out CameraPos, CameraDir, CameraUp: TVector3Single);
   end;
 
-const
-  { This is a value of TCameraSettingsOverride type that says to NOT
-    override any camera setting. I.e. it has OverrideSettings = []. }
-  CameraNoOverride: TCameraSettingsOverride =
-  (
-    OverrideSettings: [];
-    CameraKind: ckPerspective;
-    HomeCameraPos: (0, 0, 0);
-    HomeCameraDir: (0, 0, 0);
-    HomeCameraUp: (0, 0, 0);
-  );
+var
+  ViewpointsList: TViewpointsList;
 
-{ This modifies some of the parameters passed by reference using
-  values specified as CameraOverride. Those variables that
-  are specified in CameraOverride.OverrideSettings are modified. }
-procedure ApplyOverride(const CameraOverride: TCameraSettingsOverride;
-  var CameraKind: TVRMLCameraKind;
-  var HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single);
+{$undef read_interface}
 
 implementation
 
-procedure ApplyOverride(const CameraOverride: TCameraSettingsOverride;
-  var CameraKind: TVRMLCameraKind;
-  var HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single);
+uses SysUtils, RaysWindow, KambiStringUtils, VRMLCameraUtils;
+
+{$define read_implementation}
+{$I dynarray_1.inc}
+
+function AngleOfViewY: Single;
 begin
- if csCameraKind    in CameraOverride.OverrideSettings then CameraKind    := CameraOverride.CameraKind;
- if csHomeCameraPos in CameraOverride.OverrideSettings then HomeCameraPos := CameraOverride.HomeCameraPos;
- if csHomeCameraDir in CameraOverride.OverrideSettings then HomeCameraDir := CameraOverride.HomeCameraDir;
- if csHomeCameraUp  in CameraOverride.OverrideSettings then HomeCameraUp  := CameraOverride.HomeCameraUp;
+  Result := AdjustViewAngleDegToAspectRatio(
+    AngleOfViewX, Glw.Height/Glw.Width);
 end;
 
+function SForCaption(const S: string): string;
+begin
+  Result := SReplaceChars(S, [#10, #13], ' ');
+  if Length(Result) > 50 then
+    Result := Copy(Result, 1, 50) + '...';
+end;
+
+procedure TViewpointsList.AddNodeTransform(Node: TNodeGeneralViewpoint;
+  const Transform: TMatrix4Single);
+var
+  Item: TViewpointInfo;
+begin
+  Item.Node := Node;
+  Item.Transform := Transform;
+  AppendItem(Item);
+end;
+
+procedure TViewpointsList.MakeMenuJumpToViewpoint;
+var
+  Node: TNodeGeneralViewpoint;
+  I: Integer;
+  S: string;
+  Viewpoint: TNodeViewpoint;
+begin
+  MenuJumpToViewpoint.EntriesDeleteAll;
+  { We don't add more than 100 menu item entries for viewpoints. }
+  for I := 0 to Min(Count, 100) - 1 do
+  begin
+    if I < 10 then
+      S := '_' + IntToStr(I) else
+      S := IntToStr(I);
+    Node := Items[I].Node;
+    S += ': ' + Node.NodeTypeName;
+    if Node is TNodeViewpoint then
+    begin
+      Viewpoint := TNodeViewpoint(Node);
+      if Viewpoint.FdDescription.Value <> '' then
+        S += ' "' + SQuoteMenuEntryCaption(
+          SForCaption(Viewpoint.FdDescription.Value)) + '"';
+    end else
+    begin
+      if Node.NodeName <> '' then
+        S += ' "' + SQuoteMenuEntryCaption(Node.NodeName) + '"';
+    end;
+    MenuJumpToViewpoint.Append(TMenuItem.Create(S, 300 + I));
+  end;
+end;
+
+procedure TViewpointsList.GetViewpoint(
+  Index: Integer;
+  out CameraKind: TVRMLCameraKind;
+  out CameraPos, CameraDir, CameraUp: TVector3Single);
+begin
+  if Between(Index, 0, High) then
+  begin
+    ViewpointsList.Items[Index].Node.GetCameraVectors(
+      ViewpointsList.Items[Index].Transform,
+      CameraPos, CameraDir, CameraUp);
+    CameraKind := ViewpointsList.Items[Index].Node.CameraKind;
+  end else
+  begin
+    CameraPos := StdVRMLCamPos_1;
+    CameraDir := StdVRMLCamDir;
+    CameraUp := StdVRMLCamUp;
+    CameraKind := ckPerspective;
+  end;
+end;
+
+initialization
+  ViewpointsList := TViewpointsList.Create;
+finalization
+  FreeAndNil(ViewpointsList);
 end.

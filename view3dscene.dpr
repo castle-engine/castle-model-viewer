@@ -99,9 +99,6 @@ var
   { ustalane w Init, finalizowane w Close }
   StatusFont: TGLBitmapFont;
 
-  { ustalane na poczatku programu w main, potem const }
-  AngleOfViewX: Single = 60;
-
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
@@ -128,13 +125,9 @@ var
   CameraRadius: Single = 0.0;
   { 0.0 means "no limit". }
   VisibilityLimit: Single = 0.0;
+  NavigationNode: TNodeNavigationInfo;
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
-
-function AngleOfViewY: Single;
-begin
- result := AdjustViewAngleDegToAspectRatio(AngleOfViewX, Glw.Height/Glw.Width);
-end;
 
 function WalkProjectionNear: Single;
 begin
@@ -647,7 +640,44 @@ begin
 
  Scene.ChangedAll;
 
+ ViewpointsList.Count := 0;
+ if ViewpointsList.MenuJumpToViewpoint <> nil then
+   ViewpointsList.MakeMenuJumpToViewpoint;
+
+ NavigationNode := nil;
+
  SceneFileName := '';
+end;
+
+{ This jumps to 1st viewpoint on ViewpointsList
+  (or to the default VRML cam setting if no viewpoints in the list).
+
+  Sets CameraKind.
+  Uses CameraRadius, NavigationNode, so make sure these are already
+  set as needed }
+procedure SetViewpoint(Index: Integer);
+var
+  HomeCameraPos: TVector3Single;
+  HomeCameraDir: TVector3Single;
+  HomeCameraUp: TVector3Single;
+begin
+  ViewpointsList.GetViewpoint(Index, CameraKind,
+    HomeCameraPos, HomeCameraDir, HomeCameraUp);
+
+  { zmien dlugosc HomeCameraDir,
+    na podstawie CameraRadius i NavigationNode.FdSpeed }
+  HomeCameraDir := VectorAdjustToLength(HomeCameraDir, CameraRadius * 0.4);
+  if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
+    VectorScaleTo1st(HomeCameraDir, NavigationNode.FdSpeed.Value);
+
+  MatrixWalker.Init(HomeCameraPos, HomeCameraDir,
+    HomeCameraUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
+
+  if not Glw.Closed then
+  begin
+    Glw.EventResize;
+    Glw.PostRedisplay;
+  end;
 end;
 
 procedure LoadClearScene; forward;
@@ -657,10 +687,7 @@ procedure LoadClearScene; forward;
   somehow calculated (guessed) based on loaded Scene data.
 
   Camera settings for scene are inited from VRML defaults and
-  from camera node in scene, as defined in view3dscene html docs.
-  Also you can override some of those settings using
-  CameraOverride (e.g. you can force some specific value of CameraPos,
-  regardless of camera node in the scene).
+  from camera node in scene.
 
   Exceptions: if this function will raise any exception you should assume
   that scene loading failed for some reason and "scene global variables"
@@ -677,14 +704,9 @@ procedure LoadClearScene; forward;
   So do not Free RootNode after using this procedure. }
 procedure LoadSceneCore(RootNode: TVRMLNode;
   const ASceneFileName: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  const CameraOverride: TCameraSettingsOverride);
+  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
 var
-  HomeCameraPos: TVector3Single;
-  HomeCameraDir: TVector3Single;
-  HomeCameraUp: TVector3Single;
   NewCaption: string;
-  NavigationNode: TNodeNavigationInfo;
   CameraPreferredHeight: Single;
   I: Integer;
 begin
@@ -722,22 +744,17 @@ begin
       VisibilityLimit := NavigationNode.FdVisibilityLimit.Value else
       VisibilityLimit := 0;
 
-    { evaluate HomeCameraPos/Dir/Up i CameraKind na podstawie
-      (w/g rosnacego priorytetu) :
-      1. Domyslnych ustawien VRMLa
-      2. Node'a camery zapisanego w VRMLu
-      3. CameraOverride }
-    Scene.GetViewpoint(CameraKind, HomeCameraPos, HomeCameraDir, HomeCameraUp);
-    ApplyOverride(CameraOverride,
-      CameraKind, HomeCameraPos, HomeCameraDir, HomeCameraUp);
-    { zmien dlugosc HomeCameraDir,
-      na podstawie CameraRadius i NavigationNode.FdSpeed }
-    HomeCameraDir := VectorAdjustToLength(HomeCameraDir, CameraRadius * 0.4);
-    if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
-      VectorScaleTo1st(HomeCameraDir, NavigationNode.FdSpeed.Value);
+    SceneInitMultiNavigators(Scene.BoundingBox,
+      StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp,
+      CameraPreferredHeight, CameraRadius);
 
-    SceneInitMultiNavigators(Scene.BoundingBox, HomeCameraPos, HomeCameraDir,
-      HomeCameraUp, CameraPreferredHeight, CameraRadius);
+    { calculate ViewpointsList, MenuJumpToViewpoint,
+      and jump to 1st viewpoint (or to the default cam settings). }
+    Scene.EnumerateViewpoints(ViewpointsList.AddNodeTransform);
+    if ViewpointsList.MenuJumpToViewpoint <> nil then
+      ViewpointsList.MakeMenuJumpToViewpoint;
+    SetViewpoint(0);
+
     SceneInitLights(Scene, NavigationNode);
 
     { SceneInitLights could change HeadLight value.
@@ -829,8 +846,7 @@ end;
   Also, it shows the error message using MessageOK
   (so Glw must be already open). }
 procedure LoadScene(const ASceneFileName: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  const CameraOverride: TCameraSettingsOverride);
+  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
 
 { It's useful to undefine it only for debug purposes:
   FPC dumps then backtrace of where exception happened,
@@ -862,7 +878,7 @@ begin
   try
   {$endif CATCH_EXCEPTIONS}
     LoadSceneCore(RootNode,
-      ASceneFileName, SceneChanges, ACameraRadius, CameraOverride);
+      ASceneFileName, SceneChanges, ACameraRadius);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -892,7 +908,7 @@ begin
    to be careful in many places and check whether Scene.RootNode <> nil),
    without any gains in functionality. }
  RootNode := TNodeGroup_1.Create('', '');
- LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0, CameraNoOverride);
+ LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
@@ -911,7 +927,7 @@ begin
   RootNode := ParseVRMLFile(Stream, '');
  finally FreeAndNil(Stream) end;
 
- LoadSceneCore(RootNode, 'welcome_scene.wrl', [], 1.0, CameraNoOverride);
+ LoadSceneCore(RootNode, 'welcome_scene.wrl', [], 1.0);
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -1016,7 +1032,7 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true) then
-         LoadScene(s, SceneChanges, 0.0, CameraNoOverride);
+         LoadScene(s, SceneChanges, 0.0);
       end;
   11: begin
        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
@@ -1171,6 +1187,15 @@ begin
   202: MatrixWalker.PreferHomeUpForRotations := not MatrixWalker.PreferHomeUpForRotations;
   203: MatrixWalker.PreferHomeUpForMoving := not MatrixWalker.PreferHomeUpForMoving;
 
+  300..399:
+    begin
+      { We could just SetViewpoint, without swithing to nkWalker.
+        But user usually wants to switch to nkWalker --- in nkExamine
+        SetViewpoint is not visible at all. }
+      SetNavigatorKind(Glw, nkWalker);
+      SetViewpoint(MenuItem.IntData - 300);
+    end;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), Scene);
   1100..1199: SetTextureMinFilter(
@@ -1265,6 +1290,9 @@ begin
    M.Append(TMenuItem.Create('Show _lower level of octree based on triangles', 98, CtrlD));
    Result.Append(M);
  M := TMenu.Create('_Navigation');
+   ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to viewpoint');
+     ViewpointsList.MakeMenuJumpToViewpoint;
+     M.Append(ViewpointsList.MenuJumpToViewpoint);
    M2 := TMenu.Create('Change navigation method');
      for NavKind := Low(NavKind) to High(NavKind) do
       M2.Append(TMenuItem.Create(NavigatorNames[NavKind],
@@ -1331,7 +1359,6 @@ end;
 { main --------------------------------------------------------------------- }
 
 var
-  Params_CameraOverride: TCameraSettingsOverride;
   Param_CameraRadius: Single = 0.0;
   WasParam_WriteToVRML: boolean = false;
 
@@ -1339,21 +1366,15 @@ var
   Param_SceneFileName: string;
 
 const
-  Options: array[0..16] of TOption =
+  Options: array[0..10] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
     (Short:  #0; Long: 'triangle-octree-max-leaf-items-count'; Argument: oaRequired),
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
-    (Short: 'p'; Long: 'camera-pos'; Argument: oaRequired3Separate),
-    (Short: 'd'; Long: 'camera-dir'; Argument: oaRequired3Separate),
-    (Short: 'u'; Long: 'camera-up'; Argument: oaRequired3Separate),
-    (Short:  #0; Long: 'camera-up-z'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-convex-faces'; Argument: oaNone),
     (Short:  #0; Long: 'write-to-vrml'; Argument: oaNone),
-    (Short:  #0; Long: 'view-angle-x'; Argument: oaRequired),
-    (Short:  #0; Long: 'camera-kind'; Argument: oaRequired),
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'ss-octree-max-depth'; Argument: oaRequired),
@@ -1364,39 +1385,14 @@ const
     const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
   begin
    case OptionNum of
-    0: TriangleOctreeMaxDepth := StrToInt(Argument);
-    1: TriangleOctreeMaxLeafItemsCount := StrToInt(Argument);
-    2: Param_CameraRadius := StrToFloat(Argument);
-    3: begin
-        Include(Params_CameraOverride.OverrideSettings, csHomeCameraPos);
-        Params_CameraOverride.HomeCameraPos := SeparateArgsToVector3Single(SeparateArgs);
-       end;
-    4: begin
-        Include(Params_CameraOverride.OverrideSettings, csHomeCameraDir);
-        Params_CameraOverride.HomeCameraDir := SeparateArgsToVector3Single(SeparateArgs);
-       end;
-    5: begin
-        Include(Params_CameraOverride.OverrideSettings, csHomeCameraUp);
-        Params_CameraOverride.HomeCameraUp := SeparateArgsToVector3Single(SeparateArgs);
-       end;
-    6: begin
-        Include(Params_CameraOverride.OverrideSettings, csHomeCameraUp);
-        Params_CameraOverride.HomeCameraUp := Vector3Single(0, 0, 1);
-       end;
-    7: Include(SceneChanges, scNoNormals);
-    8: Include(SceneChanges, scNoSolidObjects);
-    9: Include(SceneChanges, scNoConvexFaces);
-    10: WasParam_WriteToVRML := true;
-    11: AngleOfViewX := StrToFloat(Argument);
-    12: begin
-          Include(Params_CameraOverride.OverrideSettings, csCameraKind);
-          case ArrayPosStr(Argument, ['perspective', 'orthographic']) of
-            0: Params_CameraOverride.CameraKind := ckPerspective;
-            1: Params_CameraOverride.CameraKind := ckOrthographic;
-            else raise EInvalidParams.Create('Invalid argument for --camera-kind');
-          end;
-        end;
-    13: begin
+    0 : TriangleOctreeMaxDepth := StrToInt(Argument);
+    1 : TriangleOctreeMaxLeafItemsCount := StrToInt(Argument);
+    2 : Param_CameraRadius := StrToFloat(Argument);
+    3 : Include(SceneChanges, scNoNormals);
+    4 : Include(SceneChanges, scNoSolidObjects);
+    5 : Include(SceneChanges, scNoConvexFaces);
+    6 : WasParam_WriteToVRML := true;
+    7 : begin
          InfoWrite(
            'view3dscene: VRML 1.0 (basic VRML 97 under development), ' +nl+
            '  3DS, OBJ and GEO viewer. ' +nl+
@@ -1410,23 +1406,15 @@ const
            'Available options are:' +nl+
            HelpOptionHelp +nl+
            VersionOptionHelp +nl+
-           '  -p / --camera-pos POS.X POS.Y POS.Z ,' +nl+
-           '  -d / --camera-dir DIR.X DIR.Y DIR.Z ,' +nl+
-           '  -u / --camera-up  UP.X  UP.Y  UP.Z' +nl+
-           '                        Set initial camera position, direction and up' +nl+
            '  --camera-radius RADIUS' +nl+
            '                        Set camera sphere radius used for collisions' +nl+
            '                        and determinig moving speed' +nl+
-           '  --camera-kind perspective|orthographic' +nl+
-           '                        Set camera projection kind' +nl+
            '  --scene-change-no-normals ,' +nl+
            '  --scene-change-no-solid-objects ,' +nl+
            '  --scene-change-no-convex-faces' +nl+
            '                        Change scene somehow after loading' +nl+
            '  --write-to-vrml       After loading (and changing) scene, write it' +nl+
            '                        as VRML 1.0 to the standard output' +nl+
-           '  --view-angle-x ANGLE' +nl+
-           '                        Set horizontal viewing angle (in degrees)' +nl+
            MultiNavigatorsOptionsHelp +nl+
            LightsOptionsHelp +nl+
            VRMLNodesDetailOptionsHelp +nl+
@@ -1453,12 +1441,12 @@ const
            SCamelotProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
         end;
-    14: begin
+    8 : begin
          Writeln(Version);
          ProgramBreak;
         end;
-    15: ShapeStateOctreeMaxDepth := StrToInt(Argument);
-    16: ShapeStateOctreeMaxLeafItemsCount := StrToInt(Argument);
+    9 : ShapeStateOctreeMaxDepth := StrToInt(Argument);
+    10: ShapeStateOctreeMaxLeafItemsCount := StrToInt(Argument);
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -1533,8 +1521,7 @@ begin
    Glw.Init;
 
    if WasParam_SceneFileName then
-     LoadScene(Param_SceneFileName, SceneChanges, Param_CameraRadius,
-       Params_CameraOverride) else
+     LoadScene(Param_SceneFileName, SceneChanges, Param_CameraRadius) else
      LoadWelcomeScene;
 
    Glwm.Loop;
