@@ -23,14 +23,9 @@ unit V3DSceneCamera;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, GLW_Navigated, KambiUtils;
+uses VectorMath, VRMLNodes, GLWindow, KambiUtils;
 
 {$define read_interface}
-
-var
-  AngleOfViewX: Single = 60;
-
-function AngleOfViewY: Single;
 
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you
@@ -76,12 +71,6 @@ uses SysUtils, RaysWindow, KambiStringUtils, VRMLCameraUtils;
 
 {$define read_implementation}
 {$I dynarray_1.inc}
-
-function AngleOfViewY: Single;
-begin
-  Result := AdjustViewAngleDegToAspectRatio(
-    AngleOfViewX, Glw.Height/Glw.Width);
-end;
 
 function SForCaption(const S: string): string;
 begin

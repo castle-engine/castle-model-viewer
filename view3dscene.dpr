@@ -99,6 +99,8 @@ var
   { ustalane w Init, finalizowane w Close }
   StatusFont: TGLBitmapFont;
 
+  AngleOfViewX: Single = 60;
+
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
@@ -128,6 +130,12 @@ var
   NavigationNode: TNodeNavigationInfo;
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
+
+function AngleOfViewY: Single;
+begin
+  Result := AdjustViewAngleDegToAspectRatio(
+    AngleOfViewX, Glw.Height/Glw.Width);
+end;
 
 function WalkProjectionNear: Single;
 begin
@@ -708,6 +716,7 @@ procedure LoadSceneCore(RootNode: TVRMLNode;
 var
   NewCaption: string;
   CameraPreferredHeight: Single;
+  WorldInfoNode: TNodeWorldInfo;
   I: Integer;
 begin
   FreeScene;
@@ -762,7 +771,12 @@ begin
     if MenuHeadlight <> nil then
       MenuHeadlight.Checked := HeadLight;
 
-    NewCaption := ExtractFileName(SceneFilename) + ' - view3dscene';
+    WorldInfoNode := Scene.RootNode.TryFindNode(TNodeWorldInfo, true)
+      as TNodeWorldInfo;
+    if (WorldInfoNode <> nil) and (WorldInfoNode.FdTitle.Value <> '') then
+      NewCaption := SForCaption(WorldInfoNode.FdTitle.Value) else
+      NewCaption := ExtractFileName(SceneFilename);
+    NewCaption += ' - view3dscene';
     if Glw.Closed then
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
