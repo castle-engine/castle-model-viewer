@@ -130,6 +130,8 @@ var
   NavigationNode: TNodeNavigationInfo;
   ViewpointNode: TNodeGeneralViewpoint;
 
+  VRMLLoadWarnings: TStringList;
+
 { ogolne pomocnicze funkcje -------------------------------------------------- }
 
 function AngleOfViewY: Single;
@@ -640,6 +642,12 @@ var
   MenuPreferHomeUpForRotations: TMenuItemChecked;
   MenuPreferHomeUpForMoving: TMenuItemChecked;
 
+procedure VRMLNonFatalError_Warning(const s: string);
+begin
+  Writeln(ProgramName + ': WARNING: ' + S);
+  VRMLLoadWarnings.Append(S);
+end;
+
 { Frees (and sets to some null values) "scene global variables".
 
   Note about OpenGL context: remember that changing Scene.RootNode
@@ -670,6 +678,8 @@ begin
  ViewpointNode := nil;
 
  SceneFileName := '';
+
+ VRMLLoadWarnings.Clear;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -1055,6 +1065,20 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     MessageOK(Glw, S, taLeft);
   end;
 
+  procedure ViewVRMLLoadWarnings;
+  var
+    S: TStringList;
+  begin
+    S := TStringList.Create;
+    try
+      S.Assign(VRMLLoadWarnings);
+      S.Insert(0, Format('Total %d warnings when loading scene "%s":',
+        [ VRMLLoadWarnings.Count, SceneFileName ]));
+      S.AddStrings(VRMLLoadWarnings);
+      MessageOK(Glw, S, taLeft);
+    finally FreeAndNil(S) end;
+  end;
+
 var s: string;
 begin
  case MenuItem.IntData of
@@ -1080,6 +1104,8 @@ begin
        end;
       end;
   12: Glw.Close;
+
+  21: ViewVRMLLoadWarnings;
 
   31: InvertSceneChanges(scNoNormals);
   32: InvertSceneChanges(scNoSolidObjects);
@@ -1251,6 +1277,8 @@ begin
  M := TMenu.Create('_File');
    M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
    M.Append(TMenuItem.Create('_Save as VRML ...', 11));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('View _warnings about current scene', 21));
    M.Append(TMenuSeparator.Create);
    M2 := TMenu.Create('_Configure scene loading');
      M2.Append(TMenuItemChecked.Create(
@@ -1502,7 +1530,7 @@ begin
   Param_SceneFileName := Parameters[1];
  end;
 
- VRMLNonFatalError := VRMLNonFatalError_WarningWrite;
+ VRMLNonFatalError := VRMLNonFatalError_Warning;
 
  if WasParam_WriteToVRML then
  begin
@@ -1521,6 +1549,8 @@ begin
  Progress.UserInterface := ProgressNullInterface;
 
  InitMultiNavigators(glw, TDummy.MoveAllowed, TDummy.GetCameraHeight);
+
+ VRMLLoadWarnings := TStringList.Create;
 
  { init "scene global variables" to null values }
  Scene := TVRMLFlatSceneGL.Create(nil, false, Param_RendererOptimization);
@@ -1555,7 +1585,10 @@ begin
 
    Glwm.Loop;
   finally FreeScene end;
- finally FreeAndNil(Scene) end;
+ finally
+   FreeAndNil(Scene);
+   FreeAndNil(VRMLLoadWarnings);
+ end;
 end.
 
 {
