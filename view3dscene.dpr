@@ -451,6 +451,8 @@ var Ray0, RayVector: TVector3Single;
     Intersection: TVector3Single;
     s, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
+    M1: TNodeMaterial_1;
+    M2: TNodeMaterial_2;
 
     { used only when PickingMessageShowShadows = true }
     i: integer;
@@ -518,20 +520,47 @@ begin
 
    if PickingMessageShowMaterial then
    begin
-    { TODO: this is VRML 1.0-specific, fix }
-    s += Format(nl +nl+
-           'Material name : %s' +nl+
-           'Material ambient[0] : %s' +nl+
-           'Material diffuse[0] : %s' +nl+
-           'Material specular[0] : %s' +nl+
-           'Material shininess[0] : %s' +nl+
-           'Material transparency[0] : %s',
-           [IntersectItem.State.LastNodes.Material.NodeName,
-            VectorToNiceStr(IntersectItem.State.LastNodes.Material.AmbientColor3Single(0)),
-            VectorToNiceStr(IntersectItem.State.LastNodes.Material.DiffuseColor3Single(0)),
-            VectorToNiceStr(IntersectItem.State.LastNodes.Material.SpecularColor3Single(0)),
-            FloatToNiceStr(IntersectItem.State.LastNodes.Material.ShininessExp(0)),
-            FloatToNiceStr(IntersectItem.State.LastNodes.Material.Transparency(0)) ]);
+     S += nl+ nl;
+     if IntersectItem.State.ParentShape <> nil then
+     begin
+       { This is VRML 2.0 node }
+       M2 := IntersectItem.State.ParentShape.Material;
+       if M2 <> nil then
+       begin
+         S += Format(
+                'Material:' +nl+
+                '  name : %s' +nl+
+                '  ambientIntensity[0] : %s' +nl+
+                '  diffuseColor[0] : %s' +nl+
+                '  specular[0] : %s' +nl+
+                '  shininess[0] : %s' +nl+
+                '  transparency[0] : %s',
+                [ M2.NodeName,
+                  FloatToNiceStr(M2.FdAmbientIntensity.Value),
+                  VectorToNiceStr(M2.FdDiffuseColor.Value),
+                  VectorToNiceStr(M2.FdSpecularColor.Value),
+                  FloatToNiceStr(M2.FdShininess.Value),
+                  FloatToNiceStr(M2.FdTransparency.Value) ]);
+       end else
+         S += 'Material: NULL';
+     end else
+     begin
+       M1 := IntersectItem.State.LastNodes.Material;
+       S += Format(
+           'Material:' +nl+
+           '  name : %s' +nl+
+           '  ambientColor[0] : %s' +nl+
+           '  diffuseColor[0] : %s' +nl+
+           '  specularColor[0] : %s' +nl+
+           '  shininess[0] : %s' +nl+
+           '  transparency[0] : %s',
+           [ M1.NodeName,
+             VectorToNiceStr(M1.AmbientColor3Single(0)),
+             VectorToNiceStr(M1.DiffuseColor3Single(0)),
+             VectorToNiceStr(M1.SpecularColor3Single(0)),
+             FloatToNiceStr(M1.Shininess(0)),
+             FloatToNiceStr(M1.Transparency(0)) ]);
+     end;
    end;
 
    if PickingMessageShowShadows then
@@ -1194,6 +1223,9 @@ begin
          MessageOK(Glw, 'The scene''s bounding box is empty.', taLeft) else
        begin
          Writeln(Format(
+           '# ----------------------------------------' +nl+
+           '# BoundingBox %s expressed in VRML:' +nl+
+           '# Version for VRML 1.0' +nl+
            'DEF BoundingBox Separator {' +nl+
            '  Translation {' +nl+
            '    translation %s' +nl+
@@ -1202,9 +1234,17 @@ begin
            '    width %s' +nl+
            '    height %s' +nl+
            '    depth %s' +nl+
-           '  }' +nl+
-           '}',
-           [ VectorToRawStr(Box3dMiddle(Scene.BoundingBox)),
+           '  } }' +nl+
+           nl+
+           '# Version for VRML 2.0' +nl+
+           'DEF BoundingBox Transform {' +nl+
+           '  translation %1:s' +nl+
+           '  children Shape {' +nl+
+           '    geometry Box {' +nl+
+           '      size %2:s %3:s %4:s' +nl+
+           '    } } }',
+           [ Box3dToNiceStr(Scene.BoundingBox),
+             VectorToRawStr(Box3dMiddle(Scene.BoundingBox)),
              FloatToRawStr(Scene.BoundingBox[1, 0] - Scene.BoundingBox[0, 0]),
              FloatToRawStr(Scene.BoundingBox[1, 1] - Scene.BoundingBox[0, 1]),
              FloatToRawStr(Scene.BoundingBox[1, 2] - Scene.BoundingBox[0, 2]) ]));
