@@ -707,8 +707,6 @@ begin
  ViewpointNode := nil;
 
  SceneFileName := '';
-
- SceneWarnings.Clear;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -763,7 +761,14 @@ procedure LoadClearScene; forward;
   "scene global variables".
 
   Note that RootNode object will be owned by Scene.
-  So do not Free RootNode after using this procedure. }
+  So do not Free RootNode after using this procedure.
+
+  Note that there is one "scene global variable" that will
+  not be completely handled by this procedure:
+  SceneWarnings. During this procedure some VRML warnings may
+  occur and be appended to SceneWarnings. You have to take care
+  about the rest of issues with the SceneWarnings, like clearing
+  them before calling LoadSceneCore. }
 procedure LoadSceneCore(RootNode: TVRMLNode;
   const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single);
@@ -925,22 +930,36 @@ procedure LoadScene(const ASceneFileName: string;
 
 var
   RootNode: TVRMLNode;
+  SavedSceneWarnings: TStringList;
 begin
-  {$ifdef CATCH_EXCEPTIONS}
+  { We have to clear SceneWarnings here (not later)
+    to catch also all warnings raised during parsing the VRML file.
+    This causes a potential problem: if loading the scene will fail,
+    we should restore the old warnings (if the old scene will be
+    preserved) or clear them (if the clear scene will be loaded
+    --- LoadSceneClear will clear them). }
+  SavedSceneWarnings := TStringList.Create;
   try
-  {$endif CATCH_EXCEPTIONS}
-    RootNode := LoadAsVRML(ASceneFileName, true);
-  {$ifdef CATCH_EXCEPTIONS}
-  except
-    on E: Exception do
-    begin
-      MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
-        E.Message, taLeft);
-      { In this case we can preserve current scene. }
-      Exit;
+    SavedSceneWarnings.Assign(SceneWarnings);
+    SceneWarnings.Clear;
+
+    {$ifdef CATCH_EXCEPTIONS}
+    try
+    {$endif CATCH_EXCEPTIONS}
+      RootNode := LoadAsVRML(ASceneFileName, true);
+    {$ifdef CATCH_EXCEPTIONS}
+    except
+      on E: Exception do
+      begin
+        MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+          E.Message, taLeft);
+        { In this case we can preserve current scene. }
+        SceneWarnings.Assign(SavedSceneWarnings);
+        Exit;
+      end;
     end;
-  end;
-  {$endif CATCH_EXCEPTIONS}
+    {$endif CATCH_EXCEPTIONS}
+  finally FreeAndNil(SavedSceneWarnings) end;
 
   {$ifdef CATCH_EXCEPTIONS}
   try
@@ -953,6 +972,14 @@ begin
     begin
       MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
         E.Message, taLeft);
+      { In this case we cannot preserve old scene, because
+        LoadSceneCore does FreeScene when it exits with exception
+        (and that's because LoadSceneCore modifies some global scene variables
+        when it works --- so when something fails inside LoadSceneCore,
+        we are left with some partially-initiaized state,
+        that is not usable; actually, LoadSceneCore
+        also does FreeScene when it starts it's work --- to start
+        with a clean state). }
       LoadClearScene;
       Exit;
     end;
@@ -973,19 +1000,22 @@ end;
   More specifically, this calls FreeScene, and then inits
   "scene global variables" to some non-null values. }
 procedure LoadClearScene;
-var RootNode: TVRMLNode;
+var
+  RootNode: TVRMLNode;
 begin
- { Note: once I had an idea to use here RootNode = nil.
-   This is not so entirely bad idea since I implemented TVRMLFlatScene
-   in such way that RootNode = nil is allowed and behaves sensible.
-   But it's also not so good idea because many things in view3dscene
-   use Scene.RootNode (e.g. when saving model to VRML using
-   appropriate menu item). So using here RootNode = nil would make
-   implementation of view3dscene more diffucult (I would have
-   to be careful in many places and check whether Scene.RootNode <> nil),
-   without any gains in functionality. }
- RootNode := TNodeGroup_1.Create('', '');
- LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0);
+  SceneWarnings.Clear;
+
+  { Note: once I had an idea to use here RootNode = nil.
+    This is not so entirely bad idea since I implemented TVRMLFlatScene
+    in such way that RootNode = nil is allowed and behaves sensible.
+    But it's also not so good idea because many things in view3dscene
+    use Scene.RootNode (e.g. when saving model to VRML using
+    appropriate menu item). So using here RootNode = nil would make
+    implementation of view3dscene more diffucult (I would have
+    to be careful in many places and check whether Scene.RootNode <> nil),
+    without any gains in functionality. }
+  RootNode := TNodeGroup_1.Create('', '');
+  LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
@@ -994,17 +1024,19 @@ procedure LoadWelcomeScene;
 var RootNode: TVRMLNode;
     Stream: TPeekCharStream;
 begin
- { I'm not constructing here RootNode in code (i.e. Pascal).
-   This would allow a fast implementation, but it's easier for me to
-   design welcome_scene.wrl in pure VRML and then auto-generate
-   welcome_scene.inc file to load VRML scene from a simple string. }
- Stream := TSimplePeekCharStream.Create(
-   TStringStream.Create({$I welcome_scene.inc}), true);
- try
-  RootNode := ParseVRMLFile(Stream, '');
- finally FreeAndNil(Stream) end;
+  SceneWarnings.Clear;
 
- LoadSceneCore(RootNode, 'welcome_scene.wrl', [], 1.0);
+  { I'm not constructing here RootNode in code (i.e. Pascal).
+    This would allow a fast implementation, but it's easier for me to
+    design welcome_scene.wrl in pure VRML and then auto-generate
+    welcome_scene.inc file to load VRML scene from a simple string. }
+  Stream := TSimplePeekCharStream.Create(
+    TStringStream.Create({$I welcome_scene.inc}), true);
+  try
+    RootNode := ParseVRMLFile(Stream, '');
+  finally FreeAndNil(Stream) end;
+
+  LoadSceneCore(RootNode, 'welcome_scene.wrl', [], 1.0);
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
