@@ -447,7 +447,7 @@ var Ray0, RayVector: TVector3Single;
     IntersectItemIndex: integer;
     IntersectItem: POctreeItem;
     Intersection: TVector3Single;
-    s: string;
+    s, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
 
     { used only when PickingMessageShowShadows = true }
@@ -507,9 +507,11 @@ begin
 
    if PickingMessageShowTexture then
    begin
-    s += Format(nl +nl+
-           'Node''s texture : %s.',
-           [IntersectItem.State.Texture.TextureDescription]);
+     if IntersectItem.State.Texture = nil then
+       TextureDescription := 'none' else
+       TextureDescription := IntersectItem.State.Texture.TextureDescription;
+     S += Format(nl +nl+
+           'Node''s texture : %s.', [TextureDescription]);
    end;
 
    if PickingMessageShowMaterial then
