@@ -130,7 +130,7 @@ var
   NavigationNode: TNodeNavigationInfo;
   ViewpointNode: TNodeGeneralViewpoint;
 
-  VRMLLoadWarnings: TStringList;
+  SceneWarnings: TStringList;
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
 
@@ -645,7 +645,7 @@ var
 procedure VRMLNonFatalError_Warning(const s: string);
 begin
   Writeln(ProgramName + ': WARNING: ' + S);
-  VRMLLoadWarnings.Append(S);
+  SceneWarnings.Append(S);
 end;
 
 { Frees (and sets to some null values) "scene global variables".
@@ -679,7 +679,7 @@ begin
 
  SceneFileName := '';
 
- VRMLLoadWarnings.Clear;
+ SceneWarnings.Clear;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -929,6 +929,15 @@ begin
     end;
   end;
   {$endif CATCH_EXCEPTIONS}
+
+  { We call EventBeforeDraw to make Scene.PrepareRender to gather
+    VRML warnings (because some warnings, e.g. invalid texture filename,
+    are reported only from Scene.PrepareRender) }
+  Glw.EventBeforeDraw;
+  if SceneWarnings.Count <> 0 then
+    MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
+      'this scene. See the console or use File->"View warnings" ' +
+      'menu command to view them all.', [SceneWarnings.Count]), taLeft);
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1065,16 +1074,17 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     MessageOK(Glw, S, taLeft);
   end;
 
-  procedure ViewVRMLLoadWarnings;
+  procedure ViewSceneWarnings;
   var
     S: TStringList;
   begin
     S := TStringList.Create;
     try
-      S.Assign(VRMLLoadWarnings);
-      S.Insert(0, Format('Total %d warnings when loading scene "%s":',
-        [ VRMLLoadWarnings.Count, SceneFileName ]));
-      S.AddStrings(VRMLLoadWarnings);
+      S.Assign(SceneWarnings);
+      S.Append(Format('Total %d warnings about current scene "%s":',
+        [ SceneWarnings.Count, SceneFileName ]));
+      S.Append('');
+      S.AddStrings(SceneWarnings);
       MessageOK(Glw, S, taLeft);
     finally FreeAndNil(S) end;
   end;
@@ -1105,7 +1115,7 @@ begin
       end;
   12: Glw.Close;
 
-  21: ViewVRMLLoadWarnings;
+  21: ViewSceneWarnings;
 
   31: InvertSceneChanges(scNoNormals);
   32: InvertSceneChanges(scNoSolidObjects);
@@ -1550,7 +1560,7 @@ begin
 
  InitMultiNavigators(glw, TDummy.MoveAllowed, TDummy.GetCameraHeight);
 
- VRMLLoadWarnings := TStringList.Create;
+ SceneWarnings := TStringList.Create;
 
  { init "scene global variables" to null values }
  Scene := TVRMLFlatSceneGL.Create(nil, false, Param_RendererOptimization);
@@ -1587,7 +1597,7 @@ begin
   finally FreeScene end;
  finally
    FreeAndNil(Scene);
-   FreeAndNil(VRMLLoadWarnings);
+   FreeAndNil(SceneWarnings);
  end;
 end.
 
