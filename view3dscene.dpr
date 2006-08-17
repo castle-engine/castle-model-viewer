@@ -1080,7 +1080,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     S := TStringList.Create;
     try
-      S.Assign(SceneWarnings);
       S.Append(Format('Total %d warnings about current scene "%s":',
         [ SceneWarnings.Count, SceneFileName ]));
       S.Append('');
