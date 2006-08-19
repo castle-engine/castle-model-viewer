@@ -670,6 +670,7 @@ var
   MenuGravity: TMenuItemChecked;
   MenuPreferHomeUpForRotations: TMenuItemChecked;
   MenuPreferHomeUpForMoving: TMenuItemChecked;
+  MenuReopen: TMenuItem;
 
 procedure VRMLNonFatalError_Warning(const s: string);
 begin
@@ -707,6 +708,9 @@ begin
  ViewpointNode := nil;
 
  SceneFileName := '';
+
+ if MenuReopen <> nil then
+   MenuReopen.Enabled := false;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -768,9 +772,18 @@ procedure LoadClearScene; forward;
   SceneWarnings. During this procedure some VRML warnings may
   occur and be appended to SceneWarnings. You have to take care
   about the rest of issues with the SceneWarnings, like clearing
-  them before calling LoadSceneCore. }
+  them before calling LoadSceneCore.
+
+  ASceneFileName is not const parameter, to allow you to pass
+  SceneFileName as ASceneFileName. If ASceneFileName would be const
+  we would have problem, because FreeScene modifies SceneFileName
+  global variable, and this would change ASceneFileName value
+  (actually, making it possibly totally invalid pointer,
+  pointing at some other place of memory). That's always the
+  problem with passing pointers to global variables
+  (ASceneFileName is a pointer) as local vars. }
 procedure LoadSceneCore(RootNode: TVRMLNode;
-  const ASceneFileName: string;
+  ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single);
 var
   NewCaption: string;
@@ -905,6 +918,9 @@ begin
       Glw.PostRedisplay;
     end;
 
+    if MenuReopen <> nil then
+      MenuReopen.Enabled := SceneFileName <> '';
+
   except
     FreeScene;
     raise;
@@ -1000,43 +1016,42 @@ end;
   More specifically, this calls FreeScene, and then inits
   "scene global variables" to some non-null values. }
 procedure LoadClearScene;
-var
-  RootNode: TVRMLNode;
 begin
   SceneWarnings.Clear;
 
-  { Note: once I had an idea to use here RootNode = nil.
+  { Note: Once I had an idea to use RootNode = nil for clear scene.
     This is not so entirely bad idea since I implemented TVRMLFlatScene
     in such way that RootNode = nil is allowed and behaves sensible.
-    But it's also not so good idea because many things in view3dscene
-    use Scene.RootNode (e.g. when saving model to VRML using
-    appropriate menu item). So using here RootNode = nil would make
-    implementation of view3dscene more diffucult (I would have
-    to be careful in many places and check whether Scene.RootNode <> nil),
-    without any gains in functionality. }
-  RootNode := TNodeGroup_1.Create('', '');
-  LoadSceneCore(RootNode, 'clear_scene.wrl', [], 1.0);
+    Disadvantages:
+    - Many things in view3dscene
+      use Scene.RootNode (e.g. when saving model to VRML using
+      appropriate menu item). So using here RootNode = nil would make
+      implementation of view3dscene more diffucult (I would have
+      to be careful in many places and check whether Scene.RootNode <> nil),
+      without any gains in functionality.
+    - non-empty clear scene allows me to put there WorldInfo with a title.
+      This way clear scene has an effect on view3dscene window's title,
+      and at the same time I don't have to set SceneFileName to something
+      dummy.
+
+    I'm not constructing here RootNode in code (i.e. Pascal).
+    This would allow a fast implementation, but it's easier for me to
+    design scene in pure VRML and then auto-generate
+    xxx_scene.inc file to load VRML scene from a simple string. }
+
+  LoadSceneCore(
+    ParseVRMLFileFromString({$I clear_scene.inc}, ''), '', [], 1.0);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
-var RootNode: TVRMLNode;
-    Stream: TPeekCharStream;
 begin
   SceneWarnings.Clear;
 
-  { I'm not constructing here RootNode in code (i.e. Pascal).
-    This would allow a fast implementation, but it's easier for me to
-    design welcome_scene.wrl in pure VRML and then auto-generate
-    welcome_scene.inc file to load VRML scene from a simple string. }
-  Stream := TSimplePeekCharStream.Create(
-    TStringStream.Create({$I welcome_scene.inc}), true);
-  try
-    RootNode := ParseVRMLFile(Stream, '');
-  finally FreeAndNil(Stream) end;
-
-  LoadSceneCore(RootNode, 'welcome_scene.wrl', [], 1.0);
+  { See comments at LoadClearScene }
+  LoadSceneCore(
+    ParseVRMLFileFromString({$I welcome_scene.inc}, ''), '', [], 1.0);
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -1157,7 +1172,14 @@ begin
        if glwin.FileDialog('Open file', s, true) then
          LoadScene(s, SceneChanges, 0.0);
       end;
-  11: begin
+
+  12: Glw.Close;
+
+  15: begin
+        LoadScene(SceneFileName, SceneChanges, 0.0);
+      end;
+
+  20: begin
        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
         s := AppendToFileName(SceneFilename, '_2') else
         s := ChangeFileExt(SceneFilename, '.wrl');
@@ -1173,7 +1195,6 @@ begin
         end;
        end;
       end;
-  12: Glw.Close;
 
   21: ViewSceneWarnings;
 
@@ -1357,7 +1378,10 @@ begin
  Result := TMenu.Create('Main menu');
  M := TMenu.Create('_File');
    M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
-   M.Append(TMenuItem.Create('_Save as VRML ...', 11));
+   MenuReopen := TMenuItem.Create('_Reopen',      15);
+   MenuReopen.Enabled := false;
+   M.Append(MenuReopen);
+   M.Append(TMenuItem.Create('_Save as VRML ...', 20));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _warnings about current scene', 21));
    M.Append(TMenuSeparator.Create);
