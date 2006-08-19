@@ -1081,9 +1081,6 @@ const
   Version = '1.2.5';
   DisplayProgramName = 'view3dscene';
 
-var
-  SceneChanges: TSceneChanges = [];
-
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeCameraUp;
@@ -1137,13 +1134,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     MessageOK(glwin, SOnlyInWalker);
   end;
 
-  procedure InvertSceneChanges(SC: TSceneChange);
-  begin
-   if SC in SceneChanges then
-    Exclude(SceneChanges, SC) else
-    Include(SceneChanges, SC);
-  end;
-
   procedure ShowAndWrite(const S: string);
   begin
     Writeln(S);
@@ -1170,13 +1160,13 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true) then
-         LoadScene(s, SceneChanges, 0.0);
+         LoadScene(s, [], 0.0);
       end;
 
   12: Glw.Close;
 
   15: begin
-        LoadScene(SceneFileName, SceneChanges, 0.0);
+        LoadScene(SceneFileName, [], 0.0);
       end;
 
   20: begin
@@ -1198,9 +1188,9 @@ begin
 
   21: ViewSceneWarnings;
 
-  31: InvertSceneChanges(scNoNormals);
-  32: InvertSceneChanges(scNoSolidObjects);
-  33: InvertSceneChanges(scNoConvexFaces);
+  31: ChangeScene(scNoNormals, Scene);
+  32: ChangeScene(scNoSolidObjects, Scene);
+  33: ChangeScene(scNoConvexFaces, Scene);
 
   81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;
@@ -1385,18 +1375,6 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _warnings about current scene', 21));
    M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('_Configure scene loading');
-     M2.Append(TMenuItemChecked.Create(
-       'Remove normals info from scene (no-_normals)',  31,
-       scNoNormals in SceneChanges, true));
-     M2.Append(TMenuItemChecked.Create('Force all shapes to be marked as '+
-       'possibly non-solid (no-_solid-objects)',        32,
-       scNoSolidObjects in SceneChanges, true));
-     M2.Append(TMenuItemChecked.Create('Force all faces to be marked as '+
-       'possibly non-convex (no-_convex-faces)',        33,
-       scNoConvexFaces in SceneChanges, true));
-     M.Append(M2);
-   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
    Result.Append(M);
  M := TMenu.Create('_View');
@@ -1482,6 +1460,15 @@ begin
    M.Append(MenuPreferHomeUpForMoving);
    M.Append(TMenuItem.Create('Change camera up vector ...',  124));
    Result.Append(M);
+ M := TMenu.Create('_Edit');
+   M.Append(TMenuItem.Create(
+     'Remove normals info from scene (forces normals to be calculated)',
+      31));
+   M.Append(TMenuItem.Create('Mark all shapes as '+
+     'non-solid (disables any backface culling)', 32));
+   M.Append(TMenuItem.Create('Mark all faces as '+
+     'non-convex (forces faces to be triangulated carefully)', 33));
+   Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print statistics of octree based on _triangles', 101));
    M.Append(TMenuItem.Create('Print statistics of octree based on _ShapeStates', 103));
@@ -1526,6 +1513,7 @@ var
 
   WasParam_SceneFileName: boolean = false;
   Param_SceneFileName: string;
+  Param_SceneChanges: TSceneChanges = [];
 
 const
   Options: array[0..10] of TOption =
@@ -1550,9 +1538,9 @@ const
     0 : TriangleOctreeMaxDepth := StrToInt(Argument);
     1 : TriangleOctreeMaxLeafItemsCount := StrToInt(Argument);
     2 : Param_CameraRadius := StrToFloat(Argument);
-    3 : Include(SceneChanges, scNoNormals);
-    4 : Include(SceneChanges, scNoSolidObjects);
-    5 : Include(SceneChanges, scNoConvexFaces);
+    3 : Include(Param_SceneChanges, scNoNormals);
+    4 : Include(Param_SceneChanges, scNoSolidObjects);
+    5 : Include(Param_SceneChanges, scNoConvexFaces);
     6 : WasParam_WriteToVRML := true;
     7 : begin
          InfoWrite(
@@ -1643,7 +1631,7 @@ begin
    raise EInvalidParams.Create('You used --write-to-vrml option, '+
      'this means that you want to convert some 3d model file to VRML. ' +
      'But you didn''t provide any filename on command-line to load.');
-  WriteToVRML(Param_SceneFileName, SceneChanges);
+  WriteToVRML(Param_SceneFileName, Param_SceneChanges);
   Exit;
  end;
 
@@ -1685,7 +1673,7 @@ begin
    Glw.Init;
 
    if WasParam_SceneFileName then
-     LoadScene(Param_SceneFileName, SceneChanges, Param_CameraRadius) else
+     LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius) else
      LoadWelcomeScene;
 
    Glwm.Loop;

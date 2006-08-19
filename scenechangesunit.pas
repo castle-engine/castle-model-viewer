@@ -18,6 +18,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 }
 
+{ }
 unit SceneChangesUnit;
 
 interface
@@ -28,23 +29,23 @@ type
   { When adding new item to TSceneChange you can also consider adding
     new option to view3dscene (--scene-change-).
     All other necessary changes after extending TSceneChange will be enforced
-    by the compiler. }
+    by the compiler.
+
+    See [http://www.camelot.homedns.org/~michalis/view3dscene.php#section_command_line_options]
+    for detailed spec what these scene changes do. }
   TSceneChange = (
-    { usun ze sceny wszystkie node'y Normal, NormalBinding i wykasuj zawartosc
-      wszystkich pol normalIndex w node'ach indexed.
-      W rezultacie wymusi to na nas zawsze generowanie wlasnych normali
-      (co moze byc przydatne np. gdy obiekt ma zle/niedoskonale smooth normale). }
     scNoNormals,
-    { zamien wszedzie w ShapeHints ShapeType z SOLID na UNKNOWN. W ten sposob
-      nie bedziemy uzywali backface culling. (pomocne jesli model ma blednie
-      ustawione solid). }
     scNoSolidObjects,
     scNoConvexFaces);
   TSceneChanges = set of TSceneChange;
 
+procedure ChangeScene(SceneChange: TSceneChange;
+  Scene: TVRMLFlatScene); overload;
+
 { Do all scene changes in SceneChanges.
   Changes will be done in the order they are declared in type TSceneChange. }
-procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
+procedure ChangeScene(SceneChanges: TSceneChanges;
+  Scene: TVRMLFlatScene); overload;
 
 implementation
 
@@ -138,12 +139,17 @@ const
     SceneChange_NoSolidObjects,
     SceneChange_NoConvexFaces );
 
+procedure ChangeScene(SceneChange: TSceneChange; Scene: TVRMLFlatScene);
+begin
+  SCFunctions[SceneChange](Scene);
+end;
+
 procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
 var sc: TSceneChange;
 begin
  for sc := Low(sc) to High(sc) do
   if sc in SceneChanges then
-   SCFunctions[sc](Scene);
+   ChangeScene(SC, Scene);
 end;
 
 end.
