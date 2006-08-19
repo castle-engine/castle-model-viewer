@@ -49,28 +49,54 @@ procedure ChangeScene(SceneChanges: TSceneChanges;
 
 implementation
 
+uses SysUtils;
+
+{ TSceneChangesDo -------------------------------------------------- }
+
+type
+  TSceneChangesDo = class
+  public
+    procedure NormalIndexErase_1(node: TVRMLNode);
+    procedure NormalErase_2(node: TVRMLNode);
+
+    procedure MakeNoSolid_1(node: TVRMLNode);
+    procedure MakeNoSolid_2(node: TVRMLNode);
+
+    procedure MakeNoConvex_1(node: TVRMLNode);
+    procedure MakeNoConvex_2(node: TVRMLNode);
+  end;
+
+procedure TSceneChangesDo.NormalIndexErase_1(node: TVRMLNode);
+begin
+  (Node as TNodeGeneralIndexed_1).FdNormalIndex.Items.SetLength(0);
+end;
+
+procedure TSceneChangesDo.NormalErase_2(node: TVRMLNode);
+begin
+  (Node as TNodeIndexedFaceSet_2).FdNormal.Value := nil;
+end;
+
+procedure TSceneChangesDo.MakeNoSolid_1(node: TVRMLNode);
+begin
+  (Node as TNodeShapeHints).FdShapeType.Value := SHTYPE_UNKNOWN;
+end;
+
+procedure TSceneChangesDo.MakeNoSolid_2(node: TVRMLNode);
+begin
+  (Node as TNodeIndexedFaceSet_2).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.MakeNoConvex_1(node: TVRMLNode);
+begin
+  (Node as TNodeShapeHints).FdFaceType.Value := FACETYPE_UNKNOWN;
+end;
+
+procedure TSceneChangesDo.MakeNoConvex_2(node: TVRMLNode);
+begin
+  (Node as TNodeIndexedFaceSet_2).FdConvex.Value := false;
+end;
+
 { SceneChange_Xxx functions ---------------------------------------- }
-
-type
-  TNormalIndexEraser = class
-    procedure DoNode(node: TVRMLNode);
-  end;
-  procedure TNormalIndexEraser.DoNode(node: TVRMLNode);
-  begin TNodeGeneralIndexed_1(node).FdNormalIndex.Items.SetLength(0) end;
-
-type
-  TNoSolidMaker = class
-    procedure DoNode(node: TVRMLNode);
-  end;
-  procedure TNoSolidMaker.DoNode(node: TVRMLNode);
-  begin TNodeShapeHints(node).FdShapeType.Value := SHTYPE_UNKNOWN end;
-
-type
-  TNoConvexMaker = class
-    procedure DoNode(node: TVRMLNode);
-  end;
-  procedure TNoConvexMaker.DoNode(node: TVRMLNode);
-  begin TNodeShapeHints(node).FdFaceType.Value := FACETYPE_UNKNOWN end;
 
 procedure RemoveNodeClass(RootNode: TVRMLNode;
   NodeClass: TVRMLNodeClass; onlyFromActivePart: boolean);
@@ -96,37 +122,68 @@ end;
 
 procedure SceneChange_NoNormals(scene: TVRMLFlatScene);
 const onlyFromActivePart = false;
+var
+  DoChanges: TSceneChangesDo;
 begin
- RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
- RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
- scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
-   TNormalIndexEraser.DoNode, onlyFromActivePart);
- scene.ChangedAll;
+  DoChanges := TSceneChangesDo.Create;
+  try
+    Scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
+      DoChanges.NormalIndexErase_1, onlyFromActivePart);
+    Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
+      DoChanges.NormalErase_2, onlyFromActivePart);
+  finally FreeAndNil(DoChanges) end;
+
+  { Do this at the end --- for VRML 2.0, Normal nodes will be
+    removed in more intelligent way. }
+  RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
+  RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
+
+  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoSolidObjects(scene: TVRMLFlatScene);
+var
+  DoChanges: TSceneChangesDo;
 begin
- scene.RootNode.EnumerateNodes(TNodeShapeHints, TNoSolidMaker.DoNode, false);
- scene.ChangedAll;
+  DoChanges := TSceneChangesDo.Create;
+  try
+    scene.RootNode.EnumerateNodes(TNodeShapeHints,
+      DoChanges.MakeNoSolid_1, false);
+    scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
+      DoChanges.MakeNoSolid_2, false);
+  finally FreeAndNil(DoChanges) end;
+
+  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoConvexFaces(scene: TVRMLFlatScene);
-var newRootNode: TVRMLNode;
+var
+  newRootNode: TVRMLNode;
+  DoChanges: TSceneChangesDo;
 begin
- scene.RootNode.EnumerateNodes(TNodeShapeHints, TNoConvexMaker.DoNode, false);
+  DoChanges := TSceneChangesDo.Create;
+  try
+    scene.RootNode.EnumerateNodes(TNodeShapeHints,
+      DoChanges.MakeNoConvex_1, false);
+    scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
+      DoChanges.MakeNoConvex_2, false);
+  finally FreeAndNil(DoChanges) end;
 
- (* stworz newRootNode : Group, jego chidren to
-   ShapeHints { faceType UNKNOWN_FACE_TYPE }
-   i dotychczasowy root node sceny. *)
- newRootNode := TNodeGroup_1.Create('', scene.RootNode.WWWBasePath);
- newRootNode.AddChild(TNodeShapeHints.Create('', scene.RootNode.WWWBasePath));
- TNodeShapeHints(newRootNode.Children[0]).FdFaceType.Value := FACETYPE_UNKNOWN;
- newRootNode.AddChild(scene.RootNode);
+  if scene.RootNode.TryFindNode(TNodeGeneralShape_1, false) <> nil then
+  begin
+    (* stworz newRootNode : Group, jego chidren to
+      ShapeHints { faceType UNKNOWN_FACE_TYPE }
+      i dotychczasowy root node sceny. *)
+    newRootNode := TNodeGroup_1.Create('', scene.RootNode.WWWBasePath);
+    newRootNode.AddChild(TNodeShapeHints.Create('', scene.RootNode.WWWBasePath));
+    TNodeShapeHints(newRootNode.Children[0]).FdFaceType.Value := FACETYPE_UNKNOWN;
+    newRootNode.AddChild(scene.RootNode);
 
- { podmien scene.RootNode na newRootNode }
- scene.RootNode := newRootNode;
+    { podmien scene.RootNode na newRootNode }
+    scene.RootNode := newRootNode;
+  end;
 
- scene.ChangedAll;
+  scene.ChangedAll;
 end;
 
 { ChangeScene --------------------------------------------------------------- }
