@@ -1078,7 +1078,7 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  Version = '1.2.5';
+  Version = '2.0.0';
   DisplayProgramName = 'view3dscene';
 
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
