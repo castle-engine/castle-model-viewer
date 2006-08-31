@@ -1154,6 +1154,16 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     finally FreeAndNil(S) end;
   end;
 
+  procedure ChangePointSize;
+  var
+    Value: Single;
+  begin
+    Value := Scene.Attributes.PointSize;
+    if MessageInputQuerySingle(Glwin, 'Change point size:',
+      Value, taLeft) then
+      Scene.Attributes.PointSize := Value;
+  end;
+
 var s: string;
 begin
  case MenuItem.IntData of
@@ -1330,6 +1340,8 @@ begin
   162: PickingMessageShowMaterial := not PickingMessageShowMaterial;
   163: PickingMessageShowShadows := not PickingMessageShowShadows;
 
+  182: ChangePointSize;
+
   201: MatrixWalker.Gravity := not MatrixWalker.Gravity;
   202: MatrixWalker.PreferHomeUpForRotations := not MatrixWalker.PreferHomeUpForRotations;
   203: MatrixWalker.PreferHomeUpForMoving := not MatrixWalker.PreferHomeUpForMoving;
@@ -1428,6 +1440,8 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Show _upper level of octree based on triangles', 97, CtrlU));
    M.Append(TMenuItem.Create('Show _lower level of octree based on triangles', 98, CtrlD));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Set point size ...', 182));
    Result.Append(M);
  M := TMenu.Create('_Navigation');
    ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to viewpoint');
