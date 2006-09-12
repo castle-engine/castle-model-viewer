@@ -81,12 +81,16 @@ uses
 
 var
   Wireframe: boolean = false;
-  OctreeDisplayDepth: integer = -1; { -1 means "don't display octree" }
   ShowStatus: boolean = true;
   ShowBBox: boolean = true;
 
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
+
+  OctreeDisplayWhole: boolean = false;
+  { This is meaningful only if OctreeDisplayWhole = false.
+    -1 means "don't display octree". }
+  OctreeDisplayDepth: integer = -1;
 
   PickingMessageShowTexture: boolean = false;
   PickingMessageShowMaterial: boolean = false;
@@ -185,11 +189,13 @@ end;
 
 procedure DrawStatus(data: integer);
 
-  function OctreeDisplayDepthToStr: string;
+  function OctreeDisplayToStr: string;
   begin
-   if OctreeDisplayDepth <> -1 then
-    result := IntToStr(OctreeDisplayDepth) else
-    result := 'none';
+    if OctreeDisplayWhole then
+      Result := 'whole' else
+    if OctreeDisplayDepth <> -1 then
+      Result := 'depth ' + IntToStr(OctreeDisplayDepth) else
+      Result := 'none';
   end;
 
 const BoolToStrOO: array[boolean] of string=('OFF','ON');
@@ -219,9 +225,9 @@ begin
        Glw.NavExaminer.ScaleFactor ]));
   end;
 
-  strs.Append(Format('Camera Kind : %s, Octree display depth : %s',
+  strs.Append(Format('Camera Kind : %s, Octree display : %s',
     [ VRMLCameraKindToStr[CameraKind],
-      OctreeDisplayDepthToStr ]));
+      OctreeDisplayToStr ]));
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
@@ -259,21 +265,42 @@ end;
 
 procedure Draw(glwin: TGLWindow);
 
-  procedure DisplayOctree(octreenode: TOctreeNode; octreeDisplayDepth: integer);
-  var b0, b1, b2: boolean;
+  procedure DisplayOctreeDepth(octreenode: TOctreeNode; octreeDisplayDepth: integer);
+  var
+    b0, b1, b2: boolean;
   begin
-   with octreenode do
-   if Depth = octreeDisplayDepth then
-   begin
-    if not (IsLeaf and (ItemsCount = 0)) then DrawGLBoxWire(Box, 0, 0, 0, true);
-   end else
-   if not IsLeaf then
-   begin
-    for b0 := false to true do
-     for b1 := false to true do
-      for b2 := false to true do
-       DisplayOctree(TreeSubNodes[b0, b1, b2], octreeDisplayDepth);
-   end;
+    with octreenode do
+      if Depth = octreeDisplayDepth then
+      begin
+        if not (IsLeaf and (ItemsCount = 0)) then
+          DrawGLBoxWire(Box, 0, 0, 0, true);
+      end else
+      if not IsLeaf then
+      begin
+        for b0 := false to true do
+          for b1 := false to true do
+            for b2 := false to true do
+              DisplayOctreeDepth(TreeSubNodes[b0, b1, b2], octreeDisplayDepth);
+      end;
+  end;
+
+  procedure DisplayOctreeWhole(OctreeNode: TOctreeNode);
+  var
+    b0, b1, b2: boolean;
+  begin
+    with OctreeNode do
+    begin
+      if not (IsLeaf and (ItemsCount = 0)) then
+        DrawGLBoxWire(Box, 0, 0, 0, true);
+
+      if not IsLeaf then
+      begin
+        for b0 := false to true do
+          for b1 := false to true do
+            for b2 := false to true do
+              DisplayOctreeWhole(TreeSubNodes[b0, b1, b2]);
+      end;
+    end;
   end;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
@@ -336,10 +363,15 @@ begin
 
  glLoadMatrix(Glw.Navigator.Matrix);
 
- if octreeDisplayDepth >= 0 then
+ if OctreeDisplayWhole then
  begin
-  glColorv(Yellow3Single);
-  DisplayOctree(Scene.DefaultTriangleOctree.TreeRoot, octreeDisplayDepth);
+   glColorv(Yellow3Single);
+   DisplayOctreeWhole(Scene.DefaultTriangleOctree.TreeRoot);
+ end else
+ if OctreeDisplayDepth >= 0 then
+ begin
+   glColorv(Yellow3Single);
+   DisplayOctreeDepth(Scene.DefaultTriangleOctree.TreeRoot, OctreeDisplayDepth);
  end;
 
  if showBBox then
@@ -1081,6 +1113,9 @@ const
   Version = '2.0.0';
   DisplayProgramName = 'view3dscene';
 
+var
+  MenuOctreeDisplayWhole: TMenuItemChecked;
+
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeCameraUp;
@@ -1215,15 +1250,37 @@ begin
   94: with Scene do Attributes.EnableTextures := not Attributes.EnableTextures;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
+
   97: begin
-       Inc(octreeDisplayDepth);
-       if octreeDisplayDepth > Scene.DefaultTriangleOctree.MaxDepth then
-        octreeDisplayDepth := -1;
+        if OctreeDisplayWhole then
+        begin
+          OctreeDisplayWhole := false;
+          MenuOctreeDisplayWhole.Checked := OctreeDisplayWhole;
+          OctreeDisplayDepth := -1;
+        end;
+
+        Inc(octreeDisplayDepth);
+        if octreeDisplayDepth > Scene.DefaultTriangleOctree.MaxDepth then
+          octreeDisplayDepth := -1;
       end;
+
   98: begin
-       Dec(octreeDisplayDepth);
-       if octreeDisplayDepth < -1 then
-        octreeDisplayDepth := Scene.DefaultTriangleOctree.MaxDepth;
+        if OctreeDisplayWhole then
+        begin
+          OctreeDisplayWhole := false;
+          MenuOctreeDisplayWhole.Checked := OctreeDisplayWhole;
+          OctreeDisplayDepth := -1;
+        end;
+
+        Dec(octreeDisplayDepth);
+        if octreeDisplayDepth < -1 then
+          octreeDisplayDepth := Scene.DefaultTriangleOctree.MaxDepth;
+      end;
+
+  99: begin
+        OctreeDisplayWhole := not OctreeDisplayWhole;
+        if not OctreeDisplayWhole then
+          OctreeDisplayDepth := -1;
       end;
 
   101: Writeln(Scene.DefaultTriangleOctree.Statistics);
@@ -1438,6 +1495,9 @@ begin
      'show it over all other objects (no depth test)', 180,
      ShowFrustumAlwaysVisible, true));
    M.Append(TMenuSeparator.Create);
+   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show whole octree',
+     99, OctreeDisplayWhole, true);
+   M.Append(MenuOctreeDisplayWhole);
    M.Append(TMenuItem.Create('Show _upper level of octree based on triangles', 97, CtrlU));
    M.Append(TMenuItem.Create('Show _lower level of octree based on triangles', 98, CtrlD));
    M.Append(TMenuSeparator.Create);
