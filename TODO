@@ -4,6 +4,8 @@ Blockers before next release:
 ----------------------------------------
 Others:
 
+- changing blending source and dest factors at runtime.
+
 - Recently opened files in menu.
 
 - allow to change RendererOptimization at runtime

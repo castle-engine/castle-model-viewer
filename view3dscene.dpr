@@ -363,6 +363,12 @@ begin
 
  glLoadMatrix(Glw.Navigator.Matrix);
 
+ { Draw may be called in various situations even when Scene
+   is not really ready (e.g. when showing errors after scene loading),
+   so we have to check here whether some things are initialized as they
+   should. }
+ if (Scene.DefaultTriangleOctree <> nil) and
+    (Scene.DefaultTriangleOctree.TreeRoot <> nil) then
  if OctreeDisplayWhole then
  begin
    glColorv(Yellow3Single);
