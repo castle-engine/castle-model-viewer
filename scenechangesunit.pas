@@ -128,9 +128,9 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     Scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
-      DoChanges.NormalIndexErase_1, onlyFromActivePart);
+      @DoChanges.NormalIndexErase_1, onlyFromActivePart);
     Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      DoChanges.NormalErase_2, onlyFromActivePart);
+      @DoChanges.NormalErase_2, onlyFromActivePart);
   finally FreeAndNil(DoChanges) end;
 
   { Do this at the end --- for VRML 2.0, Normal nodes will be
@@ -148,9 +148,9 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      DoChanges.MakeNoSolid_1, false);
+      @DoChanges.MakeNoSolid_1, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      DoChanges.MakeNoSolid_2, false);
+      @DoChanges.MakeNoSolid_2, false);
   finally FreeAndNil(DoChanges) end;
 
   scene.ChangedAll;
@@ -164,9 +164,9 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      DoChanges.MakeNoConvex_1, false);
+      @DoChanges.MakeNoConvex_1, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      DoChanges.MakeNoConvex_2, false);
+      @DoChanges.MakeNoConvex_2, false);
   finally FreeAndNil(DoChanges) end;
 
   if scene.RootNode.TryFindNode(TNodeGeneralShape_1, false) <> nil then
@@ -192,9 +192,9 @@ type
   TSceneChangeFunction = procedure(Scene: TVRMLFlatScene);
 const
   SCFunctions: array[TSceneChange]of TSceneChangeFunction =
-  ( SceneChange_NoNormals,
-    SceneChange_NoSolidObjects,
-    SceneChange_NoConvexFaces );
+  ( @SceneChange_NoNormals,
+    @SceneChange_NoSolidObjects,
+    @SceneChange_NoConvexFaces );
 
 procedure ChangeScene(SceneChange: TSceneChange; Scene: TVRMLFlatScene);
 begin

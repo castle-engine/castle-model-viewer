@@ -84,7 +84,7 @@ begin
   dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka }
  glClear(GL_COLOR_BUFFER_BIT);
  glRasterPos2i(0, 0);
- ImageDraw(PCallData(glwin.UserData).Image);
+ ImageDraw(PCallData(glwin.UserData)^.Image);
 end;
 
 { -------------------------------------------------------------------------
@@ -121,7 +121,7 @@ begin
     dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka.}
    glClear(GL_COLOR_BUFFER_BIT);
    glRasterPos2i(0, 0);
-   ImageDraw(D.Image);
+   ImageDraw(D^.Image);
  glPopAttrib;
 end;
 
@@ -136,12 +136,12 @@ begin
 
  { obchodzi nas tylko RowsMadeCount, ignorujemy ten callback gdy PixelsMadeCount
    nie oznacza ze wlasnie skonczylismy caly wiersz }
- if PixelsMadeCount mod D.Image.Width <> 0 then Exit;
- RowsMadeCount := PixelsMadeCount div D.Image.Width;
- D.RowsMadeCount := RowsMadeCount;
+ if PixelsMadeCount mod D^.Image.Width <> 0 then Exit;
+ RowsMadeCount := PixelsMadeCount div D^.Image.Width;
+ D^.RowsMadeCount := RowsMadeCount;
 
  TGLWindow(Data).Caption := CaptionBegin +
-   Format(' working %d%%',[Round(100*RowsMadeCount/D.Image.Height)]);
+   Format(' working %d%%',[Round(100*RowsMadeCount/D^.Image.Height)]);
 
  { zeby szybkosc rysowania wierszy nie obnizala znaczaco szybkosci renderingu
    nie wyswietlamy kazdego wiersza osobno i nie wywolujemy glwm.ProcessMessage
@@ -149,11 +149,11 @@ begin
  if (RowsMadeCount mod ROWS_SHOW_COUNT) = 0 then
  begin
   glRasterPos2i(0, RowsMadeCount-ROWS_SHOW_COUNT);
-  ImageDrawRows(D.Image, RowsMadeCount-ROWS_SHOW_COUNT, ROWS_SHOW_COUNT);
+  ImageDrawRows(D^.Image, RowsMadeCount-ROWS_SHOW_COUNT, ROWS_SHOW_COUNT);
   glFlush;
 
   glwm.ProcessAllMessages;
-  if D.UserWantsToQuit then raise BreakRaytracing.Create;
+  if D^.UserWantsToQuit then raise BreakRaytracing.Create;
  end;
 end;
 
@@ -183,9 +183,9 @@ begin
          taLeft);
        SaveAsFilename := ProgramName + '_rt.png';
        if glwin.FileDialog('Save image', SaveAsFilename, false) then
-        SaveImage(D.Image, SaveAsFilename);
+        SaveImage(D^.Image, SaveAsFilename);
       end;
-  20: D.UserWantsToQuit := true;
+  20: D^.UserWantsToQuit := true;
  end;
 end;
 
@@ -260,10 +260,10 @@ begin
    try
 
     { set initial state }
-    SetStdNoCloseGLWindowState(glwin, DrawRaytracing, Resize2D, @CallData, false,
+    SetStdNoCloseGLWindowState(glwin, @DrawRaytracing, @Resize2D, @CallData, false,
       false, true, K_None, false, false);
     glwin.MainMenu := WhileRTMainMenu;
-    glwin.OnMenuCommand := MenuCommand;
+    glwin.OnMenuCommand := @MenuCommand;
     CallData.UserWantsToQuit := false;
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
@@ -280,11 +280,11 @@ begin
       case RaytracerKind of
        rtkClassic: ClassicRayTracerTo1st(CallData.Image, Octree,
           CamPosition, CamDir, CamUp, ViewAngleDegX, ViewAngleDegY,
-          SceneBGColor, PixelsMadeNotify, glwin, RaytraceDepth,
+          SceneBGColor, @PixelsMadeNotify, glwin, RaytraceDepth,
           FogNode, FogDistanceScaling);
        rtkPathTracer: PathTracerTo1st(CallData.Image, Octree,
           CamPosition, CamDir, CamUp, ViewAngleDegX, ViewAngleDegY,
-          SceneBGColor, PixelsMadeNotify, glwin,
+          SceneBGColor, @PixelsMadeNotify, glwin,
           RaytraceDepth, PathtraceRRoulContinue,
           DEF_PRIMARY_SAMPLES_COUNT, PathtraceNonPrimarySamples, 1,
           BestRaytrSFC);
@@ -296,7 +296,7 @@ begin
        wiersze moga nie zostac namalowane przez RowDoneNotify. }
      glwin.PostRedisplay;
      glwin.Caption := CaptionBegin+ ' done';
-     glwin.OnDraw := DrawRaytraced;
+     glwin.OnDraw := @DrawRaytraced;
      glwin.MainMenu := AfterRTMainMenu;
      repeat glwm.ProcessMessage(true) until CallData.UserWantsToQuit;
 

@@ -118,7 +118,8 @@ var nk: TNavigatorKind;
 begin
  { create navigators }
  for nk := Low(nk) to High(nk) do
-   Navigators[nk] := NavigatorClasses[nk].Create(glwin.PostRedisplayOnMatrixChanged);
+   Navigators[nk] :=
+     NavigatorClasses[nk].Create(@glwin.PostRedisplayOnMatrixChanged);
 
  TMatrixWalker(Navigators[nkWalker]).OnMoveAllowed := MoveAllowed;
  TMatrixWalker(Navigators[nkWalker]).OnGetCameraHeight := GetCameraHeight;
@@ -187,7 +188,7 @@ const
   Options: array[0..0]of TOption =
   ((Short:#0; Long:'navigation'; Argument: oaRequired));
 begin
- ParseParameters(Options, OptionProc, nil, true);
+ ParseParameters(Options, @OptionProc, nil, true);
 end;
 
 { unit init/fini ------------------------------------------------------------ }

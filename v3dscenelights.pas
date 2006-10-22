@@ -103,7 +103,7 @@ const
   Options: array[0..0]of TOption =
   ((Short:#0; Long:'light-calculate'; Argument: oaRequired));
 begin
- ParseParameters(Options, OptionProc, nil, true);
+ ParseParameters(Options, @OptionProc, nil, true);
 end;
 
 end.

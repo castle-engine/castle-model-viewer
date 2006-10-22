@@ -413,7 +413,7 @@ begin
     procedure. }
   glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_DEPTH_TEST);
-    glProjectionPushPopOrtho2D(DrawStatus, 0, 0, Glwin.Width, 0, Glwin.Height);
+    glProjectionPushPopOrtho2D(@DrawStatus, 0, 0, Glwin.Width, 0, Glwin.Height);
   glPopAttrib;
  end;
 end;
@@ -522,14 +522,14 @@ begin
         'This triangle is part of the '+
         'node named %s. Node''s bounding box is %s. ',
         [VectorToNiceStr(Intersection),
-         TriangleToNiceStr(IntersectItem.Triangle),
-         NodeNiceName(IntersectItem.ShapeNode),
-         Box3dToNiceStr(IntersectItem.ShapeNode.BoundingBox(IntersectItem.State))]);
+         TriangleToNiceStr(IntersectItem^.Triangle),
+         NodeNiceName(IntersectItem^.ShapeNode),
+         Box3dToNiceStr(IntersectItem^.ShapeNode.BoundingBox(IntersectItem^.State))]);
 
-   VCNotOver := IntersectItem.ShapeNode.VerticesCount(IntersectItem.State, false);
-   TCNotOver := IntersectItem.ShapeNode.TrianglesCount(IntersectItem.State, false);
-   VCOver := IntersectItem.ShapeNode.VerticesCount(IntersectItem.State, true);
-   TCOver := IntersectItem.ShapeNode.TrianglesCount(IntersectItem.State, true);
+   VCNotOver := IntersectItem^.ShapeNode.VerticesCount(IntersectItem^.State, false);
+   TCNotOver := IntersectItem^.ShapeNode.TrianglesCount(IntersectItem^.State, false);
+   VCOver := IntersectItem^.ShapeNode.VerticesCount(IntersectItem^.State, true);
+   TCOver := IntersectItem^.ShapeNode.TrianglesCount(IntersectItem^.State, true);
 
    if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
    begin
@@ -549,9 +549,9 @@ begin
 
    if PickingMessageShowTexture then
    begin
-     if IntersectItem.State.Texture = nil then
+     if IntersectItem^.State.Texture = nil then
        TextureDescription := 'none' else
-       TextureDescription := IntersectItem.State.Texture.TextureDescription;
+       TextureDescription := IntersectItem^.State.Texture.TextureDescription;
      S += Format(nl +nl+
            'Node''s texture : %s.', [TextureDescription]);
    end;
@@ -559,10 +559,10 @@ begin
    if PickingMessageShowMaterial then
    begin
      S += nl+ nl;
-     if IntersectItem.State.ParentShape <> nil then
+     if IntersectItem^.State.ParentShape <> nil then
      begin
        { This is VRML 2.0 node }
-       M2 := IntersectItem.State.ParentShape.Material;
+       M2 := IntersectItem^.State.ParentShape.Material;
        if M2 <> nil then
        begin
          S += Format(
@@ -583,7 +583,7 @@ begin
          S += 'Material: NULL';
      end else
      begin
-       M1 := IntersectItem.State.LastNodes.Material;
+       M1 := IntersectItem^.State.LastNodes.Material;
        S += Format(
            'Material:' +nl+
            '  name : %s' +nl+
@@ -603,13 +603,13 @@ begin
 
    if PickingMessageShowShadows then
    begin
-    for i := 0 to IntersectItem.State.ActiveLights.Count - 1 do
+    for i := 0 to IntersectItem^.State.ActiveLights.Count - 1 do
     begin
      s += nl+ nl+ Format('Light node %s possibly affects node ... ',
-       [ NodeNiceName(IntersectItem.State.ActiveLights[i].LightNode) ]);
+       [ NodeNiceName(IntersectItem^.State.ActiveLights.Items[i].LightNode) ]);
 
      ShadowingItemIndex := Scene.DefaultTriangleOctree.SegmentCollision(
-       Intersection, IntersectItem.State.ActiveLights[i].TransfLocation,
+       Intersection, IntersectItem^.State.ActiveLights.Items[i].TransfLocation,
          false, IntersectItemIndex, true, nil);
 
      if ShadowingItemIndex <> NoItemIndex then
@@ -617,8 +617,8 @@ begin
       ShadowingItem := Scene.DefaultTriangleOctree.OctreeItems.
         Pointers[ShadowingItemIndex];
       s += Format('but no, this light is blocked by triangle %s from node %s.',
-        [ TriangleToNiceStr(ShadowingItem.Triangle),
-          NodeNiceName(ShadowingItem.ShapeNode) ])
+        [ TriangleToNiceStr(ShadowingItem^.Triangle),
+          NodeNiceName(ShadowingItem^.ShapeNode) ])
      end else
       s += 'hmm, yes ! No object blocks this light here.';
     end;
@@ -635,7 +635,7 @@ end;
 { TMatrixWalker collision detection using SceneTriangleOctree --------------- }
 
 type
-  TDummy = class
+  THelper = class
     class function MoveAllowed(Navigator: TMatrixWalker;
       const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
       const BecauseOfGravity: boolean): boolean;
@@ -644,7 +644,7 @@ type
       out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
   end;
 
-class function TDummy.MoveAllowed(Navigator: TMatrixWalker;
+class function THelper.MoveAllowed(Navigator: TMatrixWalker;
   const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
   const BecauseOfGravity: boolean): boolean;
 begin
@@ -672,7 +672,7 @@ begin
     Result := Box3dPointInside(NewPos, Scene.BoundingBox);
 end;
 
-class procedure TDummy.GetCameraHeight(Navigator: TMatrixWalker;
+class procedure THelper.GetCameraHeight(Navigator: TMatrixWalker;
   out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
 begin
   Scene.DefaultTriangleOctree.GetCameraHeight(
@@ -869,7 +869,7 @@ begin
 
     { calculate ViewpointsList, MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
-    Scene.EnumerateViewpoints(ViewpointsList.AddNodeTransform);
+    Scene.EnumerateViewpoints(@ViewpointsList.AddNodeTransform);
     if ViewpointsList.MenuJumpToViewpoint <> nil then
       ViewpointsList.MakeMenuJumpToViewpoint;
     SetViewpoint(0);
@@ -944,8 +944,8 @@ begin
         ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
         'Building ShapeState octree');
     finally
-      Glw.OnDraw := Draw;
-      Glw.OnBeforeDraw := BeforeDraw;
+      Glw.OnDraw := @Draw;
+      Glw.OnBeforeDraw := @BeforeDraw;
     end;
 
     if not Glw.Closed then
@@ -1683,6 +1683,7 @@ const
 
 var
   Param_RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
+  Helper: THelper;
 begin
  { parse parameters }
  { glw params }
@@ -1692,7 +1693,7 @@ begin
  LightsParseParameters;
  VRMLNodesDetailOptionsParse;
  RendererOptimizationOptionsParse(Param_RendererOptimization);
- ParseParameters(Options, OptionProc, nil);
+ ParseParameters(Options, @OptionProc, nil);
  { the most important param : filename to load }
  if Parameters.High > 1 then
   raise EInvalidParams.Create('Excessive command-line parameters. '+
@@ -1703,7 +1704,7 @@ begin
   Param_SceneFileName := Parameters[1];
  end;
 
- VRMLNonFatalError := VRMLNonFatalError_Warning;
+ VRMLNonFatalError := @VRMLNonFatalError_Warning;
 
  if WasParam_WriteToVRML then
  begin
@@ -1721,7 +1722,8 @@ begin
    (and we don't want to clutter stdout). }
  Progress.UserInterface := ProgressNullInterface;
 
- InitMultiNavigators(glw, TDummy.MoveAllowed, TDummy.GetCameraHeight);
+ Helper := nil;
+ InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight);
 
  SceneWarnings := TStringList.Create;
 
@@ -1740,13 +1742,13 @@ begin
    GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
 
    Glw.MainMenu := CreateMainMenu;
-   Glw.OnMenuCommand := MenuCommand;
-   Glw.OnResize := Resize;
-   Glw.OnInit := Init;
-   Glw.OnClose := Close;
-   Glw.OnMouseDown := MouseDown;
-   Glw.OnBeforeDraw := BeforeDraw;
-   Glw.OnDraw := Draw;
+   Glw.OnMenuCommand := @MenuCommand;
+   Glw.OnResize := @Resize;
+   Glw.OnInit := @Init;
+   Glw.OnClose := @Close;
+   Glw.OnMouseDown := @MouseDown;
+   Glw.OnBeforeDraw := @BeforeDraw;
+   Glw.OnDraw := @Draw;
 
    Glw.SetDemoOptions(K_None, #0, true);
 

@@ -77,14 +77,14 @@ const
   ColorModulatorPrivateInfos:
     array[TColorModulatorType]of TColorModulatorPrivateInfo =
   ( (SingleFunc: nil; ByteFunc: nil),
-    (SingleFunc: ColorGrayscaleSingle;    ByteFunc: ColorGrayscaleByte),
-    (SingleFunc: ColorNegativeSingle;     ByteFunc: ColorNegativeByte),
-    (SingleFunc: ColorRedStripSingle;     ByteFunc: ColorRedStripByte),
-    (SingleFunc: ColorGreenStripSingle;   ByteFunc: ColorGreenStripByte),
-    (SingleFunc: ColorBlueStripSingle;    ByteFunc: ColorBlueStripByte),
-    (SingleFunc: ColorRedConvertSingle;   ByteFunc: ColorRedConvertByte),
-    (SingleFunc: ColorGreenConvertSingle; ByteFunc: ColorGreenConvertByte),
-    (SingleFunc: ColorBlueConvertSingle;  ByteFunc: ColorBlueConvertByte)
+    (SingleFunc: @ColorGrayscaleSingle;    ByteFunc: @ColorGrayscaleByte),
+    (SingleFunc: @ColorNegativeSingle;     ByteFunc: @ColorNegativeByte),
+    (SingleFunc: @ColorRedStripSingle;     ByteFunc: @ColorRedStripByte),
+    (SingleFunc: @ColorGreenStripSingle;   ByteFunc: @ColorGreenStripByte),
+    (SingleFunc: @ColorBlueStripSingle;    ByteFunc: @ColorBlueStripByte),
+    (SingleFunc: @ColorRedConvertSingle;   ByteFunc: @ColorRedConvertByte),
+    (SingleFunc: @ColorGreenConvertSingle; ByteFunc: @ColorGreenConvertByte),
+    (SingleFunc: @ColorBlueConvertSingle;  ByteFunc: @ColorBlueConvertByte)
   );
 
 var
@@ -94,8 +94,8 @@ procedure SetColorModulatorType(Value: TColorModulatorType;
   scene: TVRMLFlatSceneGL);
 begin
  FColorModulatorType := Value;
- scene.Attributes.ColorModulatorSingle := @ColorModulatorPrivateInfos[Value].SingleFunc;
- scene.Attributes.ColorModulatorByte   := @ColorModulatorPrivateInfos[Value].ByteFunc;
+ scene.Attributes.ColorModulatorSingle := ColorModulatorPrivateInfos[Value].SingleFunc;
+ scene.Attributes.ColorModulatorByte   := ColorModulatorPrivateInfos[Value].ByteFunc;
 end;
 
 function ColorModulatorType: TColorModulatorType;
