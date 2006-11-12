@@ -224,6 +224,7 @@ var SavedMode: TGLMode;
     PathtraceRRoulContinue: Single;
 
     AfterRTMainMenu, WhileRTMainMenu: TMenu;
+    RayTracer: TRayTracer;
 begin
  { get input from user (BEFORE switching to our mode with ModeGLEnter) }
  case LoCase(MessageChar(glwin,
@@ -249,6 +250,7 @@ begin
 
  AfterRTMainMenu := nil;
  WhileRTMainMenu := nil;
+ RayTracer := nil;
  try
   AfterRTMainMenu := CreateAfterRTMainMenu;
   WhileRTMainMenu := CreateWhileRTMainMenu;
@@ -278,17 +280,37 @@ begin
      glDrawBuffer(GL_FRONT);
      try
       case RaytracerKind of
-       rtkClassic: ClassicRayTracerTo1st(CallData.Image, Octree,
-          CamPosition, CamDir, CamUp, ViewAngleDegX, ViewAngleDegY,
-          SceneBGColor, @PixelsMadeNotify, glwin, RaytraceDepth,
-          FogNode, FogDistanceScaling);
-       rtkPathTracer: PathTracerTo1st(CallData.Image, Octree,
-          CamPosition, CamDir, CamUp, ViewAngleDegX, ViewAngleDegY,
-          SceneBGColor, @PixelsMadeNotify, glwin,
-          RaytraceDepth, PathtraceRRoulContinue,
-          DEF_PRIMARY_SAMPLES_COUNT, PathtraceNonPrimarySamples, 1,
-          BestRaytrSFC);
+        rtkClassic:
+          begin
+            RayTracer := TClassicRayTracer.Create;
+            TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
+            TClassicRayTracer(RayTracer).FogNode := FogNode;
+            TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
+          end;
+        rtkPathTracer:
+          begin
+            RayTracer := TPathTracer.Create;
+            TPathTracer(RayTracer).MinDepth := RaytraceDepth;
+            TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
+            TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
+            TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
+            TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
+         end;
       end;
+
+      RayTracer.Image := CallData.Image;
+      RayTracer.Octree := Octree;
+      RayTracer.CamPosition := CamPosition;
+      RayTracer.CamDirection := CamDir;
+      RayTracer.CamUp := CamUp;
+      RayTracer.ViewAngleDegX := ViewAngleDegX;
+      RayTracer.ViewAngleDegY := ViewAngleDegY;
+      RayTracer.SceneBGColor := SceneBGColor;
+      RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
+      RayTracer.PixelsMadeNotifierData := glwin;
+
+      RayTracer.Execute;
+
      finally glPopAttrib end;
 
      { wyswietlaj w petli wyrenderowany obrazek, czekaj na Escape.
@@ -307,6 +329,7 @@ begin
  finally
   WhileRTMainMenu.Free;
   AfterRTMainMenu.Free;
+  FreeAndNil(RayTracer);
  end;
 end;
 
