@@ -92,10 +92,6 @@ var
     -1 means "don't display octree". }
   OctreeDisplayDepth: integer = -1;
 
-  PickingMessageShowTexture: boolean = false;
-  PickingMessageShowMaterial: boolean = false;
-  PickingMessageShowShadows: boolean = false;
-
   { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia
     wykrywanie kolizji: }
   CollisionCheck: boolean = true;
@@ -134,6 +130,15 @@ var
   NavigationNode: TNodeNavigationInfo;
   ViewpointNode: TNodeGeneralViewpoint;
 
+  { (SelectedItem = nil) if and only if (SelectedItemIndex = NoItemIndex). }
+  SelectedItem: POctreeItem;
+  SelectedItemIndex: Integer;
+  { SelectedPoint always lies on SelectedItem item,
+    and it's meaningless when SelectedItem = nil. }
+  SelectedPoint: TVector3Single;
+  MenuSelectedInfo: TMenuItem;
+  MenuSelectedLightsInfo: TMenuItem;
+
   SceneWarnings: TStringList;
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
@@ -160,6 +165,14 @@ begin
     (see Scene.BackgroundSkySphereRadius evaluated in Init). }
   Result := WalkProjectionNear * 10 else
   Result := Box3dAvgSize(Scene.BoundingBox) * 20.0;
+end;
+
+procedure UpdateSelectedEnabled;
+begin
+  if MenuSelectedInfo <> nil then
+    MenuSelectedInfo.Enabled := SelectedItem <> nil;
+  if MenuSelectedLightsInfo <> nil then
+    MenuSelectedLightsInfo.Enabled := SelectedItem <> nil;
 end;
 
 { TGLWindow callbacks --------------------------------------------------------- }
@@ -406,6 +419,26 @@ begin
  if ShowFrustum and (NavigatorKind = nkExaminer) then
   DrawFrustum(ShowFrustumAlwaysVisible);
 
+ if SelectedItem <> nil then
+ begin
+   glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT);
+     glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
+     glColorv(White3Single);
+
+     glLineWidth(3.0); { saved by GL_LINE_BIT }
+     glBegin(GL_LINE_LOOP);
+       glVertexv(SelectedItem^.Triangle[0]);
+       glVertexv(SelectedItem^.Triangle[1]);
+       glVertexv(SelectedItem^.Triangle[2]);
+     glEnd;
+
+     glPointSize(5.0); { saved by GL_POINT_BIT }
+     glBegin(GL_POINTS);
+       glVertexv(SelectedPoint);
+     glEnd;
+   glPopAttrib;
+ end;
+
  if ShowStatus then
  begin
   { Note that DrawStatus changes current modelview matrix,
@@ -477,159 +510,41 @@ const
     'to use this function.';
 
 procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
-
-  function NodeNiceName(node: TVRMLNode): string;
-  begin
-   result := ''''+node.NodeName+''' (class '''+node.NodeTypeName+''')';
-  end;
-
-var Ray0, RayVector: TVector3Single;
-    IntersectItemIndex: integer;
-    IntersectItem: POctreeItem;
-    Intersection: TVector3Single;
-    s, TextureDescription: string;
-    VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
-    M1: TNodeMaterial_1;
-    M2: TNodeMaterial_2;
-
-    { used only when PickingMessageShowShadows = true }
-    i: integer;
-    ShadowingItem: POctreeItem;
-    ShadowingItemIndex: Integer;
-
+var
+  Ray0, RayVector: TVector3Single;
 begin
- if btn = mbLeft then
- begin
-  if not (Glw.Navigator is TMatrixWalker) then
-   begin MessageOK(glwin, SOnlyInWalker); Exit end;
-
-  Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
-
-  Scene.DefaultTriangleOctree.DirectCollisionTestsCounter := 0;
-
-  IntersectItemIndex :=
-    Scene.DefaultTriangleOctree.RayCollision(
-      Intersection, Ray0, RayVector, true, NoItemIndex, false, nil);
-
-  if IntersectItemIndex = NoItemIndex then
-   s := 'No object picked.' else
+  if btn = mbLeft then
   begin
-   IntersectItem := Scene.DefaultTriangleOctree.OctreeItems.
-     Pointers[IntersectItemIndex];
-   s := Format(
-        'You picked point %s from triangle %s.' +nl+
-        nl+
-        'This triangle is part of the '+
-        'node named %s. Node''s bounding box is %s. ',
-        [VectorToNiceStr(Intersection),
-         TriangleToNiceStr(IntersectItem^.Triangle),
-         NodeNiceName(IntersectItem^.ShapeNode),
-         Box3dToNiceStr(IntersectItem^.ShapeNode.BoundingBox(IntersectItem^.State))]);
-
-   VCNotOver := IntersectItem^.ShapeNode.VerticesCount(IntersectItem^.State, false);
-   TCNotOver := IntersectItem^.ShapeNode.TrianglesCount(IntersectItem^.State, false);
-   VCOver := IntersectItem^.ShapeNode.VerticesCount(IntersectItem^.State, true);
-   TCOver := IntersectItem^.ShapeNode.TrianglesCount(IntersectItem^.State, true);
-
-   if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
-   begin
-    s += Format(
-           'Node has %d vertices and %d triangles '+
-           '(with and without over-triangulating).',
-           [VCNotOver, TCNotOver]);
-   end else
-   begin
-    s += Format(
-           'When we don''t use over-triangulating (e.g. for raytracing and '+
-           'collision-detection) node has %d vertices and %d triangles. '+
-           'When we use over-triangulating (e.g. for real-time rendering) '+
-           'node has %d vertices and %d triangles.',
-           [VCNotOver, TCNotOver, VCOver, TCOver]);
-   end;
-
-   if PickingMessageShowTexture then
-   begin
-     if IntersectItem^.State.Texture = nil then
-       TextureDescription := 'none' else
-       TextureDescription := IntersectItem^.State.Texture.TextureDescription;
-     S += Format(nl +nl+
-           'Node''s texture : %s.', [TextureDescription]);
-   end;
-
-   if PickingMessageShowMaterial then
-   begin
-     S += nl+ nl;
-     if IntersectItem^.State.ParentShape <> nil then
-     begin
-       { This is VRML 2.0 node }
-       M2 := IntersectItem^.State.ParentShape.Material;
-       if M2 <> nil then
-       begin
-         S += Format(
-                'Material:' +nl+
-                '  name : %s' +nl+
-                '  ambientIntensity[0] : %s' +nl+
-                '  diffuseColor[0] : %s' +nl+
-                '  specular[0] : %s' +nl+
-                '  shininess[0] : %s' +nl+
-                '  transparency[0] : %s',
-                [ M2.NodeName,
-                  FloatToNiceStr(M2.FdAmbientIntensity.Value),
-                  VectorToNiceStr(M2.FdDiffuseColor.Value),
-                  VectorToNiceStr(M2.FdSpecularColor.Value),
-                  FloatToNiceStr(M2.FdShininess.Value),
-                  FloatToNiceStr(M2.FdTransparency.Value) ]);
-       end else
-         S += 'Material: NULL';
-     end else
-     begin
-       M1 := IntersectItem^.State.LastNodes.Material;
-       S += Format(
-           'Material:' +nl+
-           '  name : %s' +nl+
-           '  ambientColor[0] : %s' +nl+
-           '  diffuseColor[0] : %s' +nl+
-           '  specularColor[0] : %s' +nl+
-           '  shininess[0] : %s' +nl+
-           '  transparency[0] : %s',
-           [ M1.NodeName,
-             VectorToNiceStr(M1.AmbientColor3Single(0)),
-             VectorToNiceStr(M1.DiffuseColor3Single(0)),
-             VectorToNiceStr(M1.SpecularColor3Single(0)),
-             FloatToNiceStr(M1.Shininess(0)),
-             FloatToNiceStr(M1.Transparency(0)) ]);
-     end;
-   end;
-
-   if PickingMessageShowShadows then
-   begin
-    for i := 0 to IntersectItem^.State.ActiveLights.Count - 1 do
+    if not (Glw.Navigator is TMatrixWalker) then
     begin
-     s += nl+ nl+ Format('Light node %s possibly affects node ... ',
-       [ NodeNiceName(IntersectItem^.State.ActiveLights.Items[i].LightNode) ]);
-
-     ShadowingItemIndex := Scene.DefaultTriangleOctree.SegmentCollision(
-       Intersection, IntersectItem^.State.ActiveLights.Items[i].TransfLocation,
-         false, IntersectItemIndex, true, nil);
-
-     if ShadowingItemIndex <> NoItemIndex then
-     begin
-      ShadowingItem := Scene.DefaultTriangleOctree.OctreeItems.
-        Pointers[ShadowingItemIndex];
-      s += Format('but no, this light is blocked by triangle %s from node %s.',
-        [ TriangleToNiceStr(ShadowingItem^.Triangle),
-          NodeNiceName(ShadowingItem^.ShapeNode) ])
-     end else
-      s += 'hmm, yes ! No object blocks this light here.';
+      MessageOK(glwin, SOnlyInWalker);
+      Exit;
     end;
-   end;
 
+    Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
+
+    Scene.DefaultTriangleOctree.DirectCollisionTestsCounter := 0;
+
+    SelectedItemIndex :=
+      Scene.DefaultTriangleOctree.RayCollision(
+        SelectedPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
+
+    { DirectCollisionTestsCounter is not recorded,
+      so I may write it now on console in case it will be useful.
+      For now it's commented out --- not interesting to typical user.
+    Writeln(Format('%d tests for collisions between ray ' +
+      'and triangles were needed to learn this.',
+      [ Scene.DefaultTriangleOctree.DirectCollisionTestsCounter ])); }
+
+    if SelectedItemIndex = NoItemIndex then
+      SelectedItem := nil else
+      SelectedItem := Scene.DefaultTriangleOctree.OctreeItems.
+        Pointers[SelectedItemIndex];
+
+    UpdateSelectedEnabled;
+
+    Glw.PostRedisplay;
   end;
-  s += Format(nl+ nl+
-    '%d tests for collisions between ray and triangles were needed to learn this.',
-    [Scene.DefaultTriangleOctree.DirectCollisionTestsCounter]);
-  MessageOK(glwin, s, taLeft);
- end;
 end;
 
 { TMatrixWalker collision detection using SceneTriangleOctree --------------- }
@@ -749,6 +664,10 @@ begin
 
  if MenuReopen <> nil then
    MenuReopen.Enabled := false;
+
+ SelectedItem := nil;
+ SelectedItemIndex := NoItemIndex;
+ UpdateSelectedEnabled;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -1205,6 +1124,146 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       Scene.Attributes.PointSize := Value;
   end;
 
+  function NodeNiceName(node: TVRMLNode): string;
+  begin
+   result := ''''+node.NodeName+''' (class '''+node.NodeTypeName+''')';
+  end;
+
+  procedure SelectedShowInformation;
+  var
+    s, TextureDescription: string;
+    VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
+    M1: TNodeMaterial_1;
+    M2: TNodeMaterial_2;
+    SelectedShape: TNodeGeneralShape;
+  begin
+    if SelectedItemIndex = NoItemIndex then
+    begin
+      s := 'Nothing selected.';
+    end else
+    begin
+      SelectedShape := SelectedItem^.ShapeNode;
+      s := Format(
+           'Selected point %s from triangle %s.' +nl+
+           nl+
+           'This triangle is part of the '+
+           'node named %s. Node''s bounding box is %s. ',
+           [VectorToNiceStr(SelectedPoint),
+            TriangleToNiceStr(SelectedItem^.Triangle),
+            NodeNiceName(SelectedShape),
+            Box3dToNiceStr(SelectedShape.BoundingBox(SelectedItem^.State))]);
+
+      VCNotOver := SelectedShape.VerticesCount(SelectedItem^.State, false);
+      TCNotOver := SelectedShape.TrianglesCount(SelectedItem^.State, false);
+      VCOver := SelectedShape.VerticesCount(SelectedItem^.State, true);
+      TCOver := SelectedShape.TrianglesCount(SelectedItem^.State, true);
+
+      if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
+      begin
+       s += Format(
+              'Node has %d vertices and %d triangles '+
+              '(with and without over-triangulating).',
+              [VCNotOver, TCNotOver]);
+      end else
+      begin
+       s += Format(
+              'When we don''t use over-triangulating (e.g. for raytracing and '+
+              'collision-detection) node has %d vertices and %d triangles. '+
+              'When we use over-triangulating (e.g. for real-time rendering) '+
+              'node has %d vertices and %d triangles.',
+              [VCNotOver, TCNotOver, VCOver, TCOver]);
+      end;
+
+      if SelectedItem^.State.Texture = nil then
+        TextureDescription := 'none' else
+        TextureDescription := SelectedItem^.State.Texture.TextureDescription;
+      S += Format(nl +nl+
+            'Node''s texture : %s.', [TextureDescription]);
+
+      S += nl+ nl;
+      if SelectedItem^.State.ParentShape <> nil then
+      begin
+        { This is VRML 2.0 node }
+        M2 := SelectedItem^.State.ParentShape.Material;
+        if M2 <> nil then
+        begin
+          S += Format(
+                 'Material:' +nl+
+                 '  name : %s' +nl+
+                 '  ambientIntensity[0] : %s' +nl+
+                 '  diffuseColor[0] : %s' +nl+
+                 '  specular[0] : %s' +nl+
+                 '  shininess[0] : %s' +nl+
+                 '  transparency[0] : %s',
+                 [ M2.NodeName,
+                   FloatToNiceStr(M2.FdAmbientIntensity.Value),
+                   VectorToNiceStr(M2.FdDiffuseColor.Value),
+                   VectorToNiceStr(M2.FdSpecularColor.Value),
+                   FloatToNiceStr(M2.FdShininess.Value),
+                   FloatToNiceStr(M2.FdTransparency.Value) ]);
+        end else
+          S += 'Material: NULL';
+      end else
+      begin
+        M1 := SelectedItem^.State.LastNodes.Material;
+        S += Format(
+            'Material:' +nl+
+            '  name : %s' +nl+
+            '  ambientColor[0] : %s' +nl+
+            '  diffuseColor[0] : %s' +nl+
+            '  specularColor[0] : %s' +nl+
+            '  shininess[0] : %s' +nl+
+            '  transparency[0] : %s',
+            [ M1.NodeName,
+              VectorToNiceStr(M1.AmbientColor3Single(0)),
+              VectorToNiceStr(M1.DiffuseColor3Single(0)),
+              VectorToNiceStr(M1.SpecularColor3Single(0)),
+              FloatToNiceStr(M1.Shininess(0)),
+              FloatToNiceStr(M1.Transparency(0)) ]);
+      end;
+    end;
+    ShowAndWrite(S);
+  end;
+
+  procedure SelectedShowLightsInformation;
+  var
+    i: integer;
+    ShadowingItem: POctreeItem;
+    ShadowingItemIndex: Integer;
+    S: string;
+  begin
+    if SelectedItemIndex = NoItemIndex then
+    begin
+      s := 'Nothing selected.';
+    end else
+    begin
+      S := Format('Total %d lights active for selected object.',
+        [SelectedItem^.State.ActiveLights.Count]);
+
+      for i := 0 to SelectedItem^.State.ActiveLights.Count - 1 do
+      begin
+       s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
+         [ I, NodeNiceName(SelectedItem^.State.ActiveLights.Items[i].LightNode) ]);
+
+       ShadowingItemIndex := Scene.DefaultTriangleOctree.SegmentCollision(
+         SelectedPoint, SelectedItem^.State.ActiveLights.Items[i].TransfLocation,
+           false, SelectedItemIndex, true, nil);
+
+       if ShadowingItemIndex <> NoItemIndex then
+       begin
+        ShadowingItem := Scene.DefaultTriangleOctree.OctreeItems.
+          Pointers[ShadowingItemIndex];
+        s += Format('but no, this light is blocked by triangle %s from node %s.',
+          [ TriangleToNiceStr(ShadowingItem^.Triangle),
+            NodeNiceName(ShadowingItem^.ShapeNode) ])
+       end else
+        s += 'hmm, yes ! No object blocks this light here.';
+      end;
+    end;
+
+    ShowAndWrite(S);
+  end;
+
 var s: string;
 begin
  case MenuItem.IntData of
@@ -1399,9 +1458,8 @@ begin
            'Compiled with ' + SCompilerDescription +'.');
        end;
 
-  161: PickingMessageShowTexture := not PickingMessageShowTexture;
-  162: PickingMessageShowMaterial := not PickingMessageShowMaterial;
-  163: PickingMessageShowShadows := not PickingMessageShowShadows;
+  171: SelectedShowInformation;
+  172: SelectedShowLightsInformation;
 
   182: ChangePointSize;
 
@@ -1569,17 +1627,17 @@ begin
    M.Append(TMenuItem.Create('_Save screen to PNG',           127, K_F5));
    Result.Append(M);
  M := TMenu.Create('_Help');
-   M.Append(TMenuItem.Create('Scene information',                  121));
    M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
       ShowStatus, true));
-   M2 := TMenu.Create('When picking with left mouse button, show ...');
-     M2.Append(TMenuItemChecked.Create('_Texture info',            161,
-       PickingMessageShowTexture, true));
-     M2.Append(TMenuItemChecked.Create('_Material info',           162,
-       PickingMessageShowMaterial, true));
-     M2.Append(TMenuItemChecked.Create('_Lights and shadows info', 163,
-       PickingMessageShowShadows, true));
-     M.Append(M2);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Scene information',                  121));
+   MenuSelectedInfo :=
+     TMenuItem.Create('Selected object information',               171);
+   M.Append(MenuSelectedInfo);
+   MenuSelectedLightsInfo :=
+     TMenuItem.Create('Selected object lights information',        172);
+   UpdateSelectedEnabled;
+   M.Append(MenuSelectedLightsInfo);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
