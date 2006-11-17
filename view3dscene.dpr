@@ -138,6 +138,8 @@ var
   SelectedPoint: TVector3Single;
   MenuSelectedInfo: TMenuItem;
   MenuSelectedLightsInfo: TMenuItem;
+  MenuRemoveSelectedGeometry: TMenuItem;
+  MenuRemoveSelectedFace: TMenuItem;
 
   SceneWarnings: TStringList;
 
@@ -173,6 +175,10 @@ begin
     MenuSelectedInfo.Enabled := SelectedItem <> nil;
   if MenuSelectedLightsInfo <> nil then
     MenuSelectedLightsInfo.Enabled := SelectedItem <> nil;
+  if MenuRemoveSelectedGeometry <> nil then
+    MenuRemoveSelectedGeometry.Enabled := SelectedItem <> nil;
+  if MenuRemoveSelectedFace <> nil then
+    MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
 end;
 
 { TGLWindow callbacks --------------------------------------------------------- }
@@ -631,6 +637,45 @@ begin
   SceneWarnings.Append(S);
 end;
 
+procedure SceneOctreeCreate;
+begin
+  { Beware: constructing octrees will cause progress drawing,
+    and progress drawing may cause FlushRedisplay,
+    and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called. }
+  Glw.OnDraw := nil;
+  Glw.OnBeforeDraw := nil;
+  try
+    Scene.OwnsDefaultTriangleOctree := false;
+    Scene.DefaultTriangleOctree := Scene.CreateTriangleOctree(
+      TriangleOctreeMaxDepth, TriangleOctreeMaxLeafItemsCount,
+      'Building triangle octree');
+
+    Scene.OwnsDefaultShapeStateOctree := false;
+    Scene.DefaultShapeStateOctree := Scene.CreateShapeStateOctree(
+      ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
+      'Building ShapeState octree');
+  finally
+    Glw.OnDraw := @Draw;
+    Glw.OnBeforeDraw := @BeforeDraw;
+  end;
+end;
+
+procedure SceneOctreeFree;
+begin
+  Scene.DefaultTriangleOctree.Free;
+  Scene.DefaultTriangleOctree := nil;
+
+  Scene.DefaultShapeStateOctree.Free;
+  Scene.DefaultShapeStateOctree := nil;
+end;
+
+procedure Unselect;
+begin
+  SelectedItem := nil;
+  SelectedItemIndex := NoItemIndex;
+  UpdateSelectedEnabled;
+end;
+
 { Frees (and sets to some null values) "scene global variables".
 
   Note about OpenGL context: remember that changing Scene.RootNode
@@ -642,32 +687,26 @@ end;
      Scene is connected to. }
 procedure FreeScene;
 begin
- Scene.DefaultTriangleOctree.Free;
- Scene.DefaultTriangleOctree := nil;
+  SceneOctreeFree;
 
- Scene.DefaultShapeStateOctree.Free;
- Scene.DefaultShapeStateOctree := nil;
+  Scene.RootNode.Free;
+  Scene.RootNode := nil;
 
- Scene.RootNode.Free;
- Scene.RootNode := nil;
+  Scene.ChangedAll;
 
- Scene.ChangedAll;
+  ViewpointsList.Count := 0;
+  if ViewpointsList.MenuJumpToViewpoint <> nil then
+    ViewpointsList.MakeMenuJumpToViewpoint;
 
- ViewpointsList.Count := 0;
- if ViewpointsList.MenuJumpToViewpoint <> nil then
-   ViewpointsList.MakeMenuJumpToViewpoint;
+  NavigationNode := nil;
+  ViewpointNode := nil;
 
- NavigationNode := nil;
- ViewpointNode := nil;
+  SceneFileName := '';
 
- SceneFileName := '';
+  if MenuReopen <> nil then
+    MenuReopen.Enabled := false;
 
- if MenuReopen <> nil then
-   MenuReopen.Enabled := false;
-
- SelectedItem := nil;
- SelectedItemIndex := NoItemIndex;
- UpdateSelectedEnabled;
+  Unselect;
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -847,25 +886,7 @@ begin
     if MenuPreferHomeUpForMoving <> nil then
       MenuPreferHomeUpForMoving.Checked := MatrixWalker.PreferHomeUpForMoving;
 
-    { Beware: constructing octrees will cause progress drawing,
-      and progress drawing may cause FlushRedisplay,
-      and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called. }
-    Glw.OnDraw := nil;
-    Glw.OnBeforeDraw := nil;
-    try
-      Scene.OwnsDefaultTriangleOctree := false;
-      Scene.DefaultTriangleOctree := Scene.CreateTriangleOctree(
-        TriangleOctreeMaxDepth, TriangleOctreeMaxLeafItemsCount,
-        'Building triangle octree');
-
-      Scene.OwnsDefaultShapeStateOctree := false;
-      Scene.DefaultShapeStateOctree := Scene.CreateShapeStateOctree(
-        ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
-        'Building ShapeState octree');
-    finally
-      Glw.OnDraw := @Draw;
-      Glw.OnBeforeDraw := @BeforeDraw;
-    end;
+    SceneOctreeCreate;
 
     if not Glw.Closed then
     begin
@@ -1264,7 +1285,115 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShowAndWrite(S);
   end;
 
-var s: string;
+  procedure RemoveSelectedGeometry;
+  begin
+    if SelectedItem = nil then
+    begin
+      ShowAndWrite('Nothing selected.');
+    end else
+    begin
+      SceneOctreeFree;
+
+      SelectedItem^.ShapeNode.FreeRemovingFromAllParentNodes;
+      Unselect;
+      Scene.ChangedAll;
+
+      SceneOctreeCreate;
+    end;
+  end;
+
+  procedure RemoveSelectedFace;
+
+    function MFNonEmpty(Field: TDynLongIntArray): boolean;
+    begin
+      Result := (Field <> nil) and (Field.Count > 0) and
+        { Single "-1" value in an MF field is the VRML 1.0 default
+          weird value for normalIndex, materialIndex and textureCoordIndex
+          fields. We treat it like an empty field, otherwise we wouldn't
+          be able to process most VRML 1.0 files. }
+        (not ((Field.Count = 1) and (Field.Items[0] = -1)));
+    end;
+
+  var
+    ShapeNode: TNodeGeneralShape;
+    Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
+  begin
+    if SelectedItem = nil then
+    begin
+      ShowAndWrite('Nothing selected.');
+      Exit;
+    end;
+
+    if (SelectedItem^.FaceCoordIndexBegin = -1) or
+       (SelectedItem^.FaceCoordIndexEnd = -1) then
+    begin
+      ShowAndWrite('The selected triangle is not part of IndexedFaceSet ' +
+        'or IndexedTriangleMesh nodes.');
+      Exit;
+    end;
+
+    ShapeNode := SelectedItem^.ShapeNode;
+
+    if ShapeNode is TNodeIndexedFaceSet_1 then
+    begin
+      Colors := nil;
+      Coords := TNodeIndexedFaceSet_1(ShapeNode).FdCoordIndex.Items;
+      Materials := TNodeIndexedFaceSet_1(ShapeNode).FdMaterialIndex.Items;
+      Normals := TNodeIndexedFaceSet_1(ShapeNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_1(ShapeNode).FdTextureCoordIndex.Items;
+    end else
+    if ShapeNode is TNodeIndexedFaceSet_2 then
+    begin
+      Colors := TNodeIndexedFaceSet_2(ShapeNode).FdColorIndex.Items;
+      Coords := TNodeIndexedFaceSet_2(ShapeNode).FdCoordIndex.Items;
+      Materials := nil;
+      Normals := TNodeIndexedFaceSet_2(ShapeNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_2(ShapeNode).FdTexCoordIndex.Items;
+    end else
+    if ShapeNode is TNodeIndexedTriangleMesh_1 then
+    begin
+      Colors := nil;
+      Coords := TNodeIndexedTriangleMesh_1(ShapeNode).FdCoordIndex.Items;
+      Materials := TNodeIndexedTriangleMesh_1(ShapeNode).FdMaterialIndex.Items;
+      Normals := TNodeIndexedTriangleMesh_1(ShapeNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedTriangleMesh_1(ShapeNode).FdTextureCoordIndex.Items;
+    end else
+    begin
+      ShowAndWrite('Internal error: cannot get the coordIndex field.');
+      Exit;
+    end;
+
+    if MFNonEmpty(Colors) or MFNonEmpty(Materials) or MFNonEmpty(Normals) then
+    begin
+      ShowAndWrite('Removing faces from a geometry node with colorIndex, ' +
+        'materialIndex or normalIndex not implemented yet.');
+      Exit;
+    end;
+
+    SceneOctreeFree;
+
+    Coords.Delete(SelectedItem^.FaceCoordIndexBegin,
+      SelectedItem^.FaceCoordIndexEnd -
+      SelectedItem^.FaceCoordIndexBegin + 1);
+
+    { Texture coordinates, if not empty, have always (both in VRML 1.0
+      and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
+      from Inventor) the same ordering as coordIndex.
+      So we can remove equivalent texture coords in the same manner
+      as we removed coords. }
+    if TexCoords <> nil then
+      TexCoords.Delete(SelectedItem^.FaceCoordIndexBegin,
+        SelectedItem^.FaceCoordIndexEnd -
+        SelectedItem^.FaceCoordIndexBegin + 1);
+
+    Unselect;
+    Scene.ChangedFields(ShapeNode);
+
+    SceneOctreeCreate;
+  end;
+
+var
+  S: string;
 begin
  case MenuItem.IntData of
   10: begin
@@ -1301,6 +1430,9 @@ begin
   31: ChangeScene(scNoNormals, Scene);
   32: ChangeScene(scNoSolidObjects, Scene);
   33: ChangeScene(scNoConvexFaces, Scene);
+
+  36: RemoveSelectedGeometry;
+  37: RemoveSelectedFace;
 
   81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;
@@ -1599,13 +1731,21 @@ begin
    M.Append(TMenuItem.Create('Change camera up vector ...',  124));
    Result.Append(M);
  M := TMenu.Create('_Edit');
-   M.Append(TMenuItem.Create(
+   M2 := TMenu.Create('_Whole scene changes');
+   M2.Append(TMenuItem.Create(
      'Remove normals info from scene (forces normals to be calculated)',
       31));
-   M.Append(TMenuItem.Create('Mark all shapes as '+
+   M2.Append(TMenuItem.Create('Mark all shapes as '+
      'non-solid (disables any backface culling)', 32));
-   M.Append(TMenuItem.Create('Mark all faces as '+
+   M2.Append(TMenuItem.Create('Mark all faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
+   M.Append(M2);
+   MenuRemoveSelectedGeometry :=
+     TMenuItem.Create('Remove selected _geometry node',         36);
+   M.Append(MenuRemoveSelectedGeometry);
+   MenuRemoveSelectedFace :=
+     TMenuItem.Create('Remove selected _face',                  37);
+   M.Append(MenuRemoveSelectedFace);
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print statistics of octree based on _triangles', 101));
