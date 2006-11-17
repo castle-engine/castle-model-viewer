@@ -273,7 +273,7 @@ procedure Draw(glwin: TGLWindow);
       if Depth = octreeDisplayDepth then
       begin
         if not (IsLeaf and (ItemsCount = 0)) then
-          DrawGLBoxWire(Box, 0, 0, 0, true);
+          glDrawBox3dWire(Box);
       end else
       if not IsLeaf then
       begin
@@ -291,7 +291,7 @@ procedure Draw(glwin: TGLWindow);
     with OctreeNode do
     begin
       if not (IsLeaf and (ItemsCount = 0)) then
-        DrawGLBoxWire(Box, 0, 0, 0, true);
+        glDrawBox3dWire(Box);
 
       if not IsLeaf then
       begin
@@ -384,7 +384,7 @@ begin
  begin
   glColorv(Green3Single);
   if not IsEmptyBox3d(Scene.BoundingBox) then
-   DrawGLBoxWire(Scene.BoundingBox, 0, 0, 0, true);
+    glDrawBox3dWire(Scene.BoundingBox);
  end;
 
  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
