@@ -30,7 +30,7 @@ unit V3DSceneLights;
 
 interface
 
-uses SysUtils, VRMLFlatSceneGL, KambiUtils, VRMLNodes;
+uses VectorMath, SysUtils, VRMLFlatSceneGL, KambiUtils, VRMLNodes;
 
 var
   LightCalculate: boolean = true;
@@ -55,9 +55,14 @@ const
   '  --light-calculate on|off' +nl+
   '                        Should light calculations be performed ?';
 
+var
+  LightModelAmbient: TVector3Single;
+
+procedure LightModelAmbientChanged;
+
 implementation
 
-uses OpenGLh, VectorMath, KambiGLUtils, ParseParametersUnit;
+uses OpenGLh, KambiGLUtils, ParseParametersUnit;
 
 procedure SceneInitLights(scene: TVRMLFlatSceneGL;
   NavigationNode: TNodeNavigationInfo);
@@ -106,4 +111,14 @@ begin
  ParseParameters(Options, @OptionProc, nil, true);
 end;
 
+procedure LightModelAmbientChanged;
+begin
+  glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(LightModelAmbient, 1.0));
+end;
+
+initialization
+  LightModelAmbient := Vector3Single(
+    GLDefaultLightModelAmbient[0],
+    GLDefaultLightModelAmbient[1],
+    GLDefaultLightModelAmbient[2]);
 end.

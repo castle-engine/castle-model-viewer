@@ -1292,12 +1292,11 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SceneOctreeFree;
-
       SelectedItem^.ShapeNode.FreeRemovingFromAllParentNodes;
-      Unselect;
-      Scene.ChangedAll;
 
+      Unselect;
+      SceneOctreeFree;
+      Scene.ChangedAll;
       SceneOctreeCreate;
     end;
   end;
@@ -1370,8 +1369,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    SceneOctreeFree;
-
     Coords.Delete(SelectedItem^.FaceCoordIndexBegin,
       SelectedItem^.FaceCoordIndexEnd -
       SelectedItem^.FaceCoordIndexBegin + 1);
@@ -1387,9 +1384,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.FaceCoordIndexBegin + 1);
 
     Unselect;
+    SceneOctreeFree;
     Scene.ChangedFields(ShapeNode);
-
     SceneOctreeCreate;
+  end;
+
+  procedure ChangeLightModelAmbient;
+  begin
+    if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
 var
@@ -1445,6 +1447,7 @@ begin
   92: HeadLight := not HeadLight;
   93: with Scene do Attributes.UseLights := not Attributes.UseLights;
   94: with Scene do Attributes.EnableTextures := not Attributes.EnableTextures;
+  95: ChangeLightModelAmbient;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
 
@@ -1669,6 +1672,7 @@ begin
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use scene lights',    93,
      Scene.Attributes.UseLights, true));
+   M.Append(TMenuItem.Create('Light global ambient color ...',  95));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
      Scene.Attributes.EnableTextures, true));
