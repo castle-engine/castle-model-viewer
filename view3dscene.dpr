@@ -69,7 +69,7 @@ uses
   KambiStringUtils, KambiFilesUtils, Math,
   { OpenGL related units: }
   OpenGLh, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
-  GLWinMessages, ProgressGL,
+  GLWinMessages, ProgressGL, GLWindowRecentMenu,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
@@ -77,7 +77,8 @@ uses
   VRMLCameraUtils, VRMLErrors,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
-  MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera;
+  MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
+  V3DSceneConfig;
 
 var
   Wireframe: boolean = false;
@@ -100,6 +101,8 @@ var
   StatusFont: TGLBitmapFont;
 
   AngleOfViewX: Single = 60;
+
+  RecentMenu: TGLRecentMenu;
 
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
@@ -563,6 +566,8 @@ type
 
     class procedure GetCameraHeight(Navigator: TMatrixWalker;
       out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
+
+    class procedure OpenRecent(const FileName: string);
   end;
 
 class function THelper.MoveAllowed(Navigator: TMatrixWalker;
@@ -780,12 +785,14 @@ procedure LoadClearScene; forward;
   (ASceneFileName is a pointer) as local vars. }
 procedure LoadSceneCore(RootNode: TVRMLNode;
   ASceneFileName: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
+  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
+  JumpToInitialViewpoint: boolean);
 var
   NewCaption: string;
   CameraPreferredHeight: Single;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
+  SavedCameraPos, SavedCameraDir, SavedCameraUp: TVector3Single;
 begin
   FreeScene;
 
@@ -821,6 +828,13 @@ begin
       VisibilityLimit := NavigationNode.FdVisibilityLimit.Value else
       VisibilityLimit := 0;
 
+    if not JumpToInitialViewpoint then
+    begin
+      SavedCameraPos := MatrixWalker.CameraPos;
+      SavedCameraDir := MatrixWalker.CameraDir;
+      SavedCameraUp := MatrixWalker.CameraUp;
+    end;
+
     SceneInitMultiNavigators(Scene.BoundingBox,
       StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp,
       CameraPreferredHeight, CameraRadius);
@@ -831,6 +845,13 @@ begin
     if ViewpointsList.MenuJumpToViewpoint <> nil then
       ViewpointsList.MakeMenuJumpToViewpoint;
     SetViewpoint(0);
+
+    if not JumpToInitialViewpoint then
+    begin
+      MatrixWalker.CameraPos := SavedCameraPos;
+      MatrixWalker.CameraDir := SavedCameraDir;
+      MatrixWalker.CameraUp := SavedCameraUp;
+    end;
 
     SceneInitLights(Scene, NavigationNode);
 
@@ -913,7 +934,8 @@ end;
   Also, it shows the error message using MessageOK
   (so Glw must be already open). }
 procedure LoadScene(const ASceneFileName: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
+  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
+  JumpToInitialViewpoint: boolean);
 
 { It's useful to undefine it only for debug purposes:
   FPC dumps then backtrace of where exception happened,
@@ -959,7 +981,7 @@ begin
   try
   {$endif CATCH_EXCEPTIONS}
     LoadSceneCore(RootNode,
-      ASceneFileName, SceneChanges, ACameraRadius);
+      ASceneFileName, SceneChanges, ACameraRadius, JumpToInitialViewpoint);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -979,6 +1001,8 @@ begin
     end;
   end;
   {$endif CATCH_EXCEPTIONS}
+
+  RecentMenu.Add(ASceneFileName);
 
   { We call EventBeforeDraw to make Scene.PrepareRender to gather
     VRML warnings (because some warnings, e.g. invalid texture filename,
@@ -1018,7 +1042,7 @@ begin
     xxx_scene.inc file to load VRML scene from a simple string. }
 
   LoadSceneCore(
-    ParseVRMLFileFromString({$I clear_scene.inc}, ''), '', [], 1.0);
+    ParseVRMLFileFromString({$I clear_scene.inc}, ''), '', [], 1.0, true);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
@@ -1029,7 +1053,7 @@ begin
 
   { See comments at LoadClearScene }
   LoadSceneCore(
-    ParseVRMLFileFromString({$I welcome_scene.inc}, ''), '', [], 1.0);
+    ParseVRMLFileFromString({$I welcome_scene.inc}, ''), '', [], 1.0, true);
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -1051,6 +1075,11 @@ begin
   SaveToVRMLFile(Scene.RootNode, StdOutStream,
     SavedVRMLPrecedingComment(ASceneFileName));
  finally Scene.Free end;
+end;
+
+class procedure THelper.OpenRecent(const FileName: string);
+begin
+  LoadScene(FileName, [], 0.0, true);
 end;
 
 { menu things ------------------------------------------------------------ }
@@ -1401,13 +1430,17 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true) then
-         LoadScene(s, [], 0.0);
+         LoadScene(s, [], 0.0, true);
       end;
 
   12: Glw.Close;
 
   15: begin
-        LoadScene(SceneFileName, [], 0.0);
+        { When reopening, then JumpToInitialViewpoint parameter is false.
+          In fact, this was the purpose of this JumpToInitialViewpoint
+          parameter: to set it to false when reopening, as this makes
+          reopening more useful. }
+        LoadScene(SceneFileName, [], 0.0, false);
       end;
 
   20: begin
@@ -1632,6 +1665,7 @@ var
   TexMin: TTextureMinFilter;
   TexMag: TTextureMagFilter;
   NavKind: TNavigatorKind;
+  NextRecentMenuItem: TMenuEntry;
 begin
  Result := TMenu.Create('Main menu');
  M := TMenu.Create('_File');
@@ -1642,7 +1676,9 @@ begin
    M.Append(TMenuItem.Create('_Save as VRML ...', 20));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _warnings about current scene', 21));
-   M.Append(TMenuSeparator.Create);
+   NextRecentMenuItem := TMenuSeparator.Create;
+   M.Append(NextRecentMenuItem);
+   RecentMenu.NextMenuItem := NextRecentMenuItem;
    M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
    Result.Append(M);
  M := TMenu.Create('_View');
@@ -1745,10 +1781,10 @@ begin
      'non-convex (forces faces to be triangulated carefully)', 33));
    M.Append(M2);
    MenuRemoveSelectedGeometry :=
-     TMenuItem.Create('Remove selected _geometry node',         36);
+     TMenuItem.Create('Remove _geometry node (containing selected triangle)', 36);
    M.Append(MenuRemoveSelectedGeometry);
    MenuRemoveSelectedFace :=
-     TMenuItem.Create('Remove selected _face',                  37);
+     TMenuItem.Create('Remove _face (containing selected triangle)', 37);
    M.Append(MenuRemoveSelectedFace);
    Result.Append(M);
  M := TMenu.Create('_Console');
@@ -1937,6 +1973,10 @@ begin
   InitColorModulator(Scene);
   InitTextureFilters(Scene);
 
+  RecentMenu := TGLRecentMenu.Create;
+  RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
+  RecentMenu.OnOpenRecent := @Helper.OpenRecent;
+
   { init "scene global variables" to non-null values }
   LoadClearScene;
   try
@@ -1957,7 +1997,7 @@ begin
    Glw.Init;
 
    if WasParam_SceneFileName then
-     LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius) else
+     LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
      LoadWelcomeScene;
 
    Glwm.Loop;
@@ -1965,6 +2005,9 @@ begin
  finally
    FreeAndNil(Scene);
    FreeAndNil(SceneWarnings);
+   if RecentMenu <> nil then
+     RecentMenu.SaveToConfig(ConfigFile, 'recent_files');
+   FreeAndNil(RecentMenu);
  end;
 end.
 

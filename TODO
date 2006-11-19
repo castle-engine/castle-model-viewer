@@ -6,8 +6,6 @@ Others:
 
 - changing blending source and dest factors at runtime.
 
-- Recently opened files in menu.
-
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),
   this would be nice.
@@ -68,13 +66,6 @@ Others:
 - allow changing OctreeMaxDepth / MaxLeafItemsCount when program is running.
   1. In menu "Configure scene loading"
   2. make also menu item "Recalculate octree"
-
-- save some user settings to file:
-  PickingMessageShowTexture
-  PickingMessageShowMaterial
-  PickingMessageShowShadows
-  ... and some others ? ...
-  use FPC's xmlcfg
 
 - Transform to using Lazarus form, with some OpenGL component wrapping
   GtkGLExt inside.
