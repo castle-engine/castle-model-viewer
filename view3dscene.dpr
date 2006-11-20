@@ -1608,6 +1608,20 @@ begin
   128: begin
          MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
          Glw.UpdateMouseLook;
+
+         if MatrixWalker.MouseLook then
+         begin
+           MatrixWalker.Key_LeftStrafe := WalkerDefaultKey_LeftRot;
+           MatrixWalker.Key_RightStrafe := WalkerDefaultKey_RightRot;
+           MatrixWalker.Key_LeftRot := WalkerDefaultKey_LeftStrafe;
+           MatrixWalker.Key_RightRot := WalkerDefaultKey_RightStrafe;
+         end else
+         begin
+           MatrixWalker.Key_LeftStrafe := WalkerDefaultKey_LeftStrafe;
+           MatrixWalker.Key_RightStrafe := WalkerDefaultKey_RightStrafe;
+           MatrixWalker.Key_LeftRot := WalkerDefaultKey_LeftRot;
+           MatrixWalker.Key_RightRot := WalkerDefaultKey_RightRot;
+         end;
        end;
 
   131: begin
