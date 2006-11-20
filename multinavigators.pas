@@ -60,6 +60,9 @@ const
   NavigatorNames: array[TNavigatorKind]of string =
    ('Examine', 'Walk');
 
+var
+  NavigatorRadios: array [TNavigatorKind] of TMenuItemRadio;
+
 function NavigatorKind: TNavigatorKind;
 { Note that Set/ChangeNavigatorKind call glwin.PostRedisplay and
   glwin.EventResize. They call glwin.EventResize so that you can adjust
@@ -109,6 +112,8 @@ begin
   FNavigatorKind := value;
   Glwin.Navigator := Navigators[FNavigatorKind];
   Glwin.UpdateMouseLook;
+  if NavigatorRadios[FNavigatorKind] <> nil then
+    NavigatorRadios[FNavigatorKind].Checked := true;
 end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;

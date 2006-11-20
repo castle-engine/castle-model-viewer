@@ -254,12 +254,7 @@ begin
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
    s := BoolToStrOO[Scene.Attributes.UseLights];
-  strs.Append(Format('Use scene lights: %s, Color modulator : %s',
-    [ s, ColorModulatorInfos[ColorModulatorType].Name ]));
-
-  strs.Append(Format('Texture min filter : %s, mag filter %s',
-    [ TextureMinFilterNames[TextureMinFilter],
-      TextureMagFilterNames[TextureMagFilter] ]));
+  strs.Append(Format('Use scene lights: %s', [s]));
 
   { Note: there's no sense in showing here Glw.FpsRealTime,
     since it would force me to constantly render new frames just
@@ -1659,12 +1654,86 @@ begin
 end;
 
 function CreateMainMenu: TMenu;
+
+  procedure AppendColorModulators(M: TMenu);
+  var
+    Cmt: TColorModulatorType;
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+  begin
+    RadioGroup := nil;
+    for Cmt := Low(Cmt) to High(Cmt) do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(ColorModulatorInfos[Cmt].Name),
+        Ord(Cmt) + 1000, ColorModulatorType = Cmt, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+    end;
+  end;
+
+  procedure AppendTextureMinFilters(M: TMenu);
+  var
+    TexMin: TTextureMinFilter;
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+  begin
+    RadioGroup := nil;
+    for TexMin := Low(TexMin) to High(TexMin) do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(TextureMinFilterNames[TexMin]),
+        Ord(TexMin) + 1100, TexMin = TextureMinFilter, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+    end;
+  end;
+
+  procedure AppendTextureMagFilters(M: TMenu);
+  var
+    TexMag: TTextureMagFilter;
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+  begin
+    RadioGroup := nil;
+    for TexMag := Low(TexMag) to High(TexMag) do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
+        Ord(TexMag) + 1200, TexMag = TextureMagFilter, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+    end;
+  end;
+
+  procedure AppendNavigationTypes(M: TMenu);
+  var
+    NavKind: TNavigatorKind;
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+  begin
+    RadioGroup := nil;
+    for NavKind := Low(NavKind) to High(NavKind) do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(NavigatorNames[NavKind]),
+        Ord(NavKind) + 1300, NavKind = NavigatorKind, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+      NavigatorRadios[NavKind] := Radio;
+    end;
+  end;
+
 var
   M, M2: TMenu;
-  Cmt: TColorModulatorType;
-  TexMin: TTextureMinFilter;
-  TexMag: TTextureMagFilter;
-  NavKind: TNavigatorKind;
   NextRecentMenuItem: TMenuEntry;
 begin
  Result := TMenu.Create('Main menu');
@@ -1694,10 +1763,7 @@ begin
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      Scene.Attributes.Blending, true));
    M2 := TMenu.Create('Change scene colors');
-     for Cmt := Low(Cmt) to High(Cmt) do
-      M2.Append(TMenuItem.Create(
-        SQuoteMenuEntryCaption(ColorModulatorInfos[Cmt].Name),
-        Ord(Cmt) + 1000));
+     AppendColorModulators(M2);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
@@ -1713,16 +1779,10 @@ begin
    M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
      Scene.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Change texture minification method');
-     for TexMin := Low(TexMin) to High(TexMin) do
-      M2.Append(TMenuItem.Create(
-        SQuoteMenuEntryCaption(TextureMinFilterNames[TexMin]),
-        Ord(TexMin) + 1100));
+     AppendTextureMinFilters(M2);
      M.Append(M2);
    M2 := TMenu.Create('Change texture magnification method');
-     for TexMag := Low(TexMag) to High(TexMag) do
-      M2.Append(TMenuItem.Create(
-        SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
-        Ord(TexMag) + 1200));
+     AppendTextureMagFilters(M2);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('Show in Examine mode camera frustum', 96,
@@ -1744,9 +1804,7 @@ begin
      ViewpointsList.MakeMenuJumpToViewpoint;
      M.Append(ViewpointsList.MenuJumpToViewpoint);
    M2 := TMenu.Create('Change navigation method');
-     for NavKind := Low(NavKind) to High(NavKind) do
-      M2.Append(TMenuItem.Create(NavigatorNames[NavKind],
-        Ord(NavKind) + 1300));
+     AppendNavigationTypes(M2);
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Next',                      111, 'v'));
      M.Append(M2);
