@@ -1198,6 +1198,15 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
             NodeNiceName(SelectedShape),
             Box3dToNiceStr(SelectedShape.BoundingBox(SelectedItem^.State))]);
 
+      if (SelectedItem^.FaceCoordIndexBegin <> -1) and
+         (SelectedItem^.FaceCoordIndexEnd <> -1) then
+      begin
+        S += Format('Face containing the selected triangle spans from %d to' +
+          ' %d coordIndex entries. ',
+          [ SelectedItem^.FaceCoordIndexBegin,
+            SelectedItem^.FaceCoordIndexEnd ]);
+      end;
+
       VCNotOver := SelectedShape.VerticesCount(SelectedItem^.State, false);
       TCNotOver := SelectedShape.TrianglesCount(SelectedItem^.State, false);
       VCOver := SelectedShape.VerticesCount(SelectedItem^.State, true);
