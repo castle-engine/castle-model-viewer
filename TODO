@@ -4,8 +4,6 @@ Blockers before next release:
 ----------------------------------------
 Others:
 
-- changing blending source and dest factors at runtime.
-
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),
   this would be nice.

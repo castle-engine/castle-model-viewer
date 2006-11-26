@@ -78,7 +78,7 @@ uses
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig;
+  V3DSceneConfig, V3DSceneBlending;
 
 var
   Wireframe: boolean = false;
@@ -1662,6 +1662,11 @@ begin
       SetViewpoint(MenuItem.IntData - 300);
     end;
 
+  400..419: Scene.Attributes.BlendingSourceFactor :=
+    BlendingFactors[MenuItem.IntData - 400].Value;
+  420..439: Scene.Attributes.BlendingDestinationFactor :=
+    BlendingFactors[MenuItem.IntData - 420].Value;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), Scene);
   1100..1199: SetTextureMinFilter(
@@ -1670,6 +1675,7 @@ begin
     TTextureMagFilter  (MenuItem.IntData-1200), Scene);
   1300..1399: SetNavigatorKind(glw,
     TNavigatorKind(     MenuItem.IntData-1300));
+
   else raise EInternalError.Create('not impl menu item');
  end;
 
@@ -1755,6 +1761,35 @@ function CreateMainMenu: TMenu;
     end;
   end;
 
+  procedure AppendBlendingFactors(M: TMenu; Source: boolean;
+    BaseIntData: Cardinal);
+  var
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+    I: Cardinal;
+    Caption: string;
+    IsDefault: boolean;
+  begin
+    RadioGroup := nil;
+
+    for I := Low(BlendingFactors) to High(BlendingFactors) do
+      if (Source and BlendingFactors[I].ForSource) or
+         ((not Source) and BlendingFactors[I].ForDestination) then
+      begin
+        if Source then
+          IsDefault := BlendingFactors[I].Value = DefaultBlendingSourceFactor else
+          IsDefault := BlendingFactors[I].Value = DefaultBlendingDestinationFactor;
+        Caption := SQuoteMenuEntryCaption(BlendingFactors[I].Name);
+        if IsDefault then
+          Caption += ' (default)';
+        Radio := TMenuItemRadio.Create(Caption, BaseIntData + I, IsDefault, true);
+        if RadioGroup = nil then
+          RadioGroup := Radio.Group else
+          Radio.Group := RadioGroup;
+        M.Append(Radio);
+      end;
+  end;
+
 var
   M, M2: TMenu;
   NextRecentMenuItem: TMenuEntry;
@@ -1785,6 +1820,12 @@ begin
      Scene.Attributes.UseFog, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      Scene.Attributes.Blending, true));
+   M2 := TMenu.Create('Blending source factor');
+     AppendBlendingFactors(M2, true, 400);
+     M.Append(M2);
+   M2 := TMenu.Create('Blending destination factor');
+     AppendBlendingFactors(M2, false, 420);
+     M.Append(M2);
    M2 := TMenu.Create('Change scene colors');
      AppendColorModulators(M2);
      M.Append(M2);
