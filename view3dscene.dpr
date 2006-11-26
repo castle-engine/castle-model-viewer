@@ -603,6 +603,59 @@ begin
     NoItemIndex, nil);
 end;
 
+{ Setting viewpoint ---------------------------------------------------------- }
+
+{ This does what all SetViewpointXxx should do, except that you
+  have to set ViewpointNode and CameraKind before calling this.
+  Note that the length of HomeCameraDir doesn't matter. }
+procedure SetViewpointCore(
+  const HomeCameraPos: TVector3Single;
+  HomeCameraDir: TVector3Single;
+  const HomeCameraUp: TVector3Single);
+begin
+  { zmien dlugosc HomeCameraDir,
+    na podstawie CameraRadius i NavigationNode.FdSpeed }
+  HomeCameraDir := VectorAdjustToLength(HomeCameraDir, CameraRadius * 0.4);
+  if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
+    VectorScaleTo1st(HomeCameraDir, NavigationNode.FdSpeed.Value);
+
+  MatrixWalker.Init(HomeCameraPos, HomeCameraDir,
+    HomeCameraUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
+
+  if not Glw.Closed then
+  begin
+    Glw.EventResize;
+    Glw.PostRedisplay;
+  end;
+end;
+
+{ This sets perspective viewpoint that doesn't come from
+  any VRML viewpoint node. }
+procedure SetViewpoint(
+  const HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single); overload;
+begin
+  ViewpointNode := nil;
+  CameraKind := ckPerspective;
+  SetViewpointCore(HomeCameraPos, HomeCameraDir, HomeCameraUp);
+end;
+
+{ This jumps to 1st viewpoint on ViewpointsList
+  (or to the default VRML cam setting if no viewpoints in the list).
+
+  Sets CameraKind.
+  Uses CameraRadius, NavigationNode, so make sure these are already
+  set as needed }
+procedure SetViewpoint(Index: Integer); overload;
+var
+  HomeCameraPos: TVector3Single;
+  HomeCameraDir: TVector3Single;
+  HomeCameraUp: TVector3Single;
+begin
+  ViewpointNode := ViewpointsList.GetViewpoint(Index, CameraKind,
+    HomeCameraPos, HomeCameraDir, HomeCameraUp);
+  SetViewpointCore(HomeCameraPos, HomeCameraDir, HomeCameraUp);
+end;
+
 { Scene operations ---------------------------------------------------------- }
 
 const
@@ -707,37 +760,6 @@ begin
     MenuReopen.Enabled := false;
 
   Unselect;
-end;
-
-{ This jumps to 1st viewpoint on ViewpointsList
-  (or to the default VRML cam setting if no viewpoints in the list).
-
-  Sets CameraKind.
-  Uses CameraRadius, NavigationNode, so make sure these are already
-  set as needed }
-procedure SetViewpoint(Index: Integer);
-var
-  HomeCameraPos: TVector3Single;
-  HomeCameraDir: TVector3Single;
-  HomeCameraUp: TVector3Single;
-begin
-  ViewpointNode := ViewpointsList.GetViewpoint(Index, CameraKind,
-    HomeCameraPos, HomeCameraDir, HomeCameraUp);
-
-  { zmien dlugosc HomeCameraDir,
-    na podstawie CameraRadius i NavigationNode.FdSpeed }
-  HomeCameraDir := VectorAdjustToLength(HomeCameraDir, CameraRadius * 0.4);
-  if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
-    VectorScaleTo1st(HomeCameraDir, NavigationNode.FdSpeed.Value);
-
-  MatrixWalker.Init(HomeCameraPos, HomeCameraDir,
-    HomeCameraUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
-
-  if not Glw.Closed then
-  begin
-    Glw.EventResize;
-    Glw.PostRedisplay;
-  end;
 end;
 
 procedure LoadClearScene; forward;
@@ -1427,6 +1449,15 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
+  procedure SetViewpointForWholeScene;
+  var
+    CameraPos, CameraDir, CameraUp: TVector3Single;
+  begin
+    CameraViewpointForWholeScene(Scene.BoundingBox,
+      CameraPos, CameraDir, CameraUp);
+    SetViewpoint(CameraPos, CameraDir, CameraUp);
+  end;
+
 var
   S: string;
 begin
@@ -1472,6 +1503,22 @@ begin
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
+
+  { Before all calls to SetViewpoint below, we don't really have to
+    swith to nkWalker. But user usually wants to switch to nkWalker ---
+    in nkExamine SetViewpoint result is not visible at all. }
+  51: begin
+        SetNavigatorKind(Glw, nkWalker);
+        SetViewpoint(StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp);
+      end;
+  52: begin
+        SetNavigatorKind(Glw, nkWalker);
+        SetViewpoint(StdVRMLCamPos_2, StdVRMLCamDir, StdVRMLCamUp);
+      end;
+  53: begin
+        SetNavigatorKind(Glw, nkWalker);
+        SetViewpointForWholeScene;
+      end;
 
   81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;

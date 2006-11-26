@@ -120,6 +120,10 @@ begin
     end;
     MenuJumpToViewpoint.Append(TMenuItem.Create(S, 300 + I));
   end;
+  MenuJumpToViewpoint.Append(TMenuSeparator.Create);
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 2.0 viewpoint', 52));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the whole scene', 53));
 end;
 
 function TViewpointsList.GetViewpoint(

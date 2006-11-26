@@ -31,9 +31,6 @@ Others:
     PerspetiveCamera { }
   ... and camera must not be translated in this case.
 
-- klawisz/element menu w rodzaju "bring entire model to view" albo przynajmniej
-  "look into direction of model center".
-
 - "wireframe with depth test on" mode
 
 - ui to set up cameraradius when loading scene using menu item "Open".
