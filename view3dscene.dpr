@@ -1872,25 +1872,27 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Next',                      111, 'v'));
      M.Append(M2);
-  M.Append(TMenuItemChecked.Create(
-     '_Use mouse look (in Walk mode)',                       128, 'm',
-       MatrixWalker.MouseLook, true));
-   M.Append(TMenuItemChecked.Create(
-     '_Collision checking (in Walk mode)',                   123, 'c',
-       CollisionCheck, true));
-   MenuGravity := TMenuItemChecked.Create(
-     '_Gravity (in Walk mode)',                              201, 'g',
-     MatrixWalker.Gravity, true);
-   M.Append(MenuGravity);
-   MenuPreferHomeUpForRotations := TMenuItemChecked.Create(
-     'Rotations are versus stable (initial) camera up',      202,
-     MatrixWalker.PreferHomeUpForRotations, true);
-   M.Append(MenuPreferHomeUpForRotations);
-   MenuPreferHomeUpForMoving := TMenuItemChecked.Create(
-     'Moving is versus stable (initial) camera up',          203,
-     MatrixWalker.PreferHomeUpForMoving, true);
-   M.Append(MenuPreferHomeUpForMoving);
-   M.Append(TMenuItem.Create('Change camera up vector ...',  124));
+   M2 := TMenu.Create('Walk navigation');
+     M2.Append(TMenuItemChecked.Create(
+       '_Use mouse look',                       128, 'm',
+         MatrixWalker.MouseLook, true));
+     M2.Append(TMenuItemChecked.Create(
+       '_Collision checking',                   123, 'c',
+         CollisionCheck, true));
+     MenuGravity := TMenuItemChecked.Create(
+       '_Gravity',                              201, 'g',
+       MatrixWalker.Gravity, true);
+     M2.Append(MenuGravity);
+     MenuPreferHomeUpForRotations := TMenuItemChecked.Create(
+       'Rotations are versus stable (initial) camera up',      202,
+       MatrixWalker.PreferHomeUpForRotations, true);
+     M2.Append(MenuPreferHomeUpForRotations);
+     MenuPreferHomeUpForMoving := TMenuItemChecked.Create(
+       'Moving is versus stable (initial) camera up',          203,
+       MatrixWalker.PreferHomeUpForMoving, true);
+     M2.Append(MenuPreferHomeUpForMoving);
+     M2.Append(TMenuItem.Create('Change camera up vector ...',  124));
+     M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Edit');
    M2 := TMenu.Create('_Whole scene changes');
