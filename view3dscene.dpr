@@ -1693,6 +1693,7 @@ begin
 
   171: SelectedShowInformation;
   172: SelectedShowLightsInformation;
+  173: ShowAndWrite(GLCapsString);
 
   182: ChangePointSize;
 
@@ -1989,6 +1990,8 @@ begin
      TMenuItem.Create('Selected object lights information',        172);
    UpdateSelectedEnabled;
    M.Append(MenuSelectedLightsInfo);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('OpenGL information',                 173));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
