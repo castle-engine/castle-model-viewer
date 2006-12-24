@@ -949,8 +949,16 @@ end;
   If it fails, it tries to preserve current scene
   (if it can't preserve current scene, only then it resets it to clear scene).
   Also, it shows the error message using MessageOK
-  (so Glw must be already open). }
-procedure LoadScene(const ASceneFileName: string;
+  (so Glw must be already open).
+
+  It may seem that ASceneFileName could be constant parameter here.
+  Yes, it could. However, you will sometimes want to pass here
+  SceneFileName global value and this would cause memory havoc
+  (parameter is passed as const, however when global variable
+  SceneFileName is changed then the parameter value implicitly
+  changes, it may even cause suddenly invalid pointer --- yeah,
+  I experienced it). }
+procedure LoadScene(ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   JumpToInitialViewpoint: boolean);
 
@@ -1003,8 +1011,6 @@ begin
   except
     on E: Exception do
     begin
-      MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
-        E.Message, taLeft);
       { In this case we cannot preserve old scene, because
         LoadSceneCore does FreeScene when it exits with exception
         (and that's because LoadSceneCore modifies some global scene variables
@@ -1012,8 +1018,14 @@ begin
         we are left with some partially-initiaized state,
         that is not usable; actually, LoadSceneCore
         also does FreeScene when it starts it's work --- to start
-        with a clean state). }
+        with a clean state).
+
+        We call LoadClearScene before we call MessageOK, this way
+        our Draw routine works OK when it's called to draw background
+        under MessageOK. }
       LoadClearScene;
+      MessageOK(glw, 'Error while loading scene from "' + ASceneFileName + '": ' +
+        E.Message, taLeft);
       Exit;
     end;
   end;
