@@ -20,8 +20,6 @@
 
 program view3dscene;
 
-{$I openglmac.inc}
-
 { WWW page of this program, with user documentation,
   is here: [http://camelot.homedns.org/~michalis/view3dscene.php].
 
@@ -36,7 +34,14 @@ program view3dscene;
   I can read) to VRML.
 
   This is 3d scene viewer. Basic components are :
-  - use LoadAsVRMLScene to load any format to VRML scene
+  - use LoadAsVRMLScene to load any format to VRML scene.
+    This converts any known (to our engine) 3D model format to VRML.
+    this convertion doesn't lose anything because VRMLis able to
+    express everything that is implemented in other 3D formats readers.
+    And we gain the simplicity of this program (we just treat everything
+    as VRML scene), optimization (display lists optimizations,
+    OpenGL renderer cache inside VRML renderer), functionality
+    (like automatic normals generation based on creaseAngle
   - render scene using TVRMLFlatSceneGL
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation methods
@@ -49,17 +54,6 @@ program view3dscene;
     viewing raytraced image
   - allow some kind of object picking with mouse left button (using
     simple one-primary-ray casting)
-
-  Ten program to nic wielkiego - skladamy tutaj po prostu razem
-  wiele rzeczy z modulow 3dmodels.gl/, 3dmodels/, 3dgraph/ i opengl/.
-
-  Ladujemy modele przez LoadAsVRML ktore konwertuje wszystkie znane nam formaty
-  do VRMLa. Nie tracimy przez to nic bo VRML obejmuje wszystko co jest
-  zaimplementowane w tamtych formatach a zyskujemy prostote i szybkosc
-  w zapisie niniejszego programu - operujemy zawsze na TVRMLFlatSceneGL i mozemy
-  wykorzystac jej funkcjonalnosc (chocby automatyczne generowanie wektorow
-  normalnych uwzgledniajac creaseAngle i mozliwosc przestawienia na generowanie
-  normali flat) i rozne optymalizacje pod katem wyswietlania w OpenGL'u.
 }
 
 uses
