@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2006 Michalis Kamburelis.
+  Copyright 2002-2007 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -1673,16 +1673,16 @@ begin
 
          if MatrixWalker.MouseLook then
          begin
-           MatrixWalker.Key_LeftStrafe := WalkerDefaultKey_LeftRot;
-           MatrixWalker.Key_RightStrafe := WalkerDefaultKey_RightRot;
-           MatrixWalker.Key_LeftRot := WalkerDefaultKey_LeftStrafe;
-           MatrixWalker.Key_RightRot := WalkerDefaultKey_RightStrafe;
+           MatrixWalker.Input_LeftStrafe.AssignFromDefault(MatrixWalker.Input_LeftRot);
+           MatrixWalker.Input_RightStrafe.AssignFromDefault(MatrixWalker.Input_RightRot);
+           MatrixWalker.Input_LeftRot.AssignFromDefault(MatrixWalker.Input_LeftStrafe);
+           MatrixWalker.Input_RightRot.AssignFromDefault(MatrixWalker.Input_RightStrafe);
          end else
          begin
-           MatrixWalker.Key_LeftStrafe := WalkerDefaultKey_LeftStrafe;
-           MatrixWalker.Key_RightStrafe := WalkerDefaultKey_RightStrafe;
-           MatrixWalker.Key_LeftRot := WalkerDefaultKey_LeftRot;
-           MatrixWalker.Key_RightRot := WalkerDefaultKey_RightRot;
+           MatrixWalker.Input_LeftStrafe.MakeDefault;
+           MatrixWalker.Input_RightStrafe.MakeDefault;
+           MatrixWalker.Input_LeftRot.MakeDefault;
+           MatrixWalker.Input_RightRot.MakeDefault;
          end;
        end;
 
