@@ -68,7 +68,7 @@ uses
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
   VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLErrors,
+  VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
@@ -126,6 +126,7 @@ var
   VisibilityLimit: Single = 0.0;
   NavigationNode: TNodeNavigationInfo;
   ViewpointNode: TNodeGeneralViewpoint;
+  SceneHeadlight: TVRMLGLHeadlight;
 
   { (SelectedItem = nil) if and only if (SelectedItemIndex = NoItemIndex). }
   SelectedItem: POctreeItem;
@@ -371,6 +372,11 @@ begin
   end;
  end else
   glClear(GL_COLOR_BUFFER_BIT);
+
+ { Set properties of headlight. Actual enabled state of headlight will be
+   set later by BeginRenderSceneWithLights. }
+ if SceneHeadlight <> nil then
+   SceneHeadlight.Render(0, false);
 
  glLoadMatrix(Glw.Navigator.Matrix);
 
@@ -754,6 +760,8 @@ begin
     MenuReopen.Enabled := false;
 
   Unselect;
+
+  FreeAndNil(SceneHeadlight);
 end;
 
 procedure LoadClearScene; forward;
@@ -865,6 +873,7 @@ begin
     end;
 
     SceneInitLights(Scene, NavigationNode);
+    SceneHeadlight := Scene.CreateHeadLight;
 
     { SceneInitLights could change HeadLight value.
       So update MenuHeadlight.Checked now. }
