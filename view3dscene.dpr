@@ -272,7 +272,7 @@ end;
 
 procedure BeforeDraw(glwin: TGLWindow);
 begin
- Scene.PrepareRender(true, true, false, false);
+ Scene.PrepareRender([tgAll], true, true, false, false);
 end;
 
 procedure Draw(glwin: TGLWindow);
@@ -408,8 +408,8 @@ begin
  try
   BeginRenderSceneWithLights;
     if (Glw.Navigator is TMatrixWalker) then
-     Scene.RenderFrustumOctree(Glw.NavWalker.Frustum) else
-     Scene.Render(nil);
+     Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
+     Scene.Render(nil, tgAll);
   EndRenderSceneWithLights;
  finally
   if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
