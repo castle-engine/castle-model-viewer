@@ -1473,6 +1473,31 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     SetViewpoint(CameraPos, CameraDir, CameraUp);
   end;
 
+  procedure RemoveNodesWithMatchingName;
+  var
+    Wildcard: string;
+    RemovedNumber: Cardinal;
+  begin
+    Wildcard := '';
+    if MessageInputQuery(Glwin,
+      'Input node name to be removed. You can use wildcards (* and ?) in ' +
+      'the expression below to match many node names. The input is ' +
+      'case sensitive (like all VRML).',
+      Wildcard, taLeft) then
+    begin
+      RemovedNumber :=
+        Scene.RootNode.RemoveChildrenWithMatchingName(Wildcard, false);
+      if RemovedNumber <> 0 then
+      begin
+        SceneOctreeFree;
+        Scene.ChangedAll;
+        SceneOctreeCreate;
+      end;
+      MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
+        taLeft);
+    end;
+  end;
+
 var
   S: string;
 begin
@@ -1515,6 +1540,8 @@ begin
   31: ChangeScene(scNoNormals, Scene);
   32: ChangeScene(scNoSolidObjects, Scene);
   33: ChangeScene(scNoConvexFaces, Scene);
+
+  34: RemoveNodesWithMatchingName;
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
@@ -1958,21 +1985,23 @@ begin
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Edit');
-   M2 := TMenu.Create('_Whole scene changes');
-   M2.Append(TMenuItem.Create(
-     'Remove normals info from scene (forces normals to be calculated)',
-      31));
-   M2.Append(TMenuItem.Create('Mark all shapes as '+
-     'non-solid (disables any backface culling)', 32));
-   M2.Append(TMenuItem.Create('Mark all faces as '+
-     'non-convex (forces faces to be triangulated carefully)', 33));
-   M.Append(M2);
    MenuRemoveSelectedGeometry :=
      TMenuItem.Create('Remove _geometry node (containing selected triangle)', 36);
    M.Append(MenuRemoveSelectedGeometry);
    MenuRemoveSelectedFace :=
      TMenuItem.Create('Remove _face (containing selected triangle)', 37);
    M.Append(MenuRemoveSelectedFace);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create(
+     'Remove VRML nodes with name matching ...', 34));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create(
+     'Remove normals info from scene (forces normals to be calculated)',
+      31));
+   M.Append(TMenuItem.Create('Mark all shapes as '+
+     'non-solid (disables any backface culling)', 32));
+   M.Append(TMenuItem.Create('Mark all faces as '+
+     'non-convex (forces faces to be triangulated carefully)', 33));
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print statistics of octree based on _triangles', 101));
