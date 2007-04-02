@@ -1355,6 +1355,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShowAndWrite(S);
   end;
 
+  procedure WholeSceneChanged;
+  begin
+    Unselect;
+    SceneOctreeFree;
+    Scene.ChangedAll;
+    SceneOctreeCreate;
+  end;
+
   procedure RemoveSelectedGeometry;
   begin
     if SelectedItem = nil then
@@ -1363,11 +1371,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end else
     begin
       SelectedItem^.ShapeNode.FreeRemovingFromAllParentNodes;
-
-      Unselect;
-      SceneOctreeFree;
-      Scene.ChangedAll;
-      SceneOctreeCreate;
+      WholeSceneChanged;
     end;
   end;
 
@@ -1488,11 +1492,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       RemovedNumber :=
         Scene.RootNode.RemoveChildrenWithMatchingName(Wildcard, false);
       if RemovedNumber <> 0 then
-      begin
-        SceneOctreeFree;
-        Scene.ChangedAll;
-        SceneOctreeCreate;
-      end;
+        WholeSceneChanged;
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
     end;
