@@ -595,11 +595,13 @@ end;
 
 class procedure THelper.GetCameraHeight(Navigator: TMatrixWalker;
   out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
+var
+  GroundItemIndex: Integer;
 begin
   Scene.DefaultTriangleOctree.GetCameraHeight(
     TMatrixWalker(Navigator).CameraPos,
     TMatrixWalker(Navigator).HomeCameraUp,
-    IsAboveTheGround, SqrHeightAboveTheGround,
+    IsAboveTheGround, SqrHeightAboveTheGround, GroundItemIndex,
     NoItemIndex, nil);
 end;
 
@@ -1123,6 +1125,37 @@ const
 var
   MenuOctreeDisplayWhole: TMenuItemChecked;
 
+type
+  THelperSpecialCastleNodes = class
+    procedure Remove(ParentNode, Node: TVRMLNode; var RemoveNode: boolean);
+  end;
+
+procedure THelperSpecialCastleNodes.Remove(
+  ParentNode, Node: TVRMLNode; var RemoveNode: boolean);
+begin
+  RemoveNode :=
+    (Node.NodeName = 'LevelBox') or
+    (Node.NodeName = 'WaterBox') or
+    IsPrefix('Crea', Node.NodeName) or
+    IsPrefix('Item', Node.NodeName) or
+    IsPrefix('Waypoint', Node.NodeName) or
+    IsPrefix('Sector', Node.NodeName) or
+    { Actually below are special only on specific levels. Oh, well... there's
+      no way to solve it in view3dscene (and I obviously don't want to
+      make view3dscene depend on any "The Castle" units --- view3dscene
+      is completely independent). }
+    (Node.NodeName = 'LevelExitBox') or
+    IsPrefix('WerewolfAppear_', Node.NodeName) or
+    (Node.NodeName = 'GateExitBox') or
+    (Node.NodeName = 'Teleport1Box') or
+    (Node.NodeName = 'Teleport2Box') or
+    (Node.NodeName = 'SacrilegeBox') or
+    IsPrefix('SacrilegeGhost_', Node.NodeName) or
+    IsPrefix('SwordGhost_', Node.NodeName) or
+    (Node.NodeName = 'Elevator49DownBox') or
+    (Node.NodeName = 'Elev9a9bPickBox');
+end;
+
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeCameraUp;
@@ -1498,6 +1531,19 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure RemoveSpecialCastleNodes;
+  var
+    RemovedNumber: Cardinal;
+    HelperSpecialCastleNodes: THelperSpecialCastleNodes;
+  begin
+    RemovedNumber := Scene.RootNode.EnumerateRemoveChildren(
+      @HelperSpecialCastleNodes.Remove);
+    if RemovedNumber <> 0 then
+      WholeSceneChanged;
+    MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
+      taLeft);
+  end;
+
 var
   S: string;
 begin
@@ -1542,6 +1588,7 @@ begin
   33: ChangeScene(scNoConvexFaces, Scene);
 
   34: RemoveNodesWithMatchingName;
+  35: RemoveSpecialCastleNodes;
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
@@ -2002,6 +2049,9 @@ begin
      'non-solid (disables any backface culling)', 32));
    M.Append(TMenuItem.Create('Mark all faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create(
+     'Remove special nodes on "The Castle" level', 35));
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print statistics of octree based on _triangles', 101));
