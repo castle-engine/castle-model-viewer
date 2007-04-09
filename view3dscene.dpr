@@ -600,7 +600,7 @@ var
 begin
   Scene.DefaultTriangleOctree.GetCameraHeight(
     TMatrixWalker(Navigator).CameraPos,
-    TMatrixWalker(Navigator).HomeCameraUp,
+    TMatrixWalker(Navigator).GravityUp,
     IsAboveTheGround, SqrHeightAboveTheGround, GroundItemIndex,
     NoItemIndex, nil);
 end;
@@ -609,20 +609,21 @@ end;
 
 { This does what all SetViewpointXxx should do, except that you
   have to set ViewpointNode and CameraKind before calling this.
-  Note that the length of HomeCameraDir doesn't matter. }
+  Note that the length of InitialCameraDir doesn't matter. }
 procedure SetViewpointCore(
-  const HomeCameraPos: TVector3Single;
-  HomeCameraDir: TVector3Single;
-  const HomeCameraUp: TVector3Single);
+  const InitialCameraPos: TVector3Single;
+  InitialCameraDir: TVector3Single;
+  const InitialCameraUp: TVector3Single;
+  const GravityUp: TVector3Single);
 begin
-  { zmien dlugosc HomeCameraDir,
+  { zmien dlugosc InitialCameraDir,
     na podstawie CameraRadius i NavigationNode.FdSpeed }
-  HomeCameraDir := VectorAdjustToLength(HomeCameraDir, CameraRadius * 0.4);
+  InitialCameraDir := VectorAdjustToLength(InitialCameraDir, CameraRadius * 0.4);
   if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
-    VectorScaleTo1st(HomeCameraDir, NavigationNode.FdSpeed.Value);
+    VectorScaleTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value);
 
-  MatrixWalker.Init(HomeCameraPos, HomeCameraDir,
-    HomeCameraUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
+  MatrixWalker.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
+    GravityUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
 
   if not Glw.Closed then
   begin
@@ -634,11 +635,12 @@ end;
 { This sets perspective viewpoint that doesn't come from
   any VRML viewpoint node. }
 procedure SetViewpoint(
-  const HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single); overload;
+  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
+    GravityUp: TVector3Single); overload;
 begin
   ViewpointNode := nil;
   CameraKind := ckPerspective;
-  SetViewpointCore(HomeCameraPos, HomeCameraDir, HomeCameraUp);
+  SetViewpointCore(InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
 end;
 
 { This jumps to 1st viewpoint on ViewpointsList
@@ -649,13 +651,14 @@ end;
   set as needed }
 procedure SetViewpoint(Index: Integer); overload;
 var
-  HomeCameraPos: TVector3Single;
-  HomeCameraDir: TVector3Single;
-  HomeCameraUp: TVector3Single;
+  InitialCameraPos: TVector3Single;
+  InitialCameraDir: TVector3Single;
+  InitialCameraUp: TVector3Single;
+  GravityUp: TVector3Single;
 begin
   ViewpointNode := ViewpointsList.GetViewpoint(Index, CameraKind,
-    HomeCameraPos, HomeCameraDir, HomeCameraUp);
-  SetViewpointCore(HomeCameraPos, HomeCameraDir, HomeCameraUp);
+    InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
+  SetViewpointCore(InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -682,8 +685,8 @@ var
     Same for MenuGravity. }
   MenuHeadlight: TMenuItemChecked;
   MenuGravity: TMenuItemChecked;
-  MenuPreferHomeUpForRotations: TMenuItemChecked;
-  MenuPreferHomeUpForMoving: TMenuItemChecked;
+  MenuPreferGravityUpForRotations: TMenuItemChecked;
+  MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
 
 procedure VRMLNonFatalError_Warning(const s: string);
@@ -857,7 +860,7 @@ begin
     end;
 
     SceneInitMultiNavigators(Scene.BoundingBox,
-      StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp,
+      StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
     { calculate ViewpointsList, MenuJumpToViewpoint,
@@ -903,16 +906,16 @@ begin
         if NavigationNode.FdType.Items[I] = 'WALK' then
         begin
           SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferHomeUpForRotations := true;
-          MatrixWalker.PreferHomeUpForMoving := true;
+          MatrixWalker.PreferGravityUpForRotations := true;
+          MatrixWalker.PreferGravityUpForMoving := true;
           MatrixWalker.Gravity := true;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'FLY' then
         begin
           SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferHomeUpForRotations := true;
-          MatrixWalker.PreferHomeUpForMoving := false;
+          MatrixWalker.PreferGravityUpForRotations := true;
+          MatrixWalker.PreferGravityUpForMoving := false;
           MatrixWalker.Gravity := false;
           Break;
         end else
@@ -924,10 +927,10 @@ begin
 
     if MenuGravity <> nil then
       MenuGravity.Checked := MatrixWalker.Gravity;
-    if MenuPreferHomeUpForRotations <> nil then
-      MenuPreferHomeUpForRotations.Checked := MatrixWalker.PreferHomeUpForRotations;
-    if MenuPreferHomeUpForMoving <> nil then
-      MenuPreferHomeUpForMoving.Checked := MatrixWalker.PreferHomeUpForMoving;
+    if MenuPreferGravityUpForRotations <> nil then
+      MenuPreferGravityUpForRotations.Checked := MatrixWalker.PreferGravityUpForRotations;
+    if MenuPreferGravityUpForMoving <> nil then
+      MenuPreferGravityUpForMoving.Checked := MatrixWalker.PreferGravityUpForMoving;
 
     SceneOctreeCreate;
 
@@ -1158,19 +1161,17 @@ end;
 
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
-  procedure ChangeCameraUp;
+  procedure ChangeGravityUp;
   var Answer: string;
-      NewUp, NewDir: TVector3Single;
+      NewUp: TVector3Single;
   begin
    if Glw.Navigator is TMatrixWalker then
    begin
     Answer := '';
     if MessageInputQuery(glwin,
-      'Input new camera home up vector (three float values) :'+nl+
-      '(new vector must not be zero vector; '+
-      'we will also change home direction to some other correct value; '+
-      'we will also change current up and direction vectors to their '+
-      '"home" values)',
+      'Input new camera up vector (three float values).' +nl+nl+
+      'This vector will be used as new gravity upward vector. ' +
+      'This vector must not be zero vector.',
       Answer, taLeft) then
     begin
 
@@ -1184,25 +1185,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       end;
      end;
 
-     { evaluate NewDir; to kiepski pomysl zeby starac sie tutaj utrzymac
-       NewDir takie jakie jest i np. zmieniac je tylko gdy
-       VectorsParallel(NewUp, NewDir) - to dlatego ze wtedy w Glw.NavWalker.Init
-       wektor up zostanie dostosowany do wektora dir, a tego nie chcemy. Musimy
-       wiec sami dostosowac NewDir do NewUp tak zeby byly prostopadle.
-
-       Wszystko co mozemy zrobic to zachowac dlugosc Glw.NavWalker.CameraDir,
-       ktora determinuje przeciez szybkosc poruszania sie. }
-     NewDir := Glw.NavWalker.HomeCameraDir;
-     if not VectorsPerp(NewUp, NewDir) then
-      NewDir := VectorAdjustToLength( AnyPerpVector(NewUp),
-        VectorLen(Glw.NavWalker.CameraDir));
-
-     { ustaw NewDir/Up. Ustaw tez aktualne Up i Dir na NewUp/Dir
-       (zeby nie martwic sie o to jak sie ma aktualne dir to NewUp,
-       czy nie sa rownolegle) }
-     Glw.NavWalker.Init(Glw.NavWalker.CameraPos, NewDir, NewUp,
-       Glw.NavWalker.CameraPreferredHeight,
-       0.0 { CameraPreferredHeight is already corrected });
+     Glw.NavWalker.GravityUp := NewUp;
      Glw.PostRedisplay;
     end;
    end else
@@ -1503,11 +1486,11 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure SetViewpointForWholeScene;
   var
-    CameraPos, CameraDir, CameraUp: TVector3Single;
+    CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single;
   begin
     CameraViewpointForWholeScene(Scene.BoundingBox,
-      CameraPos, CameraDir, CameraUp);
-    SetViewpoint(CameraPos, CameraDir, CameraUp);
+      CameraPos, CameraDir, CameraUp, GravityUp);
+    SetViewpoint(CameraPos, CameraDir, CameraUp, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -1542,6 +1525,101 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       WholeSceneChanged;
     MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
       taLeft);
+  end;
+
+  type
+    { These are VMRL versions for WritelnCameraSettings }
+    TVRMLMajorVersion = 1..2;
+
+  procedure WritelnCameraSettings(VRMLMajorVersion: TVRMLMajorVersion);
+  const
+    UntransformedViewpoint: array [TVRMLMajorVersion] of string = (
+      'PerspectiveCamera {' +nl+
+      '  position %s' +nl+
+      '  orientation %s' +nl+
+      '}',
+      'Viewpoint {' +nl+
+      '  position %s' +nl+
+      '  orientation %s' +nl+
+      '}'
+    );
+    TransformedViewpoint: array [TVRMLMajorVersion] of string = (
+      'Separator {' +nl+
+      '  Transform {' +nl+
+      '    translation %s' +nl+
+      '    rotation %s %s' +nl+
+      '  }' +nl+
+      '  PerspectiveCamera {' +nl+
+      '    position 0 0 0 # camera position is expressed by translation' +nl+
+      '    orientation %s' +nl+
+      '  }' +nl+
+      '}',
+      'Transform {' +nl+
+      '  translation %s' +nl+
+      '  rotation %s %s' +nl+
+      '  children Viewpoint {' +nl+
+      '    position 0 0 0 # camera position is expressed by translation' +nl+
+      '    orientation %s' +nl+
+      '  }' +nl+
+      '}'
+    );
+
+  var
+    RotationVectorForGravity: TVector3Single;
+    S: string;
+    AngleForGravity: Single;
+  begin
+    S := Format(
+      '# Camera settings "encoded" in the VRML declaration below :' +nl+
+      '# direction %s' +nl+
+      '# up %s' +nl+
+      '# gravityUp %s' + nl,
+      [ VectorToRawStr(MatrixWalker.CameraDir),
+        VectorToRawStr(MatrixWalker.CameraUp),
+        VectorToRawStr(MatrixWalker.GravityUp) ]);
+
+    RotationVectorForGravity := VectorProduct(StdVRMLGravityUp,
+      MatrixWalker.GravityUp);
+    if IsZeroVector(RotationVectorForGravity) then
+    begin
+      { Then GravityUp is parallel to StdVRMLGravityUp, which means that it's
+        just the same. So we can use untranslated Viewpoint node. }
+      S := S +
+        Format(
+          UntransformedViewpoint[VRMLMajorVersion],
+          [ VectorToRawStr(MatrixWalker.CameraPos),
+            VectorToRawStr( CamDirUp2Orient(
+              MatrixWalker.CameraDir,
+              MatrixWalker.CameraUp) ) ]);
+    end else
+    begin
+      { Then we must transform Viewpoint node, in such way that
+        StdVRMLGravityUp affected by this transformation will give
+        desired GravityUp. }
+      AngleForGravity := AngleRadBetweenVectors(StdVRMLGravityUp,
+        MatrixWalker.GravityUp);
+      S := S +
+        Format(
+          TransformedViewpoint[VRMLMajorVersion],
+          [ VectorToRawStr(MatrixWalker.CameraPos),
+            VectorToRawStr(RotationVectorForGravity),
+            FloatToRawStr(AngleForGravity),
+            { I want
+              1. standard VRML dir/up vectors
+              2. rotated by orientation
+              3. rotated around RotationVectorForGravity
+              will give MatrixWalker.CameraDir/Up.
+              CamDirUp2Orient will calculate the orientation needed to
+              achieve given up/dir vectors. So I have to pass there
+              MatrixWalker.CameraDir/Up *already rotated negatively
+              around RotationVectorForGravity*. }
+            VectorToRawStr( CamDirUp2Orient(
+              RotatePointAroundAxisRad(-AngleForGravity, MatrixWalker.CameraDir, RotationVectorForGravity),
+              RotatePointAroundAxisRad(-AngleForGravity, MatrixWalker.CameraUp , RotationVectorForGravity)
+              )) ]);
+    end;
+
+    Writeln(S);
   end;
 
 var
@@ -1598,11 +1676,11 @@ begin
     in nkExamine SetViewpoint result is not visible at all. }
   51: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp);
+        SetViewpoint(StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   52: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos_2, StdVRMLCamDir, StdVRMLCamUp);
+        SetViewpoint(StdVRMLCamPos_2, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   53: begin
         SetNavigatorKind(Glw, nkWalker);
@@ -1677,20 +1755,8 @@ begin
            FloatToStr(AngleOfViewX),
            BGColor[0], BGColor[1], BGColor[2] ]));
 
-  106: Writeln(Format(
-         'Current camera settings are :' +nl+
-         'Viewpoint  {' +nl+
-         '  position %s' +nl+
-         '  orientation %s' +nl+
-         '  # alternative representation of "orientation" :' +nl+
-         '  # direction %s' +nl+
-         '  # up %s' +nl+
-         '}',
-         [ VectorToRawStr(MatrixWalker.CameraPos),
-           VectorToRawStr( CamDirUp2Orient(MatrixWalker.CameraDir,
-             MatrixWalker.CameraUp) ),
-           VectorToRawStr(MatrixWalker.CameraDir),
-           VectorToRawStr(MatrixWalker.CameraUp) ]));
+  106: WritelnCameraSettings(1);
+  107: WritelnCameraSettings(2);
 
   108: Writeln(
          'Current viewing frustum planes :' +nl+
@@ -1740,7 +1806,7 @@ begin
           Scene.Info(true, true));
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
-  124: ChangeCameraUp;
+  124: ChangeGravityUp;
   125: if Glw.Navigator is TMatrixWalker then
         RaytraceToWin(glwin, Scene.DefaultTriangleOctree,
           Glw.NavWalker.CameraPos,
@@ -1787,8 +1853,8 @@ begin
   182: ChangePointSize;
 
   201: MatrixWalker.Gravity := not MatrixWalker.Gravity;
-  202: MatrixWalker.PreferHomeUpForRotations := not MatrixWalker.PreferHomeUpForRotations;
-  203: MatrixWalker.PreferHomeUpForMoving := not MatrixWalker.PreferHomeUpForMoving;
+  202: MatrixWalker.PreferGravityUpForRotations := not MatrixWalker.PreferGravityUpForRotations;
+  203: MatrixWalker.PreferGravityUpForMoving := not MatrixWalker.PreferGravityUpForMoving;
 
   300..399:
     begin
@@ -2020,15 +2086,15 @@ begin
        '_Gravity',                              201, 'g',
        MatrixWalker.Gravity, true);
      M2.Append(MenuGravity);
-     MenuPreferHomeUpForRotations := TMenuItemChecked.Create(
-       'Rotations are versus stable (initial) camera up',      202,
-       MatrixWalker.PreferHomeUpForRotations, true);
-     M2.Append(MenuPreferHomeUpForRotations);
-     MenuPreferHomeUpForMoving := TMenuItemChecked.Create(
-       'Moving is versus stable (initial) camera up',          203,
-       MatrixWalker.PreferHomeUpForMoving, true);
-     M2.Append(MenuPreferHomeUpForMoving);
-     M2.Append(TMenuItem.Create('Change camera up vector ...',  124));
+     MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
+       'Rotations are versus stable (gravity) camera up',      202,
+       MatrixWalker.PreferGravityUpForRotations, true);
+     M2.Append(MenuPreferGravityUpForRotations);
+     MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
+       'Moving is versus stable (gravity) camera up',          203,
+       MatrixWalker.PreferGravityUpForMoving, true);
+     M2.Append(MenuPreferGravityUpForMoving);
+     M2.Append(TMenuItem.Create('Change gravity up vector ...',  124));
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Edit');
@@ -2060,7 +2126,8 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print _rayhunter command-line to render this view',
      105, CtrlR));
-   M.Append(TMenuItem.Create('Print current camera _node',    106, CtrlC));
+   M.Append(TMenuItem.Create('Print current camera _node (VRML 1.0)',   106));
+   M.Append(TMenuItem.Create('Print current camera node (VRML 2.0)',    107, CtrlC));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print current camera _frustum', 108));
    M.Append(TMenuSeparator.Create);

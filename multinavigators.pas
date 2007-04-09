@@ -39,21 +39,22 @@ type
   when NavigatorKind in [nkWalker].
 
   You CAN NOT directly modify Navigators' properties
-  (settings like HomeCamera, Rotation, but also general settings
+  (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight);
 
 { Call this always when scene changes. Give new BoundingBox and
-  HomeCamera settings for this new scene.
+  InitialCameraXxx and GravityUp settings for this new scene.
   This will call Init() functions for all navigators (that are ready
   for various values of  NavigatorKind).
 
   You must call InitMultiNavigators before using this. }
 procedure SceneInitMultiNavigators(
   const ModelBox: TBox3d;
-  const HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single;
+  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
+    GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
 
 const
@@ -136,13 +137,14 @@ end;
 
 procedure SceneInitMultiNavigators(
   const ModelBox: TBox3d;
-  const HomeCameraPos, HomeCameraDir, HomeCameraUp: TVector3Single;
+  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
+    GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
 begin
  { Init all navigators }
  TMatrixExaminer(Navigators[nkExaminer]).Init(ModelBox);
  TMatrixWalker  (Navigators[nkWalker  ]).Init(
-   HomeCameraPos, HomeCameraDir, HomeCameraUp,
+   InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp,
    CameraPreferredHeight, CameraRadius);
 end;
 

@@ -1,5 +1,5 @@
 {
-  Copyright 2004-2005 Michalis Kamburelis.
+  Copyright 2004-2005,2007 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -58,7 +58,7 @@ type
       properties (and return nil). }
     function GetViewpoint(Index: Integer;
       out CameraKind: TVRMLCameraKind;
-      out CameraPos, CameraDir, CameraUp: TVector3Single):
+      out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
         TNodeGeneralViewpoint;
   end;
 
@@ -128,14 +128,15 @@ end;
 
 function TViewpointsList.GetViewpoint(
   Index: Integer; out CameraKind: TVRMLCameraKind;
-  out CameraPos, CameraDir, CameraUp: TVector3Single): TNodeGeneralViewpoint;
+  out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
+  TNodeGeneralViewpoint;
 begin
   if Between(Index, 0, High) then
   begin
     Result := ViewpointsList.Items[Index].Node;
     Result.GetCameraVectors(
       ViewpointsList.Items[Index].Transform,
-      CameraPos, CameraDir, CameraUp);
+      CameraPos, CameraDir, CameraUp, GravityUp);
     CameraKind := Result.CameraKind;
   end else
   begin
@@ -144,6 +145,7 @@ begin
     CameraDir := StdVRMLCamDir;
     CameraUp := StdVRMLCamUp;
     CameraKind := ckPerspective;
+    GravityUp := StdVRMLGravityUp;
   end;
 end;
 
