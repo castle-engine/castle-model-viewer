@@ -860,7 +860,7 @@ begin
     end;
 
     SceneInitMultiNavigators(Scene.BoundingBox,
-      StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
+      StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
     { calculate ViewpointsList, MenuJumpToViewpoint,
@@ -1527,99 +1527,13 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       taLeft);
   end;
 
-  type
-    { These are VMRL versions for WritelnCameraSettings }
-    TVRMLMajorVersion = 1..2;
-
-  procedure WritelnCameraSettings(VRMLMajorVersion: TVRMLMajorVersion);
-  const
-    UntransformedViewpoint: array [TVRMLMajorVersion] of string = (
-      'PerspectiveCamera {' +nl+
-      '  position %s' +nl+
-      '  orientation %s' +nl+
-      '}',
-      'Viewpoint {' +nl+
-      '  position %s' +nl+
-      '  orientation %s' +nl+
-      '}'
-    );
-    TransformedViewpoint: array [TVRMLMajorVersion] of string = (
-      'Separator {' +nl+
-      '  Transform {' +nl+
-      '    translation %s' +nl+
-      '    rotation %s %s' +nl+
-      '  }' +nl+
-      '  PerspectiveCamera {' +nl+
-      '    position 0 0 0 # camera position is expressed by translation' +nl+
-      '    orientation %s' +nl+
-      '  }' +nl+
-      '}',
-      'Transform {' +nl+
-      '  translation %s' +nl+
-      '  rotation %s %s' +nl+
-      '  children Viewpoint {' +nl+
-      '    position 0 0 0 # camera position is expressed by translation' +nl+
-      '    orientation %s' +nl+
-      '  }' +nl+
-      '}'
-    );
-
-  var
-    RotationVectorForGravity: TVector3Single;
-    S: string;
-    AngleForGravity: Single;
+  procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
   begin
-    S := Format(
-      '# Camera settings "encoded" in the VRML declaration below :' +nl+
-      '# direction %s' +nl+
-      '# up %s' +nl+
-      '# gravityUp %s' + nl,
-      [ VectorToRawStr(MatrixWalker.CameraDir),
-        VectorToRawStr(MatrixWalker.CameraUp),
-        VectorToRawStr(MatrixWalker.GravityUp) ]);
-
-    RotationVectorForGravity := VectorProduct(StdVRMLGravityUp,
-      MatrixWalker.GravityUp);
-    if IsZeroVector(RotationVectorForGravity) then
-    begin
-      { Then GravityUp is parallel to StdVRMLGravityUp, which means that it's
-        just the same. So we can use untranslated Viewpoint node. }
-      S := S +
-        Format(
-          UntransformedViewpoint[VRMLMajorVersion],
-          [ VectorToRawStr(MatrixWalker.CameraPos),
-            VectorToRawStr( CamDirUp2Orient(
-              MatrixWalker.CameraDir,
-              MatrixWalker.CameraUp) ) ]);
-    end else
-    begin
-      { Then we must transform Viewpoint node, in such way that
-        StdVRMLGravityUp affected by this transformation will give
-        desired GravityUp. }
-      AngleForGravity := AngleRadBetweenVectors(StdVRMLGravityUp,
-        MatrixWalker.GravityUp);
-      S := S +
-        Format(
-          TransformedViewpoint[VRMLMajorVersion],
-          [ VectorToRawStr(MatrixWalker.CameraPos),
-            VectorToRawStr(RotationVectorForGravity),
-            FloatToRawStr(AngleForGravity),
-            { I want
-              1. standard VRML dir/up vectors
-              2. rotated by orientation
-              3. rotated around RotationVectorForGravity
-              will give MatrixWalker.CameraDir/Up.
-              CamDirUp2Orient will calculate the orientation needed to
-              achieve given up/dir vectors. So I have to pass there
-              MatrixWalker.CameraDir/Up *already rotated negatively
-              around RotationVectorForGravity*. }
-            VectorToRawStr( CamDirUp2Orient(
-              RotatePointAroundAxisRad(-AngleForGravity, MatrixWalker.CameraDir, RotationVectorForGravity),
-              RotatePointAroundAxisRad(-AngleForGravity, MatrixWalker.CameraUp , RotationVectorForGravity)
-              )) ]);
-    end;
-
-    Writeln(S);
+    Writeln(MakeVRMLCameraStr(Version,
+      MatrixWalker.CameraPos,
+      MatrixWalker.CameraDir,
+      MatrixWalker.CameraUp,
+      MatrixWalker.GravityUp));
   end;
 
 var
@@ -1676,11 +1590,11 @@ begin
     in nkExamine SetViewpoint result is not visible at all. }
   51: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos_1, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpoint(StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   52: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos_2, StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpoint(StdVRMLCamPos[2], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   53: begin
         SetNavigatorKind(Glw, nkWalker);

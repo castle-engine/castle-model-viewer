@@ -141,7 +141,7 @@ begin
   end else
   begin
     Result := nil;
-    CameraPos := StdVRMLCamPos_1;
+    CameraPos := StdVRMLCamPos[1];
     CameraDir := StdVRMLCamDir;
     CameraUp := StdVRMLCamUp;
     CameraKind := ckPerspective;
