@@ -27,21 +27,21 @@ program view3dscene;
   models in your own programs, this program may look
   too complex and filled with irrelevant details.
   Instead you should look at simple example program in
-  units/3dmodels.gl/examples/simpleViewModel.dpr.
+  kambi_vrml_game_engine/3dmodels.gl/examples/simpleViewModel.dpr.
 
-  Also units/3dmodels/examples/many2vrml.dpr is an example how to write
-  simple command-line converter from 3DS (and all other model formats
-  I can read) to VRML.
+  Also kambi_vrml_game_engine/3dmodels/examples/many2vrml.dpr is an example
+  how to write simple command-line converter from 3DS (and all other model
+  formats I can read) to VRML.
 
   This is 3d scene viewer. Basic components are :
   - use LoadAsVRMLScene to load any format to VRML scene.
     This converts any known (to our engine) 3D model format to VRML.
-    this convertion doesn't lose anything because VRMLis able to
+    This convertion doesn't lose anything because VRML is able to
     express everything that is implemented in other 3D formats readers.
     And we gain the simplicity of this program (we just treat everything
     as VRML scene), optimization (display lists optimizations,
     OpenGL renderer cache inside VRML renderer), functionality
-    (like automatic normals generation based on creaseAngle
+    (like automatic normals generation based on creaseAngle).
   - render scene using TVRMLFlatSceneGL
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation methods
