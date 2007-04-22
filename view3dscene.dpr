@@ -272,7 +272,7 @@ end;
 
 procedure BeforeDraw(glwin: TGLWindow);
 begin
- Scene.PrepareRender([tgAll], true, true, false, false);
+ Scene.PrepareRender([tgAll], [prBackground, prBoundingBox]);
 end;
 
 procedure Draw(glwin: TGLWindow);
