@@ -204,7 +204,7 @@ begin
   FreeAndNil(statusFont);
 end;
 
-procedure DrawStatus(data: integer);
+procedure DrawStatus(data: Pointer);
 
   function OctreeDisplayToStr: string;
   begin
@@ -450,7 +450,7 @@ begin
     procedure. }
   glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_DEPTH_TEST);
-    glProjectionPushPopOrtho2D(@DrawStatus, 0, 0, Glwin.Width, 0, Glwin.Height);
+    glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Glwin.Width, 0, Glwin.Height);
   glPopAttrib;
  end;
 end;
