@@ -1122,7 +1122,7 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  Version = '2.0.1';
+  Version = '2.1.0';
   DisplayProgramName = 'view3dscene';
 
 var
@@ -1751,7 +1751,7 @@ begin
 
   131: begin
          ShowAndWrite(
-           'view3dscene - extensive VRML and 3DS viewer.' + NL +
+           'view3dscene: full-featured VRML, 3DS, MD3 viewer.' + NL +
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
