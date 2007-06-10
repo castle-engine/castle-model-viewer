@@ -2262,7 +2262,7 @@ end.
 
 {
   Local Variables:
-  kam-compile-release-command-win32: "clean_glwindow_unit; fpcreleaseb"
-  kam-compile-release-command-unix: "clean_glwindow_unit; fpcreleaseb"
+  kam-compile-release-command-win32: "clean_glwindow_unit && fpcreleaseb"
+  kam-compile-release-command-unix: "clean_glwindow_unit && fpcreleaseb"
   End:
 }
