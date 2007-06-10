@@ -193,8 +193,8 @@ function CreateWhileRTMainMenu: TMenu;
 var M: TMenu;
 begin
  Result := TMenu.Create('RaytraceToWindow - Main menu while RT');
- M := TMenu.Create('Raytracer working');
-   M.Append(TMenuItem.Create('Cancel', 20, CharEscape));
+ M := TMenu.Create('_Raytracer working');
+   M.Append(TMenuItem.Create('_Cancel', 20, CharEscape));
    Result.Append(M);
 end;
 
@@ -202,9 +202,9 @@ function CreateAfterRTMainMenu: TMenu;
 var M: TMenu;
 begin
  Result := TMenu.Create('RaytraceToWindow - Main menu after RT');
- M := TMenu.Create('Raytracer done');
-   M.Append(TMenuItem.Create('Save output to file',   10, 's'));
-   M.Append(TMenuItem.Create('Return to main screen', 20, CharEscape));
+ M := TMenu.Create('_Raytracer done');
+   M.Append(TMenuItem.Create('_Save output to file',   10, CtrlS));
+   M.Append(TMenuItem.Create('_Return to main screen', 20, CharEscape));
    Result.Append(M);
 end;
 
