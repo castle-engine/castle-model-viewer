@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2004 Michalis Kamburelis.
+  Copyright 2003-2004,2007 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -36,7 +36,7 @@ uses KambiUtils, VectorMath, VRMLNodes, VRMLOpenGLRenderer, VRMLFlatSceneGL;
 
 type
   TColorModulatorType = (
-    ctNone, ctGrayscale, ctNegative,
+    ctNone, ctNegative, ctGrayscale, ctGrayscaleNegative,
     ctStrippedToRed,  ctStrippedToGreen,  ctStrippedToBlue,
     ctConvertedToRed, ctConvertedToGreen, ctConvertedToBlue );
 
@@ -47,8 +47,9 @@ type
 const
   ColorModulatorInfos: array[TColorModulatorType]of TColorModulatorInfo =
   ( (Name:'Off'),
-    (Name:'Grayscale'),
     (Name:'Negative'),
+    (Name:'Grayscale'),
+    (Name:'Grayscale negative'),
     (Name:'Strip to red channel'),
     (Name:'Strip to green channel'),
     (Name:'Strip to blue channel'),
@@ -77,14 +78,15 @@ const
   ColorModulatorPrivateInfos:
     array[TColorModulatorType]of TColorModulatorPrivateInfo =
   ( (SingleFunc: nil; ByteFunc: nil),
-    (SingleFunc: @ColorGrayscaleSingle;    ByteFunc: @ColorGrayscaleByte),
-    (SingleFunc: @ColorNegativeSingle;     ByteFunc: @ColorNegativeByte),
-    (SingleFunc: @ColorRedStripSingle;     ByteFunc: @ColorRedStripByte),
-    (SingleFunc: @ColorGreenStripSingle;   ByteFunc: @ColorGreenStripByte),
-    (SingleFunc: @ColorBlueStripSingle;    ByteFunc: @ColorBlueStripByte),
-    (SingleFunc: @ColorRedConvertSingle;   ByteFunc: @ColorRedConvertByte),
-    (SingleFunc: @ColorGreenConvertSingle; ByteFunc: @ColorGreenConvertByte),
-    (SingleFunc: @ColorBlueConvertSingle;  ByteFunc: @ColorBlueConvertByte)
+    (SingleFunc: @ColorNegativeSingle;           ByteFunc: @ColorNegativeByte),
+    (SingleFunc: @ColorGrayscaleSingle;          ByteFunc: @ColorGrayscaleByte),
+    (SingleFunc: @ColorGrayscaleNegativeSingle;  ByteFunc: @ColorGrayscaleNegativeByte),
+    (SingleFunc: @ColorRedStripSingle;           ByteFunc: @ColorRedStripByte),
+    (SingleFunc: @ColorGreenStripSingle;         ByteFunc: @ColorGreenStripByte),
+    (SingleFunc: @ColorBlueStripSingle;          ByteFunc: @ColorBlueStripByte),
+    (SingleFunc: @ColorRedConvertSingle;         ByteFunc: @ColorRedConvertByte),
+    (SingleFunc: @ColorGreenConvertSingle;       ByteFunc: @ColorGreenConvertByte),
+    (SingleFunc: @ColorBlueConvertSingle;        ByteFunc: @ColorBlueConvertByte)
   );
 
 var

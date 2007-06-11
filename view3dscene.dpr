@@ -18,8 +18,6 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 }
 
-program view3dscene;
-
 { WWW page of this program, with user documentation,
   is here: [http://camelot.homedns.org/~michalis/view3dscene.php].
 
@@ -55,6 +53,8 @@ program view3dscene;
   - allow some kind of object picking with mouse left button (using
     simple one-primary-ray casting)
 }
+
+program view3dscene;
 
 uses
   KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
