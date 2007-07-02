@@ -2051,7 +2051,7 @@ begin
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
    M.Append(TMenuItemChecked.Create('_FullScreen',            126, K_F11,
      Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Save screen to PNG',           127, K_F5));
+   M.Append(TMenuItem.Create('_Save screen ...',              127, K_F5));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
