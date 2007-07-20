@@ -60,7 +60,7 @@ uses
   KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
-  KambiStringUtils, KambiFilesUtils, Math,
+  KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
   { OpenGL related units: }
   OpenGLh, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu,
