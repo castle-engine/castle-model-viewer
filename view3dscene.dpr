@@ -19,7 +19,7 @@
 }
 
 { WWW page of this program, with user documentation,
-  is here: [http://camelot.homedns.org/~michalis/view3dscene.php].
+  is here: [http://vrmlengine.sourceforge.net/view3dscene.php].
 
   If you want to find out how to use my units to use VRML and 3DS
   models in your own programs, this program may look
@@ -1755,7 +1755,7 @@ begin
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
-           '[http://www.camelot.homedns.org/~michalis/view3dscene.php]' + NL +
+           '[http://vrmlengine.sourceforge.net/view3dscene.php]' + NL +
            NL +
            'Compiled with ' + SCompilerDescription +'.');
        end;
@@ -2155,7 +2155,7 @@ const
            nl+
            TGLWindow.ParseParametersHelp(StandardParseOptions, true) +nl+
            nl+
-           SCamelotProgramHelpSuffix(DisplayProgramName, Version, true));
+           SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
         end;
     8 : begin

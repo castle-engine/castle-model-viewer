@@ -31,7 +31,7 @@ type
     All other necessary changes after extending TSceneChange will be enforced
     by the compiler.
 
-    See [http://www.camelot.homedns.org/~michalis/view3dscene.php#section_command_line_options]
+    See [http://vrmlengine.sourceforge.net/view3dscene.php#section_command_line_options]
     for detailed spec what these scene changes do. }
   TSceneChange = (
     scNoNormals,
