@@ -3,7 +3,6 @@ Blockers before next release:
 
 - finish, test fully animation kanim handling --- TODOs in view3dscene
   almost all FirstScene should be replaced with something better
-- test animating fog properties
 - md3 anim
 - AnimationTime: pause, rewind, slow/fast time ?
 
@@ -14,7 +13,6 @@ Others:
   - Octrees, first of all. So collision detection, mouse picking,
     raytracer rendering are all done using octree for the 1st animation
     frame.
-  - fog properties (or maybe it can ? check !)
   - headlight
   - background
 
