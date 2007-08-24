@@ -191,6 +191,10 @@ begin
  glEnable(GL_NORMALIZE);
  glEnable(GL_DEPTH_TEST);
 
+ { We want to be able to render any scene --- so we have to be prepared
+   that fog interpolation has to be corrected for perspective. }
+ glHint(GL_FOG_HINT, GL_NICEST);
+
  ProgressGLInterface.Window := Glw;
  Progress.UserInterface := ProgressGLInterface;
 
