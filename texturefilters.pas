@@ -19,8 +19,8 @@
 }
 
 
-{ Simple management of TexMin/MagFilter properties of VRML scene.
-  Initialize by InitTextureFilters, 
+{ Simple management of TexMin/MagFilter properties of VRML scene/animation.
+  Initialize by InitTextureFilters,
   change by SetTextureMin/MagFilter,
   description of currently set filters is in TextureMin/MagFilter. }
 
@@ -30,8 +30,8 @@ unit TextureFilters;
 
 interface
 
-uses OpenGLh, KambiUtils, VectorMath, VRMLNodes, VRMLFlatSceneGL,
-  KambiGLUtils;
+uses OpenGLh, KambiUtils, VectorMath, VRMLNodes,
+  VRMLGLAnimation, KambiGLUtils;
 
 type
   TTextureMinFilter = (tminNearest, tminLinear, tminNearestMipmapNearest,
@@ -39,60 +39,60 @@ type
   TTextureMagFilter = (tmagNearest, tmagLinear);
 
 const
-  TextureMinFilterNames:array[TTextureMinFilter]of string =
-  ( 'GL_NEAREST (fastest)', 
-    'GL_LINEAR', 
+  TextureMinFilterNames: array[TTextureMinFilter]of string =
+  ( 'GL_NEAREST (fastest)',
+    'GL_LINEAR',
     'GL_NEAREST_MIPMAP_NEAREST',
-    'GL_NEAREST_MIPMAP_LINEAR', 
-    'GL_LINEAR_MIPMAP_NEAREST', 
+    'GL_NEAREST_MIPMAP_LINEAR',
+    'GL_LINEAR_MIPMAP_NEAREST',
     'GL_LINEAR_MIPMAP_LINEAR (best looking)');
-  TextureMagFilterNames:array[TTextureMagFilter]of string =
-  ( 'GL_NEAREST (fastest)', 
+  TextureMagFilterNames: array[TTextureMagFilter]of string =
+  ( 'GL_NEAREST (fastest)',
     'GL_LINEAR (best looking)');
 
-procedure InitTextureFilters(scene:TVRMLFlatSceneGL);
+procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
 
-function TextureMinFilter:TTextureMinFilter;
-procedure SetTextureMinFilter(Value:TTextureMinFilter; scene:TVRMLFlatSceneGL);
+function TextureMinFilter: TTextureMinFilter;
+procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLAnimation);
 
-function TextureMagFilter:TTextureMagFilter;
-procedure SetTextureMagFilter(Value:TTextureMagFilter; scene:TVRMLFlatSceneGL);
+function TextureMagFilter: TTextureMagFilter;
+procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
 
 implementation
 
 const
-  TextureMinFilterToGL:array[TTextureMinFilter]of TGLint =
+  TextureMinFilterToGL: array[TTextureMinFilter]of TGLint =
   ( GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-  TextureMagFilterToGL:array[TTextureMagFilter]of TGLint =
+  TextureMagFilterToGL: array[TTextureMagFilter]of TGLint =
   ( GL_NEAREST, GL_LINEAR);
 
 var
-  FTextureMinFilter:TTextureMinFilter;
-  FTextureMagFilter:TTextureMagFilter;
+  FTextureMinFilter: TTextureMinFilter;
+  FTextureMagFilter: TTextureMagFilter;
 
-procedure InitTextureFilters(scene:TVRMLFlatSceneGL);
+procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
 begin
- SetTextureMinFilter(tminLinearMipmapLinear, scene);
- SetTextureMagFilter(tmagLinear, scene);
-end;
-    
-procedure SetTextureMinFilter(Value:TTextureMinFilter; scene:TVRMLFlatSceneGL);
-begin
- FTextureMinFilter:=value;
- scene.Attributes.TextureMinFilter:=TextureMinFilterToGL[Value];
+ SetTextureMinFilter(tminLinearMipmapLinear, SceneAnimation);
+ SetTextureMagFilter(tmagLinear, SceneAnimation);
 end;
 
-procedure SetTextureMagFilter(Value:TTextureMagFilter; scene:TVRMLFlatSceneGL);
+procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLAnimation);
 begin
- FTextureMagFilter:=value;
- scene.Attributes.TextureMagFilter:=TextureMagFilterToGL[Value];
+ FTextureMinFilter := value;
+ SceneAnimation.Attributes.TextureMinFilter := TextureMinFilterToGL[Value];
 end;
 
-function TextureMinFilter:TTextureMinFilter;
-begin Result:=FTextureMinFilter end;
+procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
+begin
+ FTextureMagFilter := value;
+ SceneAnimation.Attributes.TextureMagFilter := TextureMagFilterToGL[Value];
+end;
 
-function TextureMagFilter:TTextureMagFilter;
-begin Result:=FTextureMagFilter end;
+function TextureMinFilter: TTextureMinFilter;
+begin Result := FTextureMinFilter end;
+
+function TextureMagFilter: TTextureMagFilter;
+begin Result := FTextureMagFilter end;
 
 end.

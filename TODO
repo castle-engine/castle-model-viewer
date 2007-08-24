@@ -1,8 +1,30 @@
 ----------------------------------------
 Blockers before next release:
 
+- finish, test fully animation kanim handling --- TODOs in view3dscene
+  almost all FirstScene should be replaced with something better
+- test animating fog properties
+- md3 anim
+- progress when preparing anim works ?
+- AnimationTime: pause, rewind, slow/fast time ?
+
 ----------------------------------------
 Others:
+
+- Things that cannot be animated right now:
+  - Octrees, first of all. So collision detection, mouse picking,
+    raytracer rendering are all done using octree for the 1st animation
+    frame.
+  - fog properties (or maybe it can ? check !)
+  - headlight
+  - background
+
+  - Add to docs
+
+  With animations, there's one small caveat right now:
+  some features (collision checking, mouse picking,
+  ray-tracer --- everything that requires some octree) always use the
+  <i>first animation frame</i>, regardless of current animation time.
 
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),

@@ -30,7 +30,7 @@ unit V3DSceneLights;
 
 interface
 
-uses VectorMath, SysUtils, VRMLFlatSceneGL, KambiUtils, VRMLNodes;
+uses VectorMath, SysUtils, VRMLGLAnimation, KambiUtils, VRMLNodes;
 
 var
   LightCalculate: boolean = true;
@@ -40,14 +40,14 @@ var
 
 { Inits SceneLightsCount.
   Inits HeadLight (to NavigationNode.FdHeadlight or SceneLightsCount = 0).
-  Inits Scene.Attrib_FirstGLFreeLight (to 1). }
-procedure SceneInitLights(Scene: TVRMLFlatSceneGL;
+  Inits SceneAnimation.Attributes.FirstGLFreeLight (to 1). }
+procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 
 procedure BeginRenderSceneWithLights;
 procedure EndRenderSceneWithLights;
 
-{ Possibly sets value of LightCalculate based on ParStrings. }
+{ Possibly sets value of LightCalculate based on @link(Parameters). }
 procedure LightsParseParameters;
 
 const
@@ -64,18 +64,21 @@ implementation
 
 uses OpenGLh, KambiGLUtils, ParseParametersUnit;
 
-procedure SceneInitLights(scene: TVRMLFlatSceneGL;
+procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 begin
-  if Scene.RootNode = nil then
+  if not SceneAnimation.Loaded then
     SceneLightsCount := 0 else
-    SceneLightsCount := Scene.RootNode.NodesCount(TNodeGeneralLight, true);
+    { If Loaded, then 1st scene exists and has RootNode <> nil
+      (that's because loaded animation always has at least one RootNode) }
+    SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
+      NodesCount(TNodeGeneralLight, true);
 
   if NavigationNode <> nil then
     HeadLight := NavigationNode.FdHeadlight.Value else
     HeadLight := SceneLightsCount = 0;
 
-  Scene.Attributes.FirstGLFreeLight := 1;
+  SceneAnimation.Attributes.FirstGLFreeLight := 1;
 end;
 
 procedure BeginRenderSceneWithLights;

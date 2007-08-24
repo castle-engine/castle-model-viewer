@@ -32,15 +32,18 @@
   formats I can read) to VRML.
 
   This is 3d scene viewer. Basic components are :
-  - use LoadAsVRMLScene to load any format to VRML scene.
+  - use LoadAsVRMLSequence to load any format to VRML scene.
+    TODO: update for animation.
     This converts any known (to our engine) 3D model format to VRML.
     This convertion doesn't lose anything because VRML is able to
     express everything that is implemented in other 3D formats readers.
     And we gain the simplicity of this program (we just treat everything
-    as VRML scene), optimization (display lists optimizations,
+    as VRML scene, actually VRML animation),
+    optimization (display lists optimizations,
     OpenGL renderer cache inside VRML renderer), functionality
     (like automatic normals generation based on creaseAngle).
-  - render scene using TVRMLFlatSceneGL
+  - render scene using TVRMLFlatSceneGL (actually TVRMLGLAnimation
+    and TVRMLFlatSceneGL is inside)
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation methods
     (Examine, Walk) and with optional gravity
@@ -68,7 +71,7 @@ uses
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
   VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight,
+  VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
@@ -107,16 +110,17 @@ var
     In this program's comments I often talk about "null values" of these
     variables, "null values" mean that these variables have some *defined
     but useless* values, i.e.
-    Scene.RootNode = nil,
-    Scene.Default(Triangle/ShapeState)Octree = nil,
-    SceneFileName = '' etc. }
-  { Note that only one Scene object is created and present for the whole
+      SceneAnimation.Loaded = false
+      SceneTriangleOctree = nil
+      SceneFileName = '' }
+  { Note that only one SceneAnimation object is created and present for the whole
     lifetime of this program, i.e. when I load new scene (from "Open"
-    menu item) I DO NOT free and create new Scene object.
-    Instead I'm only freeing and creating new value for Scene.RootNode.
+    menu item) I DO NOT free and create new SceneAnimation object.
+    Instead I'm only freeing and creating underlying scenes
+    (by Close / Load of TVRMLGLAnimation).
     This way I'm preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
-  Scene: TVRMLFlatSceneGL;
+  SceneAnimation: TVRMLGLAnimation;
   SceneFilename: string;
   { must always be > 0 }
   CameraKind: TVRMLCameraKind;
@@ -141,12 +145,23 @@ var
 
   SceneWarnings: TStringList;
 
+  { TODO: for now set only by command-line param, should be configurable at runtime. }
+  RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
+
+
 { ogolne pomocnicze funkcje -------------------------------------------------- }
+
+var
+  AnimationTime: Single = 0.0;
+
+  { These are set by Draw right after rendering a SceneAnimation frame. }
+  LastRender_RenderedShapeStatesCount: Cardinal;
+  LastRender_AllShapeStatesCount: Cardinal;
 
 function AngleOfViewY: Single;
 begin
   Result := AdjustViewAngleDegToAspectRatio(
-    AngleOfViewX, Glw.Height/Glw.Width);
+    AngleOfViewX, Glw.Height / Glw.Width);
 end;
 
 function WalkProjectionNear: Single;
@@ -155,16 +170,21 @@ begin
 end;
 
 function WalkProjectionFar: Single;
+var
+  Box: TBox3d;
 begin
- if VisibilityLimit <> 0.0 then
-  Result := VisibilityLimit else
- if IsEmptyBox3d(Scene.BoundingBox) then
-  { When IsEmptyBox3d, Result is not simply "any dummy value".
-    It must be appropriately larger than WalkProjectionNear
-    to provide sufficient space for rendering Background node
-    (see Scene.BackgroundSkySphereRadius evaluated in Init). }
-  Result := WalkProjectionNear * 10 else
-  Result := Box3dAvgSize(Scene.BoundingBox) * 20.0;
+  if VisibilityLimit <> 0.0 then
+    Result := VisibilityLimit else
+  begin
+    Box := SceneAnimation.BoundingBoxSum;
+
+    if IsEmptyBox3d(Box) then
+      { When IsEmptyBox3d, Result is not simply "any dummy value".
+        It must be appropriately larger than WalkProjectionNear
+        to provide sufficient space for rendering Background node. }
+      Result := WalkProjectionNear * 10 else
+      Result := Box3dAvgSize(Box) * 20.0;
+  end;
 end;
 
 procedure UpdateSelectedEnabled;
@@ -177,6 +197,32 @@ begin
     MenuRemoveSelectedGeometry.Enabled := SelectedItem <> nil;
   if MenuRemoveSelectedFace <> nil then
     MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
+end;
+
+function SceneTriangleOctree: TVRMLTriangleOctree;
+begin
+  { TODO: for animation, this should be different for each frame.
+    But constructing octree for each scene is too memory (and loading time)
+    consuming, so... what ?
+    Besides, changing octree means that also player should be automatically
+    moved out of it's way, to avoid collision. }
+  if (SceneAnimation <> nil) and
+     (SceneAnimation.ScenesCount <> 0) and
+     (SceneAnimation.FirstScene.DefaultTriangleOctree <> nil) then
+    Result := SceneAnimation.FirstScene.DefaultTriangleOctree else
+    Result := nil;
+end;
+
+function SceneShapeStateOctree: TVRMLShapeStateOctree;
+begin
+  { TODO: for animation, this should be different for each frame.
+    But constructing octree for each scene is too memory (and loading time)
+    consuming, so... what ? }
+  if (SceneAnimation <> nil) and
+     (SceneAnimation.ScenesCount <> 0) and
+     (SceneAnimation.FirstScene.DefaultShapeStateOctree <> nil) then
+    Result := SceneAnimation.FirstScene.DefaultShapeStateOctree else
+    Result := nil;
 end;
 
 { TGLWindow callbacks --------------------------------------------------------- }
@@ -203,8 +249,8 @@ end;
 
 procedure Close(glwin: TGLWindow);
 begin
-  if Scene <> nil then
-    Scene.CloseGL;
+  if SceneAnimation <> nil then
+    SceneAnimation.CloseGL;
   FreeAndNil(statusFont);
 end;
 
@@ -252,7 +298,7 @@ begin
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[Scene.Attributes.UseLights];
+   s := BoolToStrOO[SceneAnimation.Attributes.UseLights];
   strs.Append(Format('Use scene lights: %s', [s]));
 
   { Note: there's no sense in showing here Glw.FpsRealTime,
@@ -262,8 +308,8 @@ begin
     I can sensibly show here only Glw.FpsFrameTime.
     User will be able to see Glw.FpsRealTime only on window's Caption. }
   strs.Append(Format('Rendered ShapeStates : %d of %d. FPS : %f',
-    [ Scene.LastRender_RenderedShapeStatesCount,
-      Scene.LastRender_AllShapeStatesCount,
+    [ LastRender_RenderedShapeStatesCount,
+      LastRender_AllShapeStatesCount,
       Glw.FpsFrameTime ]));
 
   {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
@@ -276,7 +322,7 @@ end;
 
 procedure BeforeDraw(glwin: TGLWindow);
 begin
- Scene.PrepareRender([tgAll], [prBackground, prBoundingBox]);
+  SceneAnimation.PrepareRender([tgAll], [prBackground, prBoundingBox], true, false);
 end;
 
 procedure Draw(glwin: TGLWindow);
@@ -341,8 +387,12 @@ procedure Draw(glwin: TGLWindow);
    end;
   end;
 
+var
+  Scene: TVRMLFlatSceneGL;
 begin
  glClear(GL_DEPTH_BUFFER_BIT);
+
+ Scene := SceneAnimation.SceneFromTime(AnimationTime);
 
  if Scene.Background <> nil then
  begin
@@ -388,35 +438,59 @@ begin
    is not really ready (e.g. when showing errors after scene loading),
    so we have to check here whether some things are initialized as they
    should. }
- if (Scene.DefaultTriangleOctree <> nil) and
-    (Scene.DefaultTriangleOctree.TreeRoot <> nil) then
+ if (SceneTriangleOctree <> nil) and
+    (SceneTriangleOctree.TreeRoot <> nil) then
  if OctreeDisplayWhole then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeWhole(Scene.DefaultTriangleOctree.TreeRoot);
+   DisplayOctreeWhole(SceneTriangleOctree.TreeRoot);
  end else
  if OctreeDisplayDepth >= 0 then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeDepth(Scene.DefaultTriangleOctree.TreeRoot, OctreeDisplayDepth);
+   DisplayOctreeDepth(SceneTriangleOctree.TreeRoot, OctreeDisplayDepth);
  end;
 
  if showBBox then
  begin
-  glColorv(Green3Single);
-  if not IsEmptyBox3d(Scene.BoundingBox) then
-    glDrawBox3dWire(Scene.BoundingBox);
+   { Display current bounding box only if there's a chance that it's
+     different than whole BoundingBoxSum --- this requires that animation
+     has at least two frames. }
+   if SceneAnimation.ScenesCount > 1 then
+   begin
+     glColorv(Red3Single);
+     if not IsEmptyBox3d(Scene.BoundingBox) then
+       glDrawBox3dWire(Scene.BoundingBox);
+   end;
+
+   glColorv(Green3Single);
+   if not IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
+     glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
  end;
 
  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
  try
-  BeginRenderSceneWithLights;
-    if (Glw.Navigator is TMatrixWalker) then
-     Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
-     Scene.Render(nil, tgAll);
-  EndRenderSceneWithLights;
+   BeginRenderSceneWithLights;
+
+     if (Glw.Navigator is TMatrixWalker) then
+     begin
+       { For animations, DefaultShapeStateOctree is constructed only
+         for the 1st scene. For the rest, we have to call normal
+         RenderFrustum. }
+       if Scene.DefaultShapeStateOctree <> nil then
+         Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
+         Scene.RenderFrustum(Glw.NavWalker.Frustum, tgAll);
+     end else
+       Scene.Render(nil, tgAll);
+
+     LastRender_RenderedShapeStatesCount :=
+       Scene.LastRender_RenderedShapeStatesCount;
+     LastRender_AllShapeStatesCount :=
+       Scene.LastRender_AllShapeStatesCount;
+
+   EndRenderSceneWithLights;
  finally
-  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+   if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
  end;
 
  { Note that there is no sense in showing viewing frustum in
@@ -471,8 +545,12 @@ procedure Resize(glwin: TGLWindow);
 var
   MaxSize, zNear, zFar: TGLdouble;
   FieldOfView: Single;
+  Scene: TVRMLFlatSceneGL;
 begin
  glViewport(0, 0, glwin.Width, glwin.Height);
+
+ { TODO: use current Scene here ? }
+ Scene := SceneAnimation.SceneFromTime(AnimationTime);
 
  { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
  if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
@@ -531,10 +609,10 @@ begin
 
     Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
 
-    Scene.DefaultTriangleOctree.DirectCollisionTestsCounter := 0;
+    SceneTriangleOctree.DirectCollisionTestsCounter := 0;
 
     SelectedItemIndex :=
-      Scene.DefaultTriangleOctree.RayCollision(
+      SceneTriangleOctree.RayCollision(
         SelectedPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
 
     { DirectCollisionTestsCounter is not recorded,
@@ -542,17 +620,32 @@ begin
       For now it's commented out --- not interesting to typical user.
     Writeln(Format('%d tests for collisions between ray ' +
       'and triangles were needed to learn this.',
-      [ Scene.DefaultTriangleOctree.DirectCollisionTestsCounter ])); }
+      [ SceneTriangleOctree.DirectCollisionTestsCounter ])); }
 
     if SelectedItemIndex = NoItemIndex then
       SelectedItem := nil else
-      SelectedItem := Scene.DefaultTriangleOctree.OctreeItems.
+      SelectedItem := SceneTriangleOctree.OctreeItems.
         Pointers[SelectedItemIndex];
 
     UpdateSelectedEnabled;
 
     Glw.PostRedisplay;
   end;
+end;
+
+procedure Idle(glwin: TGLWindow);
+var
+  OldAnimationTime: Single;
+begin
+  OldAnimationTime := AnimationTime;
+  AnimationTime += Glwin.IdleCompSpeed / 50;
+
+  { Call PostRedisplay only if the displayed animation frame actually changed.
+    This way, we avoid wasting CPU cycles if the loaded scene is actually
+    still, or if the animation stopped running. }
+  if SceneAnimation.SceneFromTime(OldAnimationTime) <>
+     SceneAnimation.SceneFromTime(AnimationTime) then
+    Glwin.PostRedisplay;
 end;
 
 { TMatrixWalker collision detection using SceneTriangleOctree --------------- }
@@ -575,8 +668,8 @@ class function THelper.MoveAllowed(Navigator: TMatrixWalker;
 begin
   if CollisionCheck then
   begin
-    Scene.DefaultTriangleOctree.DirectCollisionTestsCounter := 0;
-    Result := Scene.DefaultTriangleOctree.MoveAllowed(
+    SceneTriangleOctree.DirectCollisionTestsCounter := 0;
+    Result := SceneTriangleOctree.MoveAllowed(
       Navigator.CameraPos, ProposedNewPos, NewPos, CameraRadius,
       NoItemIndex, nil);
     {tests:
@@ -594,7 +687,7 @@ begin
     { TODO: instead of setting Result to false, this should
       actually move NewPos so that it's *exactly* on the border
       of bounding box. }
-    Result := Box3dPointInside(NewPos, Scene.BoundingBox);
+    Result := Box3dPointInside(NewPos, SceneAnimation.BoundingBoxSum);
 end;
 
 class procedure THelper.GetCameraHeight(Navigator: TMatrixWalker;
@@ -602,7 +695,7 @@ class procedure THelper.GetCameraHeight(Navigator: TMatrixWalker;
 var
   GroundItemIndex: Integer;
 begin
-  Scene.DefaultTriangleOctree.GetCameraHeight(
+  SceneTriangleOctree.GetCameraHeight(
     TMatrixWalker(Navigator).CameraPos,
     TMatrixWalker(Navigator).GravityUp,
     IsAboveTheGround, SqrHeightAboveTheGround, GroundItemIndex,
@@ -707,15 +800,19 @@ begin
   Glw.OnDraw := nil;
   Glw.OnBeforeDraw := nil;
   try
-    Scene.OwnsDefaultTriangleOctree := false;
-    Scene.DefaultTriangleOctree := Scene.CreateTriangleOctree(
-      TriangleOctreeMaxDepth, TriangleOctreeMaxLeafItemsCount,
-      'Building triangle octree');
+    { For now we construct and store octrees only for the 1st animation
+      frame, see TODO in SceneTriangleOctree. }
+    SceneAnimation.FirstScene.OwnsDefaultTriangleOctree := false;
+    SceneAnimation.FirstScene.DefaultTriangleOctree :=
+      SceneAnimation.FirstScene.CreateTriangleOctree(
+        TriangleOctreeMaxDepth, TriangleOctreeMaxLeafItemsCount,
+        'Building triangle octree');
 
-    Scene.OwnsDefaultShapeStateOctree := false;
-    Scene.DefaultShapeStateOctree := Scene.CreateShapeStateOctree(
-      ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
-      'Building ShapeState octree');
+    SceneAnimation.FirstScene.OwnsDefaultShapeStateOctree := false;
+    SceneAnimation.FirstScene.DefaultShapeStateOctree :=
+      SceneAnimation.FirstScene.CreateShapeStateOctree(
+        ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
+        'Building ShapeState octree');
   finally
     Glw.OnDraw := @Draw;
     Glw.OnBeforeDraw := @BeforeDraw;
@@ -724,11 +821,14 @@ end;
 
 procedure SceneOctreeFree;
 begin
-  Scene.DefaultTriangleOctree.Free;
-  Scene.DefaultTriangleOctree := nil;
+  if SceneAnimation.ScenesCount <> 0 then
+  begin
+    SceneAnimation.FirstScene.DefaultTriangleOctree.Free;
+    SceneAnimation.FirstScene.DefaultTriangleOctree := nil;
 
-  Scene.DefaultShapeStateOctree.Free;
-  Scene.DefaultShapeStateOctree := nil;
+    SceneAnimation.FirstScene.DefaultShapeStateOctree.Free;
+    SceneAnimation.FirstScene.DefaultShapeStateOctree := nil;
+  end;
 end;
 
 procedure Unselect;
@@ -740,21 +840,19 @@ end;
 
 { Frees (and sets to some null values) "scene global variables".
 
-  Note about OpenGL context: remember that changing Scene.RootNode
-  requires calling Scene.ChangedSthg that closes all connections
+  Note about OpenGL context: remember that changing calling Close
+  on SceneAnimation also calls CloseGL  that closes all connections
   of Scene to OpenGL context. This means that:
-  1) Scene.RootNode must not be initialized, or Scene must not have any
-     connections with OpenGL context (like e.g. after calling Scene.CloseGL)
+  1) SceneAnimation must not be Loaded, or Scene must not have any
+     connections with OpenGL context (like e.g. after calling
+     SceneAnimation.CloseGL)
   2) or you must call FreeScene in the same OpenGL context that the
-     Scene is connected to. }
+     SceneAnimation is connected to. }
 procedure FreeScene;
 begin
   SceneOctreeFree;
 
-  Scene.RootNode.Free;
-  Scene.RootNode := nil;
-
-  Scene.ChangedAll;
+  SceneAnimation.Close;
 
   ViewpointsList.Count := 0;
   if ViewpointsList.MenuJumpToViewpoint <> nil then
@@ -811,7 +909,14 @@ procedure LoadClearScene; forward;
   pointing at some other place of memory). That's always the
   problem with passing pointers to global variables
   (ASceneFileName is a pointer) as local vars. }
-procedure LoadSceneCore(RootNode: TVRMLNode;
+procedure LoadSceneCore(
+  RootNodes: TVRMLNodesList;
+  ATimes: TDynSingleArray;
+  ScenesPerTime: Cardinal;
+  AOptimization: TGLRendererOptimization;
+  const EqualityEpsilon: Single;
+  TimeLoop, TimeBackwards: boolean;
+
   ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   JumpToInitialViewpoint: boolean);
@@ -826,13 +931,20 @@ begin
 
   try
     SceneFileName := ASceneFileName;
-    Scene.RootNode := RootNode;
-    Scene.ChangedAll;
 
-    NavigationNode := Scene.RootNode.TryFindNode(TNodeNavigationInfo, true)
-      as TNodeNavigationInfo;
+    SceneAnimation.Load(RootNodes, true, ATimes,
+      ScenesPerTime, AOptimization, EqualityEpsilon);
+    SceneAnimation.TimeLoop := TimeLoop;
+    SceneAnimation.TimeBackwards := TimeBackwards;
 
-    ChangeScene(SceneChanges, Scene);
+    { TODO: allow user some more control over this, some commands
+      to pause / restart animation. }
+    AnimationTime := 0.0;
+
+    NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
+      TNodeNavigationInfo, true) as TNodeNavigationInfo;
+
+    //TODOChangeScene(SceneChanges, SceneAnimation);
 
     { calculate CameraRadius }
     CameraRadius := ACameraRadius;
@@ -841,9 +953,9 @@ begin
       if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
         CameraRadius := NavigationNode.FdAvatarSize.Items[0];
       if CameraRadius = 0.0 then
-        if IsEmptyBox3d(Scene.BoundingBox) then
+        if IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
           CameraRadius := 1.0 { any non-zero dummy value } else
-          CameraRadius := Box3dAvgSize(Scene.BoundingBox)*0.01;
+          CameraRadius := Box3dAvgSize(SceneAnimation.BoundingBoxSum) * 0.01;
     end;
 
     { calculate CameraPreferredHeight }
@@ -863,13 +975,14 @@ begin
       SavedCameraUp := MatrixWalker.CameraUp;
     end;
 
-    SceneInitMultiNavigators(Scene.BoundingBox,
+    SceneInitMultiNavigators(SceneAnimation.BoundingBoxSum,
       StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
     { calculate ViewpointsList, MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
-    Scene.EnumerateViewpoints(@ViewpointsList.AddNodeTransform);
+    SceneAnimation.FirstScene.EnumerateViewpoints(
+      @ViewpointsList.AddNodeTransform);
     if ViewpointsList.MenuJumpToViewpoint <> nil then
       ViewpointsList.MakeMenuJumpToViewpoint;
     SetViewpoint(0);
@@ -881,15 +994,16 @@ begin
       MatrixWalker.CameraUp := SavedCameraUp;
     end;
 
-    SceneInitLights(Scene, NavigationNode);
-    SceneHeadlight := Scene.CreateHeadLight;
+    SceneInitLights(SceneAnimation, NavigationNode);
+    SceneHeadlight := SceneAnimation.FirstScene.CreateHeadLight;
 
     { SceneInitLights could change HeadLight value.
       So update MenuHeadlight.Checked now. }
     if MenuHeadlight <> nil then
       MenuHeadlight.Checked := HeadLight;
 
-    WorldInfoNode := Scene.RootNode.TryFindNode(TNodeWorldInfo, true)
+    WorldInfoNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
+      TNodeWorldInfo, true)
       as TNodeWorldInfo;
     if (WorldInfoNode <> nil) and (WorldInfoNode.FdTitle.Value <> '') then
       NewCaption := SForCaption(WorldInfoNode.FdTitle.Value) else
@@ -899,10 +1013,12 @@ begin
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
 
-    { evaluate Scene.BackgroundSkySphereRadius (musi byc najpierw ustalone
+    { calculate Scene.BackgroundSkySphereRadius (musi byc najpierw ustalone
       Scene.BoundingBox i CameraRadius, sa potrzebne do WalkProjectionNear/Far) }
-    Scene.BackgroundSkySphereRadius := TBackgroundGL.NearFarToSkySphereRadius(
-      WalkProjectionNear, WalkProjectionFar);
+    { TODO: set all }
+    SceneAnimation.FirstScene.BackgroundSkySphereRadius :=
+      TBackgroundGL.NearFarToSkySphereRadius(
+        WalkProjectionNear, WalkProjectionFar);
 
     { Find recognized NavigationNode.FdType }
     if NavigationNode <> nil then
@@ -955,7 +1071,7 @@ begin
   end;
 end;
 
-{ This loads the scene from file (using LoadAsVRML) and
+{ This loads the scene from file (using LoadAsVRMLSequence) and
   then inits our scene variables by LoadSceneCore.
 
   If it fails, it tries to preserve current scene
@@ -982,77 +1098,137 @@ procedure LoadScene(ASceneFileName: string;
 {$define CATCH_EXCEPTIONS}
 
 var
-  RootNode: TVRMLNode;
+  RootNodes: TVRMLNodesList;
+  Times: TDynSingleArray;
+  ScenesPerTime: Cardinal;
+  Optimization: TGLRendererOptimization;
+  EqualityEpsilon: Single;
+  TimeLoop, TimeBackwards: boolean;
+
   SavedSceneWarnings: TStringList;
 begin
-  { We have to clear SceneWarnings here (not later)
-    to catch also all warnings raised during parsing the VRML file.
-    This causes a potential problem: if loading the scene will fail,
-    we should restore the old warnings (if the old scene will be
-    preserved) or clear them (if the clear scene will be loaded
-    --- LoadSceneClear will clear them). }
-  SavedSceneWarnings := TStringList.Create;
+  RootNodes := TVRMLNodesList.Create;
+  Times := TDynSingleArray.Create;
   try
-    SavedSceneWarnings.Assign(SceneWarnings);
-    SceneWarnings.Clear;
+    { TODO: Show to user that Optimization for kanim is from kanim file,
+      not current setting of RendererOptimization ? }
+    Optimization := RendererOptimization;
+
+    { We have to clear SceneWarnings here (not later)
+      to catch also all warnings raised during parsing the VRML file.
+      This causes a potential problem: if loading the scene will fail,
+      we should restore the old warnings (if the old scene will be
+      preserved) or clear them (if the clear scene will be loaded
+      --- LoadSceneClear will clear them). }
+    SavedSceneWarnings := TStringList.Create;
+    try
+      SavedSceneWarnings.Assign(SceneWarnings);
+      SceneWarnings.Clear;
+
+      {$ifdef CATCH_EXCEPTIONS}
+      try
+      {$endif CATCH_EXCEPTIONS}
+        LoadAsVRMLSequence(ASceneFileName, true,
+          RootNodes, Times,
+          ScenesPerTime, Optimization, EqualityEpsilon,
+          TimeLoop, TimeBackwards);
+      {$ifdef CATCH_EXCEPTIONS}
+      except
+        on E: Exception do
+        begin
+          MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+            E.Message, taLeft);
+          { In this case we can preserve current scene. }
+          SceneWarnings.Assign(SavedSceneWarnings);
+          Exit;
+        end;
+      end;
+      {$endif CATCH_EXCEPTIONS}
+    finally FreeAndNil(SavedSceneWarnings) end;
 
     {$ifdef CATCH_EXCEPTIONS}
     try
     {$endif CATCH_EXCEPTIONS}
-      RootNode := LoadAsVRML(ASceneFileName, true);
+      LoadSceneCore(
+        RootNodes, Times,
+        ScenesPerTime, Optimization, EqualityEpsilon,
+        TimeLoop, TimeBackwards,
+        ASceneFileName, SceneChanges, ACameraRadius, JumpToInitialViewpoint);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
       begin
-        MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+        { In this case we cannot preserve old scene, because
+          LoadSceneCore does FreeScene when it exits with exception
+          (and that's because LoadSceneCore modifies some global scene variables
+          when it works --- so when something fails inside LoadSceneCore,
+          we are left with some partially-initiaized state,
+          that is not usable; actually, LoadSceneCore
+          also does FreeScene when it starts it's work --- to start
+          with a clean state).
+
+          We call LoadClearScene before we call MessageOK, this way
+          our Draw routine works OK when it's called to draw background
+          under MessageOK. }
+        LoadClearScene;
+        MessageOK(glw, 'Error while loading scene from "' + ASceneFileName + '": ' +
           E.Message, taLeft);
-        { In this case we can preserve current scene. }
-        SceneWarnings.Assign(SavedSceneWarnings);
         Exit;
       end;
     end;
     {$endif CATCH_EXCEPTIONS}
-  finally FreeAndNil(SavedSceneWarnings) end;
 
-  {$ifdef CATCH_EXCEPTIONS}
-  try
-  {$endif CATCH_EXCEPTIONS}
-    LoadSceneCore(RootNode,
-      ASceneFileName, SceneChanges, ACameraRadius, JumpToInitialViewpoint);
-  {$ifdef CATCH_EXCEPTIONS}
-  except
-    on E: Exception do
-    begin
-      { In this case we cannot preserve old scene, because
-        LoadSceneCore does FreeScene when it exits with exception
-        (and that's because LoadSceneCore modifies some global scene variables
-        when it works --- so when something fails inside LoadSceneCore,
-        we are left with some partially-initiaized state,
-        that is not usable; actually, LoadSceneCore
-        also does FreeScene when it starts it's work --- to start
-        with a clean state).
+    RecentMenu.Add(ASceneFileName);
 
-        We call LoadClearScene before we call MessageOK, this way
-        our Draw routine works OK when it's called to draw background
-        under MessageOK. }
-      LoadClearScene;
-      MessageOK(glw, 'Error while loading scene from "' + ASceneFileName + '": ' +
-        E.Message, taLeft);
-      Exit;
-    end;
+    { We call EventBeforeDraw to make Scene.PrepareRender to gather
+      VRML warnings (because some warnings, e.g. invalid texture filename,
+      are reported only from Scene.PrepareRender) }
+    Glw.EventBeforeDraw;
+    if SceneWarnings.Count <> 0 then
+      MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
+        'this scene. See the console or use File->"View warnings" ' +
+        'menu command to view them all.', [SceneWarnings.Count]), taLeft);
+  finally
+    FreeAndNil(RootNodes);
+    FreeAndNil(Times);
   end;
-  {$endif CATCH_EXCEPTIONS}
+end;
 
-  RecentMenu.Add(ASceneFileName);
+{ This should be used to load special "clear" and "welcome" scenes.
+  This loads a scene directly from TVRMLNode, and assumes that
+  LoadSceneCore will not fail. }
+procedure LoadSimpleScene(Node: TVRMLNode);
+var
+  RootNodes: TVRMLNodesList;
+  Times: TDynSingleArray;
+  ScenesPerTime: Cardinal;
+  Optimization: TGLRendererOptimization;
+  EqualityEpsilon: Single;
+  TimeLoop, TimeBackwards: boolean;
+begin
+  RootNodes := TVRMLNodesList.Create;
+  Times := TDynSingleArray.Create;
+  try
+    Optimization := RendererOptimization;
 
-  { We call EventBeforeDraw to make Scene.PrepareRender to gather
-    VRML warnings (because some warnings, e.g. invalid texture filename,
-    are reported only from Scene.PrepareRender) }
-  Glw.EventBeforeDraw;
-  if SceneWarnings.Count <> 0 then
-    MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
-      'this scene. See the console or use File->"View warnings" ' +
-      'menu command to view them all.', [SceneWarnings.Count]), taLeft);
+    RootNodes.Add(Node);
+    Times.AppendItem(0);
+
+    ScenesPerTime := 1;      { doesn't matter }
+    EqualityEpsilon := 0.0;  { doesn't matter }
+    TimeLoop := false;      { doesn't matter }
+    TimeBackwards := false; { doesn't matter }
+
+    SceneWarnings.Clear;
+    LoadSceneCore(
+      RootNodes, Times,
+      ScenesPerTime, Optimization, EqualityEpsilon,
+      TimeLoop, TimeBackwards,
+      '', [], 1.0, true);
+  finally
+    FreeAndNil(RootNodes);
+    FreeAndNil(Times);
+  end;
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1060,41 +1236,31 @@ end;
   "scene global variables" to some non-null values. }
 procedure LoadClearScene;
 begin
-  SceneWarnings.Clear;
+  { As a clear scene, I'm simply loading an empty VRML file.
+    This way everything seems normal: SceneAnimation is Loaded,
+    FirstScene is available and FirstScene.RootNode is non-nil.
 
-  { Note: Once I had an idea to use RootNode = nil for clear scene.
-    This is not so entirely bad idea since I implemented TVRMLFlatScene
-    in such way that RootNode = nil is allowed and behaves sensible.
-    Disadvantages:
-    - Many things in view3dscene
-      use Scene.RootNode (e.g. when saving model to VRML using
-      appropriate menu item). So using here RootNode = nil would make
-      implementation of view3dscene more diffucult (I would have
-      to be careful in many places and check whether Scene.RootNode <> nil),
-      without any gains in functionality.
-    - non-empty clear scene allows me to put there WorldInfo with a title.
-      This way clear scene has an effect on view3dscene window's title,
-      and at the same time I don't have to set SceneFileName to something
-      dummy.
+    The other idea was to use some special state like Loaded = @false
+    to indicate clear scene, but this would only complicate code
+    with checks for "if Loaded" everywhere.
+
+    Also, non-empty clear scene allows me to put there WorldInfo with a title.
+    This way clear scene has an effect on view3dscene window's title,
+    and at the same time I don't have to set SceneFileName to something
+    dummy.
 
     I'm not constructing here RootNode in code (i.e. Pascal).
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML and then auto-generate
     xxx_scene.inc file to load VRML scene from a simple string. }
-
-  LoadSceneCore(
-    ParseVRMLFileFromString({$I clear_scene.inc}, ''), '', [], 1.0, true);
+  LoadSimpleScene(ParseVRMLFileFromString({$I clear_scene.inc}, ''));
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  SceneWarnings.Clear;
-
-  { See comments at LoadClearScene }
-  LoadSceneCore(
-    ParseVRMLFileFromString({$I welcome_scene.inc}, ''), '', [], 1.0, true);
+  LoadSimpleScene(ParseVRMLFileFromString({$I welcome_scene.inc}, ''));
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -1220,10 +1386,10 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   var
     Value: Single;
   begin
-    Value := Scene.Attributes.PointSize;
+    Value := SceneAnimation.Attributes.PointSize;
     if MessageInputQuerySingle(Glwin, 'Change point size:',
       Value, taLeft) then
-      Scene.Attributes.PointSize := Value;
+      SceneAnimation.Attributes.PointSize := Value;
   end;
 
   function NodeNiceName(node: TVRMLNode): string;
@@ -1356,13 +1522,13 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
        s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
          [ I, NodeNiceName(SelectedItem^.State.ActiveLights.Items[i].LightNode) ]);
 
-       ShadowingItemIndex := Scene.DefaultTriangleOctree.SegmentCollision(
+       ShadowingItemIndex := SceneTriangleOctree.SegmentCollision(
          SelectedPoint, SelectedItem^.State.ActiveLights.Items[i].TransfLocation,
            false, SelectedItemIndex, true, nil);
 
        if ShadowingItemIndex <> NoItemIndex then
        begin
-        ShadowingItem := Scene.DefaultTriangleOctree.OctreeItems.
+        ShadowingItem := SceneTriangleOctree.OctreeItems.
           Pointers[ShadowingItemIndex];
         s += Format('but no, this light is blocked by triangle %s from node %s.',
           [ TriangleToNiceStr(ShadowingItem^.Triangle),
@@ -1374,12 +1540,13 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
     ShowAndWrite(S);
   end;
+(* TODO: restore
 
   procedure WholeSceneChanged;
   begin
     Unselect;
     SceneOctreeFree;
-    Scene.ChangedAll;
+    SceneAnimation.ChangedAll;
     SceneOctreeCreate;
   end;
 
@@ -1479,9 +1646,10 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
     Unselect;
     SceneOctreeFree;
-    Scene.ChangedFields(ShapeNode);
+    SceneAnimation.ChangedFields(ShapeNode);
     SceneOctreeCreate;
   end;
+  *)
 
   procedure ChangeLightModelAmbient;
   begin
@@ -1492,7 +1660,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   var
     CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single;
   begin
-    CameraViewpointForWholeScene(Scene.BoundingBox,
+    CameraViewpointForWholeScene(SceneAnimation.BoundingBoxSum,
       CameraPos, CameraDir, CameraUp, GravityUp);
     SetViewpoint(CameraPos, CameraDir, CameraUp, GravityUp);
   end;
@@ -1502,6 +1670,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     Wildcard: string;
     RemovedNumber: Cardinal;
   begin
+    { TODO: restore
     Wildcard := '';
     if MessageInputQuery(Glwin,
       'Input node name to be removed. You can use wildcards (* and ?) in ' +
@@ -1516,6 +1685,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
     end;
+    }
   end;
 
   procedure RemoveSpecialCastleNodes;
@@ -1523,12 +1693,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     RemovedNumber: Cardinal;
     HelperSpecialCastleNodes: THelperSpecialCastleNodes;
   begin
+    { TODO: restore
     RemovedNumber := Scene.RootNode.EnumerateRemoveChildren(
       @HelperSpecialCastleNodes.Remove);
     if RemovedNumber <> 0 then
       WholeSceneChanged;
     MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
       taLeft);
+    }
   end;
 
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
@@ -1538,6 +1710,40 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       MatrixWalker.CameraDir,
       MatrixWalker.CameraUp,
       MatrixWalker.GravityUp));
+  end;
+
+  procedure WriteBoundingBox(const Box: TBox3d);
+  begin
+    if IsEmptyBox3d(Box) then
+      MessageOK(Glw, 'The bounding box is empty.', taLeft) else
+    begin
+      Writeln(Format(
+        '# ----------------------------------------' +nl+
+        '# BoundingBox %s expressed in VRML:' +nl+
+        '# Version for VRML 1.0' +nl+
+        'DEF BoundingBox Separator {' +nl+
+        '  Translation {' +nl+
+        '    translation %s' +nl+
+        '  }' +nl+
+        '  Cube {' +nl+
+        '    width %s' +nl+
+        '    height %s' +nl+
+        '    depth %s' +nl+
+        '  } }' +nl+
+        nl+
+        '# Version for VRML 2.0' +nl+
+        'DEF BoundingBox Transform {' +nl+
+        '  translation %1:s' +nl+
+        '  children Shape {' +nl+
+        '    geometry Box {' +nl+
+        '      size %2:s %3:s %4:s' +nl+
+        '    } } }',
+        [ Box3dToNiceStr(Box),
+          VectorToRawStr(Box3dMiddle(Box)),
+          FloatToRawStr(Box[1, 0] - Box[0, 0]),
+          FloatToRawStr(Box[1, 1] - Box[0, 1]),
+          FloatToRawStr(Box[1, 2] - Box[0, 2]) ]));
+    end;
   end;
 
 var
@@ -1561,12 +1767,16 @@ begin
       end;
 
   20: begin
+       { TODO: this filename gen is stupid, it leads to names like
+         _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
         s := AppendToFileName(SceneFilename, '_2') else
         s := ChangeFileExt(SceneFilename, '.wrl');
        if glwin.FileDialog('Save as VRML file', s, false) then
        try
-        SaveToVRMLFile(Scene.RootNode, s,
+        { TODO-animation: saving only 1st frame here.
+          We should at least make some warning ? }
+        SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
           SavedVRMLPrecedingComment(SceneFileName));
        except
         on E: Exception do
@@ -1579,15 +1789,15 @@ begin
 
   21: ViewSceneWarnings;
 
-  31: ChangeScene(scNoNormals, Scene);
-  32: ChangeScene(scNoSolidObjects, Scene);
-  33: ChangeScene(scNoConvexFaces, Scene);
+  31: ;//TODO ChangeScene(scNoNormals, SceneAnimation);
+  32: ;//TODO ChangeScene(scNoSolidObjects, SceneAnimation);
+  33: ;//TODO ChangeScene(scNoConvexFaces, SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
   35: RemoveSpecialCastleNodes;
 
-  36: RemoveSelectedGeometry;
-  37: RemoveSelectedFace;
+  36: ;//TODO RemoveSelectedGeometry;
+  37: ;//TODO RemoveSelectedFace;
 
   { Before all calls to SetViewpoint below, we don't really have to
     swith to nkWalker. But user usually wants to switch to nkWalker ---
@@ -1607,15 +1817,15 @@ begin
 
   81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;
-  83: with Scene do Attributes.SmoothShading := not Attributes.SmoothShading;
+  83: with SceneAnimation do Attributes.SmoothShading := not Attributes.SmoothShading;
   84: if glwin.ColorDialog(BGColor) then BGColorChanged;
-  85: with Scene do Attributes.UseFog := not Attributes.UseFog;
-  86: with Scene do Attributes.Blending := not Attributes.Blending;
+  85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
+  86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
-  93: with Scene do Attributes.UseLights := not Attributes.UseLights;
-  94: with Scene do Attributes.EnableTextures := not Attributes.EnableTextures;
+  93: with SceneAnimation do Attributes.UseLights := not Attributes.UseLights;
+  94: with SceneAnimation do Attributes.EnableTextures := not Attributes.EnableTextures;
   95: ChangeLightModelAmbient;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
@@ -1629,7 +1839,7 @@ begin
         end;
 
         Inc(octreeDisplayDepth);
-        if octreeDisplayDepth > Scene.DefaultTriangleOctree.MaxDepth then
+        if octreeDisplayDepth > SceneTriangleOctree.MaxDepth then
           octreeDisplayDepth := -1;
       end;
 
@@ -1643,7 +1853,7 @@ begin
 
         Dec(octreeDisplayDepth);
         if octreeDisplayDepth < -1 then
-          octreeDisplayDepth := Scene.DefaultTriangleOctree.MaxDepth;
+          octreeDisplayDepth := SceneTriangleOctree.MaxDepth;
       end;
 
   99: begin
@@ -1652,9 +1862,13 @@ begin
           OctreeDisplayDepth := -1;
       end;
 
-  101: Writeln(Scene.DefaultTriangleOctree.Statistics);
-  103: Writeln(Scene.DefaultShapeStateOctree.Statistics);
-  102: Scene.WritelnInfoNodes;
+  101: Writeln(SceneTriangleOctree.Statistics);
+  103: Writeln(SceneShapeStateOctree.Statistics);
+  102:
+    { All info nodes should be equal (their strings cannot be interpolated
+      after all), so we can safely just use FirstScene here, not worrying
+      about other animation frames. }
+    SceneAnimation.FirstScene.WritelnInfoNodes;
 
   105: Writeln(Format(
          'Call rayhunter like this to render this view :' +nl+
@@ -1686,51 +1900,29 @@ begin
          '  Near   : ' + VectorToRawStr(MatrixWalker.Frustum[fpNear]) +nl+
          '  Far    : ' + VectorToRawStr(MatrixWalker.Frustum[fpFar]));
 
-  110: if IsEmptyBox3d(Scene.BoundingBox) then
-         MessageOK(Glw, 'The scene''s bounding box is empty.', taLeft) else
-       begin
-         Writeln(Format(
-           '# ----------------------------------------' +nl+
-           '# BoundingBox %s expressed in VRML:' +nl+
-           '# Version for VRML 1.0' +nl+
-           'DEF BoundingBox Separator {' +nl+
-           '  Translation {' +nl+
-           '    translation %s' +nl+
-           '  }' +nl+
-           '  Cube {' +nl+
-           '    width %s' +nl+
-           '    height %s' +nl+
-           '    depth %s' +nl+
-           '  } }' +nl+
-           nl+
-           '# Version for VRML 2.0' +nl+
-           'DEF BoundingBox Transform {' +nl+
-           '  translation %1:s' +nl+
-           '  children Shape {' +nl+
-           '    geometry Box {' +nl+
-           '      size %2:s %3:s %4:s' +nl+
-           '    } } }',
-           [ Box3dToNiceStr(Scene.BoundingBox),
-             VectorToRawStr(Box3dMiddle(Scene.BoundingBox)),
-             FloatToRawStr(Scene.BoundingBox[1, 0] - Scene.BoundingBox[0, 0]),
-             FloatToRawStr(Scene.BoundingBox[1, 1] - Scene.BoundingBox[0, 1]),
-             FloatToRawStr(Scene.BoundingBox[1, 2] - Scene.BoundingBox[0, 2]) ]));
-       end;
+  109: WriteBoundingBox(SceneAnimation.BoundingBoxSum);
+  110: WriteBoundingBox(SceneAnimation.SceneFromTime(AnimationTime).BoundingBox);
 
   111: ChangeNavigatorKind(glw, +1);
 
   121: ShowAndWrite(
          'Scene "' + SceneFilename + '" information:' + NL + NL +
-          Scene.Info(true, true));
+         { TODO: info tri/verts about 1st frame is OK,
+           but info about bbox will display bbox of 1st frame,
+           while other frames may be different... }
+         SceneAnimation.FirstScene.Info(true, true));
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
   124: ChangeGravityUp;
   125: if Glw.Navigator is TMatrixWalker then
-        RaytraceToWin(glwin, Scene.DefaultTriangleOctree,
+        { TODO: the fact that octree is only for the 1st frame
+          means that below we can render only 1st frame... }
+        RaytraceToWin(glwin, SceneTriangleOctree,
           Glw.NavWalker.CameraPos,
           Glw.NavWalker.CameraDir, Glw.NavWalker.CameraUp,
           AngleOfViewX, AngleOfViewY, BGColor,
-          Scene.FogNode, Scene.FogDistanceScaling) else
+          SceneAnimation.FirstScene.FogNode,
+          SceneAnimation.FirstScene.FogDistanceScaling) else
         MessageOK(glwin, SOnlyInWalker);
   126: Glw.SwapFullScreen;
   127: glwin.SaveScreenDialog(FNameAutoInc('view3dscene_screen_%d.png'));
@@ -1783,17 +1975,17 @@ begin
       SetViewpoint(MenuItem.IntData - 300);
     end;
 
-  400..419: Scene.Attributes.BlendingSourceFactor :=
+  400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
     BlendingFactors[MenuItem.IntData - 400].Value;
-  420..439: Scene.Attributes.BlendingDestinationFactor :=
+  420..439: SceneAnimation.Attributes.BlendingDestinationFactor :=
     BlendingFactors[MenuItem.IntData - 420].Value;
 
   1000..1099: SetColorModulatorType(
-    TColorModulatorType(MenuItem.IntData-1000), Scene);
+    TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
-    TTextureMinFilter  (MenuItem.IntData-1100), Scene);
+    TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
-    TTextureMagFilter  (MenuItem.IntData-1200), Scene);
+    TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399: SetNavigatorKind(glw,
     TNavigatorKind(     MenuItem.IntData-1300));
 
@@ -1935,12 +2127,12 @@ begin
    M.Append(TMenuItemChecked.Create('Show _bounding box',      82, 'b',
      ShowBBox, true));
    M.Append(TMenuItemChecked.Create('_Smooth shading',         83, 's',
-     Scene.Attributes.SmoothShading, true));
+     SceneAnimation.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change background color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
-     Scene.Attributes.UseFog, true));
+     SceneAnimation.Attributes.UseFog, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
-     Scene.Attributes.Blending, true));
+     SceneAnimation.Attributes.Blending, true));
    M2 := TMenu.Create('Blending source factor');
      AppendBlendingFactors(M2, true, 400);
      M.Append(M2);
@@ -1958,11 +2150,11 @@ begin
      Headlight, true);
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use scene lights',    93,
-     Scene.Attributes.UseLights, true));
+     SceneAnimation.Attributes.UseLights, true));
    M.Append(TMenuItem.Create('Light global ambient color ...',  95));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
-     Scene.Attributes.EnableTextures, true));
+     SceneAnimation.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Change texture minification method');
      AppendTextureMinFilters(M2);
      M.Append(M2);
@@ -2049,7 +2241,8 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print current camera _frustum', 108));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print scene _bounding box as VRML node', 110));
+   M.Append(TMenuItem.Create('Print _bounding box (of whole animation)', 109));
+   M.Append(TMenuItem.Create('Print bounding box (of current animation frame)', 110));
    Result.Append(M);
  M := TMenu.Create('_Other');
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
@@ -2173,7 +2366,6 @@ const
   end;
 
 var
-  Param_RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
   Helper: THelper;
 begin
  { parse parameters }
@@ -2183,7 +2375,7 @@ begin
  MultiNavigatorsParseParameters;
  LightsParseParameters;
  VRMLNodesDetailOptionsParse;
- RendererOptimizationOptionsParse(Param_RendererOptimization);
+ RendererOptimizationOptionsParse(RendererOptimization);
  ParseParameters(Options, @OptionProc, nil);
  { the most important param : filename to load }
  if Parameters.High > 1 then
@@ -2219,12 +2411,12 @@ begin
  SceneWarnings := TStringList.Create;
 
  { init "scene global variables" to null values }
- Scene := TVRMLFlatSceneGL.Create(nil, false, Param_RendererOptimization);
+ SceneAnimation := TVRMLGLAnimation.Create;
  try
-  { in view3dscene Scene.Attributes.UseLights default value is true }
-  Scene.Attributes.UseLights := true;
-  InitColorModulator(Scene);
-  InitTextureFilters(Scene);
+  { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
+  SceneAnimation.Attributes.UseLights := true;
+  InitColorModulator(SceneAnimation);
+  InitTextureFilters(SceneAnimation);
 
   RecentMenu := TGLRecentMenu.Create;
   RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
@@ -2244,6 +2436,7 @@ begin
    Glw.OnMouseDown := @MouseDown;
    Glw.OnBeforeDraw := @BeforeDraw;
    Glw.OnDraw := @Draw;
+   Glw.OnIdle := @Idle;
 
    Glw.SetDemoOptions(K_None, #0, true);
 
@@ -2256,7 +2449,7 @@ begin
    Glwm.Loop;
   finally FreeScene end;
  finally
-   FreeAndNil(Scene);
+   FreeAndNil(SceneAnimation);
    FreeAndNil(SceneWarnings);
    if RecentMenu <> nil then
      RecentMenu.SaveToConfig(ConfigFile, 'recent_files');

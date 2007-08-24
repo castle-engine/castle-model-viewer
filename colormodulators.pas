@@ -18,7 +18,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 }
 
-{ Simple management of ColorModulator of VRML scene, to show
+{ Simple management of ColorModulator of VRML scene/animation, to show
   some sample modulators.
 
   Remember - usually you have to do glwin.PostRedisplay after
@@ -32,7 +32,7 @@ unit ColorModulators;
 
 interface
 
-uses KambiUtils, VectorMath, VRMLNodes, VRMLOpenGLRenderer, VRMLFlatSceneGL;
+uses KambiUtils, VectorMath, VRMLNodes, VRMLOpenGLRenderer, VRMLGLAnimation;
 
 type
   TColorModulatorType = (
@@ -58,11 +58,11 @@ const
     (Name:'Convert to blue')
   );
 
-procedure InitColorModulator(scene: TVRMLFlatSceneGL);
+procedure InitColorModulator(SceneAnimation: TVRMLGLAnimation);
 
 function ColorModulatorType: TColorModulatorType;
 procedure SetColorModulatorType(value: TColorModulatorType;
-  scene: TVRMLFlatSceneGL);
+  SceneAnimation: TVRMLGLAnimation);
 
 implementation
 
@@ -93,11 +93,11 @@ var
   FColorModulatorType: TColorModulatorType = ctNone;
 
 procedure SetColorModulatorType(Value: TColorModulatorType;
-  scene: TVRMLFlatSceneGL);
+  SceneAnimation: TVRMLGLAnimation);
 begin
  FColorModulatorType := Value;
- scene.Attributes.ColorModulatorSingle := ColorModulatorPrivateInfos[Value].SingleFunc;
- scene.Attributes.ColorModulatorByte   := ColorModulatorPrivateInfos[Value].ByteFunc;
+ SceneAnimation.Attributes.ColorModulatorSingle := ColorModulatorPrivateInfos[Value].SingleFunc;
+ SceneAnimation.Attributes.ColorModulatorByte   := ColorModulatorPrivateInfos[Value].ByteFunc;
 end;
 
 function ColorModulatorType: TColorModulatorType;
@@ -105,9 +105,9 @@ begin
  Result := FColorModulatorType;
 end;
 
-procedure InitColorModulator(Scene: TVRMLFlatSceneGL);
+procedure InitColorModulator(SceneAnimation: TVRMLGLAnimation);
 begin
- SetColorModulatorType(ColorModulatorType, scene);
+ SetColorModulatorType(ColorModulatorType, SceneAnimation);
 end;
 
 end.
