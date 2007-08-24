@@ -1697,9 +1697,9 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   procedure RemoveNodesWithMatchingName;
   var
     Wildcard: string;
-    RemovedNumber: Cardinal;
+    RemovedNumber, RemovedNumberOther: Cardinal;
+    I: Integer;
   begin
-    { TODO: restore
     Wildcard := '';
     if MessageInputQuery(Glwin,
       'Input node name to be removed. You can use wildcards (* and ?) in ' +
@@ -1707,29 +1707,49 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       'case sensitive (like all VRML).',
       Wildcard, taLeft) then
     begin
-      RemovedNumber :=
-        Scene.RootNode.RemoveChildrenWithMatchingName(Wildcard, false);
+      RemovedNumber := SceneAnimation.Scenes[0].RootNode.
+        RemoveChildrenWithMatchingName(Wildcard, false);
+      for I := 1 to SceneAnimation.ScenesCount - 1 do
+      begin
+        RemovedNumberOther := SceneAnimation.Scenes[I].RootNode.
+          RemoveChildrenWithMatchingName(Wildcard, false);
+        Assert(RemovedNumberOther = RemovedNumber);
+      end;
+
       if RemovedNumber <> 0 then
+      begin
+        { TODO: we should set these to nil only if
+          it's actually removed by RemoveChildrenWithMatchingName above. }
+        ViewpointNode := nil;
+        NavigationNode := nil;
+
         WholeSceneChanged;
+      end;
+
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
     end;
-    }
   end;
 
   procedure RemoveSpecialCastleNodes;
   var
-    RemovedNumber: Cardinal;
+    RemovedNumber, RemovedNumberOther: Cardinal;
+    I: Integer;
     HelperSpecialCastleNodes: THelperSpecialCastleNodes;
   begin
-    { TODO: restore
-    RemovedNumber := Scene.RootNode.EnumerateRemoveChildren(
-      @HelperSpecialCastleNodes.Remove);
+    RemovedNumber := SceneAnimation.Scenes[0].RootNode.
+      EnumerateRemoveChildren(@HelperSpecialCastleNodes.Remove);
+    for I := 1 to SceneAnimation.ScenesCount - 1 do
+    begin
+      RemovedNumberOther := SceneAnimation.Scenes[I].RootNode.
+        EnumerateRemoveChildren(@HelperSpecialCastleNodes.Remove);
+      Assert(RemovedNumberOther = RemovedNumber);
+    end;
+
     if RemovedNumber <> 0 then
       WholeSceneChanged;
     MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
       taLeft);
-    }
   end;
 
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
