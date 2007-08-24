@@ -152,6 +152,7 @@ var
 var
   AnimationTime: Single = 0.0;
   AnimationTimeSpeed: Single = 1.0;
+  AnimationTimeSpeedWhenLoading: Single = 1.0;
   AnimationTimePaused: boolean = false;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
@@ -911,8 +912,11 @@ procedure LoadClearScene; forward;
   Instead in uses already created RootNode to init
   "scene global variables".
 
-  Note that RootNode object will be owned by Scene.
-  So do not Free RootNode after using this procedure.
+  Note that all RootNodes[] will be owned by Scene.
+  So do not Free RootNodes[] items after using this procedure
+  (still, you should use RootNodes list itself).
+
+  Note that this may change the value of Times list.
 
   Note that there is one "scene global variable" that will
   not be completely handled by this procedure:
@@ -940,6 +944,15 @@ procedure LoadSceneCore(
   ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   JumpToInitialViewpoint: boolean);
+
+  procedure ScaleAll(A: TDynSingleArray; const Value: Single);
+  var
+    I: Integer;
+  begin
+    for I := 0 to A.High do
+      A.Items[I] *= Value;
+  end;
+
 var
   NewCaption: string;
   CameraPreferredHeight: Single;
@@ -951,6 +964,9 @@ begin
 
   try
     SceneFileName := ASceneFileName;
+
+    if AnimationTimeSpeedWhenLoading <> 1.0 then
+      ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
 
     SceneAnimation.Load(RootNodes, true, ATimes,
       ScenesPerTime, AOptimization, EqualityEpsilon);
@@ -1415,9 +1431,36 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     MessageInputQuerySingle(Glwin,
       'Time pass speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes time pass two times slower,' +nl+
-      '2.0 makes it pass two times faster etc.' +nl+ nl+
-      'New time pass speed:',
+      '2.0 makes it pass two times faster etc.' +nl+
+      nl+
+      'Note that this is only "on display" time speed. Which means ' +
+      'that internally number of precalculated animation frames ' +
+      'doesn''t change. Which means that slowing this time pass too much ' +
+      'leads to noticeably "jagged" animations.' +nl+
+      nl+
+      'New "on display" time pass speed:',
       AnimationTimeSpeed, taLeft);
+  end;
+
+  procedure ChangeAnimationTimeSpeedWhenLoading;
+  begin
+    MessageInputQuerySingle(Glwin,
+      'Time pass speed 1.0 means that 1 time unit is 1 second.' +nl+
+      '0.5 makes time pass two times slower,' +nl+
+      '2.0 makes it pass two times faster etc.' +nl+
+      nl+
+      'Note that this is the "on loading" time speed. Which means ' +
+      'that it''s only applied when loading animation from file ' +
+      '(you can use "File -> Reopen" command to apply this to currently ' +
+      'loaded animation). Moreover, changing this actually changes ' +
+      'the density of precalculated animation frames. Which means that ' +
+      'this is the more resource-consuming, but also better ' +
+      'method of changing animation speed: even if you slow down ' +
+      'this time pass much, the animation should not become ' +
+      'more jagged.' +nl+
+      nl+
+      'New "on loading" time pass speed:',
+      AnimationTimeSpeedWhenLoading, taLeft);
   end;
 
   function NodeNiceName(node: TVRMLNode): string;
@@ -2029,6 +2072,7 @@ begin
   220: AnimationTimePaused := not AnimationTimePaused;
   221: AnimationTime := SceneAnimation.TimeBegin;
   222: ChangeAnimationTimeSpeed;
+  223: ChangeAnimationTimeSpeedWhenLoading;
 
   300..399:
     begin
@@ -2274,7 +2318,9 @@ begin
  M := TMenu.Create('_Animation');
    M.Append(TMenuItem.Create('Pause / play', 220, CtrlP));
    M.Append(TMenuItem.Create('Rewind to beginning', 221));
-   M.Append(TMenuItem.Create('Make time pass slower or faster ...', 222));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Make time pass slower or faster (on display) ...', 222));
+   M.Append(TMenuItem.Create('Make time pass slower or faster (on loading) ...', 223));
    Result.Append(M);
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=

@@ -1,13 +1,14 @@
 ----------------------------------------
 Blockers before next release:
 
-- md3 anim
 - Add to docs
 
   With animations, there's one small caveat right now:
   some features (collision checking, mouse picking,
   ray-tracer --- everything that requires some octree) always use the
   <i>first animation frame</i>, regardless of current animation time.
+
+  Add to docs that animations in kanim (VRML sequence) and MD3 are displayed.
 
 ----------------------------------------
 Others:
