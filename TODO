@@ -4,7 +4,6 @@ Blockers before next release:
 - finish, test fully animation kanim handling --- TODOs in view3dscene
   almost all FirstScene should be replaced with something better
 - md3 anim
-- AnimationTime: pause, rewind, slow/fast time ?
 
 ----------------------------------------
 Others:

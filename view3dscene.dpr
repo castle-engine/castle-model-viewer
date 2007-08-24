@@ -153,6 +153,7 @@ var
 
 var
   AnimationTime: Single = 0.0;
+  AnimationTimePaused: boolean = false;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapeStatesCount: Cardinal;
@@ -333,6 +334,11 @@ begin
     [ LastRender_RenderedShapeStatesCount,
       LastRender_AllShapeStatesCount,
       Glw.FpsFrameTime ]));
+
+  S := Format('World time : %f', [AnimationTime]);
+  if AnimationTimePaused then
+    S += ' (paused)';
+  strs.Append(S);
 
   {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
     nil, 5, 1, 1);}
@@ -659,15 +665,18 @@ procedure Idle(glwin: TGLWindow);
 var
   OldAnimationTime: Single;
 begin
-  OldAnimationTime := AnimationTime;
-  AnimationTime += Glwin.IdleCompSpeed / 50;
+  if not AnimationTimePaused then
+  begin
+    OldAnimationTime := AnimationTime;
+    AnimationTime += Glwin.IdleCompSpeed / 50;
 
-  { Call PostRedisplay only if the displayed animation frame actually changed.
-    This way, we avoid wasting CPU cycles if the loaded scene is actually
-    still, or if the animation stopped running. }
-  if SceneAnimation.SceneFromTime(OldAnimationTime) <>
-     SceneAnimation.SceneFromTime(AnimationTime) then
-    Glwin.PostRedisplay;
+    { Call PostRedisplay only if the displayed animation frame actually changed.
+      This way, we avoid wasting CPU cycles if the loaded scene is actually
+      still, or if the animation stopped running. }
+    if SceneAnimation.SceneFromTime(OldAnimationTime) <>
+       SceneAnimation.SceneFromTime(AnimationTime) then
+      Glwin.PostRedisplay;
+  end;
 end;
 
 { TMatrixWalker collision detection using SceneTriangleOctree --------------- }
@@ -959,9 +968,7 @@ begin
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
 
-    { TODO: allow user some more control over this, some commands
-      to pause / restart animation. }
-    AnimationTime := 0.0;
+    AnimationTime := SceneAnimation.TimeBegin;
 
     NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
       TNodeNavigationInfo, true) as TNodeNavigationInfo;
@@ -1989,6 +1996,9 @@ begin
   202: MatrixWalker.PreferGravityUpForRotations := not MatrixWalker.PreferGravityUpForRotations;
   203: MatrixWalker.PreferGravityUpForMoving := not MatrixWalker.PreferGravityUpForMoving;
 
+  220: AnimationTimePaused := not AnimationTimePaused;
+  221: AnimationTime := SceneAnimation.TimeBegin;
+
   300..399:
     begin
       { We could just SetViewpoint, without swithing to nkWalker.
@@ -2230,6 +2240,12 @@ begin
      M2.Append(TMenuItem.Create('Change gravity up vector ...',  124));
      M.Append(M2);
    Result.Append(M);
+
+ M := TMenu.Create('_Animation');
+   M.Append(TMenuItem.Create('Pause / play', 220, CtrlP));
+   M.Append(TMenuItem.Create('Rewind to beginning', 221));
+   Result.Append(M);
+
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=
      TMenuItem.Create('Remove _geometry node (containing selected triangle)', 36);
