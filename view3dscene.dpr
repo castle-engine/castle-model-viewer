@@ -153,6 +153,7 @@ var
 
 var
   AnimationTime: Single = 0.0;
+  AnimationTimeSpeed: Single = 1.0;
   AnimationTimePaused: boolean = false;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
@@ -668,7 +669,7 @@ begin
   if not AnimationTimePaused then
   begin
     OldAnimationTime := AnimationTime;
-    AnimationTime += Glwin.IdleCompSpeed / 50;
+    AnimationTime += AnimationTimeSpeed * Glwin.IdleCompSpeed / 50;
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
@@ -1422,6 +1423,16 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       SceneAnimation.Attributes.PointSize := Value;
   end;
 
+  procedure ChangeAnimationTimeSpeed;
+  begin
+    MessageInputQuerySingle(Glwin,
+      'Time pass speed 1.0 means that 1 time unit is 1 second.' +nl+
+      '0.5 makes time pass two times slower,' +nl+
+      '2.0 makes it pass two times faster etc.' +nl+ nl+
+      'New time pass speed:',
+      AnimationTimeSpeed, taLeft);
+  end;
+
   function NodeNiceName(node: TVRMLNode): string;
   begin
    result := ''''+node.NodeName+''' (class '''+node.NodeTypeName+''')';
@@ -1998,6 +2009,7 @@ begin
 
   220: AnimationTimePaused := not AnimationTimePaused;
   221: AnimationTime := SceneAnimation.TimeBegin;
+  222: ChangeAnimationTimeSpeed;
 
   300..399:
     begin
@@ -2240,12 +2252,11 @@ begin
      M2.Append(TMenuItem.Create('Change gravity up vector ...',  124));
      M.Append(M2);
    Result.Append(M);
-
  M := TMenu.Create('_Animation');
    M.Append(TMenuItem.Create('Pause / play', 220, CtrlP));
    M.Append(TMenuItem.Create('Rewind to beginning', 221));
+   M.Append(TMenuItem.Create('Make time pass slower or faster ...', 222));
    Result.Append(M);
-
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=
      TMenuItem.Create('Remove _geometry node (containing selected triangle)', 36);
