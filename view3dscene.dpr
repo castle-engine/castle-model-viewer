@@ -1033,8 +1033,7 @@ begin
 
     { calculate Scene.BackgroundSkySphereRadius (musi byc najpierw ustalone
       Scene.BoundingBox i CameraRadius, sa potrzebne do WalkProjectionNear/Far) }
-    { TODO: set all }
-    SceneAnimation.FirstScene.BackgroundSkySphereRadius :=
+    SceneAnimation.BackgroundSkySphereRadius :=
       TBackgroundGL.NearFarToSkySphereRadius(
         WalkProjectionNear, WalkProjectionFar);
 
