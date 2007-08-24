@@ -225,6 +225,28 @@ begin
     Result := nil;
 end;
 
+{ This calls SceneAnimation.PrepareRender.
+  Additionally, if AllowProgess and some other conditions are met,
+  this show progress of operation.
+
+  Remember that you can call this only when gl context is already active
+  (SceneAnimation.PrepareRender requires this) }
+procedure PrepareRender(AllowProgress: boolean);
+begin
+  AllowProgress := AllowProgress and
+    (SceneAnimation.ScenesCount > 1);
+
+  if AllowProgress then
+    Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation');
+  try
+    SceneAnimation.PrepareRender([tgAll], [prBackground, prBoundingBox],
+      AllowProgress, false);
+  finally
+    if AllowProgress then
+      Progress.Fini;
+  end;
+end;
+
 { TGLWindow callbacks --------------------------------------------------------- }
 
 procedure Init(glwin: TGLWindow);
@@ -322,7 +344,7 @@ end;
 
 procedure BeforeDraw(glwin: TGLWindow);
 begin
-  SceneAnimation.PrepareRender([tgAll], [prBackground, prBoundingBox], true, false);
+  PrepareRender(false);
 end;
 
 procedure Draw(glwin: TGLWindow);
@@ -1180,10 +1202,11 @@ begin
 
     RecentMenu.Add(ASceneFileName);
 
-    { We call EventBeforeDraw to make Scene.PrepareRender to gather
+    { We call PrepareRender to make SceneAnimation.PrepareRender to gather
       VRML warnings (because some warnings, e.g. invalid texture filename,
-      are reported only from Scene.PrepareRender) }
-    Glw.EventBeforeDraw;
+      are reported only from SceneAnimation.PrepareRender).
+      Also, this allows us to show first PrepareRender with progress bar. }
+    PrepareRender(true);
     if SceneWarnings.Count <> 0 then
       MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
         'this scene. See the console or use File->"View warnings" ' +

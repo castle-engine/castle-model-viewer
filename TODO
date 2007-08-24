@@ -5,7 +5,6 @@ Blockers before next release:
   almost all FirstScene should be replaced with something better
 - test animating fog properties
 - md3 anim
-- progress when preparing anim works ?
 - AnimationTime: pause, rewind, slow/fast time ?
 
 ----------------------------------------
