@@ -33,7 +33,6 @@
 
   This is 3d scene viewer. Basic components are :
   - use LoadAsVRMLSequence to load any format to VRML scene.
-    TODO: update for animation.
     This converts any known (to our engine) 3D model format to VRML.
     This convertion doesn't lose anything because VRML is able to
     express everything that is implemented in other 3D formats readers.
@@ -148,7 +147,6 @@ var
   { TODO: for now set only by command-line param, should be configurable at runtime. }
   RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
 
-
 { ogolne pomocnicze funkcje -------------------------------------------------- }
 
 var
@@ -203,11 +201,6 @@ end;
 
 function SceneTriangleOctree: TVRMLTriangleOctree;
 begin
-  { TODO: for animation, this should be different for each frame.
-    But constructing octree for each scene is too memory (and loading time)
-    consuming, so... what ?
-    Besides, changing octree means that also player should be automatically
-    moved out of it's way, to avoid collision. }
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
      (SceneAnimation.FirstScene.DefaultTriangleOctree <> nil) then
@@ -217,9 +210,6 @@ end;
 
 function SceneShapeStateOctree: TVRMLShapeStateOctree;
 begin
-  { TODO: for animation, this should be different for each frame.
-    But constructing octree for each scene is too memory (and loading time)
-    consuming, so... what ? }
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
      (SceneAnimation.FirstScene.DefaultShapeStateOctree <> nil) then
@@ -832,8 +822,7 @@ begin
   Glw.OnDraw := nil;
   Glw.OnBeforeDraw := nil;
   try
-    { For now we construct and store octrees only for the 1st animation
-      frame, see TODO in SceneTriangleOctree. }
+    { For now we construct and store octrees only for the 1st animation frame. }
     SceneAnimation.FirstScene.OwnsDefaultTriangleOctree := false;
     SceneAnimation.FirstScene.DefaultTriangleOctree :=
       SceneAnimation.FirstScene.CreateTriangleOctree(
@@ -1949,8 +1938,6 @@ begin
   123: CollisionCheck := not CollisionCheck;
   124: ChangeGravityUp;
   125: if Glw.Navigator is TMatrixWalker then
-        { TODO: the fact that octree is only for the 1st frame
-          means that below we can render only 1st frame... }
         RaytraceToWin(glwin, SceneTriangleOctree,
           Glw.NavWalker.CameraPos,
           Glw.NavWalker.CameraDir, Glw.NavWalker.CameraUp,

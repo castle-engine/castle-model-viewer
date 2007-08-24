@@ -4,23 +4,32 @@ Blockers before next release:
 - finish, test fully animation kanim handling --- TODOs in view3dscene
   almost all FirstScene should be replaced with something better
 - md3 anim
-
-----------------------------------------
-Others:
-
-- Things that cannot be animated right now:
-  - Octrees, first of all. So collision detection, mouse picking,
-    raytracer rendering are all done using octree for the 1st animation
-    frame.
-  - headlight
-  - background
-
-  - Add to docs
+- Add to docs
 
   With animations, there's one small caveat right now:
   some features (collision checking, mouse picking,
   ray-tracer --- everything that requires some octree) always use the
   <i>first animation frame</i>, regardless of current animation time.
+
+
+----------------------------------------
+Others:
+
+- Things that cannot be animated right now:
+  - Octrees, first of all.
+    Constructing octree for each scene is too memory (and loading time)
+    consuming, so... what ?
+    Besides, changing octree means that also player should be automatically
+    moved out of it's way, to avoid collision.
+
+    So collision detection, mouse picking,
+    raytracer rendering are all done using octree for the 1st animation frame.
+    Fixing this means fixing also:
+    - SceneOctreeCreate/Free
+    - RaytraceToWin call inside MenuCommand
+    - SceneTriangle/ShapeStateOctree
+  - headlight
+  - background
 
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),
