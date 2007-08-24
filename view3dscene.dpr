@@ -2574,7 +2574,7 @@ end.
 
 {
   Local Variables:
-  kam-compile-release-command-win32: "clean_glwindow_unit && fpcreleaseb"
-  kam-compile-release-command-unix: "clean_glwindow_unit && fpcreleaseb"
+  kam-compile-release-command-unix:  "./compile.sh && mv -fv view3dscene      ~/bin/"
+  kam-compile-release-command-win32: "./compile.sh && mv -fv view3dscene.exe c:/bin/"
   End:
 }
