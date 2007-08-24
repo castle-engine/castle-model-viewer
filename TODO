@@ -31,6 +31,8 @@ Others:
   - headlight
   - background
 
+  - saving to VRML also only saves 1st frame for now
+
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),
   this would be nice.

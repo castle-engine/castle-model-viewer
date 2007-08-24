@@ -1796,24 +1796,26 @@ begin
       end;
 
   20: begin
-       { TODO: this filename gen is stupid, it leads to names like
-         _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
-       if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
-        s := AppendToFileName(SceneFilename, '_2') else
-        s := ChangeFileExt(SceneFilename, '.wrl');
-       if glwin.FileDialog('Save as VRML file', s, false) then
-       try
-        { TODO-animation: saving only 1st frame here.
-          We should at least make some warning ? }
-        SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
-          SavedVRMLPrecedingComment(SceneFileName));
-       except
-        on E: Exception do
-        begin
-         MessageOK(glw, 'Error while saving scene to "' +S+ '": '
-            +E.Message, taLeft);
+        if SceneAnimation.ScenesCount > 1 then
+          MessageOK(Glwin, 'Warning: this is an animation. Saving it as VRML ' +
+            'will only save it''s first frame.', taLeft);
+
+        { TODO: this filename gen is stupid, it leads to names like
+          _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
+        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
+          s := AppendToFileName(SceneFilename, '_2') else
+          s := ChangeFileExt(SceneFilename, '.wrl');
+        if glwin.FileDialog('Save as VRML file', s, false) then
+        try
+          SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
+            SavedVRMLPrecedingComment(SceneFileName));
+        except
+          on E: Exception do
+          begin
+            MessageOK(glw, 'Error while saving scene to "' +S+ '": ' +
+              E.Message, taLeft);
+          end;
         end;
-       end;
       end;
 
   21: ViewSceneWarnings;
