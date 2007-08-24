@@ -1905,11 +1905,7 @@ begin
 
   101: Writeln(SceneTriangleOctree.Statistics);
   103: Writeln(SceneShapeStateOctree.Statistics);
-  102:
-    { All info nodes should be equal (their strings cannot be interpolated
-      after all), so we can safely just use FirstScene here, not worrying
-      about other animation frames. }
-    SceneAnimation.FirstScene.WritelnInfoNodes;
+  102: SceneAnimation.WritelnInfoNodes;
 
   105: Writeln(Format(
          'Call rayhunter like this to render this view :' +nl+
@@ -1948,10 +1944,7 @@ begin
 
   121: ShowAndWrite(
          'Scene "' + SceneFilename + '" information:' + NL + NL +
-         { TODO: info tri/verts about 1st frame is OK,
-           but info about bbox will display bbox of 1st frame,
-           while other frames may be different... }
-         SceneAnimation.FirstScene.Info(true, true));
+         SceneAnimation.Info(true));
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
   124: ChangeGravityUp;
