@@ -564,12 +564,11 @@ procedure Resize(glwin: TGLWindow);
 var
   MaxSize, zNear, zFar: TGLdouble;
   FieldOfView: Single;
-  Scene: TVRMLFlatSceneGL;
+  Box: TBox3d;
 begin
  glViewport(0, 0, glwin.Width, glwin.Height);
 
- { TODO: use current Scene here ? }
- Scene := SceneAnimation.SceneFromTime(AnimationTime);
+ Box := SceneAnimation.BoundingBoxSum;
 
  { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
  if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
@@ -584,14 +583,14 @@ begin
    od wielkosci obiektu.
 
    W trybie Examiner mozna uzywac duzo wiekszych near,
-   uzywam tu Box3dAvgSize(Scene.BoundingBox)*0.1 i to daje dobra dokladnosc,
-   w Walkerze uzywam cameraRadius*0.6 co standardowo
-   daje Box3dAvgSize(Scene.BoundingBox)*0.006 a wiec prawie 20 razy mniej !
+   uzywam tu Box3dAvgSize(Box) * 0.1 i to daje dobra dokladnosc,
+   w Walk uzywam cameraRadius * 0.6 co standardowo
+   daje Box3dAvgSize(Box)*0.006 a wiec prawie 20 razy mniej !
    Przy tak malym perspective near w trybie Examiner czesto byloby widac
    bledy z-bufora, patrz np. KingsHead.wrl. }
  if (Glw.Navigator is TMatrixExaminer) and
-    (not IsEmptyBox3d(Scene.BoundingBox)) then
-  zNear := Box3dAvgSize(Scene.BoundingBox) * 0.1 else
+    (not IsEmptyBox3d(Box)) then
+  zNear := Box3dAvgSize(Box) * 0.1 else
   zNear := WalkProjectionNear;
  zFar := WalkProjectionFar;
 
@@ -599,9 +598,9 @@ begin
   ProjectionGLPerspective(AngleOfViewY, glwin.Width/glwin.Height,
     zNear, zFar) else
  begin
-  if IsEmptyBox3d(Scene.BoundingBox) then
+  if IsEmptyBox3d(Box) then
    MaxSize := 1.0 { any dummy value } else
-   MaxSize := Box3dMaxSize(Scene.BoundingBox);
+   MaxSize := Box3dMaxSize(Box);
   ProjectionGLOrtho(-MaxSize/2, MaxSize/2,
                     -MaxSize/2, MaxSize/2,
                     zNear, zFar);
