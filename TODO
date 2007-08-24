@@ -1,8 +1,6 @@
 ----------------------------------------
 Blockers before next release:
 
-- finish, test fully animation kanim handling --- TODOs in view3dscene
-  almost all FirstScene should be replaced with something better
 - md3 anim
 - Add to docs
 
@@ -33,6 +31,9 @@ Others:
     (see kambi_vrml_test_suite/kanim/ background test)
 
   - saving to VRML also only saves 1st frame for now
+
+  - RemoveSelectedGeometry/Face work on 1st frame (so I require
+    that you can use them only when it's the only frame) for now
 
 - allow to change RendererOptimization at runtime
   (instead only using --renderer-optimization at startup),

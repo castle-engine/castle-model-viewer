@@ -1577,9 +1577,18 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     SceneOctreeCreate;
   end;
 
-  (* TODO: restore
   procedure RemoveSelectedGeometry;
   begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      { We can't do this for animations, because we use
+        SelectedItem^.ShapeNode, so this is only for the frame where
+        octree is available. }
+      MessageOK(Glwin, 'This function is not available when you deal with ' +
+        'animations.', taLeft);
+      Exit;
+    end;
+
     if SelectedItem = nil then
     begin
       ShowAndWrite('Nothing selected.');
@@ -1606,6 +1615,17 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShapeNode: TNodeGeneralShape;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
   begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      { We can't do this for animations, because we use
+        SelectedItem^.ShapeNode, so this is only for the frame where
+        octree is available. Moreover, we call
+        SceneAnimation.FirstScene.ChangedFields. }
+      MessageOK(Glwin, 'This function is not available when you deal with ' +
+        'animations.', taLeft);
+      Exit;
+    end;
+
     if SelectedItem = nil then
     begin
       ShowAndWrite('Nothing selected.');
@@ -1674,10 +1694,9 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
     Unselect;
     SceneOctreeFree;
-    SceneAnimation.ChangedFields(ShapeNode);
+    SceneAnimation.FirstScene.ChangedFields(ShapeNode);
     SceneOctreeCreate;
   end;
-  *)
 
   procedure ChangeLightModelAmbient;
   begin
@@ -1846,8 +1865,8 @@ begin
   34: RemoveNodesWithMatchingName;
   35: RemoveSpecialCastleNodes;
 
-  36: ;//TODO RemoveSelectedGeometry;
-  37: ;//TODO RemoveSelectedFace;
+  36: RemoveSelectedGeometry;
+  37: RemoveSelectedFace;
 
   { Before all calls to SetViewpoint below, we don't really have to
     swith to nkWalker. But user usually wants to switch to nkWalker ---
