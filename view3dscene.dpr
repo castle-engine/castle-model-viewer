@@ -962,7 +962,7 @@ begin
     NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
       TNodeNavigationInfo, true) as TNodeNavigationInfo;
 
-    //TODOChangeScene(SceneChanges, SceneAnimation);
+    ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
     { calculate CameraRadius }
     CameraRadius := ACameraRadius;
@@ -1569,7 +1569,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
     ShowAndWrite(S);
   end;
-(* TODO: restore
 
   procedure WholeSceneChanged;
   begin
@@ -1579,6 +1578,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     SceneOctreeCreate;
   end;
 
+  (* TODO: restore
   procedure RemoveSelectedGeometry;
   begin
     if SelectedItem = nil then
@@ -1820,9 +1820,9 @@ begin
 
   21: ViewSceneWarnings;
 
-  31: ;//TODO ChangeScene(scNoNormals, SceneAnimation);
-  32: ;//TODO ChangeScene(scNoSolidObjects, SceneAnimation);
-  33: ;//TODO ChangeScene(scNoConvexFaces, SceneAnimation);
+  31: ChangeSceneAnimation([scNoNormals], SceneAnimation);
+  32: ChangeSceneAnimation([scNoSolidObjects], SceneAnimation);
+  33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
   35: RemoveSpecialCastleNodes;

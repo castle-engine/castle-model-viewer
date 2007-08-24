@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2005 Michalis Kamburelis.
+  Copyright 2003-2005,2007 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -23,7 +23,7 @@ unit SceneChangesUnit;
 
 interface
 
-uses VRMLFlatScene, VRMLNodes, KambiUtils;
+uses VRMLFlatScene, VRMLNodes, KambiUtils, VRMLGLAnimation;
 
 type
   { When adding new item to TSceneChange you can also consider adding
@@ -39,13 +39,12 @@ type
     scNoConvexFaces);
   TSceneChanges = set of TSceneChange;
 
-procedure ChangeScene(SceneChange: TSceneChange;
-  Scene: TVRMLFlatScene); overload;
-
 { Do all scene changes in SceneChanges.
   Changes will be done in the order they are declared in type TSceneChange. }
-procedure ChangeScene(SceneChanges: TSceneChanges;
-  Scene: TVRMLFlatScene); overload;
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
+
+procedure ChangeSceneAnimation(SceneChanges: TSceneChanges;
+  Scene: TVRMLGLAnimation);
 
 implementation
 
@@ -137,8 +136,6 @@ begin
     removed in more intelligent way. }
   RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
   RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
-
-  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoSolidObjects(scene: TVRMLFlatScene);
@@ -152,8 +149,6 @@ begin
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
       @DoChanges.MakeNoSolid_2, false);
   finally FreeAndNil(DoChanges) end;
-
-  scene.ChangedAll;
 end;
 
 procedure SceneChange_NoConvexFaces(scene: TVRMLFlatScene);
@@ -182,8 +177,6 @@ begin
     { podmien scene.RootNode na newRootNode }
     scene.RootNode := newRootNode;
   end;
-
-  scene.ChangedAll;
 end;
 
 { ChangeScene --------------------------------------------------------------- }
@@ -196,17 +189,40 @@ const
     @SceneChange_NoSolidObjects,
     @SceneChange_NoConvexFaces );
 
-procedure ChangeScene(SceneChange: TSceneChange; Scene: TVRMLFlatScene);
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
+
+  procedure DoIt(SceneChange: TSceneChange; Scene: TVRMLFlatScene);
+  begin
+    SCFunctions[SceneChange](Scene);
+  end;
+
+var
+  sc: TSceneChange;
 begin
-  SCFunctions[SceneChange](Scene);
+  for sc := Low(sc) to High(sc) do
+    if sc in SceneChanges then
+      DoIt(SC, Scene);
+  Scene.ChangedAll;
 end;
 
-procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
-var sc: TSceneChange;
+procedure ChangeSceneAnimation(SceneChanges: TSceneChanges;
+  Scene: TVRMLGLAnimation);
+
+  procedure DoIt(SceneChange: TSceneChange; Scene: TVRMLGLAnimation);
+  var
+    I: Integer;
+  begin
+    for I := 0 to Scene.ScenesCount - 1 do
+      SCFunctions[SceneChange](Scene.Scenes[I]);
+  end;
+
+var
+  sc: TSceneChange;
 begin
- for sc := Low(sc) to High(sc) do
-  if sc in SceneChanges then
-   ChangeScene(SC, Scene);
+  for sc := Low(sc) to High(sc) do
+    if sc in SceneChanges then
+      DoIt(SC, Scene);
+  Scene.ChangedAll;
 end;
 
 end.
