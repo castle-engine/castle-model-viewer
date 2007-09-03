@@ -44,7 +44,7 @@
   - render scene using TVRMLFlatSceneGL (actually TVRMLGLAnimation
     and TVRMLFlatSceneGL is inside)
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
-    over the scene using various navigation methods
+    over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
     Walk navigation and to allow raytracer
@@ -289,7 +289,7 @@ begin
 
  strs := TStringList.Create;
  try
-  strs.Append(Format('Navigation style : %s', [NavigatorNames[NavigatorKind]]));
+  strs.Append(Format('Navigation mode: %s', [NavigatorNames[NavigatorKind]]));
 
   if Glw.Navigator is TMatrixWalker then
   begin
@@ -611,7 +611,7 @@ begin
 end;
 
 const
-  SOnlyInWalker = 'You must be in ''Walk'' navigation style '+
+  SOnlyInWalker = 'You must be in ''Walk'' navigation mode '+
     'to use this function.';
 
 procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
@@ -2223,7 +2223,7 @@ begin
    M.Append(MenuReopen);
    M.Append(TMenuItem.Create('_Save as VRML ...', 20));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('View _warnings about current scene', 21));
+   M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
    RecentMenu.NextMenuItem := NextRecentMenuItem;
@@ -2232,153 +2232,153 @@ begin
  M := TMenu.Create('_View');
    M.Append(TMenuItemChecked.Create('_Wireframe',              81, 'w',
      Wireframe, true));
-   M.Append(TMenuItemChecked.Create('Show _bounding box',      82, 'b',
+   M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, 'b',
      ShowBBox, true));
-   M.Append(TMenuItemChecked.Create('_Smooth shading',         83, 's',
+   M.Append(TMenuItemChecked.Create('_Smooth Shading',         83, 's',
      SceneAnimation.Attributes.SmoothShading, true));
-   M.Append(TMenuItem.Create('Change background color ...',    84));
+   M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
      SceneAnimation.Attributes.UseFog, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      SceneAnimation.Attributes.Blending, true));
-   M2 := TMenu.Create('Blending source factor');
+   M2 := TMenu.Create('Blending Source Factor');
      AppendBlendingFactors(M2, true, 400);
      M.Append(M2);
-   M2 := TMenu.Create('Blending destination factor');
+   M2 := TMenu.Create('Blending Destination Factor');
      AppendBlendingFactors(M2, false, 420);
      M.Append(M2);
-   M2 := TMenu.Create('Change scene colors');
+   M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
-     '_Lighting calculate (GL__LIGHTING enabled)',         91, 'l',
+     '_Lighting Calculate (GL__LIGHTING enabled)',         91, 'l',
      LightCalculate, true));
-   MenuHeadlight := TMenuItemChecked.Create('_Head light', 92, 'h',
+   MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, 'h',
      Headlight, true);
    M.Append(MenuHeadlight);
-   M.Append(TMenuItemChecked.Create('Use scene lights',    93,
+   M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
      SceneAnimation.Attributes.UseLights, true));
-   M.Append(TMenuItem.Create('Light global ambient color ...',  95));
+   M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
      SceneAnimation.Attributes.EnableTextures, true));
-   M2 := TMenu.Create('Change texture minification method');
+   M2 := TMenu.Create('Texture Minification Method');
      AppendTextureMinFilters(M2);
      M.Append(M2);
-   M2 := TMenu.Create('Change texture magnification method');
+   M2 := TMenu.Create('Texture Magnification Method');
      AppendTextureMagFilters(M2);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('Show in Examine mode camera frustum', 96,
+   M.Append(TMenuItemChecked.Create('Show in Examine mode Camera Frustum', 96,
      ShowFrustum, true));
-   M.Append(TMenuItemChecked.Create('When showing camera frustum, ' +
-     'show it over all other objects (no depth test)', 180,
+   M.Append(TMenuItemChecked.Create('When Showing Camera Frustum, ' +
+     'Show it Over All Other Objects (no depth test)', 180,
      ShowFrustumAlwaysVisible, true));
    M.Append(TMenuSeparator.Create);
-   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show whole octree',
+   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Octree',
      99, OctreeDisplayWhole, true);
    M.Append(MenuOctreeDisplayWhole);
-   M.Append(TMenuItem.Create('Show _upper level of octree based on triangles', 97, CtrlU));
-   M.Append(TMenuItem.Create('Show _lower level of octree based on triangles', 98, CtrlD));
+   M.Append(TMenuItem.Create('Show _Upper Level of Octree Based on Triangles', 97, CtrlU));
+   M.Append(TMenuItem.Create('Show _Lower Level of Octree Based on Triangles', 98, CtrlD));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Set point size ...', 182));
+   M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
  M := TMenu.Create('_Navigation');
-   ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to viewpoint');
+   ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to Viewpoint');
      ViewpointsList.MakeMenuJumpToViewpoint;
      M.Append(ViewpointsList.MenuJumpToViewpoint);
-   M2 := TMenu.Create('Change navigation method');
+   M2 := TMenu.Create('Navigation Mode');
      AppendNavigationTypes(M2);
      M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Next',                      111, 'v'));
+     M2.Append(TMenuItem.Create('Switch to Next',                      111, 'v'));
      M.Append(M2);
-   M2 := TMenu.Create('Walk navigation');
+   M2 := TMenu.Create('Walk mode Settings');
      M2.Append(TMenuItemChecked.Create(
-       '_Use mouse look',                       128, 'm',
+       '_Use Mouse Look',                       128, 'm',
          MatrixWalker.MouseLook, true));
      M2.Append(TMenuItemChecked.Create(
-       '_Collision checking',                   123, 'c',
+       '_Collision Checking',                   123, 'c',
          CollisionCheck, true));
      MenuGravity := TMenuItemChecked.Create(
        '_Gravity',                              201, 'g',
        MatrixWalker.Gravity, true);
      M2.Append(MenuGravity);
      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
-       'Rotations are versus stable (gravity) camera up',      202,
+       'Rotate with Respect to Stable (Gravity) Camera Up',      202,
        MatrixWalker.PreferGravityUpForRotations, true);
      M2.Append(MenuPreferGravityUpForRotations);
      MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
-       'Moving is versus stable (gravity) camera up',          203,
+       'Move with Respect to Stable (Gravity) Camera Up',          203,
        MatrixWalker.PreferGravityUpForMoving, true);
      M2.Append(MenuPreferGravityUpForMoving);
-     M2.Append(TMenuItem.Create('Change gravity up vector ...',  124));
+     M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Animation');
-   M.Append(TMenuItem.Create('Pause / play', 220, CtrlP));
-   M.Append(TMenuItem.Create('Rewind to beginning', 221));
+   M.Append(TMenuItem.Create('Pause / Play', 220, CtrlP));
+   M.Append(TMenuItem.Create('Rewind to Beginning', 221));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Make time pass slower or faster (on display) ...', 222));
-   M.Append(TMenuItem.Create('Make time pass slower or faster (on loading) ...', 223));
+   M.Append(TMenuItem.Create('Make Time Pass Slower or Faster (on display) ...', 222));
+   M.Append(TMenuItem.Create('Make Time Pass Slower or Faster (on loading) ...', 223));
    Result.Append(M);
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=
-     TMenuItem.Create('Remove _geometry node (containing selected triangle)', 36);
+     TMenuItem.Create('Remove _Geometry Node (containing selected triangle)', 36);
    M.Append(MenuRemoveSelectedGeometry);
    MenuRemoveSelectedFace :=
-     TMenuItem.Create('Remove _face (containing selected triangle)', 37);
+     TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
    M.Append(MenuRemoveSelectedFace);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
-     'Remove VRML nodes with name matching ...', 34));
+     'Remove VRML Nodes with Name Matching ...', 34));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
-     'Remove normals info from scene (forces normals to be calculated)',
+     'Remove Normals Info from Scene (forces normals to be calculated)',
       31));
-   M.Append(TMenuItem.Create('Mark all shapes as '+
+   M.Append(TMenuItem.Create('Mark All Shapes as '+
      'non-solid (disables any backface culling)', 32));
-   M.Append(TMenuItem.Create('Mark all faces as '+
+   M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
-     'Remove special nodes on "The Castle" level', 35));
+     'Remove Special Nodes on "The Castle" Level', 35));
    Result.Append(M);
  M := TMenu.Create('_Console');
-   M.Append(TMenuItem.Create('Print statistics of octree based on _triangles', 101));
-   M.Append(TMenuItem.Create('Print statistics of octree based on _ShapeStates', 103));
+   M.Append(TMenuItem.Create('Print Statistics of Octree Based on _Triangles', 101));
+   M.Append(TMenuItem.Create('Print Statistics of Octree Based on _ShapeStates', 103));
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _rayhunter command-line to render this view',
+   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View',
      105, CtrlR));
-   M.Append(TMenuItem.Create('Print current camera _node (VRML 1.0)',   106));
-   M.Append(TMenuItem.Create('Print current camera node (VRML 2.0)',    107, CtrlC));
+   M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
+   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107, CtrlC));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print current camera _frustum', 108));
+   M.Append(TMenuItem.Create('Print Current Camera _Frustum', 108));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _bounding box (of whole animation)', 109));
-   M.Append(TMenuItem.Create('Print bounding box (of current animation frame)', 110));
+   M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
+   M.Append(TMenuItem.Create('Print Bounding Box (of current animation frame)', 110));
    Result.Append(M);
  M := TMenu.Create('_Other');
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
-   M.Append(TMenuItemChecked.Create('_FullScreen',            126, K_F11,
+   M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Save screen ...',              127, K_F5));
+   M.Append(TMenuItem.Create('_Save Screen ...',              127, K_F5));
    Result.Append(M);
  M := TMenu.Create('_Help');
-   M.Append(TMenuItemChecked.Create('Show status _text',           122, K_F1,
+   M.Append(TMenuItemChecked.Create('Show Status _Text',           122, K_F1,
       ShowStatus, true));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Scene information',                  121));
+   M.Append(TMenuItem.Create('Scene Information',                  121));
    MenuSelectedInfo :=
-     TMenuItem.Create('Selected object information',               171);
+     TMenuItem.Create('Selected Object Information',               171);
    M.Append(MenuSelectedInfo);
    MenuSelectedLightsInfo :=
-     TMenuItem.Create('Selected object lights information',        172);
+     TMenuItem.Create('Selected Object Lights Information',        172);
    UpdateSelectedEnabled;
    M.Append(MenuSelectedLightsInfo);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('OpenGL information',                 173));
+   M.Append(TMenuItem.Create('OpenGL Information',                 173));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
