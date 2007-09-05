@@ -149,10 +149,31 @@ var
 
 { ogolne pomocnicze funkcje -------------------------------------------------- }
 
+type
+  { World time, used for animations.
+
+    "Single" type is *not* enough for this.
+    Proof: open rotate.kanim (from kambi_vrml_test_suite).
+    Change "on display" time pass to 1000, wait a couple seconds
+    (world time will reach a couple of thousands),
+    change "on display" time pass back to 1.
+    Result: with TAnimationTime as Single, animation becomes jagged.
+    Reason: the precision loss of Single time, and the fact that
+    Draw is not called all the time (because AutoRedisplay is false,
+    and model is in Examine mode and is still (not rotating)),
+    so incrementation steps of AnimationTime are very very small.
+
+    Setting AutoRedisplay to true workarounds the problem too, but that's
+    1. unacceptable to eat 100% CPU without a reason for utility like
+    view3dscene 2. that's asking for trouble, after all even with
+    AutoRedisplay = true the precision loss is there, it's just not
+    noticeable... using better precision feels much safer. }
+  TAnimationTime = Float;
+
 var
-  AnimationTime: Single = 0.0;
-  AnimationTimeSpeed: Single = 1.0;
-  AnimationTimeSpeedWhenLoading: Single = 1.0;
+  AnimationTime: TAnimationTime = 0.0;
+  AnimationTimeSpeed: TAnimationTime = 1.0;
+  AnimationTimeSpeedWhenLoading: TAnimationTime = 1.0;
   AnimationTimePaused: boolean = false;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
@@ -654,7 +675,7 @@ end;
 
 procedure Idle(glwin: TGLWindow);
 var
-  OldAnimationTime: Single;
+  OldAnimationTime: TAnimationTime;
 begin
   if not AnimationTimePaused then
   begin
@@ -1421,14 +1442,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.PointSize;
-    if MessageInputQuerySingle(Glwin, 'Change point size:',
+    if MessageInputQuery(Glwin, 'Change point size:',
       Value, taLeft) then
       SceneAnimation.Attributes.PointSize := Value;
   end;
 
   procedure ChangeAnimationTimeSpeed;
   begin
-    MessageInputQuerySingle(Glwin,
+    MessageInputQuery(Glwin,
       'Time pass speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes time pass two times slower,' +nl+
       '2.0 makes it pass two times faster etc.' +nl+
@@ -1444,7 +1465,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeAnimationTimeSpeedWhenLoading;
   begin
-    MessageInputQuerySingle(Glwin,
+    MessageInputQuery(Glwin,
       'Time pass speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes time pass two times slower,' +nl+
       '2.0 makes it pass two times faster etc.' +nl+
