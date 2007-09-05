@@ -1637,7 +1637,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SelectedItem^.ShapeNode.FreeRemovingFromAllParentNodes;
+      SelectedItem^.ShapeNode.FreeRemovingFromAllParents;
       WholeSceneChanged;
     end;
   end;

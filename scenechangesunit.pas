@@ -106,7 +106,7 @@ begin
  repeat
   node := RootNode.TryFindNode(NodeClass, onlyFromActivePart);
   if node = nil then break;
-  node.FreeRemovingFromAllParentNodes;
+  node.FreeRemovingFromAllParents;
  until false;
 end;
 
