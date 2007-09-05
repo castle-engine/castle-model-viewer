@@ -979,7 +979,7 @@ var
   CameraPreferredHeight: Single;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
-  SavedCameraPos, SavedCameraDir, SavedCameraUp: TVector3Single;
+  SavedCameraPos, SavedCameraDir, SavedCameraUp, SavedGravityUp: TVector3Single;
 begin
   FreeScene;
 
@@ -1028,6 +1028,7 @@ begin
       SavedCameraPos := MatrixWalker.CameraPos;
       SavedCameraDir := MatrixWalker.CameraDir;
       SavedCameraUp := MatrixWalker.CameraUp;
+      SavedGravityUp := MatrixWalker.GravityUp;
     end;
 
     SceneInitMultiNavigators(SceneAnimation.BoundingBoxSum,
@@ -1047,6 +1048,7 @@ begin
       MatrixWalker.CameraPos := SavedCameraPos;
       MatrixWalker.CameraDir := SavedCameraDir;
       MatrixWalker.CameraUp := SavedCameraUp;
+      MatrixWalker.GravityUp := SavedGravityUp;
     end;
 
     SceneInitLights(SceneAnimation, NavigationNode);
