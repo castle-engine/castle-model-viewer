@@ -1602,22 +1602,25 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShadowingItem: POctreeItem;
     ShadowingItemIndex: Integer;
     S: string;
+    ActiveLights: TDynActiveLightArray;
   begin
     if SelectedItemIndex = NoItemIndex then
     begin
       s := 'Nothing selected.';
     end else
     begin
-      S := Format('Total %d lights active for selected object.',
-        [SelectedItem^.State.ActiveLights.Count]);
+      ActiveLights := SelectedItem^.State.CurrentActiveLights;
 
-      for i := 0 to SelectedItem^.State.ActiveLights.Count - 1 do
+      S := Format('Total %d lights active for selected object.',
+        [ActiveLights.Count]);
+
+      for i := 0 to ActiveLights.Count - 1 do
       begin
        s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
-         [ I, NodeNiceName(SelectedItem^.State.ActiveLights.Items[i].LightNode) ]);
+         [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
 
        ShadowingItemIndex := SceneTriangleOctree.SegmentCollision(
-         SelectedPoint, SelectedItem^.State.ActiveLights.Items[i].TransfLocation,
+         SelectedPoint, ActiveLights.Items[i].TransfLocation,
            false, SelectedItemIndex, true, nil);
 
        if ShadowingItemIndex <> NoItemIndex then
