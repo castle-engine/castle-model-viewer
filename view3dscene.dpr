@@ -2225,7 +2225,7 @@ function CreateMainMenu: TMenu;
       begin
         if Source then
           IsDefault := BlendingFactors[I].Value = DefaultBlendingSourceFactor else
-          IsDefault := BlendingFactors[I].Value = DefaultBlendingDestinationFactor;
+          IsDefault := BlendingFactors[I].Value = V3DDefaultBlendingDestinationFactor;
         Caption := SQuoteMenuEntryCaption(BlendingFactors[I].Name);
         if IsDefault then
           Caption += ' (default)';
@@ -2556,6 +2556,7 @@ begin
  try
   { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
   SceneAnimation.Attributes.UseLights := true;
+  SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
   InitColorModulator(SceneAnimation);
   InitTextureFilters(SceneAnimation);
 
