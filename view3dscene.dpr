@@ -831,7 +831,9 @@ var
 
 procedure VRMLNonFatalError_Warning(const s: string);
 begin
-  Writeln(ProgramName + ': WARNING: ' + S);
+  { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
+    we write to output VRML contents. }
+  Writeln(ErrOutput, ProgramName + ': WARNING: ' + S);
   SceneWarnings.Append(S);
 end;
 
@@ -2509,94 +2511,93 @@ const
 var
   Helper: THelper;
 begin
- { parse parameters }
- { glw params }
- Glw.ParseParameters(StandardParseOptions);
- { our params }
- MultiNavigatorsParseParameters;
- LightsParseParameters;
- VRMLNodesDetailOptionsParse;
- RendererOptimizationOptionsParse(RendererOptimization);
- ParseParameters(Options, @OptionProc, nil);
- { the most important param : filename to load }
- if Parameters.High > 1 then
-  raise EInvalidParams.Create('Excessive command-line parameters. '+
-    'Expected at most one filename to load') else
- if Parameters.High = 1 then
- begin
-  WasParam_SceneFileName := true;
-  Param_SceneFileName := Parameters[1];
- end;
+  { parse parameters }
+  { glw params }
+  Glw.ParseParameters(StandardParseOptions);
+  { our params }
+  MultiNavigatorsParseParameters;
+  LightsParseParameters;
+  VRMLNodesDetailOptionsParse;
+  RendererOptimizationOptionsParse(RendererOptimization);
+  ParseParameters(Options, @OptionProc, nil);
+  { the most important param : filename to load }
+  if Parameters.High > 1 then
+   raise EInvalidParams.Create('Excessive command-line parameters. '+
+     'Expected at most one filename to load') else
+  if Parameters.High = 1 then
+  begin
+    WasParam_SceneFileName := true;
+    Param_SceneFileName := Parameters[1];
+  end;
 
- VRMLNonFatalError := @VRMLNonFatalError_Warning;
-
- if WasParam_WriteToVRML then
- begin
-  if not WasParam_SceneFileName then
-   raise EInvalidParams.Create('You used --write-to-vrml option, '+
-     'this means that you want to convert some 3d model file to VRML. ' +
-     'But you didn''t provide any filename on command-line to load.');
-  WriteToVRML(Param_SceneFileName, Param_SceneChanges);
-  Exit;
- end;
-
- { This is for loading default clean scene.
-   LoadClearScene should be lighting fast always,
-   so progress should not be needed in this case anyway
-   (and we don't want to clutter stdout). }
- Progress.UserInterface := ProgressNullInterface;
-
- Helper := nil;
- InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight);
-
- SceneWarnings := TStringList.Create;
-
- { init "scene global variables" to null values }
- SceneAnimation := TVRMLGLAnimation.Create;
- try
-  { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
-  SceneAnimation.Attributes.UseLights := true;
-  SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
-  InitColorModulator(SceneAnimation);
-  InitTextureFilters(SceneAnimation);
-
-  RecentMenu := TGLRecentMenu.Create;
-  RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
-  RecentMenu.OnOpenRecent := @Helper.OpenRecent;
-
-  { init "scene global variables" to non-null values }
-  LoadClearScene;
+  SceneWarnings := TStringList.Create;
   try
+    VRMLNonFatalError := @VRMLNonFatalError_Warning;
 
-   GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
+    if WasParam_WriteToVRML then
+    begin
+      if not WasParam_SceneFileName then
+        raise EInvalidParams.Create('You used --write-to-vrml option, '+
+          'this means that you want to convert some 3d model file to VRML. ' +
+          'But you didn''t provide any filename on command-line to load.');
+      WriteToVRML(Param_SceneFileName, Param_SceneChanges);
+      Exit;
+    end;
 
-   Glw.MainMenu := CreateMainMenu;
-   Glw.OnMenuCommand := @MenuCommand;
-   Glw.OnResize := @Resize;
-   Glw.OnInit := @Init;
-   Glw.OnClose := @Close;
-   Glw.OnMouseDown := @MouseDown;
-   Glw.OnBeforeDraw := @BeforeDraw;
-   Glw.OnDraw := @Draw;
-   Glw.OnIdle := @Idle;
+    { This is for loading default clean scene.
+      LoadClearScene should be lighting fast always,
+      so progress should not be needed in this case anyway
+      (and we don't want to clutter stdout). }
+    Progress.UserInterface := ProgressNullInterface;
 
-   Glw.SetDemoOptions(K_None, #0, true);
+    Helper := nil;
+    InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight);
 
-   Glw.Init;
+    { init "scene global variables" to null values }
+    SceneAnimation := TVRMLGLAnimation.Create;
+    try
+      { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
+      SceneAnimation.Attributes.UseLights := true;
+      SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
+      InitColorModulator(SceneAnimation);
+      InitTextureFilters(SceneAnimation);
 
-   if WasParam_SceneFileName then
-     LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
-     LoadWelcomeScene;
+      RecentMenu := TGLRecentMenu.Create;
+      RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
+      RecentMenu.OnOpenRecent := @Helper.OpenRecent;
 
-   Glwm.Loop;
-  finally FreeScene end;
- finally
-   FreeAndNil(SceneAnimation);
-   FreeAndNil(SceneWarnings);
-   if RecentMenu <> nil then
-     RecentMenu.SaveToConfig(ConfigFile, 'recent_files');
-   FreeAndNil(RecentMenu);
- end;
+      { init "scene global variables" to non-null values }
+      LoadClearScene;
+      try
+        GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
+
+        Glw.MainMenu := CreateMainMenu;
+        Glw.OnMenuCommand := @MenuCommand;
+        Glw.OnResize := @Resize;
+        Glw.OnInit := @Init;
+        Glw.OnClose := @Close;
+        Glw.OnMouseDown := @MouseDown;
+        Glw.OnBeforeDraw := @BeforeDraw;
+        Glw.OnDraw := @Draw;
+        Glw.OnIdle := @Idle;
+
+        Glw.SetDemoOptions(K_None, #0, true);
+
+        Glw.Init;
+
+        if WasParam_SceneFileName then
+          LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
+          LoadWelcomeScene;
+
+        Glwm.Loop;
+      finally FreeScene end;
+    finally
+      FreeAndNil(SceneAnimation);
+      if RecentMenu <> nil then
+        RecentMenu.SaveToConfig(ConfigFile, 'recent_files');
+      FreeAndNil(RecentMenu);
+    end;
+  finally FreeAndNil(SceneWarnings); end;
 end.
 
 {
