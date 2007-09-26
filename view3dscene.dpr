@@ -254,7 +254,7 @@ begin
     Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation');
   try
     SceneAnimation.PrepareRender([tgAll], [prBackground, prBoundingBox],
-      AllowProgress, false);
+      AllowProgress);
   finally
     if AllowProgress then
       Progress.Fini;
