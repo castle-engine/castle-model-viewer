@@ -757,11 +757,37 @@ procedure SetViewpointCore(
   const InitialCameraUp: TVector3Single;
   const GravityUp: TVector3Single);
 begin
-  { zmien dlugosc InitialCameraDir,
-    na podstawie CameraRadius i NavigationNode.FdSpeed }
-  InitialCameraDir := VectorAdjustToLength(InitialCameraDir, CameraRadius * 0.4);
-  if (NavigationNode <> nil) and (NavigationNode.FdSpeed.Value <> 0.0) then
-    VectorScaleTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value);
+  { Change InitialCameraDir length, to adjust speed. }
+  if (NavigationNode = nil) or (NavigationNode.FdSpeed.Value = 0) then
+  begin
+    { Since we don't have NavigationNode.speed, we just calculate some
+      speed that should "feel sensible". We base in on CameraRadius.
+      CameraRadius in turn was calculated based on
+      Box3dAvgSize(SceneAnimation.BoundingBoxSum).
+
+      TODO: For now this is also used when NavigationNode.speed = 0, which is bad.
+      We should set speed to zero in this case. But we can't do it by
+      setting InitialCameraDir to zero. This should be done by setting MoveSpeed
+      to 0, but this means that normal model loading should also somehow
+      reset MoveSpeed to some non-zero value (otherwise, user would
+      be stuck with speed = 0 until he exits view3dscene). }
+    VectorAdjustToLengthTo1st(InitialCameraDir, CameraRadius * 0.4);
+  end else
+  begin
+    { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
+      They set InitialCameraDir length to
+        CameraRadius * 0.4 * NavigationNode.FdSpeed.Value
+      Effectively, speed per second was
+        CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50 / second
+      If your VRML models were adjusted to this view3dscene broken handling,
+      you should fix NavigationInfo.speed to value below to get the same speed
+      in newer view3dscene versions :
+    Writeln('Fix NavigationInfo.speed to ',
+      FloatToRawStr(CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50));
+    }
+
+    VectorAdjustToLengthTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value / 50.0);
+  end;
 
   MatrixWalker.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
     GravityUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
