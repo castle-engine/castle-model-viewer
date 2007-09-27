@@ -71,6 +71,7 @@ uses
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
   VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
+  VRMLRendererOptimization,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
