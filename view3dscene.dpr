@@ -320,7 +320,11 @@ begin
        VectorToNiceStr(Glw.NavWalker.CameraPos),
        VectorToNiceStr(Glw.NavWalker.CameraDir)]));
    strs.Append(Format('CamUp %s, Move speed : %f',
-     [ VectorToNiceStr(Glw.NavWalker.CameraUp), Glw.NavWalker.MoveSpeed ]));
+     [ VectorToNiceStr(Glw.NavWalker.CameraUp),
+       { In view3dscene, MoveHorizontalSpeed is always equal to
+         MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
+         So it's enough to show just MoveHorizontalSpeed. }
+       Glw.NavWalker.MoveHorizontalSpeed ]));
   end else
   begin
    strs.Append(Format('Rotation : %s, Move : %s, Scale : %f',
