@@ -2633,7 +2633,7 @@ end.
 
 {
   Local Variables:
-  kam-compile-release-command-unix:  "./compile.sh && mv -fv view3dscene      ~/bin/"
-  kam-compile-release-command-win32: "./compile.sh && mv -fv view3dscene.exe c:/bin/"
+  kam-compile-release-command-unix:    "./compile.sh && mv -fv view3dscene      ~/bin/"
+  kam-compile-release-command-windows: "./compile.sh && mv -fv view3dscene.exe c:/bin/"
   End:
 }
