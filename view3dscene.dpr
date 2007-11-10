@@ -420,7 +420,7 @@ procedure Draw(glwin: TGLWindow);
     glDisable(GL_DEPTH_TEST);
    end;
    try
-    CalculateFrustumPoints(FrustumPoints, MatrixWalker.Frustum);
+    CalculateFrustumPoints(FrustumPoints, MatrixWalker.Frustum, false);
     glColor3f(1, 1, 1);
     glEnableClientState(GL_VERTEX_ARRAY);
       glVertexPointer(3, GL_DOUBLE, 0, @FrustumPoints);
