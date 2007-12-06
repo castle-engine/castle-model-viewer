@@ -63,6 +63,7 @@ uses
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
+  DataErrors,
   { OpenGL related units: }
   OpenGLh, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu,
@@ -2564,6 +2565,7 @@ begin
   SceneWarnings := TStringList.Create;
   try
     VRMLNonFatalError := @VRMLNonFatalError_Warning;
+    DataNonFatalError := @VRMLNonFatalError_Warning;
 
     if WasParam_WriteToVRML then
     begin
