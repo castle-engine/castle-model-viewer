@@ -45,7 +45,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
 implementation
 
 uses VRMLRayTracer, GLWinModes, KambiGLUtils, Images, SysUtils, KambiUtils,
-  GLWinMessages, SpaceFillingCurves;
+  GLWinMessages, SpaceFillingCurves, GLImages;
 
 type
   { callbacks data. Callbacki TGLWindow moga osiagnac to Data przez
