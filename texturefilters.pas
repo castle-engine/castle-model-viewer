@@ -30,7 +30,7 @@ unit TextureFilters;
 
 interface
 
-uses OpenGLh, KambiUtils, VectorMath, VRMLNodes,
+uses GL, GLU, GLExt, KambiUtils, VectorMath, VRMLNodes,
   VRMLGLAnimation, KambiGLUtils;
 
 type

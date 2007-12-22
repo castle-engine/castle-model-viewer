@@ -26,7 +26,7 @@ unit BGColors;
 
 interface
 
-uses OpenGLh, VectorMath;
+uses GL, GLU, GLExt, VectorMath;
 
 var 
   BGColor: TVector3Single;

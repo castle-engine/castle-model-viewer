@@ -62,7 +62,7 @@ procedure LightModelAmbientChanged;
 
 implementation
 
-uses OpenGLh, KambiGLUtils, ParseParametersUnit;
+uses GL, GLU, GLExt, KambiGLUtils, ParseParametersUnit;
 
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);

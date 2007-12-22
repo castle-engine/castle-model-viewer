@@ -28,7 +28,7 @@ unit MultiNavigators;
 interface
 
 uses SysUtils, KambiUtils, GLWindow, MatrixNavigation, Boxes3d, VectorMath,
-  OpenGLh, KambiGLUtils;
+  GL, GLU, GLExt, KambiGLUtils;
 
 type
   TNavigatorKind = (nkExaminer, nkWalker);

@@ -65,7 +65,7 @@ uses
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
   DataErrors,
   { OpenGL related units: }
-  OpenGLh, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
+  GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,

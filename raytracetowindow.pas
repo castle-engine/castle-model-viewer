@@ -27,7 +27,7 @@ unit RaytraceToWindow;
 
 interface
 
-uses OpenGLh, GLWindow, VRMLTriangleOctree, VectorMath, VRMLNodes,
+uses GL, GLU, GLExt, GLWindow, VRMLTriangleOctree, VectorMath, VRMLNodes,
   KambiFilesUtils, KambiStringUtils;
 
 const

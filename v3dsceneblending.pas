@@ -2,7 +2,7 @@ unit V3DSceneBlending;
 
 interface
 
-uses OpenGLh;
+uses GL, GLU, GLExt;
 
 const
   BlendingFactors: array [0..10] of record
