@@ -2,7 +2,7 @@ unit V3DSceneBlending;
 
 interface
 
-uses GL, GLU, GLExt;
+uses GL, KambiGLUtils;
 
 const
   BlendingFactors: array [0..10] of record
