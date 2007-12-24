@@ -58,8 +58,7 @@
 
 program view3dscene;
 
-uses
-  KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
+uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
@@ -76,7 +75,7 @@ uses
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig, V3DSceneBlending;
+  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings;
 
 var
   Wireframe: boolean = false;
@@ -144,7 +143,7 @@ var
   MenuRemoveSelectedGeometry: TMenuItem;
   MenuRemoveSelectedFace: TMenuItem;
 
-  SceneWarnings: TStringList;
+  SceneWarnings: TSceneWarnings;
 
   { TODO: for now set only by command-line param, should be configurable at runtime. }
   RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
@@ -866,7 +865,7 @@ begin
   { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
     we write to output VRML contents. }
   Writeln(ErrOutput, ProgramName + ': WARNING: ' + S);
-  SceneWarnings.Append(S);
+  SceneWarnings.Add(S);
 end;
 
 procedure SceneOctreeCreate;
@@ -1195,7 +1194,7 @@ var
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 
-  SavedSceneWarnings: TStringList;
+  SavedSceneWarnings: TSceneWarnings;
 begin
   RootNodes := TVRMLNodesList.Create;
   Times := TDynSingleArray.Create;
@@ -1210,7 +1209,7 @@ begin
       we should restore the old warnings (if the old scene will be
       preserved) or clear them (if the clear scene will be loaded
       --- LoadSceneClear will clear them). }
-    SavedSceneWarnings := TStringList.Create;
+    SavedSceneWarnings := TSceneWarnings.Create;
     try
       SavedSceneWarnings.Assign(SceneWarnings);
       SceneWarnings.Clear;
@@ -1468,7 +1467,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       S.Append(Format('Total %d warnings about current scene "%s":',
         [ SceneWarnings.Count, SceneFileName ]));
       S.Append('');
-      S.AddStrings(SceneWarnings);
+      S.AddStrings(SceneWarnings.Items);
       MessageOK(Glw, S, taLeft);
     finally FreeAndNil(S) end;
   end;
@@ -2565,7 +2564,7 @@ begin
     Param_SceneFileName := Parameters[1];
   end;
 
-  SceneWarnings := TStringList.Create;
+  SceneWarnings := TSceneWarnings.Create;
   try
     VRMLNonFatalError := @VRMLNonFatalError_Warning;
     DataNonFatalError := @VRMLNonFatalError_Warning;
