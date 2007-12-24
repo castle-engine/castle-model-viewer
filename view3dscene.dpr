@@ -1993,6 +1993,7 @@ begin
   84: if glwin.ColorDialog(BGColor) then BGColorChanged;
   85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
   86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
+  87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -2299,6 +2300,8 @@ begin
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
      SceneAnimation.Attributes.UseFog, true));
+   M.Append(TMenuItemChecked.Create('_GLSL shaders',           87,
+     SceneAnimation.Attributes.GLSLShaders, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      SceneAnimation.Attributes.Blending, true));
    M2 := TMenu.Create('Blending Source Factor');
