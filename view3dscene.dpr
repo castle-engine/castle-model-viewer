@@ -1419,6 +1419,26 @@ begin
     (Node.NodeName = 'Elev9a9bPickBox');
 end;
 
+type
+  TShaderAdder = class
+    ProgramNode: TNodeComposedShader;
+    Added: boolean;
+    procedure AddShader(Node: TVRMLNode);
+  end;
+
+procedure TShaderAdder.AddShader(Node: TVRMLNode);
+var
+  ShadersField: TMFNode;
+begin
+  ShadersField := (Node as TNodeAppearance).FdShaders;
+  if not ((ShadersField.Count = 1) and (ShadersField.Items[0] = ProgramNode)) then
+  begin
+    ShadersField.ClearItems;
+    ShadersField.AddItem(ProgramNode);
+    Added := true;
+  end;
+end;
+
 procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
@@ -1915,6 +1935,62 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure AssignGLSLShader;
+  var
+    FragmentShaderUrl, VertexShaderUrl: string;
+    ProgramNode: TNodeComposedShader;
+    ShaderPart: TNodeShaderPart;
+    ShaderAdder: TShaderAdder;
+    I: Integer;
+  begin
+    VertexShaderUrl := '';
+    if Glwin.FileDialog('Open vertex shader file', VertexShaderUrl, true) then
+    begin
+      { We guess that FragmentShaderUrl will be in the same dir as vertex shader }
+      FragmentShaderUrl := ExtractFilePath(VertexShaderUrl);
+      if Glwin.FileDialog('Open fragment shader file', FragmentShaderUrl, true) then
+      begin
+        ProgramNode := TNodeComposedShader.Create(
+          { any name that has a chance to be unique }
+          'view3dscene_shader_' + IntToStr(Random(1000)), '');
+        ProgramNode.FdLanguage.Value := 'GLSL';
+
+        ShaderPart := TNodeShaderPart.Create('', '');
+        ProgramNode.FdParts.AddItem(ShaderPart);
+        ShaderPart.FdType.Value := 'VERTEX';
+        ShaderPart.FdUrl.Items.AppendItem(VertexShaderUrl);
+
+        ShaderPart := TNodeShaderPart.Create('', '');
+        ProgramNode.FdParts.AddItem(ShaderPart);
+        ShaderPart.FdType.Value := 'FRAGMENT';
+        ShaderPart.FdUrl.Items.AppendItem(FragmentShaderUrl);
+
+        ShaderAdder := TShaderAdder.Create;
+        try
+          ShaderAdder.ProgramNode := ProgramNode;
+          ShaderAdder.Added := false;
+
+          for I := 0 to SceneAnimation.ScenesCount - 1 do
+          begin
+            SceneAnimation.Scenes[I].RootNode.EnumerateNodes(TNodeAppearance,
+              @ShaderAdder.AddShader, false);
+          end;
+
+          if ShaderAdder.Added then
+            SceneAnimation.ChangedAll else
+          begin
+            FreeAndNil(ProgramNode);
+            MessageOK(Glw, 'No shaders added.' +NL+
+              'Hint: this feature adds shaders to Apperance.shaders field. ' +
+              'So it requires VRML >= 2.0 models with Appearance nodes present, ' +
+              'otherwise nothing will be added.',
+              taLeft);
+          end;
+        finally FreeAndNil(ShaderAdder); end;
+      end;
+    end;
+  end;
+
 var
   S: string;
 begin
@@ -1969,6 +2045,8 @@ begin
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
+
+  41: AssignGLSLShader;
 
   { Before all calls to SetViewpoint below, we don't really have to
     swith to nkWalker. But user usually wants to switch to nkWalker ---
@@ -2402,6 +2480,9 @@ begin
      'non-solid (disables any backface culling)', 32));
    M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create(
+     'Simply Assign GLSL Shader to All Objects ...', 41));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Remove Special Nodes on "The Castle" Level', 35));
