@@ -101,6 +101,8 @@ var
 
   RecentMenu: TGLRecentMenu;
 
+  UseStippleForStatus: boolean;
+
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
@@ -265,8 +267,15 @@ end;
 { TGLWindow callbacks --------------------------------------------------------- }
 
 procedure Init(glwin: TGLWindow);
+var
+  Vendor: string;
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
+
+  { Under Radeon, using stipple terribly slows down rendering.
+    Since this stipple is not really so important, I turn it off under Radeon. }
+  Vendor := glGetString(GL_VENDOR);
+  UseStippleForStatus := Vendor <> 'ATI Technologies Inc.';
 
  { normalize normals because we will scale our objects in Examiner navigation;
    chwilowo i tak w Scene.Render zawsze jest wlaczane glEnable(GL_NORMALIZE)
@@ -305,6 +314,7 @@ procedure DrawStatus(data: Pointer);
 const BoolToStrOO: array[boolean] of string=('OFF','ON');
 var strs: TStringList;
     s: string;
+    Stipple: PPolygonStipple;
 begin
  glLoadIdentity;
  glTranslatef(5, 5, 0);
@@ -360,9 +370,14 @@ begin
 
   {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
     nil, 5, 1, 1);}
+
+  if UseStippleForStatus then
+    Stipple := @HalftoneStipple else
+    Stipple := nil;
+
   statusFont.printStringsBorderedRect(strs, 0,
     Black4Single, Green4Single, Yellow4Single,
-    @HalftoneStipple, 5, 1, 1);
+    Stipple, 5, 1, 1);
  finally strs.Free end;
 end;
 
