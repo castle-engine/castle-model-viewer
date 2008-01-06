@@ -71,7 +71,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
   VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
-  VRMLRendererOptimization,
+  VRMLRendererOptimization, VRMLOpenGLRenderer,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
@@ -528,6 +528,12 @@ begin
    if not IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
      glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
  end;
+
+ { In methods other than bmGLSL, setting Scene.BumpMappingLightPosition
+   may be costly operation. So don't do this. }
+ if Scene.Attributes.BumpMapping and
+    (Scene.BumpMappingMethod = bmGLSL) then
+   Scene.BumpMappingLightPosition := MatrixWalker.CameraPos;
 
  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
  try
@@ -2086,6 +2092,7 @@ begin
   85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
   86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
   87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
+  88: with SceneAnimation do Attributes.BumpMapping := not Attributes.BumpMapping;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -2392,8 +2399,6 @@ begin
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
      SceneAnimation.Attributes.UseFog, true));
-   M.Append(TMenuItemChecked.Create('_GLSL shaders',           87,
-     SceneAnimation.Attributes.GLSLShaders, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      SceneAnimation.Attributes.Blending, true));
    M2 := TMenu.Create('Blending Source Factor');
@@ -2405,6 +2410,10 @@ begin
    M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
+   M.Append(TMenuItemChecked.Create('_GLSL shaders',          87,
+     SceneAnimation.Attributes.GLSLShaders, true));
+   M.Append(TMenuItemChecked.Create('Bump mapping',           88,
+     SceneAnimation.Attributes.BumpMapping, true));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting Calculate (GL__LIGHTING enabled)',         91, 'l',
