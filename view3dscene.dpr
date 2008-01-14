@@ -529,10 +529,9 @@ begin
      glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
  end;
 
- { In methods other than bmGLSL, setting Scene.BumpMappingLightPosition
+ { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
    may be costly operation. So don't do this. }
- if Scene.Attributes.BumpMapping and
-    (Scene.BumpMappingMethod = bmGLSL) then
+ if Scene.BumpMappingMethod in bmGLSLAll then
    Scene.BumpMappingLightPosition := MatrixWalker.CameraPos;
 
  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -2092,7 +2091,6 @@ begin
   85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
   86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
   87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
-  88: with SceneAnimation do Attributes.BumpMapping := not Attributes.BumpMapping;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -2256,6 +2254,8 @@ begin
     TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399: SetNavigatorKind(glw,
     TNavigatorKind(     MenuItem.IntData-1300));
+  1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
+    TBumpMappingMethod( MenuItem.IntData-1400);
 
   else raise EInternalError.Create('not impl menu item');
  end;
@@ -2371,6 +2371,25 @@ function CreateMainMenu: TMenu;
       end;
   end;
 
+  procedure AppendBumpMappingMethods(M: TMenu);
+  var
+    BM: TBumpMappingMethod;
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+  begin
+    RadioGroup := nil;
+    for BM := Low(BM) to High(BM) do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(BumpMappingMethodNames[BM]),
+        Ord(BM) + 1400, BM = DefaultBumpMappingMaximum, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+    end;
+  end;
+
 var
   M, M2: TMenu;
   NextRecentMenuItem: TMenuEntry;
@@ -2412,8 +2431,9 @@ begin
      M.Append(M2);
    M.Append(TMenuItemChecked.Create('_GLSL shaders',          87,
      SceneAnimation.Attributes.GLSLShaders, true));
-   M.Append(TMenuItemChecked.Create('Bump mapping',           88,
-     SceneAnimation.Attributes.BumpMapping, true));
+   M2 := TMenu.Create('Bump mapping');
+     AppendBumpMappingMethods(M2);
+     M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting Calculate (GL__LIGHTING enabled)',         91, 'l',
