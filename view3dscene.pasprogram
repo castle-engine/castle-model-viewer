@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2007 Michalis Kamburelis.
+  Copyright 2002-2008 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -25,9 +25,9 @@
   models in your own programs, this program may look
   too complex and filled with irrelevant details.
   Instead you should look at simple example program in
-  kambi_vrml_game_engine/3dmodels.gl/examples/simpleViewModel.dpr.
+  kambi_vrml_game_engine/3dmodels.gl/examples/simple_view_model.pasprogram.
 
-  Also kambi_vrml_game_engine/3dmodels/examples/many2vrml.dpr is an example
+  Also kambi_vrml_game_engine/3dmodels/examples/many2vrml.pasprogram is an example
   how to write simple command-line converter from 3DS (and all other model
   formats I can read) to VRML.
 

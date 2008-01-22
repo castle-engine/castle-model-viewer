@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
@@ -10,8 +10,8 @@
         <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -32,24 +32,22 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="kambi_glwindow_navigated"/>
+        <PackageName Value="kambi_units"/>
       </Item1>
       <Item2>
         <PackageName Value="kambi_glwindow"/>
       </Item2>
       <Item3>
-        <PackageName Value="kambi_units"/>
+        <PackageName Value="kambi_glwindow_navigated"/>
       </Item3>
     </RequiredPackages>
     <Units Count="18">
       <Unit0>
-        <Filename Value="view3dscene.dpr"/>
+        <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="66" Y="10"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="welcome_scene.inc"/>
@@ -163,20 +161,7 @@
         <UsageCount Value="10"/>
       </Unit17>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="view3dscene.dpr"/>
-        <Caret Line="16" Column="59" TopLine="58"/>
-      </Position1>
-      <Position2>
-        <Filename Value="view3dscene.dpr"/>
-        <Caret Line="991" Column="1" TopLine="977"/>
-      </Position2>
-      <Position3>
-        <Filename Value="view3dscene.dpr"/>
-        <Caret Line="467" Column="28" TopLine="453"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
