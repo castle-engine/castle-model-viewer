@@ -535,6 +535,10 @@ begin
    may be costly operation. So don't do this. }
  if Scene.BumpMappingMethod in bmGLSLAll then
    Scene.BumpMappingLightPosition := MatrixWalker.CameraPos;
+   
+ if Wireframe then
+   Scene.Attributes.WireframeEffect := weWireframeOnly else
+   Scene.Attributes.WireframeEffect := weNormal;
 
  if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
  try
