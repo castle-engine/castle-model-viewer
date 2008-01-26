@@ -44,7 +44,7 @@ var
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 
-procedure BeginRenderSceneWithLights;
+procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
 procedure EndRenderSceneWithLights;
 
 { Possibly sets value of LightCalculate based on @link(Parameters). }
@@ -81,11 +81,16 @@ begin
   SceneAnimation.Attributes.FirstGLFreeLight := 1;
 end;
 
-procedure BeginRenderSceneWithLights;
+procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
 begin
- glPushAttrib(GL_LIGHTING_BIT);
-   SetGLEnabled(GL_LIGHTING, LightCalculate);
-   SetGLEnabled(GL_LIGHT0, HeadLight);
+  glPushAttrib(GL_LIGHTING_BIT);
+    SetGLEnabled(GL_LIGHTING, LightCalculate and
+      { PureGeometry tricks in V3DFillMode look best without the light }
+      not (SceneAnimation.Attributes.PureGeometry));
+    SetGLEnabled(GL_LIGHT0, HeadLight);
+
+  if SceneAnimation.Attributes.PureGeometry then
+    glColorv(White3Single);
 end;
 
 procedure EndRenderSceneWithLights;

@@ -77,10 +77,9 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings;
+  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode;
 
 var
-  Wireframe: boolean = false;
   ShowStatus: boolean = true;
   ShowBBox: boolean = true;
 
@@ -452,43 +451,54 @@ procedure Draw(glwin: TGLWindow);
 
 var
   Scene: TVRMLFlatSceneGL;
-begin
- glClear(GL_DEPTH_BUFFER_BIT);
 
+
+  procedure ClearAndRenderBackground;
+  var
+    BackgroundWireframe: boolean;
+  begin
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    if Scene.Background <> nil then
+    begin
+      { jezeli BackgroundWireframe i mamy Background to rysujemy
+        Backgr w trybie wireframe (czyszczac
+        poprzednio teren przez glClear(GL_COLOR_BUFFER_BIT)) - nawet jezeli nie jest
+        zdefiniowane czy Backgr.Render nie bedzie takze uzywalo glClear do wyczyszczenia
+        ekranu. W rezultacie wynik renderowania jest nieco niezdefiniowany (zalezy
+        od tego jak bedzie dzialac Backgr.Render - czy ekran bedzie pokazywal szkielet
+        jakiejs kuli i za nim kolor BGColor czy tez moze bedzie wypelniony kolorem
+        Backgr.FdSkyColors[0]) ale to nic - to co widac w trybie wireframe nigdy nie mialo
+        byc jasno zdefiniowane i zawsze bylo w tym widac sporo implementation-specific
+        rzeczy.
+
+        Nie zdecydowalem sie na prostsze rozwiazanie (i dajace lepiej zdefiniowany
+        rezultat renderowania) aby zignorowac Wireframe przy rysowaniu Backgr.
+        Zrobilem to dlatego ze ogladanie nieba w trybie wireframe jest pomocne -
+        czasem wygodnie jest wiedziec gdzie przebiegaja krawedzie szescianu nieba
+        aby zobaczyc czy niebo tam dobrze pasuje. Jest to tez pomocne mi abym mogl
+        sprawdzic czy BackgroundGL dziala dobrze.
+      }
+      BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+      if BackgroundWireframe then
+      begin
+        glClear(GL_COLOR_BUFFER_BIT);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      end;
+      try
+        glLoadMatrix(Glw.Navigator.RotationOnlyMatrix);
+        Scene.Background.Render;
+      finally
+        if BackgroundWireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      end;
+    end else
+      glClear(GL_COLOR_BUFFER_BIT);
+  end;
+
+begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
 
- if Scene.Background <> nil then
- begin
-  { jezeli Wireframe i mamy Backgr to rysujemy Backgr w trybie wireframe (czyszczac
-    poprzednio teren przez glClear(GL_COLOR_BUFFER_BIT)) - nawet jezeli nie jest
-    zdefiniowane czy Backgr.Render nie bedzie takze uzywalo glClear do wyczyszczenia
-    ekranu. W rezultacie wynik renderowania jest nieco niezdefiniowany (zalezy
-    od tego jak bedzie dzialac Backgr.Render - czy ekran bedzie pokazywal szkielet
-    jakiejs kuli i za nim kolor BGColor czy tez moze bedzie wypelniony kolorem
-    Backgr.FdSkyColors[0]) ale to nic - to co widac w trybie wireframe nigdy nie mialo
-    byc jasno zdefiniowane i zawsze bylo w tym widac sporo implementation-specific
-    rzeczy.
-
-    Nie zdecydowalem sie na prostsze rozwiazanie (i dajace lepiej zdefiniowany
-    rezultat renderowania) aby zignorowac Wireframe przy rysowaniu Backgr.
-    Zrobilem to dlatego ze ogladanie nieba w trybie wireframe jest pomocne -
-    czasem wygodnie jest wiedziec gdzie przebiegaja krawedzie szescianu nieba
-    aby zobaczyc czy niebo tam dobrze pasuje. Jest to tez pomocne mi abym mogl
-    sprawdzic czy BackgroundGL dziala dobrze.
-  }
-  if Wireframe then
-  begin
-   glClear(GL_COLOR_BUFFER_BIT);
-   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  end;
-  try
-   glLoadMatrix(Glw.Navigator.RotationOnlyMatrix);
-   Scene.Background.Render;
-  finally
-   if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  end;
- end else
-  glClear(GL_COLOR_BUFFER_BIT);
+ ClearAndRenderBackground;
 
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
@@ -535,35 +545,26 @@ begin
    may be costly operation. So don't do this. }
  if Scene.BumpMappingMethod in bmGLSLAll then
    Scene.BumpMappingLightPosition := MatrixWalker.CameraPos;
-   
- if Wireframe then
-   Scene.Attributes.WireframeEffect := weWireframeOnly else
-   Scene.Attributes.WireframeEffect := weNormal;
 
- if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
- try
-   BeginRenderSceneWithLights;
+ BeginRenderSceneWithLights(SceneAnimation);
 
-     if (Glw.Navigator is TMatrixWalker) then
-     begin
-       { For animations, DefaultShapeStateOctree is constructed only
-         for the 1st scene. For the rest, we have to call normal
-         RenderFrustum. }
-       if Scene.DefaultShapeStateOctree <> nil then
-         Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
-         Scene.RenderFrustum(Glw.NavWalker.Frustum, tgAll);
-     end else
-       Scene.Render(nil, tgAll);
+   if (Glw.Navigator is TMatrixWalker) then
+   begin
+     { For animations, DefaultShapeStateOctree is constructed only
+       for the 1st scene. For the rest, we have to call normal
+       RenderFrustum. }
+     if Scene.DefaultShapeStateOctree <> nil then
+       Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
+       Scene.RenderFrustum(Glw.NavWalker.Frustum, tgAll);
+   end else
+     Scene.Render(nil, tgAll);
 
-     LastRender_RenderedShapeStatesCount :=
-       Scene.LastRender_RenderedShapeStatesCount;
-     LastRender_AllShapeStatesCount :=
-       Scene.LastRender_AllShapeStatesCount;
+   LastRender_RenderedShapeStatesCount :=
+     Scene.LastRender_RenderedShapeStatesCount;
+   LastRender_AllShapeStatesCount :=
+     Scene.LastRender_AllShapeStatesCount;
 
-   EndRenderSceneWithLights;
- finally
-   if Wireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
- end;
+ EndRenderSceneWithLights;
 
  { Note that there is no sense in showing viewing frustum in
    NavigatorKind <> nkExaminer, since viewing frustum should
@@ -2017,6 +2018,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure SetFillMode(Value: TFillMode);
+  begin
+    FillMode := Value;
+    SceneAnimation.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
+    SceneAnimation.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
+    SceneAnimation.Attributes.PureGeometry    := FillModes[FillMode].PureGeometry;
+  end;
+
 var
   S: string;
 begin
@@ -2090,7 +2099,6 @@ begin
         SetViewpointForWholeScene;
       end;
 
-  81: Wireframe := not Wireframe;
   82: ShowBBox := not ShowBBox;
   83: with SceneAnimation do Attributes.SmoothShading := not Attributes.SmoothShading;
   84: if glwin.ColorDialog(BGColor) then BGColorChanged;
@@ -2251,6 +2259,17 @@ begin
     BlendingFactors[MenuItem.IntData - 400].Value;
   420..439: SceneAnimation.Attributes.BlendingDestinationFactor :=
     BlendingFactors[MenuItem.IntData - 420].Value;
+
+  500..519:
+    begin
+      SetFillMode(MenuItem.IntData - 500);
+      { appropriate Checked will be set automatically }
+    end;
+  520:
+    begin
+      SetFillMode((FillMode + 1) mod (High(FillMode) + 1));
+      FillModesMenu[FillMode].Checked := true;
+    end;
 
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
@@ -2415,14 +2434,17 @@ begin
    M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
    Result.Append(M);
  M := TMenu.Create('_View');
-   M.Append(TMenuItemChecked.Create('_Wireframe',              81, 'w',
-     Wireframe, true));
+   M2 := TMenu.Create('_Fill mode');
+     MenuAppendFillModes(M2, 500);
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItem.Create('Next fill mode', 520, 'f'));
+     M.Append(M2);
    M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, 'b',
      ShowBBox, true));
    M.Append(TMenuItemChecked.Create('_Smooth Shading',         83, 's',
      SceneAnimation.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
-   M.Append(TMenuItemChecked.Create('_Fog',                    85, 'f',
+   M.Append(TMenuItemChecked.Create('_Fog',                    85,
      SceneAnimation.Attributes.UseFog, true));
    M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
      SceneAnimation.Attributes.Blending, true));
