@@ -67,7 +67,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   DataErrors,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
-  GLWinMessages, ProgressGL, GLWindowRecentMenu,
+  GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
@@ -151,8 +151,6 @@ var
   { TODO: for now set only by command-line param, should be configurable at runtime. }
   RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
 
-{ ogolne pomocnicze funkcje -------------------------------------------------- }
-
 type
   { World time, used for animations.
 
@@ -183,6 +181,12 @@ var
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapeStatesCount: Cardinal;
   LastRender_AllShapeStatesCount: Cardinal;
+
+  WasParam_ScreenShot: boolean = false;
+  ScreenShotFileName: string;
+  ScreenShotTime: TAnimationTime;
+
+{ Helper functions -------------------------------------------------- }
 
 function AngleOfViewY: Single;
 begin
@@ -524,7 +528,7 @@ begin
    DisplayOctreeDepth(SceneTriangleOctree.TreeRoot, OctreeDisplayDepth);
  end;
 
- if showBBox then
+ if showBBox and (not WasParam_ScreenShot) then
  begin
    { Display current bounding box only if there's a chance that it's
      different than whole BoundingBoxSum --- this requires that animation
@@ -594,7 +598,7 @@ begin
    glPopAttrib;
  end;
 
- if ShowStatus then
+ if ShowStatus and (not WasParam_ScreenShot) then
  begin
   { Note that DrawStatus changes current modelview matrix,
     so you want to always leave drawing status at the end of this Draw
@@ -896,10 +900,15 @@ begin
 end;
 
 procedure SceneOctreeCreate;
+var
+  OldDraw, OldBeforeDraw: TDrawFunc;
 begin
   { Beware: constructing octrees will cause progress drawing,
     and progress drawing may cause FlushRedisplay,
-    and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called. }
+    and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called.
+    That's why we simply turn normal Draw/BeforeDraw temporarily off. }
+  OldDraw := Glw.OnDraw;
+  OldBeforeDraw := Glw.OnBeforeDraw;
   Glw.OnDraw := nil;
   Glw.OnBeforeDraw := nil;
   try
@@ -916,8 +925,8 @@ begin
         ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
         'Building ShapeState octree');
   finally
-    Glw.OnDraw := @Draw;
-    Glw.OnBeforeDraw := @BeforeDraw;
+    Glw.OnDraw := OldDraw;
+    Glw.OnBeforeDraw := OldBeforeDraw;
   end;
 end;
 
@@ -2222,7 +2231,8 @@ begin
 
   131: begin
          ShowAndWrite(
-           'view3dscene: full-featured VRML, 3DS, MD3 viewer.' + NL +
+           'view3dscene: full-featured viewer of 3D models' +nl+
+           '(formats: VRML, 3DS, MD3, Wavefront OBJ, Collada).' + NL +
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
@@ -2578,7 +2588,7 @@ begin
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Save Screen ...',              127, K_F5));
+   M.Append(TMenuItem.Create('_Screenshot ...',              127, K_F5));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItemChecked.Create('Show Status _Text',           122, K_F1,
@@ -2610,7 +2620,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..10] of TOption =
+  Options: array[0..11] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
     (Short:  #0; Long: 'triangle-octree-max-leaf-items-count'; Argument: oaRequired),
@@ -2622,7 +2632,8 @@ const
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'ss-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'ss-octree-max-leaf-items-count'; Argument: oaRequired)
+    (Short:  #0; Long: 'ss-octree-max-leaf-items-count'; Argument: oaRequired),
+    (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -2638,50 +2649,56 @@ const
     6 : WasParam_WriteToVRML := true;
     7 : begin
          InfoWrite(
-           'view3dscene: VRML 1.0 (basic VRML 97 under development), ' +nl+
-           '  3DS, OBJ and GEO viewer. ' +nl+
-           '  You can move in the scene, possibly with collision-checking.' +nl+
-           '  It can also be used to convert 3DS, OBJ and GEO files to VRML.' +nl+
-           '  Also it has built-in raytracer, similiar to that available in ' +nl+
-           '  my other program, rayhunter.' +nl+
-           nl+
-           'Call as' +nl+
-           '  view3dscene [OPTIONS]... FILE-TO-VIEW' +nl+
-           'Available options are:' +nl+
-           HelpOptionHelp +nl+
-           VersionOptionHelp +nl+
-           '  --camera-radius RADIUS' +nl+
-           '                        Set camera sphere radius used for collisions' +nl+
-           '                        and determinig moving speed' +nl+
-           '  --scene-change-no-normals ,' +nl+
-           '  --scene-change-no-solid-objects ,' +nl+
-           '  --scene-change-no-convex-faces' +nl+
-           '                        Change scene somehow after loading' +nl+
-           '  --write-to-vrml       After loading (and changing) scene, write it' +nl+
-           '                        as VRML 1.0 to the standard output' +nl+
-           MultiNavigatorsOptionsHelp +nl+
-           LightsOptionsHelp +nl+
-           VRMLNodesDetailOptionsHelp +nl+
-           RendererOptimizationOptionsHelp +nl+
-           '  --triangle-octree-max-depth DEPTH ,' +nl+
-           '  --triangle-octree-max-leaf-items-count COUNT' +nl+
-           '                        Set the parameters of generated octree.' +nl+
-           '                        These concern octree based on triangles.' +nl+
+           'view3dscene: VRML (1.0 and 2.0, aka VRML 97), Kanim,' +NL+
+           '3DS, MD3, Wavefront OBJ and Collada viewer.' +NL+
+           'You can move in the scene, possibly with collision-checking.' +NL+
+           'It can also be used to convert models in other formats (3DS etc.) to VRML.' +NL+
+           'It has built-in raytracer, similar to that available in "rayhunter".' +NL+
+           NL+
+           'Call as' +NL+
+           '  view3dscene [OPTIONS]... FILE-TO-VIEW' +NL+
+           'Available options are:' +NL+
+           HelpOptionHelp +NL+
+           VersionOptionHelp +NL+
+           '  --camera-radius RADIUS' +NL+
+           '                        Set camera sphere radius used for collisions' +NL+
+           '                        and determinig moving speed' +NL+
+           '  --scene-change-no-normals ,' +NL+
+           '  --scene-change-no-solid-objects ,' +NL+
+           '  --scene-change-no-convex-faces' +NL+
+           '                        Change scene somehow after loading' +NL+
+           '  --write-to-vrml       After loading (and changing) scene, write it' +NL+
+           '                        as VRML 1.0 to the standard output' +NL+
+           MultiNavigatorsOptionsHelp +NL+
+           LightsOptionsHelp +NL+
+           VRMLNodesDetailOptionsHelp +NL+
+           RendererOptimizationOptionsHelp +NL+
+           '  --triangle-octree-max-depth DEPTH ,' +NL+
+           '  --triangle-octree-max-leaf-items-count COUNT' +NL+
+           '                        Set the parameters of generated octree.' +NL+
+           '                        These concern octree based on triangles.' +NL+
            '                        Defaults are: max-depth = '+
-             IntToStr(V3DSDefTriangleOctreeMaxDepth) + ',' +nl+
+             IntToStr(V3DSDefTriangleOctreeMaxDepth) + ',' +NL+
            '                        max-leaf-items-count = '+
-             IntToStr(V3DSDefTriangleOctreeMaxLeafItemsCount) + '.' +nl+
-           '  --ss-octree-max-depth DEPTH ,' +nl+
-           '  --ss-octree-max-leaf-items-count COUNT' +nl+
-           '                        Set the parameters of generated octree.' +nl+
-           '                        These concern octree based on ShapeStates.' +nl+
+             IntToStr(V3DSDefTriangleOctreeMaxLeafItemsCount) + '.' +NL+
+           '  --ss-octree-max-depth DEPTH ,' +NL+
+           '  --ss-octree-max-leaf-items-count COUNT' +NL+
+           '                        Set the parameters of generated octree.' +NL+
+           '                        These concern octree based on ShapeStates.' +NL+
            '                        Defaults are: max-depth = '+
-             IntToStr(DefShapeStateOctreeMaxDepth) + ',' +nl+
+             IntToStr(DefShapeStateOctreeMaxDepth) + ',' +NL+
            '                        max-leaf-items-count = '+
-             IntToStr(DefShapeStateOctreeMaxLeafItemsCount) + '.' +nl+
-           nl+
-           TGLWindow.ParseParametersHelp(StandardParseOptions, true) +nl+
-           nl+
+             IntToStr(DefShapeStateOctreeMaxLeafItemsCount) + '.' +NL+
+           '  --screenshot          TIME FILE-NAME' +NL+
+           '                        Take a screenshot of the loaded scene' +NL+
+           '                        at given TIME, and save it to FILE-NAME.' +NL+
+           '                        You most definitely want to pass 3D model' +NL+
+           '                        file to load at command-line too, otherwise' +NL+
+           '                        we''ll just make a screenshot of default black' +NL+
+           '                        scene.' +NL+
+           NL+
+           TGLWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
+           NL+
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
         end;
@@ -2691,6 +2708,11 @@ const
         end;
     9 : ShapeStateOctreeMaxDepth := StrToInt(Argument);
     10: ShapeStateOctreeMaxLeafItemsCount := StrToInt(Argument);
+    11: begin
+          WasParam_ScreenShot := true;
+          ScreenShotTime := StrToFloat(SeparateArgs[1]);
+          ScreenShotFileName := SeparateArgs[2];
+        end;
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -2765,9 +2787,20 @@ begin
         Glw.OnInit := @Init;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
-        Glw.OnBeforeDraw := @BeforeDraw;
-        Glw.OnDraw := @Draw;
         Glw.OnIdle := @Idle;
+
+        { For the screenshot, leave BeforeDraw and Draw as @nil,
+          we'll want to call them manually later to have control
+          over them. }
+        if not WasParam_ScreenShot then
+        begin
+          Glw.OnBeforeDraw := @BeforeDraw;
+          Glw.OnDraw := @Draw;
+        end else
+        begin
+          { --geometry must work as reliably as possible in this case. }
+          Glw.ResizeAllowed := raNotAllowed;
+        end;
 
         Glw.SetDemoOptions(K_None, #0, true);
 
@@ -2776,6 +2809,16 @@ begin
         if WasParam_SceneFileName then
           LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
           LoadWelcomeScene;
+
+        if WasParam_ScreenShot then
+        begin
+          AnimationTime := ScreenShotTime;
+          BeforeDraw(Glw);
+          Draw(Glw);
+          glFlush();
+          SaveScreen_NoFlush(ScreenShotFileName, GL_BACK);
+          Exit;
+         end;
 
         Glwm.Loop;
       finally FreeScene end;
