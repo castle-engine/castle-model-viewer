@@ -64,7 +64,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
-  DataErrors,
+  DataErrors, KambiLog,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
@@ -77,7 +77,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode;
+  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
+  V3DSceneAA;
 
 var
   ShowStatus: boolean = true;
@@ -296,6 +297,9 @@ begin
  Progress.UserInterface := ProgressGLInterface;
 
  BGColorChanged;
+
+ AntiAliasingGLInit;
+ AntiAliasingEnable;
 end;
 
 procedure Close(glwin: TGLWindow);
@@ -2620,7 +2624,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..11] of TOption =
+  Options: array[0..13] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
     (Short:  #0; Long: 'triangle-octree-max-leaf-items-count'; Argument: oaRequired),
@@ -2633,7 +2637,9 @@ const
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'ss-octree-max-depth'; Argument: oaRequired),
     (Short:  #0; Long: 'ss-octree-max-leaf-items-count'; Argument: oaRequired),
-    (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate)
+    (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
+    (Short:  #0; Long: 'debug-log'; Argument: oaNone),
+    (Short:  #0; Long: 'anti-alias'; Argument: oaRequired)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -2657,6 +2663,7 @@ const
            NL+
            'Call as' +NL+
            '  view3dscene [OPTIONS]... FILE-TO-VIEW' +NL+
+           NL+
            'Available options are:' +NL+
            HelpOptionHelp +NL+
            VersionOptionHelp +NL+
@@ -2689,15 +2696,23 @@ const
              IntToStr(DefShapeStateOctreeMaxDepth) + ',' +NL+
            '                        max-leaf-items-count = '+
              IntToStr(DefShapeStateOctreeMaxLeafItemsCount) + '.' +NL+
-           '  --screenshot          TIME FILE-NAME' +NL+
+           '  --screenshot TIME FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to FILE-NAME.' +NL+
            '                        You most definitely want to pass 3D model' +NL+
            '                        file to load at command-line too, otherwise' +NL+
            '                        we''ll just make a screenshot of default black' +NL+
            '                        scene.' +NL+
+           '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
+           '                        Argument AMOUNT is an integer >= 0.' +NL+
+           '                        Exact 0 means "no anti-aliasing",' +NL+
+           '                        this is the default. Each successive integer' +NL+
+           '                        generally makes method one step better.' +NL+
            NL+
            TGLWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
+           NL+
+           'Debug options:' +NL+
+           '  --debug-log           Write log info to stdout.' +NL+
            NL+
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
@@ -2713,6 +2728,8 @@ const
           ScreenShotTime := StrToFloat(SeparateArgs[1]);
           ScreenShotFileName := SeparateArgs[2];
         end;
+    12: InitializeLog(Version);
+    13: AntiAliasing := StrToInt(Argument);
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -2803,7 +2820,7 @@ begin
         end;
 
         Glw.SetDemoOptions(K_None, #0, true);
-
+        Glw.MultiSampling := AntiAliasingGlwMultiSampling;
         Glw.Init;
 
         if WasParam_SceneFileName then
