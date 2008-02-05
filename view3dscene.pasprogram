@@ -68,6 +68,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
+  GLAntiAliasing,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
   VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
@@ -77,8 +78,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
-  V3DSceneAA;
+  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode;
 
 var
   ShowStatus: boolean = true;
