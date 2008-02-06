@@ -47,11 +47,6 @@ Others:
     PerspetiveCamera { }
   ... and camera must not be translated in this case.
 
-- ui to set up cameraradius when loading scene using menu item "Open".
-  Add to docs that --camera-radius only initializes them.
-
-- uzywaj pozostalych pol camera - focalDistance, height
-
 - scene changing on WWWAnchor click
   (some visual indication that mouse is over WWWAnchor -- cursor := crHand
   and some status text "link to ...")
