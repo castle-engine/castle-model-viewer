@@ -20,7 +20,7 @@
 
 { User config file.
   Note that this unit initializes OnGetApplicationName in initialization. }
-unit V3dSceneConfig;
+unit V3DSceneConfig;
 
 interface
 

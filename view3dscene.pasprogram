@@ -78,7 +78,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
-  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode;
+  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
+  V3DSceneAntiAliasing;
 
 var
   ShowStatus: boolean = true;
@@ -2285,6 +2286,8 @@ begin
       FillModesMenu[FillMode].Checked := true;
     end;
 
+  600..649: AntiAliasing := MenuItem.IntData - 600;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
@@ -2430,7 +2433,7 @@ function CreateMainMenu: TMenu;
   end;
 
 var
-  M, M2: TMenu;
+  M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
 begin
  Result := TMenu.Create('Main menu');
@@ -2442,16 +2445,22 @@ begin
    M.Append(TMenuItem.Create('_Save as VRML ...', 20));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
+   M.Append(TMenuSeparator.Create);
+   M2 := TMenu.Create('Startup _Preferences');
+     M3 := TMenu.Create('_Anti aliasing');
+       MenuAppendAntiAliasing(M3, 600);
+       M2.Append(M3);
+     M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
    RecentMenu.NextMenuItem := NextRecentMenuItem;
    M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
    Result.Append(M);
  M := TMenu.Create('_View');
-   M2 := TMenu.Create('_Fill mode');
+   M2 := TMenu.Create('_Fill Mode');
      MenuAppendFillModes(M2, 500);
      M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Next fill mode', 520, 'f'));
+     M2.Append(TMenuItem.Create('Next _Fill Mode', 520, 'f'));
      M.Append(M2);
    M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, 'b',
      ShowBBox, true));
@@ -2729,7 +2738,11 @@ const
           ScreenShotFileName := SeparateArgs[2];
         end;
     12: InitializeLog(Version);
-    13: AntiAliasing := StrToInt(Argument);
+    13: begin
+          AntiAliasing := StrToInt(Argument);
+          if AntiAliasingMenu[AntiAliasing] <> nil then
+            AntiAliasingMenu[AntiAliasing].Checked := true;
+        end;
     else raise EInternalError.Create('OptionProc');
    end;
   end;
