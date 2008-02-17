@@ -2739,7 +2739,10 @@ const
         end;
     12: InitializeLog(Version);
     13: begin
-          AntiAliasing := StrToInt(Argument);
+          { for proper menu display, we have to keep AntiAliasing
+            within 0..MaxAntiAliasing range (although GLAntiAliasing
+            unit accepts any cardinal value). }
+          AntiAliasing := Clamped(StrToInt(Argument), 0, MaxAntiAliasing);
           if AntiAliasingMenu[AntiAliasing] <> nil then
             AntiAliasingMenu[AntiAliasing].Checked := true;
         end;
