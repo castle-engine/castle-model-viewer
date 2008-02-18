@@ -7,7 +7,6 @@ uses GLAntiAliasing, GLWindow;
 var
   AntiAliasingMenu: array [TAntiAliasingRange] of TMenuItemRadio;
 
-{ TODO: make view3dscene fall back on no-aa, also updating the menu. }
 procedure MenuAppendAntiAliasing(M: TMenu; BaseIntData: Cardinal);
 
 implementation

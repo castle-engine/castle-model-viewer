@@ -2837,7 +2837,25 @@ begin
 
         Glw.SetDemoOptions(K_None, #0, true);
         Glw.MultiSampling := AntiAliasingGlwMultiSampling;
-        Glw.Init;
+
+        try
+          Glw.Init;
+        except
+          on E: EGLContextNotPossible do
+          begin
+            if AntiAliasing > 0 then
+            begin
+              Writeln(ErrOutput, 'Cannot initialize GL context for anti-aliasing: ' + E.Message);
+              Writeln(ErrOutput, 'Retrying without anti-aliasing');
+              AntiAliasing := 0;
+              if AntiAliasingMenu[AntiAliasing] <> nil then
+                AntiAliasingMenu[AntiAliasing].Checked := true;
+              Glw.MultiSampling := AntiAliasingGlwMultiSampling;
+              Glw.Init;
+            end else
+              raise;
+          end;
+        end;
 
         if WasParam_SceneFileName then
           LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
