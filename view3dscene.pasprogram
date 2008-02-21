@@ -636,7 +636,7 @@ begin
  { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
  if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
    FieldOfView := TNodeViewpoint(ViewpointNode).FdFieldOfView.Value else
-   FieldOfView := Pi / 4 { VRML Viewpoint.fieldOfView default value };
+   FieldOfView := DefaultViewpointFieldOfView;
  AngleOfViewX := RadToDeg(TNodeViewpoint.ViewpointAngleOfView(
    FieldOfView, Glw.Width / Glw.Height));
  { Tests:
