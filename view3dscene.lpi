@@ -32,13 +32,13 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="kambi_units"/>
+        <PackageName Value="kambi_glwindow_navigated"/>
       </Item1>
       <Item2>
         <PackageName Value="kambi_glwindow"/>
       </Item2>
       <Item3>
-        <PackageName Value="kambi_glwindow_navigated"/>
+        <PackageName Value="kambi_units"/>
       </Item3>
     </RequiredPackages>
     <Units Count="18">
