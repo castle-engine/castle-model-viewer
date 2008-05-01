@@ -172,7 +172,7 @@ type
     view3dscene 2. that's asking for trouble, after all even with
     AutoRedisplay = true the precision loss is there, it's just not
     noticeable... using better precision feels much safer. }
-  TAnimationTime = Float;
+  TAnimationTime = TWorldTime;
 
 var
   AnimationTime: TAnimationTime = 0.0;
@@ -722,12 +722,14 @@ begin
   begin
     OldAnimationTime := AnimationTime;
     AnimationTime += AnimationTimeSpeed * Glwin.IdleCompSpeed / 50;
+    WorldTime := AnimationTime;
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
       still, or if the animation stopped running. }
-    if SceneAnimation.SceneFromTime(OldAnimationTime) <>
-       SceneAnimation.SceneFromTime(AnimationTime) then
+    if (SceneAnimation.SceneFromTime(OldAnimationTime) <>
+        SceneAnimation.SceneFromTime(AnimationTime)) or
+       WorldTimeWatchersExist then
       Glwin.PostRedisplay;
   end;
 end;
