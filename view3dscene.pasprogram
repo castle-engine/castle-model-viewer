@@ -2083,7 +2083,7 @@ begin
           s := AppendToFileName(SceneFilename, '_2') else
           s := ChangeFileExt(SceneFilename, '.wrl');
         if glwin.FileDialog('Save as VRML file', s, false,
-          VRML_FilePatterns) then
+          UncompressedVRML_FilePatterns) then
         try
           SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
             SavedVRMLPrecedingComment(SceneFileName));
