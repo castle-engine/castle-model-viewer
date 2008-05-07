@@ -45,7 +45,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
 implementation
 
 uses VRMLRayTracer, GLWinModes, KambiGLUtils, Images, SysUtils, KambiUtils,
-  GLWinMessages, SpaceFillingCurves, GLImages;
+  GLWinMessages, SpaceFillingCurves, GLImages, GLWindowFileFilters;
 
 type
   { callbacks data. Callbacki TGLWindow moga osiagnac to Data przez
@@ -169,20 +169,16 @@ begin
   10: begin
        { this will be called only when rendering is done }
        MessageOK(glwin,
-         'First some notes about saving raytraced image from view3dscene:' +nl+
-         nl+
-         'Image format will be automatically recognized from extension, '+
-         'known extensions are '+ListImageExtsShort(false, true)+', ' +
-         'unrecognized extension will result in BMP format. ' +nl+
-         nl+
-         'About RGBE format : you _can_ choose here rgbe format. But you '+
+         'First some notes about saving raytraced image from view3dscene as ' +
+         'RGBE: you _can_ choose here rgbe format. But you '+
          'should note that image is already stored in memory in RGB '+
          '(8 bits per component) format (this was required to quickly display '+
          'image in OpenGL) so any precision (beyond 8-bits) is already lost. '+
          'Use rayhunter if you want to have RGBE image with precise colors.',
          taLeft);
        SaveAsFilename := ProgramName + '_rt.png';
-       if glwin.FileDialog('Save image', SaveAsFilename, false) then
+       if glwin.FileDialog('Save image', SaveAsFilename, false,
+         SaveImage_FileFilters) then
         SaveImage(D^.Image, SaveAsFilename);
       end;
   20: D^.UserWantsToQuit := true;
