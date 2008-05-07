@@ -1980,10 +1980,10 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure AssignGLSLShader;
   const
-    VS_FilePatterns =
+    VS_FileFilters =
     'All files|*|' +
     '*Vertex shader (*.vs)|*.vs';
-    FS_FilePatterns =
+    FS_FileFilters =
     'All files|*|' +
     '*Fragment shader (*.fs)|*.fs';
   var
@@ -1995,12 +1995,12 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     VertexShaderUrl := '';
     if Glwin.FileDialog('Open vertex shader file', VertexShaderUrl, true,
-      VS_FilePatterns) then
+      VS_FileFilters) then
     begin
       { We guess that FragmentShaderUrl will be in the same dir as vertex shader }
       FragmentShaderUrl := ExtractFilePath(VertexShaderUrl);
       if Glwin.FileDialog('Open fragment shader file', FragmentShaderUrl, true,
-        FS_FilePatterns) then
+        FS_FileFilters) then
       begin
         ProgramNode := TNodeComposedShader.Create(
           { any name that has a chance to be unique }
@@ -2058,7 +2058,7 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true,
-         LoadAsVRMLSequence_FilePatterns) then
+         LoadAsVRMLSequence_FileFilters) then
          LoadScene(s, [], 0.0, true);
       end;
 
@@ -2083,7 +2083,7 @@ begin
           s := AppendToFileName(SceneFilename, '_2') else
           s := ChangeFileExt(SceneFilename, '.wrl');
         if glwin.FileDialog('Save as VRML file', s, false,
-          UncompressedVRML_FilePatterns) then
+          UncompressedVRML_FileFilters) then
         try
           SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
             SavedVRMLPrecedingComment(SceneFileName));
