@@ -61,8 +61,9 @@ type
     procedure MakeNoSolid_1(node: TVRMLNode);
     procedure MakeNoSolid_2(node: TVRMLNode);
 
-    procedure MakeNoConvex_1(node: TVRMLNode);
-    procedure MakeNoConvex_2(node: TVRMLNode);
+    procedure MakeShapeHintsNoConvex(node: TVRMLNode);
+    procedure MakeIFS_2NoConvex(node: TVRMLNode);
+    procedure MakeExtrusionNoConvex(node: TVRMLNode);
   end;
 
 procedure TSceneChangesDo.NormalIndexErase_1(node: TVRMLNode);
@@ -85,14 +86,19 @@ begin
   (Node as TNodeIndexedFaceSet_2).FdSolid.Value := false;
 end;
 
-procedure TSceneChangesDo.MakeNoConvex_1(node: TVRMLNode);
+procedure TSceneChangesDo.MakeShapeHintsNoConvex(node: TVRMLNode);
 begin
   (Node as TNodeShapeHints).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.MakeNoConvex_2(node: TVRMLNode);
+procedure TSceneChangesDo.MakeIFS_2NoConvex(node: TVRMLNode);
 begin
   (Node as TNodeIndexedFaceSet_2).FdConvex.Value := false;
+end;
+
+procedure TSceneChangesDo.MakeExtrusionNoConvex(node: TVRMLNode);
+begin
+  (Node as TNodeExtrusion).FdConvex.Value := false;
 end;
 
 { SceneChange_Xxx functions ---------------------------------------- }
@@ -159,9 +165,11 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      @DoChanges.MakeNoConvex_1, false);
+      @DoChanges.MakeShapeHintsNoConvex, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.MakeNoConvex_2, false);
+      @DoChanges.MakeIFS_2NoConvex, false);
+    scene.RootNode.EnumerateNodes(TNodeExtrusion,
+      @DoChanges.MakeExtrusionNoConvex, false);
   finally FreeAndNil(DoChanges) end;
 
   if scene.RootNode.TryFindNode(TNodeGeneralShape_1, false) <> nil then
