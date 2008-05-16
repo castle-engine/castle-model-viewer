@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2005,2007 Michalis Kamburelis.
+  Copyright 2003-2008 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -58,8 +58,9 @@ type
     procedure NormalIndexErase_1(node: TVRMLNode);
     procedure NormalErase_2(node: TVRMLNode);
 
-    procedure MakeNoSolid_1(node: TVRMLNode);
-    procedure MakeNoSolid_2(node: TVRMLNode);
+    procedure MakeShapeHintsNoSolid(node: TVRMLNode);
+    procedure MakeIFS_2NoSolid(node: TVRMLNode);
+    procedure MakeExtrusionNoSolid(node: TVRMLNode);
 
     procedure MakeShapeHintsNoConvex(node: TVRMLNode);
     procedure MakeIFS_2NoConvex(node: TVRMLNode);
@@ -76,14 +77,19 @@ begin
   (Node as TNodeIndexedFaceSet_2).FdNormal.Value := nil;
 end;
 
-procedure TSceneChangesDo.MakeNoSolid_1(node: TVRMLNode);
+procedure TSceneChangesDo.MakeShapeHintsNoSolid(node: TVRMLNode);
 begin
   (Node as TNodeShapeHints).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.MakeNoSolid_2(node: TVRMLNode);
+procedure TSceneChangesDo.MakeIFS_2NoSolid(node: TVRMLNode);
 begin
   (Node as TNodeIndexedFaceSet_2).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.MakeExtrusionNoSolid(node: TVRMLNode);
+begin
+  (Node as TNodeExtrusion).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.MakeShapeHintsNoConvex(node: TVRMLNode);
@@ -151,9 +157,11 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      @DoChanges.MakeNoSolid_1, false);
+      @DoChanges.MakeShapeHintsNoSolid, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.MakeNoSolid_2, false);
+      @DoChanges.MakeIFS_2NoSolid, false);
+    scene.RootNode.EnumerateNodes(TNodeExtrusion,
+      @DoChanges.MakeExtrusionNoSolid, false);
   finally FreeAndNil(DoChanges) end;
 end;
 
