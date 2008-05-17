@@ -55,54 +55,60 @@ uses SysUtils;
 type
   TSceneChangesDo = class
   public
-    procedure NormalIndexErase_1(node: TVRMLNode);
-    procedure NormalErase_2(node: TVRMLNode);
+    procedure NoNormal_Indexed_1(node: TVRMLNode);
+    procedure NoNormal_IFS_2(node: TVRMLNode);
+    procedure NoNormal_ElevationGrid(node: TVRMLNode);
 
-    procedure MakeShapeHintsNoSolid(node: TVRMLNode);
-    procedure MakeIFS_2NoSolid(node: TVRMLNode);
-    procedure MakeExtrusionNoSolid(node: TVRMLNode);
+    procedure NoSolid_ShapeHints(node: TVRMLNode);
+    procedure NoSolid_IFS_2(node: TVRMLNode);
+    procedure NoSolid_Extrusion(node: TVRMLNode);
 
-    procedure MakeShapeHintsNoConvex(node: TVRMLNode);
-    procedure MakeIFS_2NoConvex(node: TVRMLNode);
-    procedure MakeExtrusionNoConvex(node: TVRMLNode);
+    procedure NoConvex_ShapeHints(node: TVRMLNode);
+    procedure NoConvex_IFS_2(node: TVRMLNode);
+    procedure NoConvex_Extrusion(node: TVRMLNode);
   end;
 
-procedure TSceneChangesDo.NormalIndexErase_1(node: TVRMLNode);
+procedure TSceneChangesDo.NoNormal_Indexed_1(node: TVRMLNode);
 begin
   (Node as TNodeGeneralIndexed_1).FdNormalIndex.Items.SetLength(0);
 end;
 
-procedure TSceneChangesDo.NormalErase_2(node: TVRMLNode);
+procedure TSceneChangesDo.NoNormal_IFS_2(node: TVRMLNode);
 begin
   (Node as TNodeIndexedFaceSet_2).FdNormal.Value := nil;
 end;
 
-procedure TSceneChangesDo.MakeShapeHintsNoSolid(node: TVRMLNode);
+procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TVRMLNode);
+begin
+  (Node as TNodeElevationGrid).FdNormal.Value := nil;
+end;
+
+procedure TSceneChangesDo.NoSolid_ShapeHints(node: TVRMLNode);
 begin
   (Node as TNodeShapeHints).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.MakeIFS_2NoSolid(node: TVRMLNode);
+procedure TSceneChangesDo.NoSolid_IFS_2(node: TVRMLNode);
 begin
   (Node as TNodeIndexedFaceSet_2).FdSolid.Value := false;
 end;
 
-procedure TSceneChangesDo.MakeExtrusionNoSolid(node: TVRMLNode);
+procedure TSceneChangesDo.NoSolid_Extrusion(node: TVRMLNode);
 begin
   (Node as TNodeExtrusion).FdSolid.Value := false;
 end;
 
-procedure TSceneChangesDo.MakeShapeHintsNoConvex(node: TVRMLNode);
+procedure TSceneChangesDo.NoConvex_ShapeHints(node: TVRMLNode);
 begin
   (Node as TNodeShapeHints).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.MakeIFS_2NoConvex(node: TVRMLNode);
+procedure TSceneChangesDo.NoConvex_IFS_2(node: TVRMLNode);
 begin
   (Node as TNodeIndexedFaceSet_2).FdConvex.Value := false;
 end;
 
-procedure TSceneChangesDo.MakeExtrusionNoConvex(node: TVRMLNode);
+procedure TSceneChangesDo.NoConvex_Extrusion(node: TVRMLNode);
 begin
   (Node as TNodeExtrusion).FdConvex.Value := false;
 end;
@@ -139,13 +145,16 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     Scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
-      @DoChanges.NormalIndexErase_1, onlyFromActivePart);
+      @DoChanges.NoNormal_Indexed_1, onlyFromActivePart);
     Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.NormalErase_2, onlyFromActivePart);
+      @DoChanges.NoNormal_IFS_2, onlyFromActivePart);
+    Scene.RootNode.EnumerateNodes(TNodeElevationGrid,
+      @DoChanges.NoNormal_ElevationGrid, onlyFromActivePart);
   finally FreeAndNil(DoChanges) end;
 
-  { Do this at the end --- for VRML 2.0, Normal nodes will be
-    removed in more intelligent way. }
+  { Do this at the end.
+    Note that for VRML >= 2.0, Normal nodes were already removed by
+    NoNormal_IFS_2 (in more intelligent way). }
   RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
   RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
 end;
@@ -157,11 +166,11 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      @DoChanges.MakeShapeHintsNoSolid, false);
+      @DoChanges.NoSolid_ShapeHints, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.MakeIFS_2NoSolid, false);
+      @DoChanges.NoSolid_IFS_2, false);
     scene.RootNode.EnumerateNodes(TNodeExtrusion,
-      @DoChanges.MakeExtrusionNoSolid, false);
+      @DoChanges.NoSolid_Extrusion, false);
   finally FreeAndNil(DoChanges) end;
 end;
 
@@ -173,11 +182,11 @@ begin
   DoChanges := TSceneChangesDo.Create;
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
-      @DoChanges.MakeShapeHintsNoConvex, false);
+      @DoChanges.NoConvex_ShapeHints, false);
     scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.MakeIFS_2NoConvex, false);
+      @DoChanges.NoConvex_IFS_2, false);
     scene.RootNode.EnumerateNodes(TNodeExtrusion,
-      @DoChanges.MakeExtrusionNoConvex, false);
+      @DoChanges.NoConvex_Extrusion, false);
   finally FreeAndNil(DoChanges) end;
 
   if scene.RootNode.TryFindNode(TNodeGeneralShape_1, false) <> nil then
