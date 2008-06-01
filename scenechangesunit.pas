@@ -189,7 +189,7 @@ begin
       @DoChanges.NoConvex_Extrusion, false);
   finally FreeAndNil(DoChanges) end;
 
-  if scene.RootNode.TryFindNode(TNodeGeneralShape_1, false) <> nil then
+  if scene.RootNode.TryFindNode(TVRMLGeometryNode_1, false) <> nil then
   begin
     (* stworz newRootNode : Group, jego chidren to
       ShapeHints { faceType UNKNOWN_FACE_TYPE }

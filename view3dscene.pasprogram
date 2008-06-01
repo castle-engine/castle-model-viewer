@@ -1590,14 +1590,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M1: TNodeMaterial_1;
     M2: TNodeMaterial_2;
-    SelectedShape: TNodeGeneralShape;
+    SelectedGeometry: TVRMLGeometryNode;
   begin
     if SelectedItemIndex = NoItemIndex then
     begin
       s := 'Nothing selected.';
     end else
     begin
-      SelectedShape := SelectedItem^.ShapeNode;
+      SelectedGeometry := SelectedItem^.GeometryNode;
       s := Format(
            'Selected point %s from triangle %s.' +nl+
            nl+
@@ -1605,8 +1605,8 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
            'node named %s. Node''s bounding box is %s. ',
            [VectorToNiceStr(SelectedPoint),
             TriangleToNiceStr(SelectedItem^.Triangle),
-            NodeNiceName(SelectedShape),
-            Box3dToNiceStr(SelectedShape.BoundingBox(SelectedItem^.State))]);
+            NodeNiceName(SelectedGeometry),
+            Box3dToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
 
       if (SelectedItem^.FaceCoordIndexBegin <> -1) and
          (SelectedItem^.FaceCoordIndexEnd <> -1) then
@@ -1617,10 +1617,10 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
             SelectedItem^.FaceCoordIndexEnd ]);
       end;
 
-      VCNotOver := SelectedShape.VerticesCount(SelectedItem^.State, false);
-      TCNotOver := SelectedShape.TrianglesCount(SelectedItem^.State, false);
-      VCOver := SelectedShape.VerticesCount(SelectedItem^.State, true);
-      TCOver := SelectedShape.TrianglesCount(SelectedItem^.State, true);
+      VCNotOver := SelectedGeometry.VerticesCount(SelectedItem^.State, false);
+      TCNotOver := SelectedGeometry.TrianglesCount(SelectedItem^.State, false);
+      VCOver := SelectedGeometry.VerticesCount(SelectedItem^.State, true);
+      TCOver := SelectedGeometry.TrianglesCount(SelectedItem^.State, true);
 
       if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
       begin
@@ -1722,7 +1722,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
           Pointers[ShadowingItemIndex];
         s += Format('but no, this light is blocked by triangle %s from node %s.',
           [ TriangleToNiceStr(ShadowingItem^.Triangle),
-            NodeNiceName(ShadowingItem^.ShapeNode) ])
+            NodeNiceName(ShadowingItem^.GeometryNode) ])
        end else
         s += 'hmm, yes ! No object blocks this light here.';
       end;
@@ -1744,7 +1744,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.ShapeNode, so this is only for the frame where
+        SelectedItem^.GeometryNode, so this is only for the frame where
         octree is available. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'animations.', taLeft);
@@ -1756,7 +1756,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SelectedItem^.ShapeNode.FreeRemovingFromAllParents;
+      SelectedItem^.GeometryNode.FreeRemovingFromAllParents;
       WholeSceneChanged;
     end;
   end;
@@ -1774,13 +1774,13 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end;
 
   var
-    ShapeNode: TNodeGeneralShape;
+    GeometryNode: TVRMLGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.ShapeNode, so this is only for the frame where
+        SelectedItem^.GeometryNode, so this is only for the frame where
         octree is available. Moreover, we call
         SceneAnimation.FirstScene.ChangedFields. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
@@ -1802,31 +1802,31 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    ShapeNode := SelectedItem^.ShapeNode;
+    GeometryNode := SelectedItem^.GeometryNode;
 
-    if ShapeNode is TNodeIndexedFaceSet_1 then
+    if GeometryNode is TNodeIndexedFaceSet_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedFaceSet_1(ShapeNode).FdCoordIndex.Items;
-      Materials := TNodeIndexedFaceSet_1(ShapeNode).FdMaterialIndex.Items;
-      Normals := TNodeIndexedFaceSet_1(ShapeNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_1(ShapeNode).FdTextureCoordIndex.Items;
+      Coords := TNodeIndexedFaceSet_1(GeometryNode).FdCoordIndex.Items;
+      Materials := TNodeIndexedFaceSet_1(GeometryNode).FdMaterialIndex.Items;
+      Normals := TNodeIndexedFaceSet_1(GeometryNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_1(GeometryNode).FdTextureCoordIndex.Items;
     end else
-    if ShapeNode is TNodeIndexedFaceSet_2 then
+    if GeometryNode is TNodeIndexedFaceSet_2 then
     begin
-      Colors := TNodeIndexedFaceSet_2(ShapeNode).FdColorIndex.Items;
-      Coords := TNodeIndexedFaceSet_2(ShapeNode).FdCoordIndex.Items;
+      Colors := TNodeIndexedFaceSet_2(GeometryNode).FdColorIndex.Items;
+      Coords := TNodeIndexedFaceSet_2(GeometryNode).FdCoordIndex.Items;
       Materials := nil;
-      Normals := TNodeIndexedFaceSet_2(ShapeNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_2(ShapeNode).FdTexCoordIndex.Items;
+      Normals := TNodeIndexedFaceSet_2(GeometryNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_2(GeometryNode).FdTexCoordIndex.Items;
     end else
-    if ShapeNode is TNodeIndexedTriangleMesh_1 then
+    if GeometryNode is TNodeIndexedTriangleMesh_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedTriangleMesh_1(ShapeNode).FdCoordIndex.Items;
-      Materials := TNodeIndexedTriangleMesh_1(ShapeNode).FdMaterialIndex.Items;
-      Normals := TNodeIndexedTriangleMesh_1(ShapeNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedTriangleMesh_1(ShapeNode).FdTextureCoordIndex.Items;
+      Coords := TNodeIndexedTriangleMesh_1(GeometryNode).FdCoordIndex.Items;
+      Materials := TNodeIndexedTriangleMesh_1(GeometryNode).FdMaterialIndex.Items;
+      Normals := TNodeIndexedTriangleMesh_1(GeometryNode).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedTriangleMesh_1(GeometryNode).FdTextureCoordIndex.Items;
     end else
     begin
       ShowAndWrite('Internal error: cannot get the coordIndex field.');
@@ -1856,7 +1856,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
     Unselect;
     SceneOctreeFree;
-    SceneAnimation.FirstScene.ChangedFields(ShapeNode);
+    SceneAnimation.FirstScene.ChangedFields(GeometryNode);
     SceneOctreeCreate;
   end;
 
