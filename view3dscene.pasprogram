@@ -134,7 +134,7 @@ var
   { 0.0 means "no limit". }
   VisibilityLimit: Single = 0.0;
   NavigationNode: TNodeNavigationInfo;
-  ViewpointNode: TNodeGeneralViewpoint;
+  ViewpointNode: TVRMLViewpointNode;
   SceneHeadlight: TVRMLGLHeadlight;
 
   { (SelectedItem = nil) if and only if (SelectedItemIndex = NoItemIndex). }

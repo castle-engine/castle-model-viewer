@@ -72,7 +72,7 @@ begin
     { If Loaded, then 1st scene exists and has RootNode <> nil
       (that's because loaded animation always has at least one RootNode) }
     SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
-      NodesCount(TNodeGeneralLight, true);
+      NodesCount(TVRMLLightNode, true);
 
   if NavigationNode <> nil then
     HeadLight := NavigationNode.FdHeadlight.Value else

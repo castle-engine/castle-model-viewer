@@ -35,7 +35,7 @@ function SForCaption(const S: string): string;
 
 type
   TViewpointInfo = record
-    Node: TNodeGeneralViewpoint;
+    Node: TVRMLViewpointNode;
     Transform: TMatrix4Single;
   end;
   PViewpointInfo = ^TViewpointInfo;
@@ -48,7 +48,7 @@ type
   public
     MenuJumpToViewpoint: TMenu;
 
-    procedure AddNodeTransform(Node: TNodeGeneralViewpoint;
+    procedure AddNodeTransform(Node: TVRMLViewpointNode;
       const Transform: TMatrix4Single);
 
     procedure MakeMenuJumpToViewpoint;
@@ -59,7 +59,7 @@ type
     function GetViewpoint(Index: Integer;
       out CameraKind: TVRMLCameraKind;
       out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
-        TNodeGeneralViewpoint;
+        TVRMLViewpointNode;
   end;
 
 var
@@ -81,7 +81,7 @@ begin
     Result := Copy(Result, 1, 50) + '...';
 end;
 
-procedure TViewpointsList.AddNodeTransform(Node: TNodeGeneralViewpoint;
+procedure TViewpointsList.AddNodeTransform(Node: TVRMLViewpointNode;
   const Transform: TMatrix4Single);
 var
   Item: TViewpointInfo;
@@ -93,7 +93,7 @@ end;
 
 procedure TViewpointsList.MakeMenuJumpToViewpoint;
 var
-  Node: TNodeGeneralViewpoint;
+  Node: TVRMLViewpointNode;
   I: Integer;
   S: string;
   Viewpoint: TNodeViewpoint;
@@ -129,7 +129,7 @@ end;
 function TViewpointsList.GetViewpoint(
   Index: Integer; out CameraKind: TVRMLCameraKind;
   out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
-  TNodeGeneralViewpoint;
+  TVRMLViewpointNode;
 begin
   if Between(Index, 0, High) then
   begin

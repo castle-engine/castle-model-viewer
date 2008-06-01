@@ -70,7 +70,7 @@ type
 
 procedure TSceneChangesDo.NoNormal_Indexed_1(node: TVRMLNode);
 begin
-  (Node as TNodeGeneralIndexed_1).FdNormalIndex.Items.SetLength(0);
+  (Node as TVRMLIndexedNode_1).FdNormalIndex.Items.SetLength(0);
 end;
 
 procedure TSceneChangesDo.NoNormal_IFS_2(node: TVRMLNode);
@@ -144,7 +144,7 @@ var
 begin
   DoChanges := TSceneChangesDo.Create;
   try
-    Scene.RootNode.EnumerateNodes(TNodeGeneralIndexed_1,
+    Scene.RootNode.EnumerateNodes(TVRMLIndexedNode_1,
       @DoChanges.NoNormal_Indexed_1, onlyFromActivePart);
     Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
       @DoChanges.NoNormal_IFS_2, onlyFromActivePart);
