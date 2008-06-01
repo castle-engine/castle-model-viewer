@@ -2715,13 +2715,13 @@ const
              IntToStr(DefShapeStateOctreeMaxDepth) + ',' +NL+
            '                        max-leaf-items-count = '+
              IntToStr(DefShapeStateOctreeMaxLeafItemsCount) + '.' +NL+
-           '  --screenshot TIME FILE-NAME' +NL+
+           '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
-           '                        at given TIME, and save it to FILE-NAME.' +NL+
+           '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
            '                        You most definitely want to pass 3D model' +NL+
            '                        file to load at command-line too, otherwise' +NL+
-           '                        we''ll just make a screenshot of default black' +NL+
-           '                        scene.' +NL+
+           '                        we''ll just make a screenshot of the default' +NL+
+           '                        black scene.' +NL+
            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
            '                        Argument AMOUNT is an integer >= 0.' +NL+
            '                        Exact 0 means "no anti-aliasing",' +NL+
