@@ -17,6 +17,9 @@ set -eu
 # when reading).
 
 find ../kambi_vrml_test_suite/ \
+     ../vrml_engine_doc/examples/ \
+     ../castle/data/ \
+     ../rift/data/ \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f '(' -iname '*.wrl' -or \
                   -iname '*.wrz' -or \
@@ -28,5 +31,6 @@ find ../kambi_vrml_test_suite/ \
                   -iname '*.x3dvz' -or \
                   -iname '*.x3dv.gz' -or \
                   -iname '*.3ds' -or \
-                  -iname '*.dae' ')' \
+                  -iname '*.dae'-or \
+                  -iname '*.kanim' ')' \
               -exec ./run_test_once.sh '{}' ';' ')'
