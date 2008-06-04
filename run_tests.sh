@@ -1,10 +1,10 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene tests on ../kambi_vrml_test_suite/
-# (you should checkout this from SVN, or download and unpack
+# Run view3dscene tests on ../kambi_vrml_test_suite/ (and some other dirs).
+# You can checkout kambi_vrml_test_suite from SVN, or download and unpack
 # from [http://vrmlengine.sourceforge.net/kambi_vrml_test_suite.php],
-# such that it's a sibling of view3dscene).
+# such that it's a sibling of view3dscene.
 #
 # Tests are fully automatic.
 #
@@ -12,14 +12,14 @@ set -eu
 # and written back to VRML. Then this written result is read back.
 # This somewhat makes sure that there are no problems with parsing
 # and saving VRML (and other) files.
+#
+# Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
+# it contains files that *should* fail when reading).
 
-# Doesn't enter 'errors' subdir (it contains files that should fail
-# when reading).
-
-find ../kambi_vrml_test_suite/ \
-     ../vrml_engine_doc/examples/ \
-     ../castle/data/ \
-     ../rift/data/ \
+test_dir()
+{
+  set +e
+  find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f '(' -iname '*.wrl' -or \
                   -iname '*.wrz' -or \
@@ -31,6 +31,12 @@ find ../kambi_vrml_test_suite/ \
                   -iname '*.x3dvz' -or \
                   -iname '*.x3dv.gz' -or \
                   -iname '*.3ds' -or \
-                  -iname '*.dae'-or \
-                  -iname '*.kanim' ')' \
+                  -iname '*.dae' ')' \
               -exec ./run_test_once.sh '{}' ';' ')'
+  set -e
+}
+
+test_dir ../kambi_vrml_test_suite/
+test_dir ../vrml_engine_doc/examples/
+test_dir ../castle/data/
+test_dir ../rift/data/

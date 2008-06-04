@@ -15,7 +15,7 @@ FILE="$1"
 TEMP_FILE=`dirname "$FILE"`/view3dscene_test_temporary_file.wrl
 
 echo '---- Reading' "$FILE"
-echo '(temp is ' "$TEMP_FILE" ')'
+#echo '(temp is ' "$TEMP_FILE" ')'
 view3dscene "$FILE" --write-to-vrml > "$TEMP_FILE"
 
 # Check input file and output file headers.
