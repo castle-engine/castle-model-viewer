@@ -35,6 +35,13 @@ if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
      '(' `basename "$FILE"` != cones_gzipped_but_with_normal_extension.wrl ')' ]; then
   INPUT_HEADER=`head -n 1 "$FILE"`
   OUTPUT_HEADER=`head -n 1 "$TEMP_FILE"`
+
+  # trim both headers, to trim possibly different newlines
+  # (maybe they are stripped by ` already?)
+  # and whitespace around.
+  INPUT_HEADER="`stringoper Trim \"$INPUT_HEADER\"`"
+  OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
+
   if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
     echo 'WARNING: input/output headers differ:'
     echo 'Header on input is' "$INPUT_HEADER"
