@@ -1512,6 +1512,27 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     MessageOK(glwin, SOnlyInWalker);
   end;
 
+  procedure ChangeMoveSpeed;
+  var
+    MoveSpeed: Single;
+  begin
+    if Glw.Navigator is TMatrixWalker then
+    begin
+      { in view3dscene, MoveHorizontalSpeed is always equal
+        MoveVerticalSpeed }
+
+      MoveSpeed := Glw.NavWalker.MoveHorizontalSpeed;
+      if MessageInputQuery(Glwin, 'New move speed:', MoveSpeed, taLeft) then
+      begin
+        Glw.NavWalker.MoveHorizontalSpeed := MoveSpeed;
+        Glw.NavWalker.MoveVerticalSpeed := MoveSpeed;
+        Glw.PostRedisplay;
+      end;
+    end else
+      MessageOK(glwin, SOnlyInWalker);
+  end;
+
+
   procedure ShowAndWrite(const S: string);
   begin
     Writeln(S);
@@ -2265,6 +2286,7 @@ begin
   201: MatrixWalker.Gravity := not MatrixWalker.Gravity;
   202: MatrixWalker.PreferGravityUpForRotations := not MatrixWalker.PreferGravityUpForRotations;
   203: MatrixWalker.PreferGravityUpForMoving := not MatrixWalker.PreferGravityUpForMoving;
+  205: ChangeMoveSpeed;
 
   220: AnimationTimePaused := not AnimationTimePaused;
   221: AnimationTime := SceneAnimation.TimeBegin;
@@ -2558,6 +2580,7 @@ begin
        MatrixWalker.PreferGravityUpForMoving, true);
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
+     M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Animation');
