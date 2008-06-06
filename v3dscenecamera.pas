@@ -76,7 +76,7 @@ uses SysUtils, RaysWindow, KambiStringUtils, VRMLCameraUtils;
 
 function SForCaption(const S: string): string;
 begin
-  Result := SReplaceChars(S, [#10, #13], ' ');
+  Result := SCompressWhiteSpace(S);
   if Length(Result) > 50 then
     Result := Copy(Result, 1, 50) + '...';
 end;
