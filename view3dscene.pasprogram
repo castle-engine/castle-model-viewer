@@ -1314,7 +1314,10 @@ begin
       are reported only from SceneAnimation.PrepareRender).
       Also, this allows us to show first PrepareRender with progress bar. }
     PrepareRender(true);
-    if SceneWarnings.Count <> 0 then
+    if (SceneWarnings.Count <> 0) and
+       { For WasParam_ScreenShot, work non-interactively.
+         Warnings are displayed at stderr anyway, so user will see them there. }
+       (not WasParam_ScreenShot) then
       MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
         'this scene. See the console or use File->"View warnings" ' +
         'menu command to view them all.', [SceneWarnings.Count]), taLeft);
