@@ -6,12 +6,17 @@ set -eu
 # from [http://vrmlengine.sourceforge.net/kambi_vrml_test_suite.php],
 # such that it's a sibling of view3dscene.
 #
-# Tests are fully automatic.
-#
-# Every suitable 3D model format is read,
-# and written back to VRML. Then this written result is read back.
-# This somewhat makes sure that there are no problems with parsing
-# and saving VRML (and other) files.
+# For details what is tested, see run_test_once.sh script.
+# By default tests are fully automatic, although you can uncomment some
+# things to peek inside.
+# In short: every suitable 3D model format is
+# - Read, and written back to VRML. Then this written result is read back.
+#   This somewhat makes sure that there are no problems with parsing
+#   and saving VRML (and other) files.
+# - Then we check rendering abilities, by making screenshots with
+#   various renderer-optimization options.
+#   (This test is currently commented out by default, as it takes a lot
+#   of time and flashes view3dscene window on the screen constantly...)
 #
 # Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
 # it contains files that *should* fail when reading).

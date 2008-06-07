@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eu
 
-# This is usually run by run_tests.sh script.
+# This script is usually run by run_tests.sh script, see there for some
+# comments.
 
 # You can disable heaptrc for shorter output (useful only for debug builds
 # that have heaptrc compiled in)
@@ -53,3 +54,17 @@ echo '---- Reading again' "$FILE"
 view3dscene "$TEMP_FILE" --write-to-vrml > /dev/null
 
 rm -f "$TEMP_FILE"
+
+mk_screnshot ()
+{
+  echo '---- Rendering and making screenshot' "$@"
+  TEMP_SCREENSHOT=/tmp/view3dscene_test_screenshot.png
+  view3dscene "$FILE" --screenshot 0 "$TEMP_SCREENSHOT" "$@"
+  # display "$TEMP_SCREENSHOT"
+  rm -f "$TEMP_SCREENSHOT"
+}
+
+# mk_screnshot --renderer-optimization none
+# mk_screnshot --renderer-optimization scene-as-a-whole
+# mk_screnshot --renderer-optimization separate-shape-states
+# mk_screnshot --renderer-optimization separate-shape-states-no-transform
