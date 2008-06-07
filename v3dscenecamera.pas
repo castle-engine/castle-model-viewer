@@ -96,7 +96,7 @@ var
   Node: TVRMLViewpointNode;
   I: Integer;
   S: string;
-  Viewpoint: TNodeViewpoint;
+  Viewpoint: TNodeX3DViewpointNode;
 begin
   MenuJumpToViewpoint.EntriesDeleteAll;
   { We don't add more than 100 menu item entries for viewpoints. }
@@ -107,9 +107,9 @@ begin
       S := IntToStr(I);
     Node := Items[I].Node;
     S += ': ' + Node.NodeTypeName;
-    if Node is TNodeViewpoint then
+    if Node is TNodeX3DViewpointNode then
     begin
-      Viewpoint := TNodeViewpoint(Node);
+      Viewpoint := TNodeX3DViewpointNode(Node);
       if Viewpoint.FdDescription.Value <> '' then
         S += ' "' + SQuoteMenuEntryCaption(
           SForCaption(Viewpoint.FdDescription.Value)) + '"';

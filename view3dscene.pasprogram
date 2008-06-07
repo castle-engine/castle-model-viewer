@@ -631,6 +631,8 @@ begin
  Box := SceneAnimation.BoundingBoxSum;
 
  { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
+ { TODO: something similar should be done for OrthoViewpoint to take
+   into accound it's fieldOfView. }
  if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
    FieldOfView := TNodeViewpoint(ViewpointNode).FdFieldOfView.Value else
    FieldOfView := DefaultViewpointFieldOfView;
