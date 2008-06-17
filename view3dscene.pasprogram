@@ -1568,6 +1568,16 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       SceneAnimation.Attributes.PointSize := Value;
   end;
 
+  procedure ChangeWireframeWidth;
+  var
+    Value: Single;
+  begin
+    Value := SceneAnimation.Attributes.WireframeWidth;
+    if MessageInputQuery(Glwin, 'Change wireframe line width:',
+      Value, taLeft) then
+      SceneAnimation.Attributes.WireframeWidth := Value;
+  end;
+
   procedure ChangeAnimationTimeSpeed;
   begin
     MessageInputQuery(Glwin,
@@ -2323,6 +2333,8 @@ begin
       FillModesMenu[FillMode].Checked := true;
     end;
 
+  530: ChangeWireframeWidth;
+
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
   1000..1099: SetColorModulatorType(
@@ -2498,6 +2510,8 @@ begin
      MenuAppendFillModes(M2, 500);
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Next _Fill Mode', 520, 'f'));
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItem.Create('Set Wireframe Line Width ...', 530));
      M.Append(M2);
    M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, 'b',
      ShowBBox, true));
