@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=view3dscene
+Exec=view3dscene %f
+Icon=view3dscene.svg
+Type=Application
+Categories=Graphics;3DGraphics
+Comment=View 3D models in various formats, play with VRML / X3D worlds
+MimeType=model/vrml;model/x3d+vrml;model/x3d+xml
