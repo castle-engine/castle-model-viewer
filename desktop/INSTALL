@@ -10,6 +10,10 @@ Desktop file
   ~/.gnome2/vfolders/applications).
 - See http://standards.freedesktop.org/menu-spec/latest/apa.html
   for a list of allowed Category values.
+- "StartupNotify=true" can be useful for me to add to *.desktop files,
+  as GTK 2 backend should automatically support this
+  (http://library.gnome.org/devel/gdk/stable/gdk-General.html#gdk-notify-startup-complete).
+  For now, view3dscene opens instantly fast, so it's not needed.
 
 Icon file
 - Should be copied under /usr/share/icons/,
