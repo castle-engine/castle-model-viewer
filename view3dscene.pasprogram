@@ -2865,7 +2865,8 @@ begin
       LoadClearScene;
       try
         GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
-
+        
+        Glw.GtkIconName := 'view3dscene';
         Glw.MainMenu := CreateMainMenu;
         Glw.OnMenuCommand := @MenuCommand;
         Glw.OnResize := @Resize;
