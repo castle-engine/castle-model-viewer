@@ -15,7 +15,10 @@ install:
 	mkdir -p $(SHARE_PREFIX)/icons/hicolor/scalable/apps/
 	cp desktop/icon/6_thicker.svg $(SHARE_PREFIX)/icons/hicolor/scalable/apps/view3dscene.svg
 	mkdir -p $(SHARE_PREFIX)/icons/hicolor/48x48/apps/
-	inkscape $(SHARE_PREFIX)/icons/hicolor/scalable/apps/view3dscene.svg --export-png=$(SHARE_PREFIX)/icons/hicolor/48x48/apps/view3dscene.png
+# Autogenerate 48x48 PNG version, this helps nautilus to display icon
+# properly on the desktop. Ignore error result if "inkscape" is not
+# available, since this is not crucial.
+	-inkscape $(SHARE_PREFIX)/icons/hicolor/scalable/apps/view3dscene.svg --export-png=$(SHARE_PREFIX)/icons/hicolor/48x48/apps/view3dscene.png
 	mkdir -p $(SHARE_PREFIX)/mime/packages/
 	cp desktop/view3dscene.xml $(SHARE_PREFIX)/mime/packages/
 	update-mime-database $(SHARE_PREFIX)/mime

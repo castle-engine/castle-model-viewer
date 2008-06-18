@@ -25,6 +25,8 @@ Icon file
   Yes, this happens to other programs with only scalable icons too,
   like eog. It doesn't happen e.g. to evolution --- because evolution
   just adds 48x48 icon as PNG file, in addition to SVG in scalable.
+  Fortunately, we can trivially easy just autogenerate PNG 48x48 version
+  to workaround this.
 
 Mime file
 - Should be copied to /usr/share/mime/packages/,
