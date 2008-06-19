@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   viewBox="0 0 1.5176403 4.056"
+   id="svg2464"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="7_tentacles_kasia.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="/tmp/a.png"
+   inkscape:export-xdpi="480"
+   inkscape:export-ydpi="480">
+  <metadata
+     id="metadata2501">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2499">
+    <linearGradient
+       id="linearGradient4771">
+      <stop
+         style="stop-color:#555753;stop-opacity:1;"
+         offset="0"
+         id="stop4773" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop4775" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3167">
+      <stop
+         style="stop-color:#2e3436;stop-opacity:1;"
+         offset="0"
+         id="stop3169" />
+      <stop
+         id="stop3175"
+         offset="0.06061278"
+         style="stop-color:#2e3436;stop-opacity:1;" />
+      <stop
+         style="stop-color:#7d8074;stop-opacity:1;"
+         offset="0.40697148"
+         id="stop3177" />
+      <stop
+         style="stop-color:#807d74;stop-opacity:1;"
+         offset="1"
+         id="stop3171" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 2.0280001 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1.5176402 : 2.0280001 : 1"
+       inkscape:persp3d-origin="0.75882012 : 1.3520001 : 1"
+       id="perspective2503" />
+    <inkscape:perspective
+       id="perspective3404"
+       inkscape:persp3d-origin="1.4805682 : 0.38136911 : 1"
+       inkscape:vp_z="2.9611363 : 0.57205367 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.57205367 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3167"
+       id="linearGradient3185"
+       x1="-0.63802892"
+       y1="4.0923672"
+       x2="0.077149987"
+       y2="3.4864626"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3167"
+       id="linearGradient3211"
+       x1="-0.77867138"
+       y1="3.7383499"
+       x2="0.36128464"
+       y2="3.7383499"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3167"
+       id="linearGradient3200"
+       x1="-0.47767425"
+       y1="4.8427873"
+       x2="0.43797177"
+       y2="4.8427873"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4771"
+       id="radialGradient4815"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1.6909403,-0.7895685,0.1543118,-0.330474,0.3960596,4.7724297)"
+       cx="0.45732221"
+       cy="3.5139356"
+       fx="0.45732221"
+       fy="3.5139356"
+       r="0.98066193" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4771"
+       id="radialGradient4836"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.1918276,-0.224165,1.7996265,1.540018,-5.3541228,-1.5256833)"
+       cx="0.8252458"
+       cy="3.3172085"
+       fx="0.8252458"
+       fy="3.3172085"
+       r="0.57726377" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-height="705"
+     inkscape:window-width="1020"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="0.77254902"
+     bordercolor="#d8d8d8"
+     pagecolor="#ffffff"
+     id="base"
+     showgrid="false"
+     inkscape:zoom="8.0937166"
+     inkscape:cx="27.764942"
+     inkscape:cy="24.266509"
+     inkscape:window-x="4"
+     inkscape:window-y="63"
+     inkscape:current-layer="svg2464"
+     inkscape:showpageshadow="false"
+     showborder="true"
+     borderlayer="false" />
+  <title
+     id="title2466">coubre de bezier : Curve</title>
+  <desc
+     id="desc2468">Un trace dessinant une courbe de type bezie issue de blender</desc>
+  <path
+     sodipodi:type="arc"
+     style="opacity:0.78620689;fill:#d7f4ee;fill-opacity:1;stroke:none;stroke-width:0.01;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path3426"
+     sodipodi:cx="-6.5869765"
+     sodipodi:cy="-2.4866824"
+     sodipodi:rx="2.1211436"
+     sodipodi:ry="1.9269544"
+     d="M -4.4658329,-2.4866824 A 2.1211436,1.9269544 0 1 1 -8.7081201,-2.4866824 A 2.1211436,1.9269544 0 1 1 -4.4658329,-2.4866824 z"
+     transform="matrix(0.9239629,0,0,0.8253146,6.8582426,3.6459816)"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52"
+     inkscape:export-ydpi="52" />
+  <path
+     style="fill:#d7f4ee;fill-rule:evenodd;stroke:#000000;stroke-width:0.00091682;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.5820604,0.34602149 C -1.1427827,-0.64281996 -2.2739642,2.5110148 0.59902879,2.6181494 C -1.0809575,1.6799052 0.38665689,0.050154489 1.9790618,0.91110909 L 1.9554117,0.75437579 L 1.7090573,0.50528199 L 1.5820604,0.34602149 z"
+     id="path3409"
+     sodipodi:nodetypes="cccccc"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52"
+     inkscape:export-ydpi="52" />
+  <path
+     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.03705655;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 0.99739969,3.6142471 L 2.1680595,3.6142471 C 2.1720432,3.6142471 2.1766045,3.6114922 2.1766045,3.6090865 L 2.1766045,3.2942913 C 2.1766045,3.2918855 2.1720432,3.2891307 2.1680595,3.2891307 L 0.99739969,3.1136712 L 0.99739969,3.6142471 z"
+     id="path3405"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.03705655;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 0.97065429,3.6088629 L 0.97065429,3.1082871 C 0.96667069,3.1082871 -0.088920955,3.2865013 -0.088920955,3.2889072 L -0.088920955,3.6037024 C -0.088920955,3.6061082 -0.084359585,3.6088629 -0.080375985,3.6088629 L 0.97065429,3.6088629 z"
+     id="path3407"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <g
+     id="g2474"
+     transform="matrix(1.1295799,0,0,1.1295799,7.0253496,3.7562295)">
+    <path
+       d="M -0.41517425,7.3363514 C -0.41517425,6.7897754 -0.41517425,6.4829273 -0.41517425,5.9363513"
+       id="path2476" />
+  </g>
+  <g
+     transform="matrix(1.7081831,0,0,1.3875546,2.2742819,-2.7321032)"
+     id="g2503"
+     style="fill:#000000;fill-opacity:1"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <g
+     transform="matrix(0.8743597,0,0,0.7244661,1.094008,-0.9991025)"
+     id="g2486"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239">
+    <path
+       d="M -0.68759414,3.757172 C -0.68759414,3.7378348 -0.5150645,3.6983317 -0.5150645,3.6789944 C -0.5150645,3.6596572 -0.51836024,3.5912664 -0.51954579,3.4999878 C -0.57058325,3.4818562 -0.59038214,3.4722057 -0.63588321,3.4583147"
+       id="path2488"
+       style="fill:#eae8e3;fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:nodetypes="cscc" />
+  </g>
+  <g
+     id="g2490"
+     transform="matrix(1.1295799,0,0,1.1295799,7.0253496,3.7562295)">
+    <path
+       d="M 0.37547174,7.3363514 C 0.37547174,6.7897754 0.37547174,6.4829273 0.37547174,5.9363513"
+       id="path2492" />
+  </g>
+  <g
+     transform="matrix(0.8743597,0,0,0.7244661,1.0824454,-0.9799417)"
+     id="g2494"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239">
+    <path
+       d="M 0.5961807,3.4583147 C 0.6596069,3.7222636 0.6523729,3.7720279 0.6165226,3.8019849 C 0.6210039,3.7042251 0.4671976,3.6736681 0.4663994,3.6543474 C 0.464815,3.6159976 0.466142,3.596404 0.4663994,3.4708594 C 0.5212152,3.4660591 0.5589859,3.4611151 0.5961807,3.4583147 z"
+       id="path2496"
+       style="fill:#eae8e3;fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:nodetypes="ccscc" />
+  </g>
+  <g
+     transform="matrix(0.8743597,0,0,0.7244661,1.0824455,-0.9703614)"
+     id="g2482"
+     style="fill-opacity:1"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239">
+    <path
+       d="M 0.73896885,4.1963599 C 0.73896885,4.0963599 0.73896885,3.9224185 0.73896885,3.8224185 C 0.72442901,3.8120694 0.70470679,3.8017204 0.69534934,3.7913713 C 0.69534934,3.7096664 0.69534934,3.6279615 0.69534934,3.5462565 C 0.66229314,3.5169426 0.62923688,3.4876286 0.59618068,3.4583147 C 0.59618068,3.5381889 0.59618068,3.6180632 0.59618068,3.6979375 C 0.53069198,3.6573969 0.46520329,3.6168563 0.39971459,3.5763157 C 0.39971459,3.5069749 0.39971459,3.4244266 0.39971459,3.3682933 C 0.36763546,3.310303 0.18139811,3.2796655 0.087239861,3.2803514 C 0.087239861,3.3517957 0.087239861,3.4232398 0.087239861,3.494684 C 0.051542822,3.4854674 0.018477364,3.4835146 -0.019851252,3.4835247 C -0.058179002,3.4835348 -0.091245331,3.4854674 -0.12694237,3.494684 C -0.12694237,3.4232398 -0.12694237,3.3517957 -0.12694237,3.2803514 C -0.22110061,3.2796655 -0.40733796,3.310303 -0.43941709,3.3682933 C -0.43941709,3.4244266 -0.43941709,3.5069749 -0.43941709,3.5763157 C -0.50490582,3.6168563 -0.57039452,3.6573969 -0.63588321,3.6979375 C -0.63588321,3.6180632 -0.63588321,3.5381889 -0.63588321,3.4583147 C -0.66893941,3.4876286 -0.70199567,3.5169426 -0.73505187,3.5462565 C -0.73505187,3.6279615 -0.73505187,3.7096664 -0.73505187,3.7913713 C -0.74440926,3.8017204 -0.76413155,3.8120694 -0.77867138,3.8224185 C -0.77867138,3.9224185 -0.77867138,4.0941192 -0.77867138,4.1941192"
+       id="path2484"
+       style="fill:url(#linearGradient3211);fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:nodetypes="csscccccccscccccccssc" />
+  </g>
+  <g
+     transform="matrix(0.8743597,0,0,0.7244661,1.0824454,-0.9799417)"
+     id="g2478"
+     style="fill-opacity:1"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239">
+    <path
+       d="M 0.37744632,4.4513645 C 0.48530176,4.4353718 0.51547909,4.4152374 0.59064329,4.3826575 C 0.69068444,4.3392947 0.78196418,4.2079797 0.71406591,4.1224186 C 0.48813993,3.8377212 0.09199024,3.8550055 -0.037218213,3.8559866 C -0.16113359,3.8569275 -0.52784246,3.8377212 -0.75376844,4.1224186 C -0.82166672,4.2079797 -0.73038697,4.3392947 -0.63034576,4.3826575 C -0.55518162,4.4152374 -0.52500427,4.4353718 -0.41714883,4.4513645"
+       id="path2480"
+       style="fill:url(#linearGradient3185);fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     transform="matrix(0.8743597,0,0,0.7244661,1.0824454,-0.9320398)"
+     id="g2470"
+     style="fill-opacity:1"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239">
+    <path
+       d="M 0.37547174,5.6363513 C 0.37547174,5.0788882 0.37547177,4.6844273 0.37547177,4.2084653 C 0.34240529,4.0603693 0.14063244,4.0495579 -0.029115668,4.0492345 C -0.18822928,4.0489314 -0.37400526,4.0536171 -0.40707174,4.2017132 C -0.40977257,4.6799259 -0.41517425,5.0788882 -0.41517425,5.6363513"
+       id="path2472"
+       style="fill:url(#linearGradient3200);fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <path
+     style="fill:#c83771;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.0354124;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.0152264,3.601422 L 2.1383672,3.601422 C 2.1421891,3.601422 2.1465653,3.5987998 2.1465653,3.5965098 L 2.1465653,3.2968659 C 2.1465653,3.2945759 2.1421891,3.2919538 2.1383672,3.2919538 L 1.0152264,3.1249392 L 1.0152264,3.601422 z"
+     id="path3563"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#782144;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.04380097;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.0014736,3.5921028 L 1.0014736,3.1240085 C 0.99552168,3.1240085 -0.58161816,3.2906588 -0.58161816,3.2929084 L -0.58161816,3.5872771 C -0.58161816,3.5895267 -0.57480308,3.5921028 -0.56885128,3.5921028 L 1.0014736,3.5921028 z"
+     id="rect3353"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <g
+     id="g4789"
+     transform="translate(-0.104402,0.1879236)">
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3300"
+       d="M 2.1607477,2.6482559 C 2.2914318,2.61094 2.4871857,2.5564305 2.5947936,2.4919593 C 2.6376579,2.6500769 2.2232738,2.9353972 2.1715326,2.6802805 L 2.1607479,2.6482559 L 2.1607477,2.6482559 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00042746;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3302"
+       d="M 1.8601157,3.43312 C 2.7117824,2.9025509 2.4183791,1.3681167 1.9294912,1.1146674 C 2.7032297,1.9095021 1.648468,3.0103848 1.2704239,3.4235396 C 1.4664841,3.4350988 1.6648914,3.4076782 1.8601157,3.43312 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3304"
+       d="M 2.1410101,2.4066591 C 2.1848778,2.2538239 1.9504631,2.0669636 1.8869263,2.0015117 C 1.9019672,2.1517 1.8927402,2.4239963 2.0349141,2.4854037 C 2.0672693,2.4555569 2.073454,2.4040002 2.1410101,2.4066591 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00035702;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3306"
+       d="M 1.906366,3.0403243 C 1.8634775,3.0047883 1.7773514,2.9031728 1.7213647,2.8103952 C 1.6838814,2.7482804 1.6519892,2.6770222 1.6519892,2.609207 C 1.6519892,2.518386 1.6244649,2.5111128 1.5710511,2.5996267 C 1.5633427,2.6124006 1.5556343,2.6251744 1.5479259,2.6379482 C 1.5091112,2.7022695 1.5132382,2.7778568 1.5132382,2.8487167 C 1.5132382,2.9255136 1.5068277,3.0041866 1.5248007,3.0786459 C 1.5464531,3.1683483 1.6277398,3.2143148 1.7098021,3.2415124 C 1.7695176,3.2613038 1.823612,3.1875537 1.8601156,3.1648693 C 1.9020539,3.1388079 1.8736177,3.074242 1.906366,3.0403243 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3308"
+       d="M 2.2528994,1.8738487 C 2.2910445,1.8539858 2.3626382,1.7697146 2.3800113,1.6973432 C 2.391228,1.6506167 2.3800113,1.5957415 2.3800113,1.5479923 C 2.3800113,1.4824714 2.4426146,1.6145565 2.4680118,1.6498224 C 2.5272202,1.7320385 2.5014904,1.8323042 2.4777896,1.9145807 C 2.4619579,1.9695397 2.4046863,1.9960448 2.331122,1.9960448 C 2.2951027,1.9960448 2.2592556,1.9254441 2.2528994,1.907792 C 2.248947,1.8968154 2.2528994,1.8851632 2.2528994,1.8738487 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00046088;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path2513"
+       d="M 1.8844698,3.4070418 C 2.2525805,3.088341 2.4349188,1.9730922 2.3240704,1.7579567 C 2.4286237,2.3793114 1.8928339,3.0906065 1.697453,3.3588014 C 1.7581246,3.3808141 1.8265651,3.3751839 1.8844698,3.4070418 z"
+       style="fill:#37483e;fill-rule:evenodd;stroke:#000000;stroke-width:0.00029226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       sodipodi:nodetypes="cccc"
+       id="path3290"
+       d="M 2.1335027,2.3983634 C 2.1638672,2.3024152 2.0016098,2.1851064 1.9576308,2.1440164 C 1.9680418,2.2383029 1.9732177,2.4763101 2.0716277,2.514861 C 2.1633989,2.4961235 2.0867419,2.3966942 2.1335027,2.3983634 z"
+       style="fill:#b7c8b7;fill-rule:evenodd;stroke:#000000;stroke-width:0.00023535;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3313"
+       d="M 1.7483724,3.5168106 C 2.2525354,3.6840763 2.6413507,3.0312223 2.5693828,2.98519 C 2.5780044,3.4133943 1.6049768,3.2259157 1.6488228,3.4239173 L 1.7483724,3.5168106 L 1.7483724,3.5168106 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00026752;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3310"
+       d="M 1.7922007,3.4606178 C 2.2022328,3.6140286 2.3722141,3.242753 2.4388557,3.2413709 C 2.1275802,3.3559599 1.6822519,3.2213801 1.7128799,3.3822003 L 1.7922007,3.4606178 L 1.7922007,3.4606178 z"
+       style="fill:#536c53;fill-rule:evenodd;stroke:#000000;stroke-width:0.00021769;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       sodipodi:nodetypes="cssssssssc"
+       id="path3294"
+       d="M 1.7655537,2.9107524 C 1.7439755,2.8905446 1.700643,2.8327599 1.6724747,2.7800011 C 1.6536159,2.7446789 1.63757,2.7041573 1.63757,2.6655936 C 1.63757,2.6139473 1.6237218,2.6098114 1.5968479,2.6601457 C 1.5929696,2.6674097 1.5890913,2.6746736 1.585213,2.6819376 C 1.5656843,2.7185145 1.5677607,2.7614979 1.5677607,2.801793 C 1.5677607,2.8454643 1.5645355,2.8902024 1.5735781,2.9325443 C 1.584472,2.9835544 1.6138068,3.1342387 1.6550946,3.1497048 C 1.6851391,3.1609593 1.723918,2.9944757 1.742284,2.981576 C 1.7633842,2.966756 1.7490773,2.93004 1.7655537,2.9107524 z"
+       style="fill:#008000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00031847;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="g4832"
+     transform="translate(-1.0440197e-2,-1.0440197e-2)">
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3371"
+       d="M 1.0058869,3.3227034 C 0.49427409,3.0203031 -0.2064151,2.3603997 -0.08359011,2.0006012 C -0.36437583,2.5606591 0.31656159,3.5200249 0.9503013,3.485571 L 0.9864272,3.4090997 L 1.0058869,3.3227033 L 1.0058869,3.3227034 z"
+       style="fill:url(#radialGradient4836);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0005838;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3379"
+       d="M 0.21963739,2.6616528 C 0.11505559,2.7266426 0.31651689,2.915859 0.36995089,2.9490643 C 0.48448399,3.0202382 0.56268149,2.9096494 0.62432779,2.8245193 C 0.7097574,2.7065456 0.7358394,2.5507434 0.7746414,2.4221432 C 0.7928105,2.3619256 0.7951562,2.2147717 0.7630787,2.3742413 C 0.7411959,2.48303 0.64725459,2.5601664 0.54338979,2.5945901 C 0.43373129,2.6309338 0.31843159,2.5961665 0.21963739,2.6616528 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <g
+     id="g4825"
+     transform="translate(0.1148422,0)">
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3373"
+       d="M -0.59074164,2.5462604 C -0.64108508,2.4294031 -0.53774428,2.2173325 -0.5540453,2.1269485 C -0.65982147,2.2390607 -0.8462386,2.6338716 -0.59074164,2.5462604 L -0.59074164,2.5462604 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00040467;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3375"
+       d="M 0.24910769,3.390176 C 0.26658259,3.3467238 0.07475339,3.6016789 -0.21106631,3.7201191 C -0.39050391,3.794476 -0.5285329,3.803841 -0.30412561,3.8657992 C -0.17233871,3.902185 0.11250189,3.8538297 0.23881579,3.8014867 C 0.35188289,3.754633 0.38223859,3.7223135 0.43529139,3.6343756 C 0.44390789,3.6200934 0.45252439,3.605811 0.46114089,3.5915288 C 0.49889909,3.5289424 0.51372269,3.4703758 0.42492659,3.4458595 C 0.34279439,3.4231831 0.27665809,3.4738431 0.24910769,3.390176 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3377"
+       d="M -0.12757471,3.2460412 C -0.19069411,3.2722358 -0.27976141,3.3117565 -0.39077043,3.3249612 C -0.55938457,3.345018 -0.76330557,3.2626931 -0.92103827,3.2192293 C -1.2324933,3.1334069 -0.90891093,3.1918164 -0.83331475,3.1828241 C -0.67271459,3.1637205 -0.56317522,3.0727794 -0.41659022,3.055343 C -0.30712045,3.0423214 -0.2074743,3.1385908 -0.18245871,3.200629 C -0.17426591,3.2209473 -0.14586931,3.2309038 -0.12757471,3.2460412 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3381"
+       d="M -0.52036799,2.9203231 C -0.26481831,2.8268503 -0.08625061,2.6098985 -0.12855131,2.3807532 C -0.18549011,2.6119269 -0.82815355,2.5656376 -0.63599374,2.8724212 L -0.5816488,2.89556 L -0.52036792,2.9203231 L -0.52036799,2.9203231 z"
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:export-ydpi="52.260239"
+       inkscape:export-xdpi="52.260239"
+       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+       id="path3384"
+       d="M 0.7630789,3.2556365 C -0.02095301,3.1605842 -1.1514334,2.4448261 -0.53193059,1.8856417 C -1.9415413,2.2766345 -0.2451225,3.7834655 0.7399537,3.543048 C 0.8998338,3.4847548 0.9711415,3.3118145 0.7630789,3.2556365 z"
+       style="fill:url(#radialGradient4815);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 3.24254,7.886564 C 3.24254,7.886564 3.24254,7.886564 3.24254,7.886564 z"
+     id="path3386" />
+</svg>
