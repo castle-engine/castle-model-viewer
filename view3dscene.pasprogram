@@ -2824,6 +2824,11 @@ begin
     Param_SceneFileName := Parameters[1];
   end;
 
+  if WasParam_ScreenShot then
+    { There's no point in using better optimization. They would waste
+      time to prepare display lists, while we only render scene once. }
+    RendererOptimization := roNone;
+
   SceneWarnings := TSceneWarnings.Create;
   try
     VRMLNonFatalError := @VRMLNonFatalError_Warning;
@@ -2865,7 +2870,7 @@ begin
       LoadClearScene;
       try
         GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
-        
+
         Glw.GtkIconName := 'view3dscene';
         Glw.MainMenu := CreateMainMenu;
         Glw.OnMenuCommand := @MenuCommand;
