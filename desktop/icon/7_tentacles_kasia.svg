@@ -34,6 +34,17 @@
   <defs
      id="defs2499">
     <linearGradient
+       id="linearGradient3216">
+      <stop
+         style="stop-color:#37483e;stop-opacity:1;"
+         offset="0"
+         id="stop3218" />
+      <stop
+         style="stop-color:#70927e;stop-opacity:1;"
+         offset="1"
+         id="stop3220" />
+    </linearGradient>
+    <linearGradient
        id="linearGradient4771">
       <stop
          style="stop-color:#555753;stop-opacity:1;"
@@ -106,7 +117,7 @@
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4771"
+       xlink:href="#linearGradient3216"
        id="radialGradient4815"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(-1.6909403,-0.7895685,0.1543118,-0.330474,0.3960596,4.7724297)"
@@ -117,7 +128,7 @@
        r="0.98066193" />
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4771"
+       xlink:href="#linearGradient3216"
        id="radialGradient4836"
        gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(0.1918276,-0.224165,1.7996265,1.540018,-5.3541228,-1.5256833)"
@@ -126,6 +137,17 @@
        fx="0.8252458"
        fy="3.3172085"
        r="0.57726377" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3216"
+       id="radialGradient3222"
+       cx="1.5848087"
+       cy="3.0634773"
+       fx="1.5848087"
+       fy="3.0634773"
+       r="0.50024329"
+       gradientTransform="matrix(0.3249926,0.211103,-1.2982912,1.9987167,5.11287,-3.08416)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      inkscape:window-height="705"
@@ -140,9 +162,9 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="8.0937166"
-     inkscape:cx="27.764942"
-     inkscape:cy="24.266509"
+     inkscape:zoom="5.7231219"
+     inkscape:cx="30.882255"
+     inkscape:cy="12.808458"
      inkscape:window-x="4"
      inkscape:window-y="63"
      inkscape:current-layer="svg2464"
@@ -168,19 +190,12 @@
      inkscape:export-ydpi="52" />
   <path
      style="fill:#d7f4ee;fill-rule:evenodd;stroke:#000000;stroke-width:0.00091682;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 1.5820604,0.34602149 C -1.1427827,-0.64281996 -2.2739642,2.5110148 0.59902879,2.6181494 C -1.0809575,1.6799052 0.38665689,0.050154489 1.9790618,0.91110909 L 1.9554117,0.75437579 L 1.7090573,0.50528199 L 1.5820604,0.34602149 z"
+     d="M 1.5820604,0.34602149 C -1.1427827,-0.64281996 -1.9503181,3.1791874 0.59902879,2.6181494 C -0.96611533,1.6590248 0.58502064,-0.23173085 1.9581814,0.56658257 L 1.7674881,0.44116986 L 1.5820604,0.34602149 z"
      id="path3409"
-     sodipodi:nodetypes="cccccc"
+     sodipodi:nodetypes="ccccc"
      inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
      inkscape:export-xdpi="52"
      inkscape:export-ydpi="52" />
-  <path
-     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.03705655;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 0.99739969,3.6142471 L 2.1680595,3.6142471 C 2.1720432,3.6142471 2.1766045,3.6114922 2.1766045,3.6090865 L 2.1766045,3.2942913 C 2.1766045,3.2918855 2.1720432,3.2891307 2.1680595,3.2891307 L 0.99739969,3.1136712 L 0.99739969,3.6142471 z"
-     id="path3405"
-     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-     inkscape:export-xdpi="52.260239"
-     inkscape:export-ydpi="52.260239" />
   <path
      style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.03705655;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="M 0.97065429,3.6088629 L 0.97065429,3.1082871 C 0.96667069,3.1082871 -0.088920955,3.2865013 -0.088920955,3.2889072 L -0.088920955,3.6037024 C -0.088920955,3.6061082 -0.084359585,3.6088629 -0.080375985,3.6088629 L 0.97065429,3.6088629 z"
@@ -266,101 +281,69 @@
      inkscape:export-xdpi="52.260239"
      inkscape:export-ydpi="52.260239">
     <path
-       d="M 0.37547174,5.6363513 C 0.37547174,5.0788882 0.37547177,4.6844273 0.37547177,4.2084653 C 0.34240529,4.0603693 0.14063244,4.0495579 -0.029115668,4.0492345 C -0.18822928,4.0489314 -0.37400526,4.0536171 -0.40707174,4.2017132 C -0.40977257,4.6799259 -0.41517425,5.0788882 -0.41517425,5.6363513"
+       d="M 0.37547174,5.8696265 C 0.37547174,5.3121634 0.37547177,4.6844273 0.37547177,4.2084653 C 0.34240529,4.0603693 0.14063244,4.0495579 -0.029115668,4.0492345 C -0.18822928,4.0489314 -0.37400526,4.0536171 -0.40707174,4.2017132 C -0.40977257,4.6799259 -0.41517425,5.3121634 -0.41517425,5.8696265"
        id="path2472"
-       style="fill:url(#linearGradient3200);fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#linearGradient3200);fill-opacity:1;stroke:#000000;stroke-width:0.0424385;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:nodetypes="ccscc" />
   </g>
   <path
-     style="fill:#c83771;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.0354124;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 1.0152264,3.601422 L 2.1383672,3.601422 C 2.1421891,3.601422 2.1465653,3.5987998 2.1465653,3.5965098 L 2.1465653,3.2968659 C 2.1465653,3.2945759 2.1421891,3.2919538 2.1383672,3.2919538 L 1.0152264,3.1249392 L 1.0152264,3.601422 z"
+     style="fill:#c83771;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.03582454;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.0363129,3.6116561 L 2.1590445,3.6116561 C 2.1628651,3.6116561 2.1672396,3.6089716 2.1672396,3.6066271 L 2.1672396,3.2998562 C 2.1672396,3.2975118 2.1628651,3.2948273 2.1590445,3.2948273 L 1.0363129,3.1238403 L 1.0363129,3.6116561 z"
      id="path3563"
      inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
      inkscape:export-xdpi="52.260239"
      inkscape:export-ydpi="52.260239" />
   <path
-     style="fill:#782144;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.04380097;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 1.0014736,3.5921028 L 1.0014736,3.1240085 C 0.99552168,3.1240085 -0.58161816,3.2906588 -0.58161816,3.2929084 L -0.58161816,3.5872771 C -0.58161816,3.5895267 -0.57480308,3.5921028 -0.56885128,3.5921028 L 1.0014736,3.5921028 z"
+     style="fill:#782144;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.04425912;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.0012445,3.607534 L 1.0012445,3.1294577 C 0.99529432,3.1294577 -0.58138908,3.2996618 -0.58138908,3.3019593 L -0.58138908,3.6026054 C -0.58138908,3.604903 -0.57457597,3.607534 -0.5686259,3.607534 L 1.0012445,3.607534 z"
      id="rect3353"
      inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
      inkscape:export-xdpi="52.260239"
      inkscape:export-ydpi="52.260239" />
-  <g
-     id="g4789"
-     transform="translate(-0.104402,0.1879236)">
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3300"
-       d="M 2.1607477,2.6482559 C 2.2914318,2.61094 2.4871857,2.5564305 2.5947936,2.4919593 C 2.6376579,2.6500769 2.2232738,2.9353972 2.1715326,2.6802805 L 2.1607479,2.6482559 L 2.1607477,2.6482559 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00042746;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3302"
-       d="M 1.8601157,3.43312 C 2.7117824,2.9025509 2.4183791,1.3681167 1.9294912,1.1146674 C 2.7032297,1.9095021 1.648468,3.0103848 1.2704239,3.4235396 C 1.4664841,3.4350988 1.6648914,3.4076782 1.8601157,3.43312 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3304"
-       d="M 2.1410101,2.4066591 C 2.1848778,2.2538239 1.9504631,2.0669636 1.8869263,2.0015117 C 1.9019672,2.1517 1.8927402,2.4239963 2.0349141,2.4854037 C 2.0672693,2.4555569 2.073454,2.4040002 2.1410101,2.4066591 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00035702;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3306"
-       d="M 1.906366,3.0403243 C 1.8634775,3.0047883 1.7773514,2.9031728 1.7213647,2.8103952 C 1.6838814,2.7482804 1.6519892,2.6770222 1.6519892,2.609207 C 1.6519892,2.518386 1.6244649,2.5111128 1.5710511,2.5996267 C 1.5633427,2.6124006 1.5556343,2.6251744 1.5479259,2.6379482 C 1.5091112,2.7022695 1.5132382,2.7778568 1.5132382,2.8487167 C 1.5132382,2.9255136 1.5068277,3.0041866 1.5248007,3.0786459 C 1.5464531,3.1683483 1.6277398,3.2143148 1.7098021,3.2415124 C 1.7695176,3.2613038 1.823612,3.1875537 1.8601156,3.1648693 C 1.9020539,3.1388079 1.8736177,3.074242 1.906366,3.0403243 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3308"
-       d="M 2.2528994,1.8738487 C 2.2910445,1.8539858 2.3626382,1.7697146 2.3800113,1.6973432 C 2.391228,1.6506167 2.3800113,1.5957415 2.3800113,1.5479923 C 2.3800113,1.4824714 2.4426146,1.6145565 2.4680118,1.6498224 C 2.5272202,1.7320385 2.5014904,1.8323042 2.4777896,1.9145807 C 2.4619579,1.9695397 2.4046863,1.9960448 2.331122,1.9960448 C 2.2951027,1.9960448 2.2592556,1.9254441 2.2528994,1.907792 C 2.248947,1.8968154 2.2528994,1.8851632 2.2528994,1.8738487 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00046088;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path2513"
-       d="M 1.8844698,3.4070418 C 2.2525805,3.088341 2.4349188,1.9730922 2.3240704,1.7579567 C 2.4286237,2.3793114 1.8928339,3.0906065 1.697453,3.3588014 C 1.7581246,3.3808141 1.8265651,3.3751839 1.8844698,3.4070418 z"
-       style="fill:#37483e;fill-rule:evenodd;stroke:#000000;stroke-width:0.00029226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       sodipodi:nodetypes="cccc"
-       id="path3290"
-       d="M 2.1335027,2.3983634 C 2.1638672,2.3024152 2.0016098,2.1851064 1.9576308,2.1440164 C 1.9680418,2.2383029 1.9732177,2.4763101 2.0716277,2.514861 C 2.1633989,2.4961235 2.0867419,2.3966942 2.1335027,2.3983634 z"
-       style="fill:#b7c8b7;fill-rule:evenodd;stroke:#000000;stroke-width:0.00023535;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3313"
-       d="M 1.7483724,3.5168106 C 2.2525354,3.6840763 2.6413507,3.0312223 2.5693828,2.98519 C 2.5780044,3.4133943 1.6049768,3.2259157 1.6488228,3.4239173 L 1.7483724,3.5168106 L 1.7483724,3.5168106 z"
-       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00026752;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       sodipodi:nodetypes="ccccc"
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       id="path3310"
-       d="M 1.7922007,3.4606178 C 2.2022328,3.6140286 2.3722141,3.242753 2.4388557,3.2413709 C 2.1275802,3.3559599 1.6822519,3.2213801 1.7128799,3.3822003 L 1.7922007,3.4606178 L 1.7922007,3.4606178 z"
-       style="fill:#536c53;fill-rule:evenodd;stroke:#000000;stroke-width:0.00021769;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <path
-       inkscape:export-ydpi="52.260239"
-       inkscape:export-xdpi="52.260239"
-       inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
-       sodipodi:nodetypes="cssssssssc"
-       id="path3294"
-       d="M 1.7655537,2.9107524 C 1.7439755,2.8905446 1.700643,2.8327599 1.6724747,2.7800011 C 1.6536159,2.7446789 1.63757,2.7041573 1.63757,2.6655936 C 1.63757,2.6139473 1.6237218,2.6098114 1.5968479,2.6601457 C 1.5929696,2.6674097 1.5890913,2.6746736 1.585213,2.6819376 C 1.5656843,2.7185145 1.5677607,2.7614979 1.5677607,2.801793 C 1.5677607,2.8454643 1.5645355,2.8902024 1.5735781,2.9325443 C 1.584472,2.9835544 1.6138068,3.1342387 1.6550946,3.1497048 C 1.6851391,3.1609593 1.723918,2.9944757 1.742284,2.981576 C 1.7633842,2.966756 1.7490773,2.93004 1.7655537,2.9107524 z"
-       style="fill:#008000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00031847;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  </g>
+  <path
+     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00042746;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 2.0563457,2.8361795 C 2.1870298,2.7988636 2.3827837,2.7443541 2.4903916,2.6798829 C 2.5332559,2.8380005 2.1188718,3.1233208 2.0671306,2.8682041 L 2.0563459,2.8361795 L 2.0563457,2.8361795 z"
+     id="path3300"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.7557137,3.6210436 C 2.6073804,3.0904745 2.3139771,1.5560403 1.8250892,1.302591 C 2.5988277,2.0974257 1.544066,3.1983084 1.1660219,3.6114632 C 1.3620821,3.6230224 1.5604894,3.5956018 1.7557137,3.6210436 z"
+     id="path3302"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00046088;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 2.1484974,2.0617723 C 2.1866425,2.0419094 2.2582362,1.9576382 2.2756093,1.8852668 C 2.286826,1.8385403 2.2756093,1.7836651 2.2756093,1.7359159 C 2.2756093,1.670395 2.3382126,1.8024801 2.3636098,1.837746 C 2.4228182,1.9199621 2.3970884,2.0202278 2.3733876,2.1025043 C 2.3575559,2.1574633 2.3002843,2.1839684 2.22672,2.1839684 C 2.1907007,2.1839684 2.1548536,2.1133677 2.1484974,2.0957156 C 2.144545,2.084739 2.1484974,2.0730868 2.1484974,2.0617723 z"
+     id="path3308"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#b7c8b7;fill-rule:evenodd;stroke:#000000;stroke-width:0.0356754;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 2.0677815,2.5960091 C 2.101781,2.5005461 1.8616495,2.3111187 1.8124057,2.2702365 C 1.824063,2.3640462 1.8298585,2.6008498 1.9400493,2.6392057 C 2.0428066,2.620563 2.0154229,2.5943483 2.0677815,2.5960091 z"
+     id="path3290"
+     sodipodi:nodetypes="cccc"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.00026752;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.6439704,3.7047342 C 2.1481334,3.8719999 2.5369487,3.2191459 2.4649808,3.1731136 C 2.4736024,3.6013179 1.5005748,3.4138393 1.5444208,3.6118409 L 1.6439704,3.7047342 L 1.6439704,3.7047342 z"
+     id="path3313"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#008000;fill-rule:evenodd;stroke:#000000;stroke-width:0.03459945;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.7404415,3.1458541 C 1.696969,3.1381706 1.6297931,3.0979671 1.6009585,3.0439605 C 1.5816537,3.0078028 1.5152469,2.9399847 1.5152469,2.7722633 C 1.5152469,2.7193954 1.5110621,2.749163 1.4682918,2.8426424 C 1.4035337,2.9841784 1.4219185,3.0741732 1.4356,3.1520751 C 1.4542887,3.2584875 1.4724091,3.3333317 1.5146734,3.3491636 C 1.5454286,3.3606843 1.7611377,3.3059385 1.7404415,3.1458541 z"
+     id="path3294"
+     sodipodi:nodetypes="csssssc"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
   <g
      id="g4832"
      transform="translate(-1.0440197e-2,-1.0440197e-2)">
@@ -370,7 +353,7 @@
        inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
        id="path3371"
        d="M 1.0058869,3.3227034 C 0.49427409,3.0203031 -0.2064151,2.3603997 -0.08359011,2.0006012 C -0.36437583,2.5606591 0.31656159,3.5200249 0.9503013,3.485571 L 0.9864272,3.4090997 L 1.0058869,3.3227033 L 1.0058869,3.3227034 z"
-       style="fill:url(#radialGradient4836);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0005838;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#radialGradient4836);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0338;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        inkscape:export-ydpi="52.260239"
        inkscape:export-xdpi="52.260239"
@@ -416,10 +399,26 @@
        inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
        id="path3384"
        d="M 0.7630789,3.2556365 C -0.02095301,3.1605842 -1.1514334,2.4448261 -0.53193059,1.8856417 C -1.9415413,2.2766345 -0.2451225,3.7834655 0.7399537,3.543048 C 0.8998338,3.4847548 0.9711415,3.3118145 0.7630789,3.2556365 z"
-       style="fill:url(#radialGradient4815);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0059538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#radialGradient4815);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0338;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
   <path
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      d="M 3.24254,7.886564 C 3.24254,7.886564 3.24254,7.886564 3.24254,7.886564 z"
      id="path3386" />
+  <path
+     sodipodi:nodetypes="ccscc"
+     style="fill:url(#radialGradient3222);fill-rule:evenodd;stroke:#000000;stroke-width:0.00029226000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+     d="M 1.790508,3.5845252 C 2.3987432,3.1823028 2.2991962,1.9522119 2.1048262,1.7579568 C 2.1571029,2.0686341 2.1536957,2.3861363 1.803506,2.8865677 C 1.581237,3.2041967 1.3775355,3.4596084 1.2537446,3.5884858 C 1.3144162,3.6104985 1.7326033,3.5526673 1.790508,3.5845252 z"
+     id="path2513"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239" />
+  <path
+     style="fill:#536c53;fill-rule:evenodd;stroke:#000000;stroke-width:0.00021769;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 1.6643851,3.6654683 C 1.8686613,3.7843011 2.2026377,3.5728859 2.2797195,3.4462214 C 2.0415254,3.5138295 1.4452038,3.5379648 1.6372653,3.649692 L 1.6643851,3.6654683 z"
+     id="path3310"
+     inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
+     inkscape:export-xdpi="52.260239"
+     inkscape:export-ydpi="52.260239"
+     sodipodi:nodetypes="ccss" />
 </svg>
