@@ -9,16 +9,17 @@ SHARE_PREFIX := $(HOME)/.local/share
 VIEW3DSCENE_ICON := 6_thicker
 ENGINE_ICON := 8_tentacles_moon_polish
 
-ALL_IMAGES := icon/$(ENGINE_ICON)_256x256.png \
+ALL_IMAGES := ../../www/htdocs/images/kambi_vrml_game_engine_icon.png \
               icon/$(VIEW3DSCENE_ICON)_48x48.png
 
 .PHONY: all_images
 all_images: $(ALL_IMAGES)
 
-# We generate PNG versions and put them in SVN repo, to not
-# require user to have inkscape just to install our icons...
+# We generate PNG versions from SVG and put them in our SVN repo,
+# to not require user to have inkscape just to install our icons.
 
-icon/$(ENGINE_ICON)_256x256.png: icon/$(ENGINE_ICON).svg
+
+../../www/htdocs/images/kambi_vrml_game_engine_icon.png: icon/$(ENGINE_ICON).svg
 	inkscape --export-width=256 --export-height=256 $< --export-png=$@
 
 icon/$(VIEW3DSCENE_ICON)_48x48.png: icon/$(VIEW3DSCENE_ICON).svg
