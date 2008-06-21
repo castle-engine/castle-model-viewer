@@ -47,7 +47,7 @@ Mime file
 - Note that our mime XML file describes "model/x3d+binary", but it's
   not yet listed in our desktop file --- because we do not handle x3db yet.
 
-Thumbnailer script
+Thumbnailer script:
 - It works, and this is great :) Just follow
     http://library.gnome.org/devel/integration-guide/stable/thumbnailer.html.en,
   just add gconf keys
@@ -58,20 +58,27 @@ Thumbnailer script
   and make sure that both view3dscene-thumbnailer script and view3dscene
   are available on $PATH. You can add this for other mime types too,
   see view3dscene.xml.
-- But it's NOT suggested for a real use. Two reasons:
-  1. It flashes on the screen when making a screemshot.
-     That's because we actually render the window on screen,
-     so making a screenshot results in ugly window flashing on your desktop.
-     For directory with many VRML / X3D files, this results in view3dscene
-     flashing many times, so is not only ugly but also prevents user
-     to normally work with the desktop.
-  2. We're fast, but not fast enough. For --screenshot, some things
-     (like octree construction) should be avoided to make the process faster.
-     Ideally (and this one is really difficult to implement) we should
-     just stop parsing or loading resources (textures, images) or rendering
-     to OpenGL after some time passed, to avoid spending too much time on this.
-     (Hm, although nautilus will automatically terminate thumbnailer that
-     runs too long? So this is not that much of a problem?)
+
+- Beware that loading arbitrary 3D scene may take a lot of time,
+  consume a lot of memory and CPU power.
+
+  Although we try to be fast, and some things are specially optimized
+  for screenshot (namely, RendererOptimization is always roNone when
+  generating a screenshot for a single image), but stil some things
+  could be optimized more (like octree construction should be avoided
+  for a screenshot).
+
+  But no amount of optimization will make loading fast for any scene.
+  And we can't really detect every resource use (CPU, memory, time)
+  and abort model loading (parsing, loading textures, rendering to OpenGL)
+  --- since this is quite complicated and delegates work to many libraries,
+  OpenGL foremost.
+
+  The bottom line is: making a thumbnail of 3D scene may be resource-consuming,
+  and there's really nothing we can do about it.
+  Nautilus should automatically terminate thumbnailer that
+  runs too long, so this is not critical problem --- but you may experience
+  slowdowns when using this thumbnailer.
 
 You may want to run
   killall gnome-panel

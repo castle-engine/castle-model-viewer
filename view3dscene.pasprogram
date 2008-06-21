@@ -2984,6 +2984,9 @@ begin
         begin
           { --geometry must work as reliably as possible in this case. }
           Glw.ResizeAllowed := raNotAllowed;
+
+          { Do not show window on the screen, since we're working in batch mode. }
+          Glw.WindowVisible := false;
         end;
 
         Glw.SetDemoOptions(K_None, #0, true);
