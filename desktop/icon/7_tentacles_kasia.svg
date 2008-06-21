@@ -120,18 +120,18 @@
        xlink:href="#linearGradient3216"
        id="radialGradient4815"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(-1.6909403,-0.7895685,0.1543118,-0.330474,0.3960596,4.7724297)"
-       cx="0.45732221"
-       cy="3.5139356"
-       fx="0.45732221"
-       fy="3.5139356"
+       gradientTransform="matrix(-1.0661238,-0.1271125,4.318003e-2,-0.3621611,0.7417425,4.8127456)"
+       cx="0.11591901"
+       cy="3.8664722"
+       fx="0.11591901"
+       fy="3.8664722"
        r="0.98066193" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3216"
        id="radialGradient4836"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.1918276,-0.224165,1.7996265,1.540018,-5.3541228,-1.5256833)"
+       gradientTransform="matrix(0.1927463,-0.2233755,1.3136637,1.1335348,-3.7428411,-0.1779454)"
        cx="0.8252458"
        cy="3.3172085"
        fx="0.8252458"
@@ -141,13 +141,24 @@
        inkscape:collect="always"
        xlink:href="#linearGradient3216"
        id="radialGradient3222"
-       cx="1.5848087"
-       cy="3.0634773"
-       fx="1.5848087"
-       fy="3.0634773"
+       cx="1.659088"
+       cy="3.1787071"
+       fx="1.659088"
+       fy="3.1787071"
        r="0.50024329"
-       gradientTransform="matrix(0.3249926,0.211103,-1.2982912,1.9987167,5.11287,-3.08416)"
+       gradientTransform="matrix(0.3692717,0.2732122,-1.1681055,1.5788038,4.6624585,-1.9212414)"
        gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3216"
+       id="radialGradient3279"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1.5094931,-0.7048435,0.1377533,-0.2950123,0.3034133,4.5863476)"
+       cx="0.45732221"
+       cy="3.5139356"
+       fx="0.45732221"
+       fy="3.5139356"
+       r="0.98066193" />
   </defs>
   <sodipodi:namedview
      inkscape:window-height="705"
@@ -162,9 +173,9 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="5.7231219"
-     inkscape:cx="30.882255"
-     inkscape:cy="12.808458"
+     inkscape:zoom="11.446244"
+     inkscape:cx="24.705824"
+     inkscape:cy="24.998974"
      inkscape:window-x="4"
      inkscape:window-y="63"
      inkscape:current-layer="svg2464"
@@ -353,7 +364,7 @@
        inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
        id="path3371"
        d="M 1.0058869,3.3227034 C 0.49427409,3.0203031 -0.2064151,2.3603997 -0.08359011,2.0006012 C -0.36437583,2.5606591 0.31656159,3.5200249 0.9503013,3.485571 L 0.9864272,3.4090997 L 1.0058869,3.3227033 L 1.0058869,3.3227034 z"
-       style="fill:url(#radialGradient4836);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0338;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#radialGradient4836);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.03380000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        inkscape:export-ydpi="52.260239"
        inkscape:export-xdpi="52.260239"
@@ -399,7 +410,8 @@
        inkscape:export-filename="C:\Documents and Settings\Admin\Pulpit\ico.png"
        id="path3384"
        d="M 0.7630789,3.2556365 C -0.02095301,3.1605842 -1.1514334,2.4448261 -0.53193059,1.8856417 C -1.9415413,2.2766345 -0.2451225,3.7834655 0.7399537,3.543048 C 0.8998338,3.4847548 0.9711415,3.3118145 0.7630789,3.2556365 z"
-       style="fill:url(#radialGradient4815);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0338;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:url(#radialGradient4815);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.03380000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       sodipodi:nodetypes="cccc" />
   </g>
   <path
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
