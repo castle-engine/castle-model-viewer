@@ -259,11 +259,12 @@ end;
 
 procedure TRangeScreenShot.EndCapture(Success: boolean);
 var
-  Executable, OutputMovieFileName: string;
+  Executable, OutputMovieFileName, TempFile: string;
+  I: Integer;
 begin
   Progress.Fini;
 
-  if SingleMovieFile then
+  if SingleMovieFile and Success then
   begin
     Executable := FileSearch(
       {$ifdef MSWINDOWS} 'ffmpeg.exe' {$endif}
@@ -272,9 +273,10 @@ begin
 
     if Executable = '' then
     begin
-      DataNonFatalError('You must have "ffmpeg" program from ' +
+      DataNonFatalError(Format('You must have "ffmpeg" program from ' +
         '[http://ffmpeg.mplayerhq.hu/] installed and available on $PATH to be able to ' +
-        'create movie files"');
+        'create movie files". Leaving generated temporary images "%s"',
+        [TemporaryImagesPattern]));
     end else
     begin
       OutputMovieFileName := MakeFileName(FileNamePattern, ScreenShotsList.ScreenShotCounter);
@@ -285,9 +287,17 @@ begin
 
       ExecuteProcess(Executable,
         [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', OutputMovieFileName ]);
-    end;
 
-    { TODO: delete temp image files }
+      Write(Output, 'Removing temporary image files "', TemporaryImagesPattern, '" ...');
+      TemporaryImagesCounter := 1;
+      for I := 1 to FramesCount do
+      begin
+        TempFile := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter);
+        if not DeleteFile(TempFile) then
+          DataNonFatalError(Format('Cannot delete temporary file "%s"', [TempFile]));
+      end;
+      Writeln('done.');
+    end;
   end;
 end;
 
