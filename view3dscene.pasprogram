@@ -1399,6 +1399,57 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
+{ make screen shots ---------------------------------------------------------- }
+
+{ This performs all screenshot takes, as specified in ScreenShotsList.
+  It is used both for batch mode screenshots (--screenshot, --screenshot-range)
+  and interactive (menu items about screenshots) operation. }
+procedure MakeAllScreenShots;
+var
+  I, J: Integer;
+  OldProgressUserInterface: TProgressUserInterface;
+  OldAnimationTime: TAnimationTime;
+begin
+  { Save global things that we change, to restore them later.
+    This isn't needed for batch mode screenshots, but it doesn't hurt
+    to be clean. }
+  OldProgressUserInterface := Progress.UserInterface;
+  OldAnimationTime := AnimationTime;
+  try
+    BeforeDraw(Glw);
+
+    { For TRangeScreenShot to display progress on console
+      (it cannot display progress on GL window, since this would
+      mess rendered image; besides, in the future GL window may be
+      hidden during rendering). }
+    Progress.UserInterface := ProgressConsoleInterface;
+
+    ScreenShotsList.BeginCapture;
+
+    for I := 0 to ScreenShotsList.Count - 1 do
+    begin
+      ScreenShotsList[I].BeginCapture;
+      try
+        for J := 0 to ScreenShotsList[I].Count - 1 do
+        begin
+          AnimationTime := ScreenShotsList[I].UseTime(J);
+          Draw(Glw);
+          glFlush();
+          SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
+        end;
+        ScreenShotsList[I].EndCapture(true);
+      except
+        ScreenShotsList[I].EndCapture(false);
+        raise;
+      end;
+    end;
+
+  finally
+    Progress.UserInterface := OldProgressUserInterface;
+    AnimationTime := OldAnimationTime;
+  end;
+end;
+
 { menu things ------------------------------------------------------------ }
 
 const
@@ -2059,6 +2110,50 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     SceneAnimation.Attributes.PureGeometry    := FillModes[FillMode].PureGeometry;
   end;
 
+  procedure ScreenShotToVideo;
+  var
+    TimeBegin, TimeStep: TAnimationTime;
+    FramesCount: Cardinal;
+    FileNamePattern: string;
+    Range: TRangeScreenShot;
+  begin
+    TimeBegin := AnimationTime;
+    TimeStep := 0.04;
+    FramesCount := 25;
+    FileNamePattern := 'image%d.png';
+
+    if MessageInputQuery(Glwin, 'Input start time for recording movie:',
+      TimeBegin, taLeft) then
+      if MessageInputQuery(Glwin, 'Time step between capturing movie frames:' +NL+NL+
+        'Note that if you later choose to record to a single movie file, like "output.avi", then we''ll generate a movie with 25 frames per second. ' +
+        'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
+        'Input time step between capturing movie frames:', TimeStep, taLeft) then
+        if MessageInputQueryCardinal(Glwin, 'Input frames count to capture:', FramesCount, taLeft) then
+          if Glwin.FileDialog('Images pattern or movie filename to save', FileNamePattern, false) then
+          begin
+            { ScreenShotsList should always be empty in interactive mode
+              (otherwise some rendering behaves differently when
+              MakingScreenShot = true) }
+            Assert(ScreenShotsList.Count = 0);
+
+            Range := TRangeScreenShot.Create;
+            Range.TimeBegin := TimeBegin;
+            Range.TimeStep := TimeStep;
+            Range.FramesCount := FramesCount;
+            Range.FileNamePattern := FileNamePattern;
+            ScreenShotsList.Add(Range);
+
+            try
+              MakeAllScreenShots;
+            except
+              on E: EInvalidScreenShotFileName do
+                MessageOk(Glwin, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
+            end;
+
+            ScreenShotsList.FreeContents;
+          end;
+  end;
+
 var
   S: string;
 begin
@@ -2309,6 +2404,8 @@ begin
     end;
 
   530: ChangeWireframeWidth;
+
+  540: ScreenShotToVideo;
 
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
@@ -2624,11 +2721,12 @@ begin
    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
    M.Append(TMenuItem.Create('Print Bounding Box (of current animation frame)', 110));
    Result.Append(M);
- M := TMenu.Create('_Other');
+ M := TMenu.Create('_Display');
    M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Screenshot ...',               127, K_F5));
+   M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
+   M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItemChecked.Create('Show Status _Text',           122, K_F1,
@@ -2647,39 +2745,6 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
-end;
-
-{ make screen shots ---------------------------------------------------------- }
-
-procedure MakeAllScreenShots;
-var
-  I, J: Integer;
-begin
-  BeforeDraw(Glw);
-
-  { For TRangeScreenShot to display progress on console
-    (it cannot display progress on GL window, since this would
-    mess rendered image; besides, in the future GL window may be
-    hidden during rendering). }
-  Progress.UserInterface := ProgressConsoleInterface;
-
-  for I := 0 to ScreenShotsList.Count - 1 do
-  begin
-    ScreenShotsList[I].BeginCapture;
-    try
-      for J := 0 to ScreenShotsList[I].Count - 1 do
-      begin
-        AnimationTime := ScreenShotsList[I].UseTime(J);
-        Draw(Glw);
-        glFlush();
-        SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
-      end;
-      ScreenShotsList[I].EndCapture(true);
-    except
-      ScreenShotsList[I].EndCapture(false);
-      raise;
-    end;
-  end;
 end;
 
 { main --------------------------------------------------------------------- }

@@ -28,6 +28,8 @@ uses KambiUtils, KambiClassUtils, VRMLOpenGLRenderer;
 {$define read_interface}
 
 type
+  EInvalidScreenShotFileName = class(EInvalidParams);
+
   { World time, used for animations.
 
     "Single" type is *not* enough for this.
@@ -99,6 +101,9 @@ type
     function Count: Cardinal; override;
     function UseTime(const Index: Integer): TAnimationTime; override;
     function UseFileName(const Index: Integer): string; override;
+    
+    { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
+        detected, like an image file with no %d.) }
     procedure BeginCapture; override;
     procedure EndCapture(Success: boolean); override;
   end;
@@ -108,6 +113,8 @@ type
   TScreenShotsList = class(TObjectsList_1)
   private
     ScreenShotCounter: Cardinal;
+  public
+    procedure BeginCapture;
   end;
 
 var
@@ -250,7 +257,7 @@ begin
     SPercentReplace(FileNamePattern, Replaces, ReplacementsDone,
       { ErrorOnUnknownPercentFormat = } false);
     if ReplacementsDone = 0 then
-      raise EInvalidParams.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no %%d pattern found', [FileNamePattern]);
+      raise EInvalidScreenShotFileName.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no %%d pattern found', [FileNamePattern]);
   end;
 
   Progress.Init(Count, Format('Screenshot range from time %f (%d frames)',
@@ -301,11 +308,17 @@ begin
   end;
 end;
 
+{ TScreenShotsList ----------------------------------------------------------- }
+
+procedure TScreenShotsList.BeginCapture;
+begin
+  ScreenShotCounter := 1;
+end;
+
 { unit initialization / finalization ---------------------------------------- }
 
 initialization
   ScreenShotsList := TScreenShotsList.Create;
-  ScreenShotsList.ScreenShotCounter := 1;
 finalization
   FreeWithContentsAndNil(ScreenShotsList);
 end.
