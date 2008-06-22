@@ -101,7 +101,7 @@ type
     function Count: Cardinal; override;
     function UseTime(const Index: Integer): TAnimationTime; override;
     function UseFileName(const Index: Integer): string; override;
-    
+
     { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
         detected, like an image file with no %d.) }
     procedure BeginCapture; override;
@@ -290,10 +290,10 @@ begin
 
       Writeln(Output, 'FFMpeg found, executing...');
       Writeln(Output, Executable + ' -f image2 -i "' +
-        TemporaryImagesPattern + '" -y "' + OutputMovieFileName + '"');
+        TemporaryImagesPattern + '" -y -sameq "' + OutputMovieFileName + '"');
 
       ExecuteProcess(Executable,
-        [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', OutputMovieFileName ]);
+        [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-sameq', OutputMovieFileName ]);
 
       Write(Output, 'Removing temporary image files "', TemporaryImagesPattern, '" ...');
       TemporaryImagesCounter := 1;
