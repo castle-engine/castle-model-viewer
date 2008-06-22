@@ -1,0 +1,16 @@
+(Don't hold me too much for any info in this file (and please report mistakes),
+I'm not a Windows programmer, I just wanted to quickly reuse my beatiful
+SVG icon for ugly Windows exe.)
+
+- The automatic export by Inkscape to 32x32 size in view3dscene.png was
+  a starting point. But at 32x32, you really have to fix details manually.
+  Also Windows (at least Win 2000 Prof) cannot handle 8bit alpha well (actually,
+  it's not handled at all, it seems). So the view3dscene.png version was reworked
+  in GIMP a bit to make it look good.
+
+- Then convert from view3dscene.png -> view3dscene.ico.
+  I used GIMP (choosing 8bpp, 1bit alpha, 256 palette --- like said, Windows
+  doesn't seem to handle 8bit alpha channel, it's just ignored.)
+
+- After this `make' will do view3dscene.res, which will be automatically included
+  in view3dscene.exe when recompiled.

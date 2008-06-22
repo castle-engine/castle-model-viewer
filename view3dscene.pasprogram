@@ -60,6 +60,10 @@
 
 program view3dscene;
 
+{$ifdef MSWINDOWS}
+  {$R windows/view3dscene.res}
+{$endif MSWINDOWS}
+
 uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
