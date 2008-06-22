@@ -2,7 +2,11 @@
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
 
   <!-- VRML, 3DS mime spec is copied from
-       /usr/share/mime/packages/freedesktop.org.xml in Debian. -->
+       /usr/share/mime/packages/freedesktop.org.xml in Debian.
+
+       I also added Gzip compressed extensions to this, which is
+       not 100% correct solution, but see below for comments about
+       this for X3D. -->
 
   <mime-type type="model/vrml">
     <sub-class-of type="text/plain"/>
@@ -42,6 +46,10 @@
     <comment xml:lang="zh_CN">VRML 文档</comment>
     <comment xml:lang="zh_TW">VRML 文件</comment>
     <glob pattern="*.wrl"/>
+
+    <!-- Gzip compressed -->
+    <glob pattern="*.wrz"/>
+    <glob pattern="*.wrl.gz"/>
   </mime-type>
 
   <mime-type type="image/x-3ds">
@@ -84,24 +92,46 @@
   </mime-type>
 
   <!-- X3D mimes just written based on X3D encodings specs.
-       TODO: should I add here the xxx.gz versions too?
+
+       Note that I add Gzip compressed extensions here.
+       All X3D encoding specifications say that
+       Gzip compressed files indeed have the same MIME type as
+       the normal uncompressed files.
+
+       The one problem with this is that this makes "sub-class-of"
+       somewhat invalid: Gzip compressed X3D is not really a subclass
+       of text/xml, it's a binary data now (unless it's Ok?).
+       But, since the spec says the mime type should be same, there's
+       no correct solution here. Simply removing "sub-class-of" clauses
+       would suck (and cause warnings from nautilus when double-clicking
+       the file, since detected by "file" contents would conflict with
+       mime specified, so the "file type" description would switch
+       between "X3D model" and "XML document").
   -->
 
   <mime-type type="model/x3d+vrml">
     <sub-class-of type="text/plain"/>
     <comment>X3D model (classic VRML encoding)</comment>
     <glob pattern="*.x3dv"/>
+    <!-- Gzip compressed -->
+    <glob pattern="*.x3dv.gz"/>
+    <glob pattern="*.x3dvz"/>
   </mime-type>
 
   <mime-type type="model/x3d+xml">
     <sub-class-of type="text/xml"/>
     <comment>X3D model (XML encoding)</comment>
     <glob pattern="*.x3d"/>
+    <!-- Gzip compressed -->
+    <glob pattern="*.x3d.gz"/>
+    <glob pattern="*.x3dz"/>
   </mime-type>
 
   <mime-type type="model/x3d+binary">
     <comment>X3D model (binary compressed)</comment>
     <glob pattern="*.x3db"/>
+    <!-- Gzip compressed -->
+    <glob pattern="*.x3db.gz"/>
   </mime-type>
 
   <!-- Collada, Inventor, other mime types just invented by Kambi.
