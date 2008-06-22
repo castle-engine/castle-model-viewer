@@ -12,5 +12,12 @@ SVG icon for ugly Windows exe.)
   I used GIMP (choosing 8bpp, 1bit alpha, 256 palette --- like said, Windows
   doesn't seem to handle 8bit alpha channel, it's just ignored.)
 
-- After this `make' will do view3dscene.res, which will be automatically included
-  in view3dscene.exe when recompiled.
+- After this `make' will make view3dscene.res.
+
+  Note that main icon has MainIcon identifier, not AppIcon.
+  Although [http://freepascal.org/docs-html/prog/progse61.html] suggests using AppIcon,
+  I saw some programs using MAINICON, and my GLWindow in WinAPI backend also loads icon
+  from MAINICON name. Ultimately, it doesn't seem to matter to Windows (it grabs
+  the first ico available in file?).
+
+  view3dscene.res will be automatically included in view3dscene.exe when recompiled.
