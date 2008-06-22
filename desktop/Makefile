@@ -18,7 +18,6 @@ all_images: $(ALL_IMAGES)
 # We generate PNG versions from SVG and put them in our SVN repo,
 # to not require user to have inkscape just to install our icons.
 
-
 ../../www/htdocs/images/kambi_vrml_game_engine_icon.png: icon/$(ENGINE_ICON).svg
 	inkscape --export-width=256 --export-height=256 $< --export-png=$@
 

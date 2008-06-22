@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-  <!-- VRML mime spec is copied from
+
+  <!-- VRML, 3DS mime spec is copied from
        /usr/share/mime/packages/freedesktop.org.xml in Debian. -->
+
   <mime-type type="model/vrml">
     <sub-class-of type="text/plain"/>
     <comment>VRML document</comment>
@@ -42,6 +44,45 @@
     <glob pattern="*.wrl"/>
   </mime-type>
 
+  <mime-type type="image/x-3ds">
+    <comment>3D Studio image</comment>
+    <comment xml:lang="az">3D Studio rəsmi</comment>
+    <comment xml:lang="bg">Изображение — 3D Studio</comment>
+    <comment xml:lang="ca">imatge de 3D Studio</comment>
+    <comment xml:lang="cs">Obrázek 3D Studio</comment>
+    <comment xml:lang="cy">Delwedd "3D Studio"</comment>
+    <comment xml:lang="da">3D Studio-billede</comment>
+    <comment xml:lang="de">3D Studio-Bild</comment>
+    <comment xml:lang="el">εικόνα 3D Studio</comment>
+    <comment xml:lang="en_GB">3D Studio image</comment>
+    <comment xml:lang="eo">bildo de 3D Studio</comment>
+    <comment xml:lang="es">imagen de 3D Studio</comment>
+    <comment xml:lang="eu">3D Studio-ko irudia</comment>
+    <comment xml:lang="fi">3D Studio -kuva</comment>
+    <comment xml:lang="fr">image 3D Studio</comment>
+    <comment xml:lang="hu">3D Studio-kép</comment>
+    <comment xml:lang="it">Immagine 3D Studio</comment>
+    <comment xml:lang="ja">3D Studio 画像</comment>
+    <comment xml:lang="ko">3D Studio 그림</comment>
+    <comment xml:lang="lt">3D Studio paveikslėlis</comment>
+    <comment xml:lang="ms">Imej 3D Studio</comment>
+    <comment xml:lang="nb">3D Studio-bilde</comment>
+    <comment xml:lang="nl">3D-Studio-afbeelding</comment>
+    <comment xml:lang="nn">3D Studio-bilete</comment>
+    <comment xml:lang="pl">Obraz 3D Studio</comment>
+    <comment xml:lang="pt">imagem 3D Studio</comment>
+    <comment xml:lang="pt_BR">Imagem do 3D Studio</comment>
+    <comment xml:lang="ru">изображение 3D Studio</comment>
+    <comment xml:lang="sq">Figurë 3D Studio</comment>
+    <comment xml:lang="sr">3D Studio слика</comment>
+    <comment xml:lang="sv">3D Studio-bild</comment>
+    <comment xml:lang="uk">Зображення 3D Studio</comment>
+    <comment xml:lang="vi">Ảnh xuởng vẽ 3D</comment>
+    <comment xml:lang="zh_CN">3D Studio 图像</comment>
+    <comment xml:lang="zh_TW">3D Studio 圖片</comment>
+    <glob pattern="*.3ds"/>
+  </mime-type>
+
   <!-- X3D mimes just written based on X3D encodings specs.
        TODO: should I add here the xxx.gz versions too?
   -->
@@ -61,5 +102,50 @@
   <mime-type type="model/x3d+binary">
     <comment>X3D model (binary compressed)</comment>
     <glob pattern="*.x3db"/>
+  </mime-type>
+
+  <!-- Collada, Inventor, other mime types just invented by Kambi.
+       If there's any official agreement what mime types to use for them,
+       please report to Kambi ([http://vrmlengine.sourceforge.net/] author),
+       and this file will be adjusted to specify standard mime values.
+  -->
+
+  <mime-type type="application/x-collada">
+    <sub-class-of type="text/xml"/>
+    <comment>COLLADA model</comment>
+    <glob pattern="*.dae"/>
+  </mime-type>
+
+  <mime-type type="application/x-inventor">
+    <sub-class-of type="text/plain"/>
+    <comment>Inventor model</comment>
+    <glob pattern="*.iv"/>
+  </mime-type>
+
+  <mime-type type="application/x-md3">
+    <comment>MD3 (Quake 3 engine) model</comment>
+    <glob pattern="*.md3"/>
+  </mime-type>
+
+  <mime-type type="application/x-wavefront-obj">
+    <sub-class-of type="text/plain"/>
+    <comment>Wavefront OBJ model</comment>
+    <glob pattern="*.obj"/>
+  </mime-type>
+
+  <mime-type type="application/x-geo">
+    <sub-class-of type="text/plain"/>
+    <comment>Videoscape GEO model</comment>
+    <glob pattern="*.geo"/>
+  </mime-type>
+
+  <!-- Kanim is my format, see
+       [http://vrmlengine.sourceforge.net/kanim_format.php],
+       so I can invent any mime type I want here... -->
+
+  <mime-type type="application/x-kanim">
+    <sub-class-of type="text/xml"/>
+    <comment>Kambi VRML engine animation</comment>
+    <glob pattern="*.kanim"/>
   </mime-type>
 </mime-info>

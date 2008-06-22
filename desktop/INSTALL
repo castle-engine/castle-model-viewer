@@ -48,16 +48,9 @@ Mime file
   not yet listed in our desktop file --- because we do not handle x3db yet.
 
 Thumbnailer script:
-- It works, and this is great :) Just follow
-    http://library.gnome.org/devel/integration-guide/stable/thumbnailer.html.en,
-  just add gconf keys
-    /desktop/gnome/thumbnailers/model@vrml/enable
-      (boolean true)
-    /desktop/gnome/thumbnailers/model@vrml/command
-      (string "view3dscene-thumbnailer %i %o %s")
-  and make sure that both view3dscene-thumbnailer script and view3dscene
-  are available on $PATH. You can add this for other mime types too,
-  see view3dscene.xml.
+- It works, and this is great :)
+  Installation instructions are on
+  [http://vrmlengine.sourceforge.net/view3dscene.php#section_nautilus_thumbnailer].
 
 - Beware that loading arbitrary 3D scene may take a lot of time,
   consume a lot of memory and CPU power.
