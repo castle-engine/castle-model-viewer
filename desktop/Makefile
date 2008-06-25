@@ -25,7 +25,7 @@ icon/$(VIEW3DSCENE_ICON)_48x48.png: icon/$(VIEW3DSCENE_ICON).svg
 	inkscape --export-width=48 --export-height=48 $< --export-png=$@
 
 .PHONY: install
-install: all_images
+install: icon/$(VIEW3DSCENE_ICON)_48x48.png
 # Install mime types:
 	mkdir -p $(SHARE_PREFIX)/mime/packages/
 	cp view3dscene.xml $(SHARE_PREFIX)/mime/packages/
@@ -46,3 +46,29 @@ install: all_images
 	mkdir -p $(SHARE_PREFIX)/applications/
 	cp view3dscene.desktop $(SHARE_PREFIX)/applications/
 	if which update-desktop-database >/dev/null 2>&1 ; then update-desktop-database -q $(SHARE_PREFIX)/applications/; fi
+
+# GNOME thumbnailer stuff ------------------------------------------------------
+
+# This should be called only by recursive make call from install_thumbnailer.
+# (This looks better than using a GNU make function).
+.PHONY: install_single_thumbnailer
+install_single_thumbnailer:
+	@echo 'Installing for MIME '$(THUMBNAILER_MIME)
+	gconftool --type bool   --set /desktop/gnome/thumbnailers/$(subst +,@,$(subst /,@,$(THUMBNAILER_MIME)))/enable true
+	gconftool --type string --set /desktop/gnome/thumbnailers/$(subst +,@,$(subst /,@,$(THUMBNAILER_MIME)))/command "view3dscene-thumbnailer %i %o %s"
+
+.PHONY: install_thumbnailer
+install_thumbnailer:
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=model/vrml
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=image/x-3ds
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=model/x3d+vrml
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=model/x3d+xml
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-collada
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-inventor
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-md3
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-wavefront-obj
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-geo
+	@$(MAKE) --no-print-directory install_single_thumbnailer THUMBNAILER_MIME=application/x-kanim
+	@echo '--------'
+	@echo 'All done. Remember to call also "make install" (before or after "make install_thumbnailer"), otherwise MIME types of 3D models will not be known and thumbnailer will never be run.'
+	@echo '--------'
