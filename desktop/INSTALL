@@ -14,6 +14,9 @@ Desktop file
   as GTK 2 backend should automatically support this
   (http://library.gnome.org/devel/gdk/stable/gdk-General.html#gdk-notify-startup-complete).
   For now, view3dscene opens instantly fast, so it's not needed.
+- update-desktop-database call is needed to actually associate my program
+  with MimeType specified in desktop file. (Found by looking at some Debian
+  packges postinst script.)
 
 Icon file
 - Should be copied under /usr/share/icons/,
