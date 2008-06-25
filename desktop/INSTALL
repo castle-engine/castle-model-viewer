@@ -1,5 +1,8 @@
-"make install" (in parent dir, -C ..) does basic install of this for
-current user.
+"make install" does basic install of this for current user. See
+  http://vrmlengine.sourceforge.net/view3dscene.php#section_install_free_desktop
+for user documentation how to use data and makefiles in this directory.
+File below is only for developers, some internal notes from Kambi how this
+works.
 
 See http://library.gnome.org/devel/integration-guide/stable/desktop-files.html.en
 for basic GNOME integration instructions.
@@ -51,9 +54,7 @@ Mime file
   not yet listed in our desktop file --- because we do not handle x3db yet.
 
 Thumbnailer script:
-- It works, and this is great :)
-  Installation instructions are on
-  [http://vrmlengine.sourceforge.net/view3dscene.php#section_nautilus_thumbnailer].
+- It works :)
 
 - Beware that loading arbitrary 3D scene may take a lot of time,
   consume a lot of memory and CPU power.
