@@ -1288,7 +1288,11 @@ begin
     end;
     {$endif CATCH_EXCEPTIONS}
 
-    RecentMenu.Add(ASceneFileName);
+    { For batch operation (making screenshots), do not save the scene
+      on "recent files" menu. This also applies when using view3dscene
+      as a thumbnailer. }
+    if not MakingScreenShot then
+      RecentMenu.Add(ASceneFileName);
 
     { We call PrepareRender to make SceneAnimation.PrepareRender to gather
       VRML warnings (because some warnings, e.g. invalid texture filename,

@@ -51,11 +51,19 @@ install: icon/$(VIEW3DSCENE_ICON)_48x48.png
 
 # This should be called only by recursive make call from install_thumbnailer.
 # (This looks better than using a GNU make function).
+#
+# view3dscene command notes:
+# - TODO: spec says that we should make PNG file on the output.
+#   But currently we recognize output file type by extension,
+#   and nautilus calls us with something like "/tmp/.gnome_thumbnail.0WOIDU",
+#   and on unrecognized extension we produce BMP format.
+#   Seems that it's handled Ok, but I should probably switch to PNG anyway.
+# - %s is what everyone uses, but will this handle filenames with spaces?
 .PHONY: install_single_thumbnailer
 install_single_thumbnailer:
 	@echo 'Installing for MIME '$(THUMBNAILER_MIME)
 	gconftool --type bool   --set /desktop/gnome/thumbnailers/$(subst +,@,$(subst /,@,$(THUMBNAILER_MIME)))/enable true
-	gconftool --type string --set /desktop/gnome/thumbnailers/$(subst +,@,$(subst /,@,$(THUMBNAILER_MIME)))/command "view3dscene-thumbnailer %i %o %s"
+	gconftool --type string --set /desktop/gnome/thumbnailers/$(subst +,@,$(subst /,@,$(THUMBNAILER_MIME)))/command "view3dscene %i --screenshot 0 %o --geometry %sx%s"
 
 .PHONY: install_thumbnailer
 install_thumbnailer:
