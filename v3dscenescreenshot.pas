@@ -131,7 +131,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils, EnumerateFiles,
-  DataErrors;
+  DataErrors, Videos;
 
 {$define read_implementation}
 {$I objectslist_1.inc}
@@ -208,13 +208,7 @@ var
 begin
   { calculate SingleMovieFile }
   Ext := ExtractFileExt(FileNamePattern);
-  SingleMovieFile :=
-    SameText(Ext, '.avi') or
-    SameText(Ext, '.mpg') or
-    SameText(Ext, '.dvd') or
-    SameText(Ext, '.ogg') or
-    SameText(Ext, '.mov') or
-    SameText(Ext, '.swf');
+  SingleMovieFile := FfmpegVideoFileExtension(Ext, true);
 
   if SingleMovieFile then
   begin
