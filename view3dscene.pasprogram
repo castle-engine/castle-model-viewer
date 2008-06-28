@@ -161,7 +161,7 @@ var
   AnimationTime: TAnimationTime = 0.0;
   AnimationTimeSpeed: TAnimationTime = 1.0;
   AnimationTimeSpeedWhenLoading: TAnimationTime = 1.0;
-  AnimationTimePaused: boolean = false;
+  AnimationTimePlaying: boolean = true;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapeStatesCount: Cardinal;
@@ -350,7 +350,7 @@ begin
       Glw.FpsFrameTime ]));
 
   S := Format('World time : %f', [AnimationTime]);
-  if AnimationTimePaused then
+  if not AnimationTimePlaying then
     S += ' (paused)';
   strs.Append(S);
 
@@ -436,7 +436,6 @@ procedure Draw(glwin: TGLWindow);
 
 var
   Scene: TVRMLFlatSceneGL;
-
 
   procedure ClearAndRenderBackground;
   var
@@ -696,7 +695,7 @@ procedure Idle(glwin: TGLWindow);
 var
   OldAnimationTime: TAnimationTime;
 begin
-  if not AnimationTimePaused then
+  if AnimationTimePlaying then
   begin
     OldAnimationTime := AnimationTime;
     AnimationTime += AnimationTimeSpeed * Glwin.IdleCompSpeed / 50;
@@ -2381,7 +2380,7 @@ begin
   203: MatrixWalker.PreferGravityUpForMoving := not MatrixWalker.PreferGravityUpForMoving;
   205: ChangeMoveSpeed;
 
-  220: AnimationTimePaused := not AnimationTimePaused;
+  220: AnimationTimePlaying := not AnimationTimePlaying;
   221: AnimationTime := SceneAnimation.TimeBegin;
   222: ChangeAnimationTimeSpeed;
   223: ChangeAnimationTimeSpeedWhenLoading;
@@ -2683,7 +2682,8 @@ begin
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Animation');
-   M.Append(TMenuItem.Create('Pause / Play', 220, CtrlP));
+   M.Append(TMenuItemChecked.Create('_Playing / Paused',   220, CtrlP,
+     AnimationTimePlaying, true));
    M.Append(TMenuItem.Create('Rewind to Beginning', 221));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Make Time Pass Slower or Faster (on display) ...', 222));

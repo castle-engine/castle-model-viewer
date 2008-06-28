@@ -144,13 +144,9 @@ end;
 function MakeFileName(const FileNamePattern: string;
   var Counter: Cardinal): string;
 var
-  Replaces: array [0..0] of TPercentReplace;
   ReplacementsDone: Cardinal;
 begin
-  Replaces[0].c := 'd';
-  Replaces[0].s := IntToStr(Counter);
-  Result := SPercentReplace(FileNamePattern, Replaces, ReplacementsDone,
-    { ErrorOnUnknownPercentFormat = } false);
+  Result := FormatIndexedName(FileNamePattern, Counter, ReplacementsDone);
   if ReplacementsDone > 0 then
     Inc(Counter);
 end;
@@ -205,7 +201,6 @@ end;
 
 procedure TRangeScreenShot.BeginCapture;
 var
-  Replaces: array [0..0] of TPercentReplace;
   ReplacementsDone: Cardinal;
   TemporaryImagesPrefix, Ext: string;
   FileRec: TSearchRec;
@@ -250,12 +245,9 @@ begin
   if not SingleMovieFile then
   begin
     { Check that we have some %d in our filename.
-      Just call SPercentReplace and ignore result,
+      Just call FormatIndexedName and ignore result,
       to get and check ReplacementsDone. }
-    Replaces[0].c := 'd';
-    Replaces[0].s := 'dummy';
-    SPercentReplace(FileNamePattern, Replaces, ReplacementsDone,
-      { ErrorOnUnknownPercentFormat = } false);
+    FormatIndexedName(FileNamePattern, -1, ReplacementsDone);
     if ReplacementsDone = 0 then
       raise EInvalidScreenShotFileName.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no %%d pattern found', [FileNamePattern]);
   end;
