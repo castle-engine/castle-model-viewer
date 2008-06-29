@@ -698,7 +698,7 @@ begin
   if AnimationTimePlaying then
   begin
     OldAnimationTime := AnimationTime;
-    AnimationTime += AnimationTimeSpeed * Glwin.IdleCompSpeed / 50;
+    AnimationTime += AnimationTimeSpeed * Glwin.IdleSpeed;
     WorldTime := AnimationTime;
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
