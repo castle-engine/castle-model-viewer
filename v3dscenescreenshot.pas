@@ -23,32 +23,12 @@ unit V3DSceneScreenShot;
 
 interface
 
-uses KambiUtils, KambiClassUtils, VRMLOpenGLRenderer;
+uses KambiUtils, KambiClassUtils, VRMLOpenGLRenderer, KambiTimeUtils;
 
 {$define read_interface}
 
 type
   EInvalidScreenShotFileName = class(EInvalidParams);
-
-  { World time, used for animations.
-
-    "Single" type is *not* enough for this.
-    Proof: open rotate.kanim (from kambi_vrml_test_suite).
-    Change "on display" time pass to 1000, wait a couple seconds
-    (world time will reach a couple of thousands),
-    change "on display" time pass back to 1.
-    Result: with TAnimationTime as Single, animation becomes jagged.
-    Reason: the precision loss of Single time, and the fact that
-    Draw is not called all the time (because AutoRedisplay is false,
-    and model is in Examine mode and is still (not rotating)),
-    so incrementation steps of AnimationTime are very very small.
-
-    Setting AutoRedisplay to true workarounds the problem too, but that's
-    1. unacceptable to eat 100% CPU without a reason for utility like
-    view3dscene 2. that's asking for trouble, after all even with
-    AutoRedisplay = true the precision loss is there, it's just not
-    noticeable... using better precision feels much safer. }
-  TAnimationTime = TWorldTime;
 
   { One screenshot, that is one --screenshot or --screenshot-range option
     occurence.
@@ -65,7 +45,7 @@ type
     FileNamePattern: string;
 
     function Count: Cardinal; virtual; abstract;
-    function UseTime(const Index: Integer): TAnimationTime; virtual; abstract;
+    function UseTime(const Index: Integer): TKamTime; virtual; abstract;
     function UseFileName(const Index: Integer): string; virtual; abstract;
 
     { Call BeginCapture, EndCapture around saving all images for this
@@ -81,10 +61,10 @@ type
   end;
 
   TSingleScreenShot = class(TScreenShot)
-    Time: TAnimationTime;
+    Time: TKamTime;
 
     function Count: Cardinal; override;
-    function UseTime(const Index: Integer): TAnimationTime; override;
+    function UseTime(const Index: Integer): TKamTime; override;
     function UseFileName(const Index: Integer): string; override;
   end;
 
@@ -95,11 +75,11 @@ type
     TemporaryImagesPattern: string;
     TemporaryImagesCounter: Cardinal;
   public
-    TimeBegin, TimeStep: TAnimationTime;
+    TimeBegin, TimeStep: TKamTime;
     FramesCount: Cardinal;
 
     function Count: Cardinal; override;
-    function UseTime(const Index: Integer): TAnimationTime; override;
+    function UseTime(const Index: Integer): TKamTime; override;
     function UseFileName(const Index: Integer): string; override;
 
     { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
@@ -168,7 +148,7 @@ begin
   Result := 1;
 end;
 
-function TSingleScreenShot.UseTime(const Index: Integer): TAnimationTime;
+function TSingleScreenShot.UseTime(const Index: Integer): TKamTime;
 begin
   Result := Time;
 end;
@@ -185,7 +165,7 @@ begin
   Result := FramesCount;
 end;
 
-function TRangeScreenShot.UseTime(const Index: Integer): TAnimationTime;
+function TRangeScreenShot.UseTime(const Index: Integer): TKamTime;
 begin
   Result := TimeBegin + Index * TimeStep;
 end;

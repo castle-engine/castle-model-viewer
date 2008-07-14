@@ -158,9 +158,10 @@ var
   RendererOptimization: TGLRendererOptimization = roSeparateShapeStates;
 
 var
-  AnimationTime: TAnimationTime = 0.0;
-  AnimationTimeSpeed: TAnimationTime = 1.0;
-  AnimationTimeSpeedWhenLoading: TAnimationTime = 1.0;
+  { When setting this, always update also WorldTime }
+  AnimationTime: TKamTime = 0.0;
+  AnimationTimeSpeed: TKamTime = 1.0;
+  AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
@@ -693,20 +694,23 @@ end;
 
 procedure Idle(glwin: TGLWindow);
 var
-  OldAnimationTime: TAnimationTime;
+  OldAnimationTime, TimeIncrease: TKamTime;
+  SomethingChanged: boolean;
 begin
   if AnimationTimePlaying then
   begin
     OldAnimationTime := AnimationTime;
-    AnimationTime += AnimationTimeSpeed * Glwin.IdleSpeed;
-    WorldTime := AnimationTime;
+    TimeIncrease := AnimationTimeSpeed * Glwin.IdleSpeed;
+
+    AnimationTime += TimeIncrease;
+    IncreaseWorldTime(TimeIncrease, SomethingChanged);
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
       still, or if the animation stopped running. }
     if (SceneAnimation.SceneFromTime(OldAnimationTime) <>
         SceneAnimation.SceneFromTime(AnimationTime)) or
-       WorldTimeWatchersExist then
+       SomethingChanged then
       Glwin.PostRedisplay;
   end;
 end;
@@ -1033,6 +1037,7 @@ var
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedCameraPos, SavedCameraDir, SavedCameraUp, SavedGravityUp: TVector3Single;
+  DummySomethingChanged: boolean;
 begin
   FreeScene;
 
@@ -1048,6 +1053,7 @@ begin
     SceneAnimation.TimeBackwards := TimeBackwards;
 
     AnimationTime := SceneAnimation.TimeBegin;
+    ResetWorldTime(AnimationTime);
 
     NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
       TNodeNavigationInfo, true) as TNodeNavigationInfo;
@@ -1415,7 +1421,7 @@ procedure MakeAllScreenShots;
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
-  OldAnimationTime: TAnimationTime;
+  OldAnimationTime: TKamTime;
 begin
   { Save global things that we change, to restore them later.
     This isn't needed for batch mode screenshots, but it doesn't hurt
@@ -1440,6 +1446,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           AnimationTime := ScreenShotsList[I].UseTime(J);
+          ResetWorldTime(AnimationTime);
           Draw(Glw);
           glFlush();
           SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
@@ -1454,6 +1461,7 @@ begin
   finally
     Progress.UserInterface := OldProgressUserInterface;
     AnimationTime := OldAnimationTime;
+    ResetWorldTime(AnimationTime);
   end;
 end;
 
@@ -2119,7 +2127,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ScreenShotToVideo;
   var
-    TimeBegin, TimeStep: TAnimationTime;
+    TimeBegin, TimeStep: TKamTime;
     FramesCount: Cardinal;
     FileNamePattern: string;
     Range: TRangeScreenShot;
@@ -2381,7 +2389,10 @@ begin
   205: ChangeMoveSpeed;
 
   220: AnimationTimePlaying := not AnimationTimePlaying;
-  221: AnimationTime := SceneAnimation.TimeBegin;
+  221: begin
+         AnimationTime := SceneAnimation.TimeBegin;
+         ResetWorldTime(AnimationTime);
+       end;
   222: ChangeAnimationTimeSpeed;
   223: ChangeAnimationTimeSpeedWhenLoading;
 
