@@ -1037,7 +1037,6 @@ var
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedCameraPos, SavedCameraDir, SavedCameraUp, SavedGravityUp: TVector3Single;
-  DummySomethingChanged: boolean;
 begin
   FreeScene;
 
