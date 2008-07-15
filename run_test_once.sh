@@ -64,6 +64,9 @@ mk_screnshot ()
   rm -f "$TEMP_SCREENSHOT"
 }
 
+# Uncomment these for much longer test (this does --screenshot,
+# testing actual rendering of the scene)
+
 # mk_screnshot --renderer-optimization none
 # mk_screnshot --renderer-optimization scene-as-a-whole
 # mk_screnshot --renderer-optimization separate-shape-states
