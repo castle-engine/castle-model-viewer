@@ -60,8 +60,15 @@ type
     procedure NoNormal_ElevationGrid(node: TVRMLNode);
 
     procedure NoSolid_ShapeHints(node: TVRMLNode);
-    procedure NoSolid_IFS_2(node: TVRMLNode);
+    procedure NoSolid_X3DComposedGeometry(node: TVRMLNode);
     procedure NoSolid_Extrusion(node: TVRMLNode);
+    procedure NoSolid_ElevationGrid(node: TVRMLNode);
+    procedure NoSolid_Box(node: TVRMLNode);
+    procedure NoSolid_Cone(node: TVRMLNode);
+    procedure NoSolid_Cylinder(node: TVRMLNode);
+    procedure NoSolid_Sphere(node: TVRMLNode);
+    procedure NoSolid_Text(node: TVRMLNode);
+    procedure NoSolid_Text3D(node: TVRMLNode);
 
     procedure NoConvex_ShapeHints(node: TVRMLNode);
     procedure NoConvex_IFS_2(node: TVRMLNode);
@@ -88,14 +95,49 @@ begin
   (Node as TNodeShapeHints).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.NoSolid_IFS_2(node: TVRMLNode);
+procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TVRMLNode);
 begin
-  (Node as TNodeIndexedFaceSet_2).FdSolid.Value := false;
+  (Node as TNodeX3DComposedGeometryNode).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoSolid_Extrusion(node: TVRMLNode);
 begin
   (Node as TNodeExtrusion).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_ElevationGrid(Node: TVRMLNode);
+begin
+  (Node As TNodeElevationGrid).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Box(Node: TVRMLNode);
+begin
+  (Node As TNodeBox).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Cone(Node: TVRMLNode);
+begin
+  (Node As TNodeCone_2).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Cylinder(Node: TVRMLNode);
+begin
+  (Node As TNodeCylinder_2).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Sphere(Node: TVRMLNode);
+begin
+  (Node As TNodeSphere_2).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Text(Node: TVRMLNode);
+begin
+  (Node As TNodeText).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_Text3D(Node: TVRMLNode);
+begin
+  (Node As TNodeText3D).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoConvex_ShapeHints(node: TVRMLNode);
@@ -167,10 +209,24 @@ begin
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
       @DoChanges.NoSolid_ShapeHints, false);
-    scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.NoSolid_IFS_2, false);
+    scene.RootNode.EnumerateNodes(TNodeX3DComposedGeometryNode,
+      @DoChanges.NoSolid_X3DComposedGeometry, false);
     scene.RootNode.EnumerateNodes(TNodeExtrusion,
       @DoChanges.NoSolid_Extrusion, false);
+    scene.RootNode.EnumerateNodes(TNodeElevationGrid,
+      @DoChanges.NoSolid_ElevationGrid, false);
+    scene.RootNode.EnumerateNodes(TNodeBox,
+      @DoChanges.NoSolid_Box, false);
+    scene.RootNode.EnumerateNodes(TNodeCone_2,
+      @DoChanges.NoSolid_Cone, false);
+    scene.RootNode.EnumerateNodes(TNodeCylinder_2,
+      @DoChanges.NoSolid_Cylinder, false);
+    scene.RootNode.EnumerateNodes(TNodeSphere_2,
+      @DoChanges.NoSolid_Sphere, false);
+    scene.RootNode.EnumerateNodes(TNodeText,
+      @DoChanges.NoSolid_Text, false);
+    scene.RootNode.EnumerateNodes(TNodeText3D,
+      @DoChanges.NoSolid_Text3D, false);
   finally FreeAndNil(DoChanges) end;
 end;
 
