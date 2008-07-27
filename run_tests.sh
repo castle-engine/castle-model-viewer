@@ -16,7 +16,7 @@ set -eu
 # - Then we check rendering abilities, by making screenshots with
 #   various renderer-optimization options.
 #   (This test is currently commented out by default, as it takes a lot
-#   of time and flashes view3dscene window on the screen constantly...)
+#   of time...)
 #
 # Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
 # it contains files that *should* fail when reading).
