@@ -1873,8 +1873,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     if (SelectedItem^.FaceCoordIndexBegin = -1) or
        (SelectedItem^.FaceCoordIndexEnd = -1) then
     begin
-      ShowAndWrite('The selected triangle is not part of IndexedFaceSet ' +
-        'or IndexedTriangleMesh nodes.');
+      ShowAndWrite('The selected triangle is not part of IndexedFaceSet node.');
       Exit;
     end;
 
