@@ -2328,9 +2328,12 @@ begin
 
   111: ChangeNavigatorKind(glw, +1);
 
-  121: ShowAndWrite(
-         'Scene "' + SceneFilename + '" information:' + NL + NL +
-         SceneAnimation.Info(true));
+  121: begin
+         ShowAndWrite(
+           'Scene "' + SceneFilename + '" information:' + NL + NL +
+           SceneAnimation.Info(true, true, true));
+         SceneAnimation.FreeResources([frManifoldAndBorderEdges]);
+       end;
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
   124: ChangeGravityUp;
