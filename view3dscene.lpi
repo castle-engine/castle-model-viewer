@@ -32,63 +32,63 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="kambi_glwindow_navigated"/>
+        <PackageName Value="kambi_units"/>
       </Item1>
       <Item2>
         <PackageName Value="kambi_glwindow"/>
       </Item2>
       <Item3>
-        <PackageName Value="kambi_units"/>
+        <PackageName Value="kambi_glwindow_navigated"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="25">
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="66" Y="10"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="3" Y="73"/>
+        <TopLine Value="62"/>
+        <UsageCount Value="23"/>
       </Unit0>
       <Unit1>
         <Filename Value="welcome_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit1>
       <Unit2>
         <Filename Value="bgcolors.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit2>
       <Unit3>
         <Filename Value="clear_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit3>
       <Unit4>
         <Filename Value="colormodulators.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit4>
       <Unit5>
         <Filename Value="multinavigators.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit5>
       <Unit6>
         <Filename Value="raytracetowindow.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit6>
       <Unit7>
         <Filename Value="scenechangesunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit7>
       <Unit8>
@@ -97,24 +97,24 @@
         <UnitName Value="TextureFilters"/>
         <CursorPos X="5" Y="29"/>
         <TopLine Value="15"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
       </Unit8>
       <Unit9>
         <Filename Value="v3dsceneblending.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit9>
       <Unit10>
         <Filename Value="v3dscenecamera.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit10>
       <Unit11>
         <Filename Value="v3dsceneconfig.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
         <SyntaxHighlighter Value="Text"/>
       </Unit11>
       <Unit12>
@@ -123,14 +123,14 @@
         <UnitName Value="V3DSceneLights"/>
         <CursorPos X="38" Y="114"/>
         <TopLine Value="96"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="23"/>
       </Unit12>
       <Unit13>
         <Filename Value="../kambi_vrml_game_engine/opengl/glwindow.pas"/>
         <UnitName Value="GLWindow"/>
-        <CursorPos X="27" Y="735"/>
-        <TopLine Value="721"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="11"/>
       </Unit13>
       <Unit14>
         <Filename Value="../kambi_vrml_game_engine/packages/unix/kambi_units.pas"/>
@@ -160,6 +160,53 @@
         <TopLine Value="196"/>
         <UsageCount Value="10"/>
       </Unit17>
+      <Unit18>
+        <Filename Value="../kambi_vrml_game_engine/base/kambilog.pas"/>
+        <UnitName Value="KambiLog"/>
+        <CursorPos X="50" Y="120"/>
+        <TopLine Value="75"/>
+        <UsageCount Value="11"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../kambi_vrml_game_engine/packages/unix/kambi_glwindow.pas"/>
+        <UnitName Value="kambi_glwindow"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglanimation.pas"/>
+        <UnitName Value="VRMLGLAnimation"/>
+        <CursorPos X="1" Y="854"/>
+        <TopLine Value="831"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3d_grouping.inc"/>
+        <CursorPos X="42" Y="254"/>
+        <TopLine Value="245"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../kambi_vrml_game_engine/base/templates/objectslist_3.inc"/>
+        <CursorPos X="1" Y="208"/>
+        <TopLine Value="185"/>
+        <UsageCount Value="10"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlflatscenegl.pas"/>
+        <UnitName Value="VRMLFlatSceneGL"/>
+        <CursorPos X="1" Y="1179"/>
+        <TopLine Value="1156"/>
+        <UsageCount Value="10"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3dxmltovrml.pas"/>
+        <UnitName Value="X3DXmlToVRML"/>
+        <CursorPos X="1" Y="259"/>
+        <TopLine Value="230"/>
+        <UsageCount Value="10"/>
+      </Unit24>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
@@ -179,7 +226,9 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <Generate Value="Faster"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -188,17 +237,26 @@
       </Debugging>
     </Linking>
     <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="2">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="ECodetoolError"/>
       </Item1>
       <Item2>
         <Name Value="EFOpenError"/>
       </Item2>
+      <Item3>
+        <Name Value="BreakTryFindNode"/>
+      </Item3>
+      <Item4>
+        <Name Value="BreakIsNodePresent"/>
+      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>
