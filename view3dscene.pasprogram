@@ -2480,8 +2480,7 @@ begin
   121: begin
          ShowAndWrite(
            'Scene "' + SceneFilename + '" information:' + NL + NL +
-           SceneAnimation.Info(true, true, true));
-         SceneAnimation.FreeResources([frManifoldAndBorderEdges]);
+           SceneAnimation.Info(true, true, false));
        end;
   122: ShowStatus := not ShowStatus;
   123: CollisionCheck := not CollisionCheck;
@@ -2496,6 +2495,7 @@ begin
         MessageOK(glwin, SOnlyInWalker);
   126: Glw.SwapFullScreen;
   127: glwin.SaveScreenDialog(FNameAutoInc('view3dscene_screen_%d.png'));
+
   128: begin
          MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
          Glw.UpdateMouseLook;
@@ -2513,6 +2513,11 @@ begin
            MatrixWalker.Input_LeftRot.MakeDefault;
            MatrixWalker.Input_RightRot.MakeDefault;
          end;
+       end;
+
+  129: begin
+         ShowAndWrite(SceneAnimation.Info(false, false, true));
+         SceneAnimation.FreeResources([frManifoldAndBorderEdges]);
        end;
 
   131: begin
@@ -2910,6 +2915,7 @@ begin
       ShowStatus, true));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Scene Information',                  121));
+   M.Append(TMenuItem.Create('Manifold Edges Information',         129));
    MenuSelectedInfo :=
      TMenuItem.Create('Selected Object Information',               171);
    M.Append(MenuSelectedInfo);
