@@ -151,6 +151,7 @@ var
   MenuSelectedLightsInfo: TMenuItem;
   MenuRemoveSelectedGeometry: TMenuItem;
   MenuRemoveSelectedFace: TMenuItem;
+  MenuEditMaterial: TMenu;
 
   SceneWarnings: TSceneWarnings;
 
@@ -209,6 +210,8 @@ begin
     MenuRemoveSelectedGeometry.Enabled := SelectedItem <> nil;
   if MenuRemoveSelectedFace <> nil then
     MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
+  if MenuEditMaterial <> nil then
+    MenuEditMaterial.Enabled := SelectedItem <> nil;
 end;
 
 function SceneTriangleOctree: TVRMLTriangleOctree;
@@ -1807,6 +1810,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShowAndWrite(S);
   end;
 
+  { Note that calling ChangedAll (either on SceneAnimation
+    or just on SceneAnimation.FirstScene) should always be done
+    through this routine.
+
+    Reason: ChangedAll traverses the VRML graph again,
+    recalculating State values... so the old State is not
+    correct anymore. Unfortunately, this means that
+    the whole octree becomes invalid, along with SelectedItem. }
   procedure WholeSceneChanged;
   begin
     Unselect;
@@ -1933,6 +1944,144 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     SceneOctreeFree;
     SceneAnimation.FirstScene.ChangedFields(GeometryNode);
     SceneOctreeCreate;
+  end;
+
+  { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
+    if success. Produces message to user and returns @false on failure.
+
+    Note that SelectedItem is not necessarily correct anymore. Use only
+    M1 and M2 pointers after this. }
+  function ChangeMaterialInit(
+    out M1: TNodeMaterial_1;
+    out M2: TNodeMaterial_2): boolean;
+  var
+    Shape: TNodeX3DShapeNode;
+  begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      { We can't do this for animations, because we use
+        SelectedItem.State, so this is only for the frame where
+        octree is available. Moreover, we call
+        SceneAnimation.FirstScene.ChangedFields. }
+      MessageOK(Glwin, 'This function is not available when you deal with ' +
+        'animations.', taLeft);
+      Exit(false);
+    end;
+
+    if (SelectedItem = nil) then
+    begin
+      ShowAndWrite('Nothing selected.');
+      Exit(false);
+    end;
+
+    M1 := nil;
+    M2 := nil;
+    Shape := SelectedItem^.State.ParentShape;
+    if Shape <> nil then
+    begin
+      M2 := Shape.Material;
+      if M2 = nil then
+      begin
+        if MessageYesNo(Glw, 'No material present. Add material to this node and then edit it?', taLeft) then
+        begin
+          { Note that this may remove old Shape.FdAppearance.Value,
+            but only if Shape.Appearance = nil, indicating that
+            something wrong was specified for "appearance" field.
+
+            Similar, it may remove old Shape.Appearance.FdMaterial.Value,
+            but only if Shape.Material was nil, and together
+            this indicates that something incorrect was placed in "material"
+            field. }
+          if Shape.Appearance = nil then
+          begin
+            Shape.FdAppearance.Value := TNodeAppearance.Create('', '');
+            Assert(Shape.Appearance <> nil);
+          end;
+
+          M2 := TNodeMaterial_2.Create('', '');
+          Shape.Appearance.FdMaterial.Value := M2;
+          WholeSceneChanged;
+        end else
+          Exit(false);
+      end;
+    end else
+    begin
+      M1 := SelectedItem^.State.LastNodes.Material;
+    end;
+
+    Result := true;
+  end;
+
+  procedure ChangeMaterialDiffuse;
+  var
+    M1: TNodeMaterial_1;
+    M2: TNodeMaterial_2;
+    Color: TVector3Single;
+  begin
+    if not ChangeMaterialInit(M1, M2) then Exit;
+
+    if M2 <> nil then
+      Color := M2.FdDiffuseColor.Value else
+    begin
+      Assert(M1 <> nil);
+      if M1.FdDiffuseColor.Count > 0 then
+        Color := M1.FdDiffuseColor.Items.Items[0] else
+        Color := DefaultMaterialDiffuseColor;
+    end;
+
+    if Glwin.ColorDialog(Color) then
+    begin
+      if M2 <> nil then
+      begin
+        M2.FdDiffuseColor.Value := Color;
+        SceneAnimation.FirstScene.ChangedFields(M2);
+      end else
+      begin
+        Assert(M1 <> nil);
+        M1.FdDiffuseColor.Items.AssignArray([Color]);
+        SceneAnimation.FirstScene.ChangedFields(M1);
+      end;
+    end;
+
+    { ChangedFields above is a little dirty, as depends on internal things.
+
+      Actually, ChangedFields could call ChangedAll, which has large
+      consequences, see WholeSceneChanged comments.
+      But in this case, we know the implementation of ChangedFields,
+      and we know that TNodeMaterial_1 and TNodeMaterial_2 can only result in
+      ChangedShapeStateFields, never in ChangedAll. }
+  end;
+
+  procedure ChangeMaterialSpecular;
+  var
+    M1: TNodeMaterial_1;
+    M2: TNodeMaterial_2;
+    Color: TVector3Single;
+  begin
+    if not ChangeMaterialInit(M1, M2) then Exit;
+
+    if M2 <> nil then
+      Color := M2.FdSpecularColor.Value else
+    begin
+      Assert(M1 <> nil);
+      if M1.FdSpecularColor.Count > 0 then
+        Color := M1.FdSpecularColor.Items.Items[0] else
+        Color := DefaultMaterialSpecularColor;
+    end;
+
+    if Glwin.ColorDialog(Color) then
+    begin
+      if M2 <> nil then
+      begin
+        M2.FdSpecularColor.Value := Color;
+        SceneAnimation.FirstScene.ChangedFields(M2);
+      end else
+      begin
+        Assert(M1 <> nil);
+        M1.FdSpecularColor.Items.AssignArray([Color]);
+        SceneAnimation.FirstScene.ChangedFields(M1);
+      end;
+    end;
   end;
 
   procedure ChangeLightModelAmbient;
@@ -2101,7 +2250,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
           end;
 
           if ShaderAdder.Added then
-            SceneAnimation.ChangedAll else
+            WholeSceneChanged else
           begin
             FreeAndNil(ProgramNode);
             MessageOK(Glw, 'No shaders added.' +NL+
@@ -2428,6 +2577,9 @@ begin
 
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
+  710: ChangeMaterialDiffuse;
+  720: ChangeMaterialSpecular;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
@@ -2708,6 +2860,11 @@ begin
    MenuRemoveSelectedFace :=
      TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
    M.Append(MenuRemoveSelectedFace);
+   M.Append(TMenuSeparator.Create);
+   MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
+     MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
+     MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
+   M.Append(MenuEditMaterial);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Remove VRML Nodes with Name Matching ...', 34));
