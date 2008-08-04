@@ -45,3 +45,7 @@ test_dir ../kambi_vrml_test_suite/
 test_dir ../vrml_engine_doc/examples/
 test_dir ../castle/data/
 test_dir ../rift/data/
+
+# This dir has fallback_prototypes in VRML 97 and X3D, two really important
+# files that should be correct.
+test_dir ../www/htdocs/
