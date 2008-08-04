@@ -2317,7 +2317,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   end;
 
 var
-  S: string;
+  S, ProposedScreenShotName: string;
 begin
  case MenuItem.IntData of
   10: begin
@@ -2494,8 +2494,12 @@ begin
           SceneAnimation.FirstScene.FogDistanceScaling) else
         MessageOK(glwin, SOnlyInWalker);
   126: Glw.SwapFullScreen;
-  127: glwin.SaveScreenDialog(FNameAutoInc('view3dscene_screen_%d.png'));
-
+  127: begin
+         if SceneFileName <> '' then
+           ProposedScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
+           ProposedScreenShotName := 'view3dscene_screen_%d.png';
+         Glwin.SaveScreenDialog(FNameAutoInc(ProposedScreenShotName));
+       end;
   128: begin
          MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
          Glw.UpdateMouseLook;
