@@ -695,6 +695,18 @@ begin
   end;
 end;
 
+procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
+begin
+  if SceneAnimation.ScenesCount = 1 then
+    SceneAnimation.Scenes[0].KeyDown(Key, C, @Glwin.KeysDown);
+end;
+
+procedure KeyUp(Glwin: TGLWindow; Key: TKey);
+begin
+  if SceneAnimation.ScenesCount = 1 then
+    SceneAnimation.Scenes[0].KeyUp(Key);
+end;
+
 procedure Idle(glwin: TGLWindow);
 var
   OldAnimationTime, TimeIncrease: TKamTime;
@@ -1059,6 +1071,10 @@ begin
 
     NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
       TNodeNavigationInfo, true) as TNodeNavigationInfo;
+
+    { TODO: for now, ProcessEvents is always @true when scenes count = 1 }
+    if SceneAnimation.ScenesCount = 1 then
+      SceneAnimation.Scenes[0].ProcessEvents := true;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
@@ -3159,6 +3175,8 @@ begin
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
         Glw.OnIdle := @Idle;
+        Glw.OnKeyDown := @KeyDown;
+        Glw.OnKeyUp := @KeyUp;
 
         { For the screenshot, leave BeforeDraw and Draw as @nil,
           we'll want to call them manually later to have control
