@@ -742,7 +742,13 @@ type
       out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
 
     class procedure OpenRecent(const FileName: string);
+
+    class procedure BeforeChangedAll(Scene: TVRMLFlatScene);
+    class procedure AfterChangedAll(Scene: TVRMLFlatScene);
   end;
+
+var
+  Helper: THelper;
 
 class function THelper.MoveAllowed(Navigator: TMatrixWalker;
   const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
@@ -1072,10 +1078,6 @@ begin
     NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
       TNodeNavigationInfo, true) as TNodeNavigationInfo;
 
-    { TODO: for now, ProcessEvents is always @true when scenes count = 1 }
-    if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].ProcessEvents := true;
-
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
     { calculate CameraRadius }
@@ -1186,6 +1188,14 @@ begin
       MenuPreferGravityUpForMoving.Checked := MatrixWalker.PreferGravityUpForMoving;
 
     SceneOctreeCreate;
+
+    for I := 0 to SceneAnimation.ScenesCount - 1 do
+    begin
+      { TODO: for now, ProcessEvents is always @true when scenes count = 1 }
+      SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
+      SceneAnimation.Scenes[I].OnBeforeChangedAll := @Helper.BeforeChangedAll;
+      SceneAnimation.Scenes[I].OnAfterChangedAll := @Helper.AfterChangedAll;
+    end;
 
     if not Glw.Closed then
     begin
@@ -1428,6 +1438,22 @@ end;
 class procedure THelper.OpenRecent(const FileName: string);
 begin
   LoadScene(FileName, [], 0.0, true);
+end;
+
+class procedure THelper.BeforeChangedAll(Scene: TVRMLFlatScene);
+begin
+  { ChangedAll traverses the VRML graph again,
+    recalculating State values... so the old State is not
+    correct anymore. Unfortunately, this means that
+    the whole octree becomes invalid, along with SelectedItem. }
+
+  Unselect;
+  SceneOctreeFree;
+end;
+
+class procedure THelper.AfterChangedAll(Scene: TVRMLFlatScene);
+begin
+  SceneOctreeCreate;
 end;
 
 { make screen shots ---------------------------------------------------------- }
@@ -1826,22 +1852,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     ShowAndWrite(S);
   end;
 
-  { Note that calling ChangedAll (either on SceneAnimation
-    or just on SceneAnimation.FirstScene) should always be done
-    through this routine.
-
-    Reason: ChangedAll traverses the VRML graph again,
-    recalculating State values... so the old State is not
-    correct anymore. Unfortunately, this means that
-    the whole octree becomes invalid, along with SelectedItem. }
-  procedure WholeSceneChanged;
-  begin
-    Unselect;
-    SceneOctreeFree;
-    SceneAnimation.ChangedAll;
-    SceneOctreeCreate;
-  end;
-
   procedure RemoveSelectedGeometry;
   begin
     if SceneAnimation.ScenesCount > 1 then
@@ -1860,7 +1870,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end else
     begin
       SelectedItem^.GeometryNode.FreeRemovingFromAllParents;
-      WholeSceneChanged;
+      SceneAnimation.Scenes[0].ChangedAll;
     end;
   end;
 
@@ -2016,7 +2026,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
 
           M2 := TNodeMaterial_2.Create('', '');
           Shape.Appearance.FdMaterial.Value := M2;
-          WholeSceneChanged;
+          SceneAnimation.Scenes[0].ChangedAll;
         end else
           Exit(false);
       end;
@@ -2058,14 +2068,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         SceneAnimation.FirstScene.ChangedFields(M1);
       end;
     end;
-
-    { ChangedFields above is a little dirty, as depends on internal things.
-
-      Actually, ChangedFields could call ChangedAll, which has large
-      consequences, see WholeSceneChanged comments.
-      But in this case, we know the implementation of ChangedFields,
-      and we know that TNodeMaterial_1 and TNodeMaterial_2 can only result in
-      ChangedShapeStateFields, never in ChangedAll. }
   end;
 
   procedure ChangeMaterialSpecular;
@@ -2143,7 +2145,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         ViewpointNode := nil;
         NavigationNode := nil;
 
-        WholeSceneChanged;
+        SceneAnimation.Scenes[0].ChangedAll;
       end;
 
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
@@ -2167,7 +2169,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     end;
 
     if RemovedNumber <> 0 then
-      WholeSceneChanged;
+      SceneAnimation.Scenes[0].ChangedAll;
     MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
       taLeft);
   end;
@@ -2266,7 +2268,10 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
           end;
 
           if ShaderAdder.Added then
-            WholeSceneChanged else
+          begin
+            for I := 0 to SceneAnimation.ScenesCount - 1 do
+              SceneAnimation.Scenes[I].ChangedAll;
+          end else
           begin
             FreeAndNil(ProgramNode);
             MessageOK(Glw, 'No shaders added.' +NL+
@@ -3098,8 +3103,6 @@ const
    end;
   end;
 
-var
-  Helper: THelper;
 begin
   { parse parameters }
   { glw params }
@@ -3146,7 +3149,6 @@ begin
       (and we don't want to clutter stdout). }
     Progress.UserInterface := ProgressNullInterface;
 
-    Helper := nil;
     InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight);
 
     { init "scene global variables" to null values }
