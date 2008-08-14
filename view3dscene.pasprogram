@@ -1454,6 +1454,7 @@ end;
 class procedure THelper.AfterChangedAll(Scene: TVRMLFlatScene);
 begin
   SceneOctreeCreate;
+  Glw.PostRedisplay;
 end;
 
 { make screen shots ---------------------------------------------------------- }
