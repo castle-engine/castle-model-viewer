@@ -12,7 +12,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="3"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -47,9 +47,9 @@
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="1407"/>
-        <TopLine Value="1393"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="37" Y="3169"/>
+        <TopLine Value="3165"/>
+        <EditorIndex Value="0"/>
         <UsageCount Value="24"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -206,47 +206,37 @@
         <UnitName Value="KambiDynLib"/>
         <CursorPos X="32" Y="200"/>
         <TopLine Value="186"/>
-        <EditorIndex Value="0"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="../kambi_vrml_game_engine/base/kambiutils.pas"/>
         <UnitName Value="KambiUtils"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit26>
       <Unit27>
         <Filename Value="../kambi_vrml_game_engine/base/kambistringutils.pas"/>
         <UnitName Value="KambiStringUtils"/>
         <CursorPos X="23" Y="605"/>
         <TopLine Value="591"/>
-        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="../kambi_vrml_game_engine/opengl/opengltypes.inc"/>
         <CursorPos X="25" Y="348"/>
         <TopLine Value="334"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
         <UnitName Value="VRMLNodes"/>
         <CursorPos X="1" Y="7179"/>
         <TopLine Value="7165"/>
-        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit29>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="3115" Column="1" TopLine="3101"/>
@@ -347,26 +337,6 @@
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="1407" Column="1" TopLine="1393"/>
       </Position25>
-      <Position26>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
-        <Caret Line="7174" Column="1" TopLine="7160"/>
-      </Position26>
-      <Position27>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
-        <Caret Line="7175" Column="1" TopLine="7161"/>
-      </Position27>
-      <Position28>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
-        <Caret Line="7176" Column="1" TopLine="7162"/>
-      </Position28>
-      <Position29>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
-        <Caret Line="7177" Column="1" TopLine="7163"/>
-      </Position29>
-      <Position30>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
-        <Caret Line="7178" Column="1" TopLine="7164"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -404,12 +374,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Source Value="view3dscene.pasprogram"/>
-        <Line Value="3169"/>
-      </Item1>
-    </BreakPoints>
     <Exceptions Count="4">
       <Item1>
         <Name Value="ECodetoolError"/>
