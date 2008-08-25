@@ -745,6 +745,7 @@ type
 
     class procedure BeforeChangedAll(Scene: TVRMLFlatScene);
     class procedure AfterChangedAll(Scene: TVRMLFlatScene);
+    class procedure Changed(Scene: TVRMLFlatScene);
   end;
 
 var
@@ -1195,6 +1196,7 @@ begin
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
       SceneAnimation.Scenes[I].OnBeforeChangedAll := @Helper.BeforeChangedAll;
       SceneAnimation.Scenes[I].OnAfterChangedAll := @Helper.AfterChangedAll;
+      SceneAnimation.Scenes[I].OnChanged := @Helper.Changed;
     end;
 
     if not Glw.Closed then
@@ -1454,6 +1456,10 @@ end;
 class procedure THelper.AfterChangedAll(Scene: TVRMLFlatScene);
 begin
   SceneOctreeCreate;
+end;
+
+class procedure THelper.Changed(Scene: TVRMLFlatScene);
+begin
   Glw.PostRedisplay;
 end;
 
