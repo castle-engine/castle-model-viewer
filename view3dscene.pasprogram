@@ -718,7 +718,8 @@ begin
     TimeIncrease := AnimationTimeSpeed * Glwin.IdleSpeed;
 
     AnimationTime += TimeIncrease;
-    IncreaseWorldTime(TimeIncrease, SomethingChanged);
+    if SceneAnimation.ScenesCount = 1 then
+      SceneAnimation.Scenes[0].IncreaseWorldTime(TimeIncrease, SomethingChanged);
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
@@ -959,6 +960,14 @@ begin
   UpdateSelectedEnabled;
 end;
 
+procedure ResetWorldTime(const NewValue: TKamTime);
+begin
+  { Ignored when SceneAnimation.ScenesCount <> 1, as ProcessEvents
+    is always false then and WorldTime wouldn't have much sense anyway. }
+  if SceneAnimation.ScenesCount = 1 then
+    SceneAnimation.Scenes[0].ResetWorldTime(NewValue);
+end;
+
 { Frees (and sets to some null values) "scene global variables".
 
   Note about OpenGL context: remember that changing calling Close
@@ -1192,7 +1201,7 @@ begin
 
     for I := 0 to SceneAnimation.ScenesCount - 1 do
     begin
-      { TODO: for now, ProcessEvents is always @true when scenes count = 1 }
+      { TODO: for now, SceneProcessEvents is always @true when scenes count = 1 }
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
       SceneAnimation.Scenes[I].OnBeforeChangedAll := @Helper.BeforeChangedAll;
       SceneAnimation.Scenes[I].OnAfterChangedAll := @Helper.AfterChangedAll;
