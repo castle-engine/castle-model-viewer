@@ -1684,10 +1684,17 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       '0.5 makes time pass two times slower,' +nl+
       '2.0 makes it pass two times faster etc.' +nl+
       nl+
-      'Note that this is only "on display" time speed. Which means ' +
+      'Note that this is the "on display" time speed.' +nl+
+      nl+
+      '- For pracalculated ' +
+      'animations (like from Kanim or MD3 files), this means ' +
       'that internally number of precalculated animation frames ' +
       'doesn''t change. Which means that slowing this time pass too much ' +
       'leads to noticeably "jagged" animations.' +nl+
+      nl+
+      '- For interactive animations (played and calculated from a single ' +
+      'VRML / X3D file, e.g. by VRML interpolators) this is perfect, ' +
+      'animation always remains smooth.' +nl+
       nl+
       'New "on display" time pass speed:',
       AnimationTimeSpeed, taLeft);
@@ -1701,14 +1708,21 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       '2.0 makes it pass two times faster etc.' +nl+
       nl+
       'Note that this is the "on loading" time speed. Which means ' +
-      'that it''s only applied when loading animation from file ' +
+      'it''s only applied when loading animation from file ' +
       '(you can use "File -> Reopen" command to apply this to currently ' +
-      'loaded animation). Moreover, changing this actually changes ' +
+      'loaded animation).' +nl+
+      nl+
+      '- For pracalculated ' +
+      'animations (like from Kanim or MD3 files), changing this actually changes ' +
       'the density of precalculated animation frames. Which means that ' +
       'this is the more resource-consuming, but also better ' +
       'method of changing animation speed: even if you slow down ' +
-      'this time pass much, the animation should not become ' +
-      'more jagged.' +nl+
+      'this time pass much, the animation will remain smooth.' +nl+
+      nl+
+      '- For interactive animations (played and calculated from a single ' +
+      'VRML / X3D file, e.g. by VRML interpolators) this has no effect, ' +
+      'as no frames are precalculated at loading. Use "on display" time speed ' +
+      'instead.' +nl+
       nl+
       'New "on loading" time pass speed:',
       AnimationTimeSpeedWhenLoading, taLeft);
