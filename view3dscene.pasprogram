@@ -710,7 +710,6 @@ end;
 procedure Idle(glwin: TGLWindow);
 var
   OldAnimationTime, TimeIncrease: TKamTime;
-  SomethingChanged: boolean;
 begin
   if AnimationTimePlaying then
   begin
@@ -719,14 +718,13 @@ begin
 
     AnimationTime += TimeIncrease;
     if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].IncreaseWorldTime(TimeIncrease, SomethingChanged);
+      SceneAnimation.Scenes[0].IncreaseWorldTime(TimeIncrease);
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
       still, or if the animation stopped running. }
     if (SceneAnimation.SceneFromTime(OldAnimationTime) <>
-        SceneAnimation.SceneFromTime(AnimationTime)) or
-       SomethingChanged then
+        SceneAnimation.SceneFromTime(AnimationTime)) then
       Glwin.PostRedisplay;
   end;
 end;
@@ -746,7 +744,7 @@ type
 
     class procedure BeforeChangedAll(Scene: TVRMLFlatScene);
     class procedure AfterChangedAll(Scene: TVRMLFlatScene);
-    class procedure Changed(Scene: TVRMLFlatScene);
+    class procedure PostRedisplay(Scene: TVRMLFlatScene);
   end;
 
 var
@@ -1205,7 +1203,7 @@ begin
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
       SceneAnimation.Scenes[I].OnBeforeChangedAll := @Helper.BeforeChangedAll;
       SceneAnimation.Scenes[I].OnAfterChangedAll := @Helper.AfterChangedAll;
-      SceneAnimation.Scenes[I].OnChanged := @Helper.Changed;
+      SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
     end;
 
     if not Glw.Closed then
@@ -1467,7 +1465,7 @@ begin
   SceneOctreeCreate;
 end;
 
-class procedure THelper.Changed(Scene: TVRMLFlatScene);
+class procedure THelper.PostRedisplay(Scene: TVRMLFlatScene);
 begin
   Glw.PostRedisplay;
 end;
