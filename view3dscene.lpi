@@ -188,8 +188,8 @@
         <UsageCount Value="10"/>
       </Unit22>
       <Unit23>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlflatscenegl.pas"/>
-        <UnitName Value="VRMLFlatSceneGL"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglscene.pas"/>
+        <UnitName Value="VRMLGLScene"/>
         <CursorPos X="1" Y="1179"/>
         <TopLine Value="1156"/>
         <UsageCount Value="10"/>

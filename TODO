@@ -56,9 +56,9 @@ Others:
 
 - it would be nice to have all --scene-changes available
   as attributes instead ?
-    TVRMLFlatSceneGL.Attributes.IgnoreModelNormals (=false)
-    TVRMLFlatSceneGL.Attributes.NoSolidObjects (=false)
-    TVRMLFlatSceneGL.Attributes.NoConvexFaces (=false)
+    TVRMLGLScene.Attributes.IgnoreModelNormals (=false)
+    TVRMLGLScene.Attributes.NoSolidObjects (=false)
+    TVRMLGLScene.Attributes.NoConvexFaces (=false)
 
 - allow changing OctreeMaxDepth / MaxLeafItemsCount when program is running.
   1. In menu "Configure scene loading"
