@@ -2,7 +2,7 @@ unit V3DSceneFillMode;
 
 interface
 
-uses VRMLFlatSceneGL, GLWindow, VectorMath;
+uses VRMLGLScene, GLWindow, VectorMath;
 
 type
   TFillMode = 0..7;

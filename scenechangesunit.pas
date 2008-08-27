@@ -23,7 +23,7 @@ unit SceneChangesUnit;
 
 interface
 
-uses VRMLFlatScene, VRMLNodes, KambiUtils, VRMLGLAnimation;
+uses VRMLScene, VRMLNodes, KambiUtils, VRMLGLAnimation;
 
 type
   { When adding new item to TSceneChange you can also consider adding
@@ -41,7 +41,7 @@ type
 
 { Do all scene changes in SceneChanges.
   Changes will be done in the order they are declared in type TSceneChange. }
-procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLScene);
 
 procedure ChangeSceneAnimation(SceneChanges: TSceneChanges;
   Scene: TVRMLGLAnimation);
@@ -179,7 +179,7 @@ end;
   to dla mnie sor-ry bo do niczego mi szybkosc ponizszych procedur nie jest
   potrzebna. }
 
-procedure SceneChange_NoNormals(scene: TVRMLFlatScene);
+procedure SceneChange_NoNormals(scene: TVRMLScene);
 const onlyFromActivePart = false;
 var
   DoChanges: TSceneChangesDo;
@@ -201,7 +201,7 @@ begin
   RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
 end;
 
-procedure SceneChange_NoSolidObjects(scene: TVRMLFlatScene);
+procedure SceneChange_NoSolidObjects(scene: TVRMLScene);
 var
   DoChanges: TSceneChangesDo;
 begin
@@ -230,7 +230,7 @@ begin
   finally FreeAndNil(DoChanges) end;
 end;
 
-procedure SceneChange_NoConvexFaces(scene: TVRMLFlatScene);
+procedure SceneChange_NoConvexFaces(scene: TVRMLScene);
 var
   newRootNode: TVRMLNode;
   DoChanges: TSceneChangesDo;
@@ -263,16 +263,16 @@ end;
 { ChangeScene --------------------------------------------------------------- }
 
 type
-  TSceneChangeFunction = procedure(Scene: TVRMLFlatScene);
+  TSceneChangeFunction = procedure(Scene: TVRMLScene);
 const
   SCFunctions: array[TSceneChange]of TSceneChangeFunction =
   ( @SceneChange_NoNormals,
     @SceneChange_NoSolidObjects,
     @SceneChange_NoConvexFaces );
 
-procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLFlatScene);
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLScene);
 
-  procedure DoIt(SceneChange: TSceneChange; Scene: TVRMLFlatScene);
+  procedure DoIt(SceneChange: TSceneChange; Scene: TVRMLScene);
   begin
     SCFunctions[SceneChange](Scene);
   end;

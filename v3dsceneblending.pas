@@ -25,7 +25,7 @@ const
   );
 
   { Although for my engine default is GL_ONE
-    (see TVRMLFlatSceneGL.DefaultBlendingDestinationFactor),
+    (see VRMLGLScene.DefaultBlendingDestinationFactor),
     and it's not a problem since it's configurable...
 
     But for view3dscene default is GL_ONE_MINUS_SRC_ALPHA, since this is usually

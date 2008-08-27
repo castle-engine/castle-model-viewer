@@ -43,15 +43,15 @@
     optimization (display lists optimizations,
     OpenGL renderer cache inside VRML renderer), functionality
     (like automatic normals generation based on creaseAngle).
-  - render scene using TVRMLFlatSceneGL (actually TVRMLGLAnimation
-    and TVRMLFlatSceneGL is inside)
+  - render scene using TVRMLGLScene (actually TVRMLGLAnimation
+    and TVRMLGLScene is inside)
   - use MatrixNavigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
     Walk navigation and to allow raytracer
   - build TVRMLShapeStateOctree to allow frustum culling using
-    octree by TVRMLFlatSceneGL
+    octree by TVRMLGLScene
   - use VRMLRayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
   - allow some kind of object picking with mouse left button (using
@@ -75,8 +75,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   GLAntiAliasing, GLVersionUnit,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
-  VRMLNodes, Object3dAsVRML, VRMLFlatSceneGL,
-  VRMLFlatScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
+  VRMLNodes, Object3dAsVRML, VRMLGLScene,
+  VRMLScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
   VRMLRendererOptimization, VRMLOpenGLRenderer,
   { view3dscene-specific units: }
@@ -439,7 +439,7 @@ procedure Draw(glwin: TGLWindow);
   end;
 
 var
-  Scene: TVRMLFlatSceneGL;
+  Scene: TVRMLGLScene;
 
   procedure ClearAndRenderBackground;
   var
@@ -742,9 +742,9 @@ type
 
     class procedure OpenRecent(const FileName: string);
 
-    class procedure BeforeChangedAll(Scene: TVRMLFlatScene);
-    class procedure AfterChangedAll(Scene: TVRMLFlatScene);
-    class procedure PostRedisplay(Scene: TVRMLFlatScene);
+    class procedure BeforeChangedAll(Scene: TVRMLScene);
+    class procedure AfterChangedAll(Scene: TVRMLScene);
+    class procedure PostRedisplay(Scene: TVRMLScene);
   end;
 
 var
@@ -1434,9 +1434,9 @@ end;
   This is simply the function to handle --write-to-vrml command-line option. }
 procedure WriteToVRML(const ASceneFileName: string;
   const SceneChanges: TSceneChanges);
-var Scene: TVRMLFlatScene;
+var Scene: TVRMLScene;
 begin
- Scene := TVRMLFlatScene.Create(LoadAsVRML(ASceneFileName, true), true);
+ Scene := TVRMLScene.Create(LoadAsVRML(ASceneFileName, true), true);
  try
   ChangeScene(SceneChanges, Scene);
   SaveToVRMLFile(Scene.RootNode, StdOutStream,
@@ -1449,7 +1449,7 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
-class procedure THelper.BeforeChangedAll(Scene: TVRMLFlatScene);
+class procedure THelper.BeforeChangedAll(Scene: TVRMLScene);
 begin
   { ChangedAll traverses the VRML graph again,
     recalculating State values... so the old State is not
@@ -1460,12 +1460,12 @@ begin
   SceneOctreeFree;
 end;
 
-class procedure THelper.AfterChangedAll(Scene: TVRMLFlatScene);
+class procedure THelper.AfterChangedAll(Scene: TVRMLScene);
 begin
   SceneOctreeCreate;
 end;
 
-class procedure THelper.PostRedisplay(Scene: TVRMLFlatScene);
+class procedure THelper.PostRedisplay(Scene: TVRMLScene);
 begin
   Glw.PostRedisplay;
 end;
