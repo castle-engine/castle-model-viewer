@@ -1896,7 +1896,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.GeometryNode, so this is only for the frame where
         octree is available. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
-        'animations.', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
     end;
 
@@ -1933,7 +1933,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         octree is available. Moreover, we call
         SceneAnimation.FirstScene.ChangedFields. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
-        'animations.', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
     end;
 
@@ -2026,7 +2026,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         octree is available. Moreover, we call
         SceneAnimation.FirstScene.ChangedFields. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
-        'animations.', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit(false);
     end;
 
@@ -2373,6 +2373,77 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
           end;
   end;
 
+  procedure PrecalculateAnimationFromVRMLEvents;
+  var
+    ScenesPerTime: Cardinal;
+    TimeBegin, TimeEnd: Single;
+    RootNode: TVRMLNode;
+  const
+    EqualityEpsilon = 0.0001;
+  begin
+    if SceneAnimation.ScenesCount <> 1 then
+    begin
+      MessageOK(Glwin, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
+      Exit;
+    end;
+
+    TimeBegin := 0;
+    TimeEnd := 10;
+    ScenesPerTime := 25;
+
+    if MessageInputQuery(Glwin, 'This will "record" an interactive animation (done by VRML events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
+         nl+
+         'World BEGIN time of recording:', TimeBegin, taLeft) and
+       MessageInputQuery(Glwin,
+         'World END time of recording:', TimeEnd, taLeft) and
+       MessageInputQueryCardinal(Glwin,
+         'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime, taLeft) then
+    begin
+      { Since we just destroy RootNode, and replace it with completely
+        different scene, we have to recalculate many things.
+        Before/AfterChangedAll callbacks take care of recalculating
+        octree, invalidating SelectedItem and such.
+
+        TODO: things like viewpoints etc. also should be recalculated by this,
+        as their pointers changed. }
+      THelper.BeforeChangedAll(nil);
+
+      { Note: there's an inherent problem here since RootNode starts
+        with state from current WorldTime. This includes
+        TimeDependentNodeHandler state like IsActive, etc., but also
+        the rest of VRML graph (e.g. if some events change some geometry
+        or materials). While LoadFromVRMLEvents takes care to call
+        ResetWorldTime, this only resets time-dependent nodes and routes
+        and the like, but it cannot at the same time deactivate-and-then-activate
+        time-dependent nodes in the same timestamp (so e.g. TimeSensor just
+        remains active, if it was active currently and is determined to be
+        active during animation, without a pair of Active.Send(false) +
+        Active.Send(true)). And it cannot revert whole VRML graph state.
+
+        This is inherent to the fact that we take current RootNode,
+        not the loaded one, so it cannot really be fixed --- we would have
+        to just reload RootNode from file, since we cannot keep RootNode
+        copy just for this purpose.
+
+        So I just treat it silently as non-fixable in view3dscene,
+        you have to load model with ProcessEvents = initially false
+        to safely do LoadFromVRMLEvents. }
+
+      { Extract RootNode. OwnsFirstRootNode set to false, to avoid
+        freeing it when current animation is closed (which is done implicitly
+        at the beginning of LoadFromVRMLEvents). }
+      SceneAnimation.OwnsFirstRootNode := false;
+      RootNode := SceneAnimation.Scenes[0].RootNode;
+
+      { Root node will be owned by LoadFromVRMLEvents, so it will be freed }
+      SceneAnimation.LoadFromVRMLEvents(RootNode, true,
+        TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
+        'Precalculating animation');
+
+      THelper.AfterChangedAll(nil);
+    end;
+  end;
+
 var
   S, ProposedScreenShotName: string;
 begin
@@ -2396,8 +2467,8 @@ begin
 
   20: begin
         if SceneAnimation.ScenesCount > 1 then
-          MessageOK(Glwin, 'Warning: this is an animation. Saving it as VRML ' +
-            'will only save it''s first frame.', taLeft);
+          MessageOK(Glwin, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML will only save it''s first frame.',
+            taLeft);
 
         { TODO: this filename gen is stupid, it leads to names like
           _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
@@ -2611,6 +2682,8 @@ begin
        end;
   222: ChangeAnimationTimeSpeed;
   223: ChangeAnimationTimeSpeedWhenLoading;
+
+  225: PrecalculateAnimationFromVRMLEvents;
 
   300..399:
     begin
@@ -2928,6 +3001,8 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Make Time Pass Slower or Faster (on display) ...', 222));
    M.Append(TMenuItem.Create('Make Time Pass Slower or Faster (on loading) ...', 223));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Precalculate Animation from VRML Events ...', 225));
    Result.Append(M);
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=
