@@ -31,7 +31,7 @@ unit TextureFilters;
 interface
 
 uses GL, GLU, GLExt, KambiUtils, VectorMath, VRMLNodes,
-  VRMLGLAnimation, KambiGLUtils;
+  VRMLGLAnimation, KambiGLUtils, GLWindow;
 
 type
   TTextureMinFilter = (tminNearest, tminLinear, tminNearestMipmapNearest,
@@ -57,6 +57,9 @@ procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLA
 
 function TextureMagFilter: TTextureMagFilter;
 procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
+
+procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
+procedure MenuAppendTextureMagFilters(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
@@ -94,5 +97,45 @@ begin Result := FTextureMinFilter end;
 
 function TextureMagFilter: TTextureMagFilter;
 begin Result := FTextureMagFilter end;
+
+procedure MenuAppendTextureMinFilters(M: TMenu;
+  BaseIntData: Cardinal);
+var
+  TexMin: TTextureMinFilter;
+  Radio: TMenuItemRadio;
+  RadioGroup: TMenuItemRadioGroup;
+begin
+  RadioGroup := nil;
+  for TexMin := Low(TexMin) to High(TexMin) do
+  begin
+    Radio := TMenuItemRadio.Create(
+      SQuoteMenuEntryCaption(TextureMinFilterNames[TexMin]),
+      Cardinal(Ord(TexMin)) + BaseIntData, TexMin = TextureMinFilter, true);
+    if RadioGroup = nil then
+      RadioGroup := Radio.Group else
+      Radio.Group := RadioGroup;
+    M.Append(Radio);
+  end;
+end;
+
+procedure MenuAppendTextureMagFilters(M: TMenu;
+  BaseIntData: Cardinal);
+var
+  TexMag: TTextureMagFilter;
+  Radio: TMenuItemRadio;
+  RadioGroup: TMenuItemRadioGroup;
+begin
+  RadioGroup := nil;
+  for TexMag := Low(TexMag) to High(TexMag) do
+  begin
+    Radio := TMenuItemRadio.Create(
+      SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
+      Cardinal(Ord(TexMag)) + BaseIntData, TexMag = TextureMagFilter, true);
+    if RadioGroup = nil then
+      RadioGroup := Radio.Group else
+      Radio.Group := RadioGroup;
+    M.Append(Radio);
+  end;
+end;
 
 end.

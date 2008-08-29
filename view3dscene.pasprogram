@@ -2829,44 +2829,6 @@ function CreateMainMenu: TMenu;
     end;
   end;
 
-  procedure AppendTextureMinFilters(M: TMenu);
-  var
-    TexMin: TTextureMinFilter;
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
-  begin
-    RadioGroup := nil;
-    for TexMin := Low(TexMin) to High(TexMin) do
-    begin
-      Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(TextureMinFilterNames[TexMin]),
-        Ord(TexMin) + 1100, TexMin = TextureMinFilter, true);
-      if RadioGroup = nil then
-        RadioGroup := Radio.Group else
-        Radio.Group := RadioGroup;
-      M.Append(Radio);
-    end;
-  end;
-
-  procedure AppendTextureMagFilters(M: TMenu);
-  var
-    TexMag: TTextureMagFilter;
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
-  begin
-    RadioGroup := nil;
-    for TexMag := Low(TexMag) to High(TexMag) do
-    begin
-      Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
-        Ord(TexMag) + 1200, TexMag = TextureMagFilter, true);
-      if RadioGroup = nil then
-        RadioGroup := Radio.Group else
-        Radio.Group := RadioGroup;
-      M.Append(Radio);
-    end;
-  end;
-
   procedure AppendNavigationTypes(M: TMenu);
   var
     NavKind: TNavigatorKind;
@@ -3007,10 +2969,10 @@ begin
    M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
      SceneAnimation.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Texture Minification Method');
-     AppendTextureMinFilters(M2);
+     MenuAppendTextureMinFilters(M2, 1100);
      M.Append(M2);
    M2 := TMenu.Create('Texture Magnification Method');
-     AppendTextureMagFilters(M2);
+     MenuAppendTextureMagFilters(M2, 1200);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('Show in Examine mode Camera Frustum', 96,
