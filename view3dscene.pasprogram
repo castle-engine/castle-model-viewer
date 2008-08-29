@@ -2715,8 +2715,8 @@ begin
 
   131: begin
          ShowAndWrite(
-           'view3dscene: full-featured viewer of 3D models' +nl+
-           '(formats: VRML, 3DS, MD3, Wavefront OBJ, Collada).' + NL +
+           'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' +nl+
+           'Formats: X3D, VRML 1.0 and 2.0 (aka VRML 97), 3DS, MD3, Wavefront OBJ, Collada.' + NL +
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
