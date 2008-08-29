@@ -23,17 +23,23 @@ implementation
 
 uses V3DSceneConfig;
 
+const
+  DefaultOptimization = roSeparateShapeStates;
+
 procedure MenuAppendOptimization(M: TMenu; BaseIntData: Cardinal);
 var
   RadioGroup: TMenuItemRadioGroup;
   O: TGLRendererOptimization;
+  S: string;
 begin
   RadioGroup := nil;
 
   for O := Low(O) to High(O) do
   begin
-    OptimizationMenu[O] := TMenuItemRadio.Create(
-      SQuoteMenuEntryCaption(RendererOptimizationNiceNames[O]),
+    S := SQuoteMenuEntryCaption(RendererOptimizationNiceNames[O]);
+    if O = DefaultOptimization then
+      S += ' (Default)';
+    OptimizationMenu[O] := TMenuItemRadio.Create(S,
       BaseIntData + Cardinal(Ord(O)), O = Optimization, true);
     if RadioGroup = nil then
       RadioGroup := OptimizationMenu[O].Group else
@@ -41,9 +47,6 @@ begin
     M.Append(OptimizationMenu[O]);
   end;
 end;
-
-const
-  DefaultOptimization = roSeparateShapeStates;
 
 initialization
   Optimization := TGLRendererOptimization(
