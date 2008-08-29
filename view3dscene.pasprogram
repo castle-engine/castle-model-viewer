@@ -1737,7 +1737,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     MessageInputQuery(Glwin,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
-      '0.5 makes playing two times slower,' +nl+
+      '0.5 makes playing animation two times slower,' +nl+
       '2.0 makes it two times faster etc.' +nl+
       nl+
       'Note that this is the "on display" playing speed.' +nl+
@@ -1760,7 +1760,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     MessageInputQuery(Glwin,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
-      '0.5 makes playing two times slower,' +nl+
+      '0.5 makes playing animation two times slower,' +nl+
       '2.0 makes it two times faster etc.' +nl+
       nl+
       'Note that this is the "on loading" playing speed. Which means ' +
