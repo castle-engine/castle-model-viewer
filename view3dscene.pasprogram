@@ -86,7 +86,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
-  V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization;
+  V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
+  V3DSceneDetectCostlyAnims;
 
 var
   ShowStatus: boolean = true;
@@ -174,6 +175,7 @@ var
   AnimationTimeSpeed: TKamTime = 1.0;
   AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
+  MenuAnimationTimePlaying: TMenuItemChecked;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapeStatesCount: Cardinal;
@@ -261,6 +263,22 @@ begin
   finally
     if AllowProgress then
       Progress.Fini;
+  end;
+end;
+
+procedure SceneOctreeCreate; forward;
+
+procedure SetCollisionCheck(const Value: boolean;
+  const NeedMenuUpdate: boolean = true);
+begin
+  if CollisionCheck <> Value then
+  begin
+    CollisionCheck := Value;
+    if NeedMenuUpdate then
+      MenuCollisionCheck.Checked := Value;
+    if CollisionCheck and
+      (SceneAnimation.FirstScene.DefaultTriangleOctree = nil) then
+      SceneOctreeCreate;
   end;
 end;
 
@@ -732,17 +750,119 @@ begin
 end;
 
 procedure Idle(glwin: TGLWindow);
+
+  { We want to detect when two successive calls to IncreaseWorldTime
+    caused a costly GeometryChanged call.
+    When calls to octree are often, and they take a non-trivial time,
+    then significant part of time is wasted on octree recalculation.
+
+    Also, this indicates that display lists optimization is wasted
+    (when geometry changes, then display lists for sure will also be
+    rebuild internally inside TVRMLGLScene). Actually, display lists
+    optimization may be wasted even without calling GeometryChanged
+    often (for example, constantly changing material may force it),
+    but this has to be detected then inside TVRMLGLScene.
+
+    Implementation:
+
+    GeometryChanged always sets CurrentGeometryChangedTime.
+    We set it to 0 before IncreaseWorldTime, so if GeometryChanged
+    will not occur, we will get 0 and "costly animation" will not be detected.
+
+    When both Last- and Current- GeometryChangedTime are non-zero
+    and large, we know that GeometryChanged is called often and it's costly. }
+  procedure DetectCostlyAnim1;
+  begin
+    LastGeometryChangedTime := CurrentGeometryChangedTime;
+    CurrentGeometryChangedTime := 0;
+  end;
+
+  procedure DetectCostlyAnim2;
+  begin
+    { Tests:
+    Writeln('DetectCostlyAnim: ',
+      DetectTimeConsumingAnimations, ' ',
+      ( (Optimization <> roNone) or CollisionCheck), ' ',
+      (CurrentGeometryChangedTime > KamTimerFrequency div 100), ' ',
+      (LastGeometryChangedTime > KamTimerFrequency div 100), ' '
+    ); }
+
+    if DetectTimeConsumingAnimations and
+       ( (Optimization <> roNone) or CollisionCheck) and
+       (CurrentGeometryChangedTime > KamTimerFrequency div 100) and
+       (LastGeometryChangedTime > KamTimerFrequency div 100) then
+    begin
+      case MessageChar(Glw,
+        'Detected a time-consuming animation. Disable some features to make it work faster?' +nl+
+        nl+
+        'If "Yes", we will turn off collision detection and change rendering optimization to "None". These settings should be fast even for very demanding VRML animations.' + ' You can reenable them if you want by menu items "Navigation -> Collision Detection" and "File -> Preferences -> Renderer Optimization".' +nl+
+        nl+
+        'You can also pause animation, this will most certainly eliminate the problem (unpause it by menu "Animation -> Playing / Paused").' +nl+
+        nl+
+        'If "No", this automatic detection will be turned "off", so it will not bother you anymore. You can always explicitly request it again by menu item "File -> Preferences -> Auto-Detect Time-Consuming Animations".' +nl+
+        nl+
+        'If "Cancel", we will do nothing. But this automatic detection will be lefft turned "on", so it will probably be triggered again very soon.',
+        [ CharEnter, 'y', 'Y',
+          'p', 'P',
+          'n', 'N',
+          CharEscape, 'c', 'C'],
+        'Yes [Enter / Y]' +nl+
+        'Pause [P]' +nl+
+        'No [N]' +nl+
+        'Cancel [Escape / C]',
+        taLeft) of
+
+        CharEnter, 'y', 'Y':
+          begin
+            Optimization := roNone;
+            if OptimizationMenu[Optimization] <> nil then
+              OptimizationMenu[Optimization].Checked := true;
+            SceneAnimation.Optimization := Optimization;
+
+            SetCollisionCheck(false);
+          end;
+        'p', 'P':
+          begin
+            AnimationTimePlaying := false;
+            MenuAnimationTimePlaying.Checked := false;
+          end;
+        'n', 'N':
+          begin
+            DetectTimeConsumingAnimations := false;
+            MenuDetectTimeConsumingAnimations.Checked := false;
+          end;
+        { else: on cancel do nothing }
+      end;
+    end;
+  end;
+
 var
   OldAnimationTime, TimeIncrease: TKamTime;
 begin
-  if AnimationTimePlaying then
+  { Ignore Idle calls when IdleSpeed is precisely zero
+    (this may happen, and is good, see TGLWindow.IgnoreNextIdleSpeed).
+    In this case, TimeIncrease will be zero so the whole code
+    will not do anything anyway.
+
+    Moreover, executing DetectCostlyAnim1 would confuse our detection
+    (marking one Idle call without any GeometryChanged call,
+    since IncreaseWorldTime(0) is simply ignored as VRML WorldTime must grow.)
+    In effect, a time-consuming octree rebuild in each frame would not
+    trigger costly anim detection, since each ProgressGL would be followed
+    by one Idle call with IdleSpeed = 0. }
+
+  if AnimationTimePlaying and (Glwin.IdleSpeed <> 0) then
   begin
     OldAnimationTime := AnimationTime;
     TimeIncrease := AnimationTimeSpeed * Glwin.IdleSpeed;
 
+    DetectCostlyAnim1;
+
     AnimationTime += TimeIncrease;
     if SceneAnimation.ScenesCount = 1 then
       SceneAnimation.Scenes[0].IncreaseWorldTime(TimeIncrease);
+
+    DetectCostlyAnim2;
 
     { Call PostRedisplay only if the displayed animation frame actually changed.
       This way, we avoid wasting CPU cycles if the loaded scene is actually
@@ -1259,6 +1379,10 @@ begin
     if MenuReopen <> nil then
       MenuReopen.Enabled := SceneFileName <> '';
 
+    { New scene was loaded, so auto-detection of long animations
+      should be reset. }
+    LastGeometryChangedTime := 0;
+    CurrentGeometryChangedTime := 0;
   except
     FreeScene;
     raise;
@@ -1493,10 +1617,16 @@ begin
 end;
 
 class procedure THelper.GeometryChanged(Scene: TVRMLScene);
+var
+  BeginTime: TKamTimerResult;
 begin
+  BeginTime := KamTimer;
+
   Unselect;
   SceneOctreeFree;
   SceneOctreeCreate;
+
+  CurrentGeometryChangedTime := KamTimer - BeginTime;
 end;
 
 class procedure THelper.PostRedisplay(Scene: TVRMLScene);
@@ -1614,20 +1744,6 @@ begin
     ShadersField.ClearItems;
     ShadersField.AddItem(ProgramNode);
     Added := true;
-  end;
-end;
-
-procedure SetCollisionCheck(const Value: boolean;
-  const NeedMenuUpdate: boolean = true);
-begin
-  if CollisionCheck <> Value then
-  begin
-    CollisionCheck := Value;
-    if NeedMenuUpdate then
-      MenuCollisionCheck.Checked := Value;
-    if CollisionCheck and
-      (SceneAnimation.FirstScene.DefaultTriangleOctree = nil) then
-      SceneOctreeCreate;
   end;
 end;
 
@@ -2767,6 +2883,8 @@ begin
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
 
+  730: DetectTimeConsumingAnimations := not DetectTimeConsumingAnimations;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
@@ -2901,6 +3019,10 @@ begin
      M3 := TMenu.Create('_Rendering optimization');
        MenuAppendOptimization(M3, 1500);
        M2.Append(M3);
+     MenuDetectTimeConsumingAnimations := TMenuItemChecked.Create(
+       'Auto-Detect Time-Consuming Animations', 730,
+       DetectTimeConsumingAnimations, true);
+     M2.Append(MenuDetectTimeConsumingAnimations);
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
@@ -3006,8 +3128,9 @@ begin
      M.Append(M2);
    Result.Append(M);
  M := TMenu.Create('_Animation');
-   M.Append(TMenuItemChecked.Create('_Playing / Paused',   220, CtrlP,
-     AnimationTimePlaying, true));
+   MenuAnimationTimePlaying := TMenuItemChecked.Create(
+     '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
+   M.Append(MenuAnimationTimePlaying);
    M.Append(TMenuItem.Create('Rewind to Beginning', 221));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
