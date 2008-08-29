@@ -3107,10 +3107,6 @@ begin
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, 'm',
          MatrixWalker.MouseLook, true));
-     MenuCollisionCheck := TMenuItemChecked.Create(
-       '_Collision Detection',                   123, 'c',
-         CollisionCheck, true);
-     M2.Append(MenuCollisionCheck);
      MenuGravity := TMenuItemChecked.Create(
        '_Gravity',                              201, 'g',
        MatrixWalker.Gravity, true);
@@ -3126,6 +3122,10 @@ begin
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(M2);
+   MenuCollisionCheck := TMenuItemChecked.Create(
+     '_Collision Detection',                   123, 'c',
+       CollisionCheck, true);
+   M.Append(MenuCollisionCheck);
    Result.Append(M);
  M := TMenu.Create('_Animation');
    MenuAnimationTimePlaying := TMenuItemChecked.Create(
