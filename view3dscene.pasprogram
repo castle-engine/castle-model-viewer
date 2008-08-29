@@ -323,15 +323,19 @@ begin
  try
   strs.Append(Format('Navigation mode: %s', [NavigatorNames[NavigatorKind]]));
 
+  S := Format('Collision detection: %s', [ BoolToStrOO[collisionCheck] ]);
+  if SceneTriangleOctree = nil then
+    S += ' (octree resources released)';
+  strs.Append(S);
+
   if Glw.Navigator is TMatrixWalker then
   begin
-   strs.Append(Format('Collision check %s, CamPos %s, CamDir %s',
-     [ BoolToStrOO[collisionCheck],
-       VectorToNiceStr(Glw.NavWalker.CameraPos),
-       VectorToNiceStr(Glw.NavWalker.CameraDir)]));
-   strs.Append(Format('CamUp %s, Move speed : %f',
-     [ VectorToNiceStr(Glw.NavWalker.CameraUp),
-       { In view3dscene, MoveHorizontalSpeed is always equal to
+   strs.Append(Format('Camera: pos %s, dir %s, up %s',
+     [ VectorToNiceStr(Glw.NavWalker.CameraPos),
+       VectorToNiceStr(Glw.NavWalker.CameraDir),
+       VectorToNiceStr(Glw.NavWalker.CameraUp) ]));
+   strs.Append(Format('Move speed : %f',
+     [ { In view3dscene, MoveHorizontalSpeed is always equal to
          MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
          So it's enough to show just MoveHorizontalSpeed. }
        Glw.NavWalker.MoveHorizontalSpeed ]));
