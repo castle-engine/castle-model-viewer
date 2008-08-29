@@ -675,7 +675,6 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-
 procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
@@ -767,8 +766,7 @@ type
 
     class procedure OpenRecent(const FileName: string);
 
-    class procedure BeforeChangedAll(Scene: TVRMLScene);
-    class procedure AfterChangedAll(Scene: TVRMLScene);
+    class procedure GeometryChanged(Scene: TVRMLScene);
     class procedure PostRedisplay(Scene: TVRMLScene);
   end;
 
@@ -1246,8 +1244,7 @@ begin
     begin
       { TODO: for now, SceneProcessEvents is always @true when scenes count = 1 }
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
-      SceneAnimation.Scenes[I].OnBeforeChangedAll := @Helper.BeforeChangedAll;
-      SceneAnimation.Scenes[I].OnAfterChangedAll := @Helper.AfterChangedAll;
+      SceneAnimation.Scenes[I].OnGeometryChanged := @Helper.GeometryChanged;
       SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
     end;
 
@@ -1495,19 +1492,10 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
-class procedure THelper.BeforeChangedAll(Scene: TVRMLScene);
+class procedure THelper.GeometryChanged(Scene: TVRMLScene);
 begin
-  { ChangedAll traverses the VRML graph again,
-    recalculating State values... so the old State is not
-    correct anymore. Unfortunately, this means that
-    the whole octree becomes invalid, along with SelectedItem. }
-
   Unselect;
   SceneOctreeFree;
-end;
-
-class procedure THelper.AfterChangedAll(Scene: TVRMLScene);
-begin
   SceneOctreeCreate;
 end;
 
@@ -2054,10 +2042,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.FaceCoordIndexEnd -
         SelectedItem^.FaceCoordIndexBegin + 1);
 
-    Unselect;
-    SceneOctreeFree;
     SceneAnimation.FirstScene.ChangedFields(GeometryNode);
-    SceneOctreeCreate;
   end;
 
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
@@ -2451,15 +2436,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
        MessageInputQueryCardinal(Glwin,
          'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime, taLeft) then
     begin
-      { Since we just destroy RootNode, and replace it with completely
-        different scene, we have to recalculate many things.
-        Before/AfterChangedAll callbacks take care of recalculating
-        octree, invalidating SelectedItem and such.
-
-        TODO: things like viewpoints etc. also should be recalculated by this,
-        as their pointers changed. }
-      THelper.BeforeChangedAll(nil);
-
       { Note: there's an inherent problem here since RootNode starts
         with state from current WorldTime. This includes
         TimeDependentNodeHandler state like IsActive, etc., but also
@@ -2492,7 +2468,14 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
         'Precalculating animation');
 
-      THelper.AfterChangedAll(nil);
+      { Since we just destroyed RootNode, and replaced it with completely
+        different scene, we have to recalculate many things.
+        GeometryChanged takes care of recalculating
+        octree, invalidating SelectedItem and such.
+
+        TODO: things like viewpoints etc. also should be recalculated by this,
+        as their pointers changed. }
+      THelper.GeometryChanged(nil);
     end;
   end;
 
