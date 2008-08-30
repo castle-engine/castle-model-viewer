@@ -795,7 +795,7 @@ procedure Idle(glwin: TGLWindow);
       case MessageChar(Glw,
         'Detected a time-consuming animation. Disable some features to make it work faster?' +nl+
         nl+
-        'If "Yes", we will turn off collision detection and change rendering optimization to "None". These settings should be fast even for very demanding VRML animations.' + ' You can reenable them if you want by menu items "Navigation -> Collision Detection" and "File -> Preferences -> Renderer Optimization".' +nl+
+        'If "Yes", we will turn off collision detection and change rendering optimization to "None".' + ' You can reenable them if you want by menu items "Navigation -> Collision Detection" and "File -> Preferences -> Renderer Optimization". ' + '(For animations based on Transform node, optimization "Separate Shape-States, No Transform" is quite superior, so you may want to try this setting.)' +nl+
         nl+
         'You can also pause animation, this will most certainly eliminate the problem (unpause it by menu "Animation -> Playing / Paused").' +nl+
         nl+
