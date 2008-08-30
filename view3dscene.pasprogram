@@ -2158,7 +2158,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.FaceCoordIndexEnd -
         SelectedItem^.FaceCoordIndexBegin + 1);
 
-    SceneAnimation.FirstScene.ChangedFields(GeometryNode);
+    SceneAnimation.FirstScene.ChangedFields(GeometryNode, nil);
   end;
 
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
@@ -2248,13 +2248,11 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdDiffuseColor.Value := Color;
-        SceneAnimation.FirstScene.ChangedFields(M2);
+        M2.FdDiffuseColor.EventIn.Send(Color, SceneAnimation.FirstScene.WorldTime);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdDiffuseColor.Items.AssignArray([Color]);
-        SceneAnimation.FirstScene.ChangedFields(M1);
+        M1.FdDiffuseColor.EventIn.Send([Color], SceneAnimation.FirstScene.WorldTime);
       end;
     end;
   end;
@@ -2280,13 +2278,11 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdSpecularColor.Value := Color;
-        SceneAnimation.FirstScene.ChangedFields(M2);
+        M2.FdSpecularColor.EventIn.Send(Color, SceneAnimation.FirstScene.WorldTime);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdSpecularColor.Items.AssignArray([Color]);
-        SceneAnimation.FirstScene.ChangedFields(M1);
+        M1.FdSpecularColor.EventIn.Send([Color], SceneAnimation.FirstScene.WorldTime);
       end;
     end;
   end;
