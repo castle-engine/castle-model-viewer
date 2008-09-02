@@ -2577,6 +2577,11 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       SceneAnimation.OwnsFirstRootNode := false;
       RootNode := SceneAnimation.Scenes[0].RootNode;
 
+      { Using LoadFromVRMLEvents will also Close the previous scene.
+        Before doing this, we must always free our octrees
+        (as SceneAnimation.FirstScene keeps references to our octrees). }
+      SceneOctreeFree;
+
       { Root node will be owned by LoadFromVRMLEvents, so it will be freed }
       SceneAnimation.LoadFromVRMLEvents(RootNode, true,
         TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
