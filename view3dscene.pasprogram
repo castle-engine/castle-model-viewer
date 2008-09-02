@@ -151,7 +151,6 @@ var
   CameraRadius: Single = 0.0;
   { 0.0 means "no limit". }
   VisibilityLimit: Single = 0.0;
-  NavigationNode: TNodeNavigationInfo;
   ViewpointNode: TVRMLViewpointNode;
   SceneHeadlight: TVRMLGLHeadlight;
 
@@ -941,6 +940,14 @@ end;
 
 { Setting viewpoint ---------------------------------------------------------- }
 
+function NavigationNode: TNodeNavigationInfo;
+begin
+  if SceneAnimation.Loaded then
+    Result := SceneAnimation.Scenes[0].NavigationInfoStack.Top as
+      TNodeNavigationInfo else
+    Result := nil;
+end;
+
 { This does what all SetViewpointXxx should do, except that you
   have to set ViewpointNode and CameraKind before calling this.
   Note that the length of InitialCameraDir doesn't matter. }
@@ -1142,7 +1149,6 @@ begin
   if ViewpointsList.MenuJumpToViewpoint <> nil then
     ViewpointsList.MakeMenuJumpToViewpoint;
 
-  NavigationNode := nil;
   ViewpointNode := nil;
 
   SceneFileName := '';
@@ -1245,9 +1251,6 @@ begin
 
     AnimationTime := SceneAnimation.TimeBegin;
     ResetWorldTime(AnimationTime);
-
-    NavigationNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
-      TNodeNavigationInfo, true) as TNodeNavigationInfo;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
@@ -2328,7 +2331,6 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         { TODO: we should set these to nil only if
           it's actually removed by RemoveChildrenWithMatchingName above. }
         ViewpointNode := nil;
-        NavigationNode := nil;
 
         SceneAnimation.Scenes[0].ChangedAll;
       end;
