@@ -1043,6 +1043,7 @@ type
     class procedure PostRedisplay(Scene: TVRMLScene);
 
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
+    class procedure ViewpointsChanged(Scene: TVRMLScene);
   end;
 
 var
@@ -1217,6 +1218,11 @@ begin
   UpdateViewpointNode;
 end;
 
+class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
+begin
+  ViewpointsList.Recalculate(Scene);
+end;
+
 { Scene operations ---------------------------------------------------------- }
 
 const
@@ -1244,6 +1250,8 @@ var
   MenuPreferGravityUpForRotations: TMenuItemChecked;
   MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
+
+  DebugLogVRMLChanges: boolean = false;
 
 procedure VRMLNonFatalError_Warning(const s: string);
 begin
@@ -1558,6 +1566,8 @@ begin
       SceneAnimation.Scenes[I].OnGeometryChanged := @Helper.GeometryChanged;
       SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @Helper.BoundViewpointChanged;
+      SceneAnimation.Scenes[I].OnViewpointsChanged := @Helper.ViewpointsChanged;
+      SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
     end;
 
     if not Glw.Closed then
@@ -3412,7 +3422,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..14] of TOption =
+  Options: array[0..15] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
     (Short:  #0; Long: 'triangle-octree-max-leaf-items-count'; Argument: oaRequired),
@@ -3428,6 +3438,7 @@ const
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-vrml-changes'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired)
   );
 
@@ -3512,6 +3523,10 @@ const
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
+           '  --debug-log-vrml-changes' +nl+
+           '                        If --debug-log, output also info about' +NL+
+           '                        VRML graph changes. This indicates' +nl+
+           '                        how VRML events are optimized.' +nl+
            NL+
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
@@ -3538,6 +3553,10 @@ const
         end;
     13: InitializeLog(Version);
     14: begin
+          InitializeLog(Version);
+          DebugLogVRMLChanges := true;
+        end;
+    15: begin
           { for proper menu display, we have to keep AntiAliasing
             within 0..MaxAntiAliasing range (although GLAntiAliasing
             unit accepts any cardinal value). }
