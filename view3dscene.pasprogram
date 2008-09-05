@@ -146,13 +146,11 @@ var
     from "Open" menu item. }
   SceneAnimation: TVRMLGLAnimation;
   SceneFilename: string;
-  { must always be > 0 }
-  CameraKind: TVRMLCameraKind;
   { vars below istotne tylko w trybach nawigacji ktore robia wykrywanie kolizji: }
+  { must always be > 0 }
   CameraRadius: Single = 0.0;
   { 0.0 means "no limit". }
   VisibilityLimit: Single = 0.0;
-  ViewpointNode: TVRMLViewpointNode;
   SceneHeadlight: TVRMLGLHeadlight;
 
   { (SelectedItem = nil) if and only if (SelectedItemIndex = NoItemIndex). }
@@ -281,6 +279,9 @@ begin
       SceneOctreeCreate;
   end;
 end;
+
+function CameraKind: TVRMLCameraKind; forward;
+function ViewpointNode: TVRMLViewpointNode; forward;
 
 { TGLWindow callbacks --------------------------------------------------------- }
 
@@ -723,7 +724,8 @@ begin
  { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
  { TODO: something similar should be done for OrthoViewpoint to take
    into accound it's fieldOfView. }
- if (ViewpointNode <> nil) and (ViewpointNode is TNodeViewpoint) then
+ if (ViewpointNode <> nil) and
+    (ViewpointNode is TNodeViewpoint) then
    FieldOfView := TNodeViewpoint(ViewpointNode).FdFieldOfView.Value else
    FieldOfView := DefaultViewpointFieldOfView;
  AngleOfViewX := RadToDeg(TNodeViewpoint.ViewpointAngleOfView(
@@ -1039,6 +1041,8 @@ type
 
     class procedure GeometryChanged(Scene: TVRMLScene);
     class procedure PostRedisplay(Scene: TVRMLScene);
+
+    class procedure BoundViewpointChanged(Scene: TVRMLScene);
   end;
 
 var
@@ -1100,8 +1104,29 @@ begin
     Result := nil;
 end;
 
-{ This does what all SetViewpointXxx should do, except that you
-  have to set ViewpointNode and CameraKind before calling this.
+function ViewpointNode: TVRMLViewpointNode;
+begin
+  if SceneAnimation.Loaded then
+    Result := SceneAnimation.Scenes[0].ViewpointStack.Top as
+      TVRMLViewpointNode else
+    Result := nil;
+end;
+
+function CameraKind: TVRMLCameraKind;
+var
+  Viewpoint: TVRMLViewpointNode;
+begin
+  Viewpoint := ViewpointNode;
+  if Viewpoint <> nil then
+    Result := Viewpoint.CameraKind else
+    Result := ckPerspective;
+end;
+
+{ This directly sets navigator properties, without looking at
+  current ViewpointNode state. It may be used to initialize
+  navigator to some state that doesn't correspond to any existing
+  viewpoint, or as a basis for UpdateViewpointNode.
+
   Note that the length of InitialCameraDir doesn't matter. }
 procedure SetViewpointCore(
   const InitialCameraPos: TVector3Single;
@@ -1113,7 +1138,7 @@ begin
   if (NavigationNode = nil) or (NavigationNode.FdSpeed.Value = 0) then
   begin
     { Since we don't have NavigationNode.speed, we just calculate some
-      speed that should "feel sensible". We base in on CameraRadius.
+      speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3dAvgSize(SceneAnimation.BoundingBoxSum).
 
@@ -1151,33 +1176,45 @@ begin
   end;
 end;
 
-{ This sets perspective viewpoint that doesn't come from
-  any VRML viewpoint node. }
-procedure SetViewpoint(
-  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
-    GravityUp: TVector3Single); overload;
-begin
-  ViewpointNode := nil;
-  CameraKind := ckPerspective;
-  SetViewpointCore(InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
-end;
+{ Call this when ViewpointNode (currently bound viewpoint node)
+  changed (possibly to/from nil) and we have to go to this viewpoint.
 
-{ This jumps to 1st viewpoint on ViewpointsList
-  (or to the default VRML cam setting if no viewpoints in the list).
+  When it's nil, we'll go to some default position.
 
-  Sets CameraKind.
+  This doesn't call set_bind event for this viewpoint --- the idea
+  is that viewpoint changed for example because something already
+  did set_bind. If you want to just bind the viewpoint, then
+  don't use this procedure --- instead send set_bind = true event
+  to given viewpoint, and this will indirectly call this procedure.
+
   Uses CameraRadius, NavigationNode, so make sure these are already
   set as needed }
-procedure SetViewpoint(Index: Integer); overload;
+procedure UpdateViewpointNode;
 var
-  InitialCameraPos: TVector3Single;
-  InitialCameraDir: TVector3Single;
-  InitialCameraUp: TVector3Single;
+  CameraPos: TVector3Single;
+  CameraDir: TVector3Single;
+  CameraUp: TVector3Single;
   GravityUp: TVector3Single;
+  V: TVRMLViewpointNode;
 begin
-  ViewpointNode := ViewpointsList.GetViewpoint(Index, CameraKind,
-    InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
-  SetViewpointCore(InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp);
+  V := ViewpointNode;
+  if V <> nil then
+  begin
+    V.GetCameraVectors(V.Transform, CameraPos, CameraDir, CameraUp, GravityUp);
+  end else
+  begin
+    CameraPos := StdVRMLCamPos[1];
+    CameraDir := StdVRMLCamDir;
+    CameraUp := StdVRMLCamUp;
+    GravityUp := StdVRMLGravityUp;
+  end;
+
+  SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
+end;
+
+class procedure THelper.BoundViewpointChanged(Scene: TVRMLScene);
+begin
+  UpdateViewpointNode;
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -1302,11 +1339,7 @@ begin
 
   SceneAnimation.Close;
 
-  ViewpointsList.Count := 0;
-  if ViewpointsList.MenuJumpToViewpoint <> nil then
-    ViewpointsList.MakeMenuJumpToViewpoint;
-
-  ViewpointNode := nil;
+  ViewpointsList.Recalculate(nil);
 
   SceneFileName := '';
 
@@ -1435,6 +1468,7 @@ begin
 
     if not JumpToInitialViewpoint then
     begin
+      { TODO: this should preserve previously bound viewpoint. }
       SavedCameraPos := MatrixWalker.CameraPos;
       SavedCameraDir := MatrixWalker.CameraDir;
       SavedCameraUp := MatrixWalker.CameraUp;
@@ -1445,13 +1479,10 @@ begin
       StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
-    { calculate ViewpointsList, MenuJumpToViewpoint,
+    { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
-    SceneAnimation.FirstScene.EnumerateViewpoints(
-      @ViewpointsList.AddNodeTransform);
-    if ViewpointsList.MenuJumpToViewpoint <> nil then
-      ViewpointsList.MakeMenuJumpToViewpoint;
-    SetViewpoint(0);
+    ViewpointsList.Recalculate(SceneAnimation.FirstScene);
+    UpdateViewpointNode;
 
     if not JumpToInitialViewpoint then
     begin
@@ -1526,6 +1557,7 @@ begin
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
       SceneAnimation.Scenes[I].OnGeometryChanged := @Helper.GeometryChanged;
       SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
+      SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @Helper.BoundViewpointChanged;
     end;
 
     if not Glw.Closed then
@@ -2458,7 +2490,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     CameraViewpointForWholeScene(SceneAnimation.BoundingBoxSum,
       CameraPos, CameraDir, CameraUp, GravityUp);
-    SetViewpoint(CameraPos, CameraDir, CameraUp, GravityUp);
+    SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2484,13 +2516,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       end;
 
       if RemovedNumber <> 0 then
-      begin
-        { TODO: we should set these to nil only if
-          it's actually removed by RemoveChildrenWithMatchingName above. }
-        ViewpointNode := nil;
-
         SceneAnimation.Scenes[0].ChangedAll;
-      end;
 
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
@@ -2814,16 +2840,16 @@ begin
 
   41: AssignGLSLShader;
 
-  { Before all calls to SetViewpoint below, we don't really have to
+  { Before all calls to SetViewpointCore below, we don't really have to
     swith to nkWalker. But user usually wants to switch to nkWalker ---
-    in nkExamine SetViewpoint result is not visible at all. }
+    in nkExamine viewpoint result is not visible at all. }
   51: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpointCore(StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   52: begin
         SetNavigatorKind(Glw, nkWalker);
-        SetViewpoint(StdVRMLCamPos[2], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpointCore(StdVRMLCamPos[2], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   53: begin
         SetNavigatorKind(Glw, nkWalker);
@@ -3011,11 +3037,16 @@ begin
 
   300..399:
     begin
-      { We could just SetViewpoint, without swithing to nkWalker.
+      { We could just bind given viewpoint, without swithing to nkWalker.
         But user usually wants to switch to nkWalker --- in nkExamine
-        SetViewpoint is not visible at all. }
+        current viewpoint is not visible at all. }
       SetNavigatorKind(Glw, nkWalker);
-      SetViewpoint(MenuItem.IntData - 300);
+      ViewpointsList.Items[MenuItem.IntData - 300].Node.EventSet_Bind.
+        Send(true, SceneAnimation.FirstScene.WorldTime);
+      { Sending set_bind = true works fine if it's not current viewpoint,
+        otherwise nothing happens... So just call UpdateViewpointNode
+        explicitly, to really reset on the given viewpoint. }
+      UpdateViewpointNode;
     end;
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=

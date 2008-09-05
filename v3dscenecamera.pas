@@ -1,5 +1,5 @@
 {
-  Copyright 2004-2005,2007 Michalis Kamburelis.
+  Copyright 2004-2008 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -23,7 +23,7 @@ unit V3DSceneCamera;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, KambiUtils;
+uses VectorMath, VRMLNodes, GLWindow, KambiUtils, VRMLScene;
 
 {$define read_interface}
 
@@ -34,6 +34,7 @@ uses VectorMath, VRMLNodes, GLWindow, KambiUtils;
 function SForCaption(const S: string): string;
 
 type
+  { TODO: this Transform is not used now, remove and simplify }
   TViewpointInfo = record
     Node: TVRMLViewpointNode;
     Transform: TMatrix4Single;
@@ -45,21 +46,24 @@ type
   {$define DYNARRAY_1_IS_STRUCT}
   {$I dynarray_1.inc}
   TViewpointsList = class(TDynArray_1)
+  private
+    procedure AddNodeTransform(Node: TVRMLViewpointNode;
+      const Transform: TMatrix4Single);
   public
     MenuJumpToViewpoint: TMenu;
 
-    procedure AddNodeTransform(Node: TVRMLViewpointNode;
-      const Transform: TMatrix4Single);
+    { Recalculate our list of viewpoints, also recalculating
+      MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
 
+      Special value Scene = @nil means no scene is loaded, so no
+      viewpoint nodes exist. }
+    procedure Recalculate(Scene: TVRMLScene);
+
+    { This does part of Recalculate job: only recalculate
+      MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
+      Call this when MenuJumpToViewpoint reference changed, and you know
+      that actual scene viewpoints didn't change. }
     procedure MakeMenuJumpToViewpoint;
-
-    { Calculate viewpoint given by Index (and return it).
-      If Index is outside 0..High, we calculate default VRML camera
-      properties (and return nil). }
-    function GetViewpoint(Index: Integer;
-      out CameraKind: TVRMLCameraKind;
-      out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
-        TVRMLViewpointNode;
   end;
 
 var
@@ -89,6 +93,17 @@ begin
   Item.Node := Node;
   Item.Transform := Transform;
   AppendItem(Item);
+end;
+
+procedure TViewpointsList.Recalculate(Scene: TVRMLScene);
+begin
+  Count := 0;
+
+  if Scene <> nil then
+    Scene.EnumerateViewpoints(@AddNodeTransform);
+
+  if MenuJumpToViewpoint <> nil then
+    MakeMenuJumpToViewpoint;
 end;
 
 procedure TViewpointsList.MakeMenuJumpToViewpoint;
@@ -124,29 +139,6 @@ begin
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 2.0 viewpoint', 52));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the whole scene', 53));
-end;
-
-function TViewpointsList.GetViewpoint(
-  Index: Integer; out CameraKind: TVRMLCameraKind;
-  out CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single):
-  TVRMLViewpointNode;
-begin
-  if Between(Index, 0, High) then
-  begin
-    Result := ViewpointsList.Items[Index].Node;
-    Result.GetCameraVectors(
-      ViewpointsList.Items[Index].Transform,
-      CameraPos, CameraDir, CameraUp, GravityUp);
-    CameraKind := Result.CameraKind;
-  end else
-  begin
-    Result := nil;
-    CameraPos := StdVRMLCamPos[1];
-    CameraDir := StdVRMLCamDir;
-    CameraUp := StdVRMLCamUp;
-    CameraKind := ckPerspective;
-    GravityUp := StdVRMLGravityUp;
-  end;
 end;
 
 initialization
