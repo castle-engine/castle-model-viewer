@@ -354,13 +354,23 @@ var
       begin
         Desc := TNodeAnchor(Sensor).FdDescription.Value;
         for J := 0 to TNodeAnchor(Sensor).FdUrl.Count - 1 do
-          Desc += ' ' + TNodeAnchor(Sensor).FdUrl.Items.Items[J];
+        begin
+          if J = 0 then
+          begin
+            if Desc <> '' then Desc += ' ';
+            Desc += '[';
+          end else
+            Desc += ', ';
+          Desc += TNodeAnchor(Sensor).FdUrl.Items.Items[J];
+        end;
+        if TNodeAnchor(Sensor).FdUrl.Count <> 0 then
+          Desc += ']';
       end else
         Desc := '';
 
       Desc := SForCaption(Desc);
       if Desc <> '' then
-        Result += Desc;
+        Result += ' ' + Desc;
     end;
 
   var
