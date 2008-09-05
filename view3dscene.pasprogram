@@ -368,6 +368,7 @@ var
     I: Integer;
   begin
     Strs.Clear;
+
     if (SceneAnimation.ScenesCount = 1) and
        (SceneAnimation.Scenes[0].PointingDeviceOverItem <> nil) then
     begin
