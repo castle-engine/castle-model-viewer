@@ -3041,7 +3041,7 @@ begin
         But user usually wants to switch to nkWalker --- in nkExamine
         current viewpoint is not visible at all. }
       SetNavigatorKind(Glw, nkWalker);
-      ViewpointsList.Items[MenuItem.IntData - 300].Node.EventSet_Bind.
+      ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
         Send(true, SceneAnimation.FirstScene.WorldTime);
       { Sending set_bind = true works fine if it's not current viewpoint,
         otherwise nothing happens... So just call UpdateViewpointNode

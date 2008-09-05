@@ -23,7 +23,7 @@ unit V3DSceneCamera;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, KambiUtils, VRMLScene;
+uses VectorMath, VRMLNodes, GLWindow, KambiUtils, KambiClassUtils, VRMLScene;
 
 {$define read_interface}
 
@@ -34,21 +34,13 @@ uses VectorMath, VRMLNodes, GLWindow, KambiUtils, VRMLScene;
 function SForCaption(const S: string): string;
 
 type
-  { TODO: this Transform is not used now, remove and simplify }
-  TViewpointInfo = record
-    Node: TVRMLViewpointNode;
-    Transform: TMatrix4Single;
-  end;
-  PViewpointInfo = ^TViewpointInfo;
-
-  TDynArrayItem_1 = TViewpointInfo;
-  PDynArrayItem_1 = PViewpointInfo;
-  {$define DYNARRAY_1_IS_STRUCT}
-  {$I dynarray_1.inc}
-  TViewpointsList = class(TDynArray_1)
+  TObjectsListItem_1 = TVRMLViewpointNode;
+  {$I objectslist_1.inc}
+  TViewpointsList = class(TObjectsList_1)
   private
-    procedure AddNodeTransform(Node: TVRMLViewpointNode;
-      const Transform: TMatrix4Single);
+    procedure AddViewpoint(Node: TVRMLNode;
+      State: TVRMLGraphTraverseState;
+      ParentInfo: PTraversingInfo);
   public
     MenuJumpToViewpoint: TMenu;
 
@@ -76,7 +68,7 @@ implementation
 uses SysUtils, RaysWindow, KambiStringUtils, VRMLCameraUtils;
 
 {$define read_implementation}
-{$I dynarray_1.inc}
+{$I objectslist_1.inc}
 
 function SForCaption(const S: string): string;
 begin
@@ -85,22 +77,20 @@ begin
     Result := Copy(Result, 1, 50) + '...';
 end;
 
-procedure TViewpointsList.AddNodeTransform(Node: TVRMLViewpointNode;
-  const Transform: TMatrix4Single);
-var
-  Item: TViewpointInfo;
+procedure TViewpointsList.AddViewpoint(Node: TVRMLNode;
+  State: TVRMLGraphTraverseState;
+  ParentInfo: PTraversingInfo);
 begin
-  Item.Node := Node;
-  Item.Transform := Transform;
-  AppendItem(Item);
+  Add(Node as TVRMLViewpointNode);
 end;
 
 procedure TViewpointsList.Recalculate(Scene: TVRMLScene);
 begin
   Count := 0;
 
-  if Scene <> nil then
-    Scene.EnumerateViewpoints(@AddNodeTransform);
+  if (Scene <> nil) and
+     (Scene.RootNode <> nil) then
+    Scene.RootNode.TraverseFromDefaultState(TVRMLViewpointNode, @AddViewpoint);
 
   if MenuJumpToViewpoint <> nil then
     MakeMenuJumpToViewpoint;
@@ -120,7 +110,7 @@ begin
     if I < 10 then
       S := '_' + IntToStr(I) else
       S := IntToStr(I);
-    Node := Items[I].Node;
+    Node := Items[I];
     S += ': ' + Node.NodeTypeName;
     if Node is TNodeX3DViewpointNode then
     begin
