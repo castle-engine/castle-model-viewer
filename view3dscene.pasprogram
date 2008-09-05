@@ -329,9 +329,70 @@ procedure DrawStatus(data: Pointer);
   end;
 
 const BoolToStrOO: array[boolean] of string=('OFF','ON');
-var strs: TStringList;
-    s: string;
-    Stipple: PPolygonStipple;
+var
+  strs: TStringList;
+  Stipple: PPolygonStipple;
+
+  { Describe pointing-device sensors (under the mouse, and also active
+    one (if any)). }
+  procedure DescribeSensors;
+
+    function DescribeSensor(Sensor: TVRMLNode): string;
+    var
+      Desc: string;
+      J: Integer;
+    begin
+      Result := '';
+
+      if Sensor.NodeName <> '' then
+        Result += Format('%s (%s)', [Sensor.NodeName, Sensor.NodeTypeName]) else
+        Result += Format('%s', [Sensor.NodeTypeName]);
+
+      if Sensor is TNodeX3DPointingDeviceSensorNode then
+        Desc := TNodeX3DPointingDeviceSensorNode(Sensor).FdDescription.Value else
+      if Sensor is TNodeAnchor then
+      begin
+        Desc := TNodeAnchor(Sensor).FdDescription.Value;
+        for J := 0 to TNodeAnchor(Sensor).FdUrl.Count - 1 do
+          Desc += ' ' + TNodeAnchor(Sensor).FdUrl.Items.Items[J];
+      end else
+        Desc := '';
+
+      Desc := SForCaption(Desc);
+      if Desc <> '' then
+        Result += Desc;
+    end;
+
+  var
+    Sensors: TVRMLNodesList;
+    I: Integer;
+  begin
+    Strs.Clear;
+    if (SceneAnimation.ScenesCount = 1) and
+       (SceneAnimation.Scenes[0].PointingDeviceOverItem <> nil) then
+    begin
+      Sensors := SceneAnimation.Scenes[0].PointingDeviceSensors;
+      for I := 0 to Sensors.Count - 1 do
+      begin
+        Strs.Append('Over sensor: ' + DescribeSensor(Sensors[I]));
+      end;
+      if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
+        Strs.Append('Active sensor: ' +
+          DescribeSensor(SceneAnimation.Scenes[0].PointingDeviceActiveSensor));
+    end;
+
+    if Strs.Count <> 0 then
+    begin
+      glLoadIdentity;
+      glTranslatef(5, 0, 0);
+      statusFont.printStringsBorderedRectTop(strs, 0,
+        Black4Single, Green4Single, Yellow4Single,
+        Stipple, 5, 1, 1, Glw.Height, 5);
+    end;
+  end;
+
+var
+  s: string;
 begin
  glLoadIdentity;
  glTranslatef(5, 5, 0);
@@ -399,6 +460,8 @@ begin
   statusFont.printStringsBorderedRect(strs, 0,
     Black4Single, Green4Single, Yellow4Single,
     Stipple, 5, 1, 1);
+
+  DescribeSensors;
  finally strs.Free end;
 end;
 
@@ -698,6 +761,15 @@ var
 begin
   if btn = mbLeft then
   begin
+    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    begin
+      SceneAnimation.Scenes[0].PointingDeviceActive := true;
+      { Our status text displays current sensors, so we have to redisplay. }
+      Glwin.PostRedisplay;
+    end;
+  end else
+  if btn = mbRight then
+  begin
     if not (Glw.Navigator is TMatrixWalker) then
     begin
       MessageOK(glwin, SOnlyInWalker);
@@ -733,6 +805,69 @@ begin
     UpdateSelectedEnabled;
 
     Glw.PostRedisplay;
+  end;
+end;
+
+procedure MouseUp(glwin: TGLWindow; btn: TMouseButton);
+begin
+  if btn = mbLeft then
+  begin
+    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    begin
+      SceneAnimation.Scenes[0].PointingDeviceActive := false;
+      { Our status text displays current sensors, so we have to redisplay. }
+      Glwin.PostRedisplay;
+    end;
+  end;
+end;
+
+procedure MouseMove(Glwin: TGLWindow; NewX, NewY: Integer);
+var
+  Ray0, RayVector: TVector3Single;
+  OverPoint: TVector3Single;
+  Item: POctreeItem;
+  ItemIndex: Integer;
+
+
+  function SensorsCount: Cardinal;
+  begin
+    if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
+      Result := SceneAnimation.Scenes[0].PointingDeviceSensors.Count else
+      Result := 0;
+  end;
+
+var
+  OldSensorsCount, NewSensorsCount: Cardinal;
+begin
+  if (SceneAnimation.ScenesCount = 1 { ProcessEvents = true }) and
+     (Glw.Navigator is TMatrixWalker) and
+     (SceneTriangleOctree <> nil) then
+  begin
+    OldSensorsCount := SensorsCount;
+
+    Glw.Ray(NewX, NewY, AngleOfViewX, AngleOfViewY, Ray0, RayVector);
+
+    ItemIndex := SceneTriangleOctree.RayCollision(
+      OverPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
+
+    if ItemIndex = NoItemIndex then
+      Item := nil else
+      Item := SceneTriangleOctree.OctreeItems.Pointers[ItemIndex];
+
+    SceneAnimation.Scenes[0].PointingDeviceMove(OverPoint, Item);
+
+    NewSensorsCount := SensorsCount;
+
+    { I want to keep assertion that Glwin.Cursor = gcText when
+      we're over some pointing-device sensors. }
+    if NewSensorsCount <> 0 then
+      Glwin.Cursor := gcText else
+      Glwin.Cursor := gcDefault;
+
+    if (OldSensorsCount <> 0) or
+       (NewSensorsCount <> 0) then
+      { Our status text displays current sensors, so we have to redisplay. }
+      Glwin.PostRedisplay;
   end;
 end;
 
@@ -1106,6 +1241,11 @@ procedure SceneOctreeFree;
 begin
   if SceneAnimation.ScenesCount <> 0 then
   begin
+    { Since we destroy our POctreeItems, make sure SceneAnimation.FirstScene
+      doesn't hold a reference to it. }
+    SceneAnimation.FirstScene.PointingDeviceClear;
+    Glw.Cursor := gcDefault;
+
     SceneAnimation.FirstScene.DefaultTriangleOctree.Free;
     SceneAnimation.FirstScene.DefaultTriangleOctree := nil;
 
@@ -3438,6 +3578,8 @@ begin
         Glw.OnInit := @Init;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
+        Glw.OnMouseUp := @MouseUp;
+        Glw.OnMouseMove := @MouseMove;
         Glw.OnIdle := @Idle;
         Glw.OnKeyDown := @KeyDown;
         Glw.OnKeyUp := @KeyUp;
