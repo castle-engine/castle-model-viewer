@@ -72,7 +72,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
-  DataErrors, KambiLog, ProgressConsole,
+  DataErrors, KambiLog, ProgressConsole, DateUtils,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
@@ -1451,7 +1451,13 @@ begin
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
 
-    AnimationTime := SceneAnimation.TimeBegin;
+    if (SceneAnimation.ScenesCount > 1) or
+       ( (NavigationNode <> nil) and
+         (NavigationNode is TNodeKambiNavigationInfo) and
+         TNodeKambiNavigationInfo(NavigationNode).FdTimeOriginAtLoad.Value )
+       then
+      AnimationTime := SceneAnimation.TimeBegin else
+      AnimationTime := DateTimeToUnix(Now);
     ResetWorldTime(AnimationTime);
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
