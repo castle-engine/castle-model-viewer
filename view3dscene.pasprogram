@@ -800,7 +800,7 @@ procedure Idle(glwin: TGLWindow);
         nl+
         'If "No", this automatic detection will be turned "off", so it will not bother you anymore. You can always explicitly request it again by menu item "File -> Preferences -> Auto-Detect Time-Consuming Animations".' +nl+
         nl+
-        'If "Cancel", we will do nothing. But this automatic detection will be lefft turned "on", so it will probably be triggered again very soon.',
+        'If "Cancel", we will do nothing. But this automatic detection will be left turned "on", so it will probably be triggered again very soon.',
         [ CharEnter, 'y', 'Y',
           'p', 'P',
           'n', 'N',
