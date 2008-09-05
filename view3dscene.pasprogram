@@ -770,64 +770,68 @@ procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
 begin
-  if btn = mbLeft then
+  { In Examiner mode, mouse clicks start dragging, so don't do
+    anything here (not even a warning about SOnlyInWalker,
+    since it would only interfere with navigation). }
+
+  if Glw.Navigator is TMatrixWalker then
   begin
-    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    if btn = mbLeft then
     begin
-      SceneAnimation.Scenes[0].PointingDeviceActive := true;
-      { Our status text displays current sensors, so we have to redisplay. }
-      Glwin.PostRedisplay;
-    end;
-  end else
-  if btn = mbRight then
-  begin
-    if not (Glw.Navigator is TMatrixWalker) then
+      if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+      begin
+        SceneAnimation.Scenes[0].PointingDeviceActive := true;
+        { Our status text displays current sensors, so we have to redisplay. }
+        Glwin.PostRedisplay;
+      end;
+    end else
+    if btn = mbRight then
     begin
-      MessageOK(glwin, SOnlyInWalker);
-      Exit;
+      if SceneTriangleOctree = nil then
+      begin
+        MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
+        Exit;
+      end;
+
+      Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
+
+      SceneTriangleOctree.DirectCollisionTestsCounter := 0;
+
+      SelectedItemIndex :=
+        SceneTriangleOctree.RayCollision(
+          SelectedPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
+
+      { DirectCollisionTestsCounter is not recorded,
+        so I may write it now on console in case it will be useful.
+        For now it's commented out --- not interesting to typical user.
+      Writeln(Format('%d tests for collisions between ray ' +
+        'and triangles were needed to learn this.',
+        [ SceneTriangleOctree.DirectCollisionTestsCounter ])); }
+
+      if SelectedItemIndex = NoItemIndex then
+        SelectedItem := nil else
+        SelectedItem := SceneTriangleOctree.OctreeItems.
+          Pointers[SelectedItemIndex];
+
+      UpdateSelectedEnabled;
+
+      Glw.PostRedisplay;
     end;
-
-    if SceneTriangleOctree = nil then
-    begin
-      MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
-      Exit;
-    end;
-
-    Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
-
-    SceneTriangleOctree.DirectCollisionTestsCounter := 0;
-
-    SelectedItemIndex :=
-      SceneTriangleOctree.RayCollision(
-        SelectedPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
-
-    { DirectCollisionTestsCounter is not recorded,
-      so I may write it now on console in case it will be useful.
-      For now it's commented out --- not interesting to typical user.
-    Writeln(Format('%d tests for collisions between ray ' +
-      'and triangles were needed to learn this.',
-      [ SceneTriangleOctree.DirectCollisionTestsCounter ])); }
-
-    if SelectedItemIndex = NoItemIndex then
-      SelectedItem := nil else
-      SelectedItem := SceneTriangleOctree.OctreeItems.
-        Pointers[SelectedItemIndex];
-
-    UpdateSelectedEnabled;
-
-    Glw.PostRedisplay;
   end;
 end;
 
 procedure MouseUp(glwin: TGLWindow; btn: TMouseButton);
 begin
-  if btn = mbLeft then
+  if Glw.Navigator is TMatrixWalker then
   begin
-    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    if btn = mbLeft then
     begin
-      SceneAnimation.Scenes[0].PointingDeviceActive := false;
-      { Our status text displays current sensors, so we have to redisplay. }
-      Glwin.PostRedisplay;
+      if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+      begin
+        SceneAnimation.Scenes[0].PointingDeviceActive := false;
+        { Our status text displays current sensors, so we have to redisplay. }
+        Glwin.PostRedisplay;
+      end;
     end;
   end;
 end;
