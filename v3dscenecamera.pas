@@ -41,8 +41,31 @@ type
     procedure AddViewpoint(Node: TVRMLNode;
       State: TVRMLGraphTraverseState;
       ParentInfo: PTraversingInfo);
+    FBoundViewpoint: TVRMLViewpointNode;
+    procedure SetBoundViewpoint(const Value: TVRMLViewpointNode);
+
+    ViewpointsRadioGroup: TMenuItemRadioGroup;
   public
     MenuJumpToViewpoint: TMenu;
+
+    { Currently bound viewpoint, used here only to make appropriate
+      menu item "checked". @nil if none is currently bound.
+
+      Fore safety, you should not assume that passed here BoundViewpoint
+      reference is always valid. While it's guaranteed that we get
+      TVRMLScene.OnViewpointsChanged when some viewpoints will be destroyed,
+      but we also may get TVRMLScene.ViewpointStack.OnBoundChanged before
+      we will know that old viewpoints were destroyed (for example,
+      ChangedAll may first do some set_bind for first found viewpoint,
+      that is not yet in our ViewpointsList,
+      and later let us know that actually all viewpoints changed).
+
+      So we may get BoundViewpoint that we don't know about, and at this
+      time previous BoundViewpoint may be invalid, actually all our viewpoints
+      may be invalid.
+    }
+    property BoundViewpoint: TVRMLViewpointNode
+      read FBoundViewpoint write SetBoundViewpoint;
 
     { Recalculate our list of viewpoints, also recalculating
       MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
@@ -96,16 +119,44 @@ begin
     MakeMenuJumpToViewpoint;
 end;
 
+const
+  { We don't add more than 100 menu item entries for viewpoints. }
+  MaxMenuItems = 100;
+
+procedure TViewpointsList.SetBoundViewpoint(const Value: TVRMLViewpointNode);
+var
+  Index: Integer;
+begin
+  if FBoundViewpoint <> Value then
+  begin
+    FBoundViewpoint := Value;
+
+    if ViewpointsRadioGroup <> nil then
+    begin
+      Assert(MenuJumpToViewpoint <> nil);
+
+      Index := IndexOf(Value);
+      if Index = -1 then
+        ViewpointsRadioGroup.Selected := nil else
+      if Index < MaxMenuItems then
+        (MenuJumpToViewpoint.Entries[Index] as TMenuItemRadio).Checked := true;
+    end;
+  end;
+end;
+
 procedure TViewpointsList.MakeMenuJumpToViewpoint;
 var
   Node: TVRMLViewpointNode;
   I: Integer;
   S: string;
   Viewpoint: TNodeX3DViewpointNode;
+  MenuItem: TMenuItemRadio;
 begin
   MenuJumpToViewpoint.EntriesDeleteAll;
-  { We don't add more than 100 menu item entries for viewpoints. }
-  for I := 0 to Min(Count, 100) - 1 do
+
+  ViewpointsRadioGroup := nil;
+
+  for I := 0 to Min(Count, MaxMenuItems) - 1 do
   begin
     if I < 10 then
       S := '_' + IntToStr(I) else
@@ -123,7 +174,14 @@ begin
       if Node.NodeName <> '' then
         S += ' "' + SQuoteMenuEntryCaption(Node.NodeName) + '"';
     end;
-    MenuJumpToViewpoint.Append(TMenuItem.Create(S, 300 + I));
+
+    MenuItem := TMenuItemRadio.Create(S, 300 + I, Node = BoundViewpoint, false);
+
+    if I = 0 then
+      ViewpointsRadioGroup := MenuItem.Group else
+      MenuItem.Group := ViewpointsRadioGroup;
+
+    MenuJumpToViewpoint.Append(MenuItem);
   end;
   MenuJumpToViewpoint.Append(TMenuSeparator.Create);
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));

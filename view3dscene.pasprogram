@@ -1182,6 +1182,8 @@ end;
 
   When it's nil, we'll go to some default position.
 
+  This does update the ViewpointsList menu.
+
   This doesn't call set_bind event for this viewpoint --- the idea
   is that viewpoint changed for example because something already
   did set_bind. If you want to just bind the viewpoint, then
@@ -1209,6 +1211,8 @@ begin
     CameraUp := StdVRMLCamUp;
     GravityUp := StdVRMLGravityUp;
   end;
+
+  ViewpointsList.BoundViewpoint := V;
 
   SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
 end;
