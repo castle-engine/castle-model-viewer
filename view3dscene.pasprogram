@@ -379,13 +379,13 @@ var
   begin
     Strs.Clear;
 
-    if (SceneAnimation.ScenesCount = 1) and
-       (SceneAnimation.Scenes[0].PointingDeviceOverItem <> nil) then
+    if SceneAnimation.ScenesCount = 1 then
     begin
-      Sensors := SceneAnimation.Scenes[0].PointingDeviceSensors;
-      for I := 0 to Sensors.Count - 1 do
+      if SceneAnimation.Scenes[0].PointingDeviceOverItem <> nil then
       begin
-        Strs.Append('Over sensor: ' + DescribeSensor(Sensors[I]));
+        Sensors := SceneAnimation.Scenes[0].PointingDeviceSensors;
+        for I := 0 to Sensors.Count - 1 do
+          Strs.Append('Over sensor: ' + DescribeSensor(Sensors[I]));
       end;
       if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
         Strs.Append('Active sensor: ' +
@@ -839,12 +839,13 @@ var
   Item: POctreeItem;
   ItemIndex: Integer;
 
-
   function SensorsCount: Cardinal;
   begin
     if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
       Result := SceneAnimation.Scenes[0].PointingDeviceSensors.Count else
       Result := 0;
+    if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
+      Inc(Result);
   end;
 
 var
@@ -870,7 +871,7 @@ begin
     NewSensorsCount := SensorsCount;
 
     { I want to keep assertion that Glwin.Cursor = gcText when
-      we're over some pointing-device sensors. }
+      we're over or keeping active some pointing-device sensors. }
     if NewSensorsCount <> 0 then
       Glwin.Cursor := gcText else
       Glwin.Cursor := gcDefault;
