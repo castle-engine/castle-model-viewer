@@ -875,11 +875,11 @@ begin
 
     NewSensorsCount := SensorsCount;
 
-    { I want to keep assertion that Glwin.Cursor = gcHand when
+    { I want to keep assertion that Glwin.CursorNonMouseLook = gcHand when
       we're over or keeping active some pointing-device sensors. }
     if NewSensorsCount <> 0 then
-      Glwin.Cursor := gcHand else
-      Glwin.Cursor := gcDefault;
+      Glw.CursorNonMouseLook := gcHand else
+      Glw.CursorNonMouseLook := gcDefault;
 
     if (OldSensorsCount <> 0) or
        (NewSensorsCount <> 0) then
@@ -1261,7 +1261,7 @@ begin
     { Since we destroy our POctreeItems, make sure SceneAnimation.FirstScene
       doesn't hold a reference to it. }
     SceneAnimation.FirstScene.PointingDeviceClear;
-    Glw.Cursor := gcDefault;
+    Glw.CursorNonMouseLook := gcDefault;
 
     SceneAnimation.FirstScene.DefaultTriangleOctree.Free;
     SceneAnimation.FirstScene.DefaultTriangleOctree := nil;
