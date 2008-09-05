@@ -875,10 +875,10 @@ begin
 
     NewSensorsCount := SensorsCount;
 
-    { I want to keep assertion that Glwin.Cursor = gcText when
+    { I want to keep assertion that Glwin.Cursor = gcHand when
       we're over or keeping active some pointing-device sensors. }
     if NewSensorsCount <> 0 then
-      Glwin.Cursor := gcText else
+      Glwin.Cursor := gcHand else
       Glwin.Cursor := gcDefault;
 
     if (OldSensorsCount <> 0) or
