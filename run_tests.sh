@@ -49,3 +49,6 @@ test_dir ../rift/data/
 # This dir has fallback_prototypes in VRML 97 and X3D, two really important
 # files that should be correct.
 test_dir ../www/htdocs/
+
+# Extreme test on all models within vrmlengine repository
+# test_dir ../
