@@ -57,8 +57,9 @@
     octree by TVRMLGLScene
   - use VRMLRayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
-  - allow some kind of object picking with mouse left button (using
-    simple one-primary-ray casting)
+  - allow some kind of object picking with mouse left button
+    (for VRML sensors) and right button (to select for editing).
+    This uses simple one-primary-ray casting.
 }
 
 program view3dscene;
