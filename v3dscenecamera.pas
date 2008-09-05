@@ -90,7 +90,7 @@ begin
 
   if (Scene <> nil) and
      (Scene.RootNode <> nil) then
-    Scene.RootNode.TraverseFromDefaultState(TVRMLViewpointNode, @AddViewpoint);
+    Scene.RootNode.Traverse(TVRMLViewpointNode, @AddViewpoint);
 
   if MenuJumpToViewpoint <> nil then
     MakeMenuJumpToViewpoint;
