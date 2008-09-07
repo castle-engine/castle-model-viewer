@@ -43,7 +43,8 @@ type
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   MoveAllowed: TMoveAllowedFunc;
-  GetCameraHeight: TGetCameraHeight);
+  GetCameraHeight: TGetCameraHeight;
+  WalkerMatrixChanged: TMatrixNavigatorNotifyFunc);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -119,7 +120,8 @@ end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   MoveAllowed: TMoveAllowedFunc;
-  GetCameraHeight: TGetCameraHeight);
+  GetCameraHeight: TGetCameraHeight;
+  WalkerMatrixChanged: TMatrixNavigatorNotifyFunc);
 var nk: TNavigatorKind;
 begin
  { create navigators }
@@ -129,6 +131,7 @@ begin
 
  TMatrixWalker(Navigators[nkWalker]).OnMoveAllowed := MoveAllowed;
  TMatrixWalker(Navigators[nkWalker]).OnGetCameraHeight := GetCameraHeight;
+ TMatrixWalker(Navigators[nkWalker]).OnMatrixChanged := WalkerMatrixChanged;
 
  { init glwin.Navigator }
  glwin.OwnsNavigator := false;

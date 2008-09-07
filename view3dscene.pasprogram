@@ -1054,6 +1054,8 @@ type
 
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
+
+    class procedure WalkerMatrixChanged(Navigator: TMatrixNavigator);
   end;
 
 var
@@ -1235,6 +1237,14 @@ end;
 class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
 begin
   ViewpointsList.Recalculate(Scene);
+end;
+
+class procedure THelper.WalkerMatrixChanged(Navigator: TMatrixNavigator);
+begin
+  if SceneAnimation.ScenesCount = 1 then
+    SceneAnimation.Scenes[0].ViewerPositionChanged(
+      (Navigator as TMatrixWalker).CameraPos);
+  Glw.PostRedisplay;
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -3644,7 +3654,8 @@ begin
       (and we don't want to clutter stdout). }
     Progress.UserInterface := ProgressNullInterface;
 
-    InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight);
+    InitMultiNavigators(glw, @Helper.MoveAllowed, @Helper.GetCameraHeight,
+      @Helper.WalkerMatrixChanged);
 
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create;
