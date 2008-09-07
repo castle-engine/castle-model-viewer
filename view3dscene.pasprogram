@@ -167,6 +167,13 @@ var
 
   SceneWarnings: TSceneWarnings;
 
+  { This is used solely to display "WorldTime: LoadTime + %f" on status,
+    to show time more helpful for the user.
+
+    0 means that starting WorldTime was TimeBegin of the animation
+    (0.0 in case of normal VRML files, usually 0.0 in case of Kanim). }
+  WorldTimeAtLoad: TKamTime = 0;
+
 var
   { When setting this, always update also WorldTime }
   AnimationTime: TKamTime = 0.0;
@@ -458,7 +465,10 @@ begin
       LastRender_AllShapeStatesCount,
       Glw.FpsFrameTime ]));
 
-  S := Format('World time : %f', [AnimationTime]);
+  if WorldTimeAtLoad = 0.0 then
+    S := Format('World time: %f', [AnimationTime]) else
+    S := Format('World time: load time + %f = %f',
+      [AnimationTime - WorldTimeAtLoad, AnimationTime]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   strs.Append(S);
@@ -1456,8 +1466,14 @@ begin
          (NavigationNode is TNodeKambiNavigationInfo) and
          TNodeKambiNavigationInfo(NavigationNode).FdTimeOriginAtLoad.Value )
        then
-      AnimationTime := SceneAnimation.TimeBegin else
-      AnimationTime := DateTimeToUnix(Now);
+    begin
+      WorldTimeAtLoad := 0.0;
+      AnimationTime := SceneAnimation.TimeBegin;
+    end else
+    begin
+      WorldTimeAtLoad := DateTimeToUnix(Now);
+      AnimationTime := WorldTimeAtLoad;
+    end;
     ResetWorldTime(AnimationTime);
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
@@ -3048,6 +3064,7 @@ begin
   220: AnimationTimePlaying := not AnimationTimePlaying;
   221: begin
          AnimationTime := SceneAnimation.TimeBegin;
+         WorldTimeAtLoad := 0.0;
          ResetWorldTime(AnimationTime);
        end;
   222: ChangeAnimationTimeSpeed;
