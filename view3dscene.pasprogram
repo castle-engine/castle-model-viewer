@@ -1606,6 +1606,13 @@ begin
       SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
     end;
 
+    { Make initial ViewerPositionChanged to make initial events to
+      ProximitySensor, if user is within. Even when default navigation
+      method is not walker --- we want to allow special ProximitySensor
+      nodes that are placed just to start anim on loading to work. }
+    if SceneAnimation.ScenesCount = 1 then
+      SceneAnimation.Scenes[0].ViewerPositionChanged(MatrixWalker.CameraPos);
+
     if not Glw.Closed then
     begin
       { call EventResize to adjust zNear/zFar of our projection to the size
