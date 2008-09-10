@@ -2826,11 +2826,9 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
       { Since we just destroyed RootNode, and replaced it with completely
         different scene, we have to recalculate many things.
         GeometryChanged takes care of recalculating
-        octree, invalidating SelectedItem and such.
-
-        TODO: things like viewpoints etc. also should be recalculated by this,
-        as their pointers changed. }
+        octree, invalidating SelectedItem and such. }
       THelper.GeometryChanged(nil);
+      THelper.ViewpointsChanged(SceneAnimation.FirstScene);
     end;
   end;
 
