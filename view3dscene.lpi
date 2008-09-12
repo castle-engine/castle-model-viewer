@@ -12,7 +12,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -218,9 +218,11 @@
       <Unit27>
         <Filename Value="../kambi_vrml_game_engine/base/kambistringutils.pas"/>
         <UnitName Value="KambiStringUtils"/>
-        <CursorPos X="23" Y="605"/>
-        <TopLine Value="591"/>
+        <CursorPos X="23" Y="608"/>
+        <TopLine Value="594"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="../kambi_vrml_game_engine/opengl/opengltypes.inc"/>
@@ -236,7 +238,7 @@
         <UsageCount Value="10"/>
       </Unit29>
     </Units>
-    <JumpHistory Count="25" HistoryIndex="24">
+    <JumpHistory Count="26" HistoryIndex="25">
       <Position1>
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="3115" Column="1" TopLine="3101"/>
@@ -337,6 +339,10 @@
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="1407" Column="1" TopLine="1393"/>
       </Position25>
+      <Position26>
+        <Filename Value="../kambi_vrml_game_engine/base/kambistringutils.pas"/>
+        <Caret Line="605" Column="23" TopLine="591"/>
+      </Position26>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
