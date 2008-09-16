@@ -1054,6 +1054,7 @@ type
 
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
+    class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
     class procedure WalkerMatrixChanged(Navigator: TMatrixNavigator);
   end;
@@ -1215,7 +1216,7 @@ begin
   V := ViewpointNode;
   if V <> nil then
   begin
-    V.GetCameraVectors(V.Transform, CameraPos, CameraDir, CameraUp, GravityUp);
+    V.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
   end else
   begin
     CameraPos := StdVRMLCamPos[1];
@@ -1245,6 +1246,33 @@ begin
     SceneAnimation.Scenes[0].ViewerPositionChanged(
       (Navigator as TMatrixWalker).CameraPos);
   Glw.PostRedisplay;
+end;
+
+class procedure THelper.BoundViewpointVectorsChanged(Scene: TVRMLScene);
+var
+  CameraPos: TVector3Single;
+  CameraDir: TVector3Single;
+  CameraUp: TVector3Single;
+  GravityUp: TVector3Single;
+begin
+  Assert(ViewpointNode <> nil);
+
+  ViewpointNode.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
+
+  MatrixWalker.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
+
+  { TODO:
+    - GravityUp is not passed
+    - CameraDir, CameraUp are actually not used to update current viewpoint
+    - and CameraDir has wrong length anyway... (we should make
+      a setting like NormalizedCameraDir for MatrixWalker?)
+
+    So for now above is used only to update viewer position relative
+    to viewpoint position.
+  }
+
+  { PostRedisplay will be automatically called by SetInitialCameraLookDir,
+    as matrix changed. }
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -1603,6 +1631,7 @@ begin
       SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @Helper.BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @Helper.ViewpointsChanged;
+      SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @Helper.BoundViewpointVectorsChanged;
       SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
     end;
 
