@@ -292,7 +292,7 @@ function ViewpointNode: TVRMLViewpointNode; forward;
 
 { TGLWindow callbacks --------------------------------------------------------- }
 
-procedure Init(glwin: TGLWindow);
+procedure Init(Glwin: TGLWindow);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
@@ -319,7 +319,7 @@ begin
  AntiAliasingEnable;
 end;
 
-procedure Close(glwin: TGLWindow);
+procedure Close(Glwin: TGLWindow);
 begin
   if SceneAnimation <> nil then
     SceneAnimation.CloseGL;
@@ -488,12 +488,12 @@ begin
  finally strs.Free end;
 end;
 
-procedure BeforeDraw(glwin: TGLWindow);
+procedure BeforeDraw(Glwin: TGLWindow);
 begin
   PrepareRender(false);
 end;
 
-procedure Draw(glwin: TGLWindow);
+procedure Draw(Glwin: TGLWindow);
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode; octreeDisplayDepth: integer);
   var
@@ -713,7 +713,7 @@ begin
  end;
 end;
 
-procedure Resize(glwin: TGLWindow);
+procedure Resize(Glwin: TGLWindow);
 
   procedure UpdateNavigatorProjectionMatrix;
   var ProjectionMatrix: TMatrix4f;
@@ -779,7 +779,7 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure MouseDown(glwin: TGLWindow; btn: TMouseButton);
+procedure MouseDown(Glwin: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
 begin
@@ -833,7 +833,7 @@ begin
   end;
 end;
 
-procedure MouseUp(glwin: TGLWindow; btn: TMouseButton);
+procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
 begin
   if Glw.Navigator is TMatrixWalker then
   begin
@@ -912,7 +912,7 @@ begin
     SceneAnimation.Scenes[0].KeyUp(Key);
 end;
 
-procedure Idle(glwin: TGLWindow);
+procedure Idle(Glwin: TGLWindow);
 
   { We want to detect when two successive calls to IncreaseWorldTime
     caused a costly GeometryChanged call.
@@ -2021,7 +2021,7 @@ begin
   end;
 end;
 
-procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
+procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -2030,7 +2030,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
    if Glw.Navigator is TMatrixWalker then
    begin
     Answer := '';
-    if MessageInputQuery(glwin,
+    if MessageInputQuery(Glwin,
       'Input new camera up vector (three float values).' +nl+nl+
       'This vector will be used as new gravity upward vector. ' +
       'This vector must not be zero vector.',
@@ -2042,7 +2042,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
      except
       on E: EConvertError do
       begin
-       MessageOK(glwin, 'Incorrect vector value : '+E.Message);
+       MessageOK(Glwin, 'Incorrect vector value : '+E.Message);
        Exit;
       end;
      end;
@@ -2051,7 +2051,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
      Glw.PostRedisplay;
     end;
    end else
-    MessageOK(glwin, SOnlyInWalker);
+    MessageOK(Glwin, SOnlyInWalker);
   end;
 
   procedure ChangeMoveSpeed;
@@ -2071,7 +2071,7 @@ procedure MenuCommand(glwin: TGLWindow; MenuItem: TMenuItem);
         Glw.PostRedisplay;
       end;
     end else
-      MessageOK(glwin, SOnlyInWalker);
+      MessageOK(Glwin, SOnlyInWalker);
   end;
 
 
@@ -3043,14 +3043,14 @@ begin
          if SceneTriangleOctree = nil then
            SetCollisionCheck(true);
          Assert(SceneTriangleOctree <> nil);
-         RaytraceToWin(glwin, SceneTriangleOctree,
+         RaytraceToWin(Glwin, SceneTriangleOctree,
            Glw.NavWalker.CameraPos,
            Glw.NavWalker.CameraDir, Glw.NavWalker.CameraUp,
            AngleOfViewX, AngleOfViewY, BGColor,
            SceneAnimation.FirstScene.FogNode,
            SceneAnimation.FirstScene.FogDistanceScaling);
        end else
-         MessageOK(glwin, SOnlyInWalker);
+         MessageOK(Glwin, SOnlyInWalker);
   126: Glw.SwapFullScreen;
   127: begin
          if SceneFileName <> '' then
