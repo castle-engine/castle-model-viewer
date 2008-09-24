@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="\"/>
+    <PathDelim Value="/"/>
     <Version Value="6"/>
     <General>
       <Flags>
@@ -10,7 +10,7 @@
         <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value=".\"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <ActiveEditorIndexAtStart Value="0"/>
     </General>
@@ -21,7 +21,6 @@
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="$(TestDir)\publishedproject\"/>
       <IgnoreBinaries Value="False"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
@@ -29,8 +28,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="\home\michalis\3dmodels\x3d\cic.nist.gov\AISC_Sculpture.x3d"/>
-        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
+        <CommandLineParams Value="/home/michalis/3dmodels/x3d/cic.nist.gov/AISC_Sculpture.x3d"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -121,116 +120,116 @@
         <UsageCount Value="24"/>
       </Unit12>
       <Unit13>
-        <Filename Value="..\kambi_vrml_game_engine\opengl\glwindow.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glwindow.pas"/>
         <UnitName Value="GLWindow"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="11"/>
       </Unit13>
       <Unit14>
-        <Filename Value="..\kambi_vrml_game_engine\packages\unix\kambi_units.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/packages/unix/kambi_units.pas"/>
         <UnitName Value="kambi_units"/>
         <CursorPos X="3" Y="10"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit14>
       <Unit15>
-        <Filename Value="..\kambi_vrml_game_engine\3dgraph\backgroundbase.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dgraph/backgroundbase.pas"/>
         <UnitName Value="BackgroundBase"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\kambi_vrml_game_engine\opengl\glwinmessages.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glwinmessages.pas"/>
         <UnitName Value="GLWinMessages"/>
         <CursorPos X="30" Y="1095"/>
         <TopLine Value="1079"/>
         <UsageCount Value="10"/>
       </Unit16>
       <Unit17>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels\vrmlfields.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlfields.pas"/>
         <UnitName Value="VRMLFields"/>
         <CursorPos X="60" Y="219"/>
         <TopLine Value="196"/>
         <UsageCount Value="10"/>
       </Unit17>
       <Unit18>
-        <Filename Value="..\kambi_vrml_game_engine\base\kambilog.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/base/kambilog.pas"/>
         <UnitName Value="KambiLog"/>
         <CursorPos X="50" Y="120"/>
         <TopLine Value="75"/>
         <UsageCount Value="11"/>
       </Unit18>
       <Unit19>
-        <Filename Value="..\kambi_vrml_game_engine\packages\unix\kambi_glwindow.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/packages/unix/kambi_glwindow.pas"/>
         <UnitName Value="kambi_glwindow"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit19>
       <Unit20>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels.gl\vrmlglanimation.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglanimation.pas"/>
         <UnitName Value="VRMLGLAnimation"/>
         <CursorPos X="1" Y="854"/>
         <TopLine Value="831"/>
         <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels\x3d_grouping.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3d_grouping.inc"/>
         <CursorPos X="42" Y="254"/>
         <TopLine Value="245"/>
         <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
-        <Filename Value="..\kambi_vrml_game_engine\base\templates\objectslist_3.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/base/templates/objectslist_3.inc"/>
         <CursorPos X="1" Y="208"/>
         <TopLine Value="185"/>
         <UsageCount Value="10"/>
       </Unit22>
       <Unit23>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels.gl\vrmlglscene.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglscene.pas"/>
         <UnitName Value="VRMLGLScene"/>
         <CursorPos X="1" Y="1179"/>
         <TopLine Value="1156"/>
         <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels\x3dxmltovrml.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3dxmltovrml.pas"/>
         <UnitName Value="X3DXmlToVRML"/>
         <CursorPos X="1" Y="259"/>
         <TopLine Value="230"/>
         <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
-        <Filename Value="..\kambi_vrml_game_engine\base\kambidynlib.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/base/kambidynlib.pas"/>
         <UnitName Value="KambiDynLib"/>
         <CursorPos X="32" Y="200"/>
         <TopLine Value="186"/>
         <UsageCount Value="10"/>
       </Unit25>
       <Unit26>
-        <Filename Value="..\kambi_vrml_game_engine\base\kambiutils.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/base/kambiutils.pas"/>
         <UnitName Value="KambiUtils"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit26>
       <Unit27>
-        <Filename Value="..\kambi_vrml_game_engine\base\kambistringutils.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/base/kambistringutils.pas"/>
         <UnitName Value="KambiStringUtils"/>
         <CursorPos X="23" Y="608"/>
         <TopLine Value="594"/>
         <UsageCount Value="10"/>
       </Unit27>
       <Unit28>
-        <Filename Value="..\kambi_vrml_game_engine\opengl\opengltypes.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/opengltypes.inc"/>
         <CursorPos X="25" Y="348"/>
         <TopLine Value="334"/>
         <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
-        <Filename Value="..\kambi_vrml_game_engine\3dmodels\vrmlnodes.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
         <UnitName Value="VRMLNodes"/>
         <CursorPos X="1" Y="7179"/>
         <TopLine Value="7165"/>
@@ -342,7 +341,6 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
-    <PathDelim Value="\"/>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
