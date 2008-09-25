@@ -909,7 +909,7 @@ end;
 procedure KeyUp(Glwin: TGLWindow; Key: TKey);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyUp(Key);
+    SceneAnimation.Scenes[0].KeyUp(Key, #0 { TODO -- char for this key });
 end;
 
 procedure Idle(Glwin: TGLWindow);
