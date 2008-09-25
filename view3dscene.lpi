@@ -12,7 +12,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -240,20 +240,13 @@
         <UnitName Value="GLSoundMenu"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit30>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
-      <Position1>
-        <Filename Value="../kambi_vrml_game_engine/opengl/glsoundmenu.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
