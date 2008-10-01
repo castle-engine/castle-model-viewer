@@ -1141,6 +1141,12 @@ end;
   navigator to some state that doesn't correspond to any existing
   viewpoint, or as a basis for UpdateViewpointNode.
 
+  This takes into account NavigationNode, that is currently bound
+  NavigationInfo node.
+
+  Besides initializing navigator by MatrixWalker.Init, it also
+  takes care to initialize MoveHorizontal/VerticalSpeed.
+
   Note that the length of InitialCameraDir doesn't matter. }
 procedure SetViewpointCore(
   const InitialCameraPos: TVector3Single;
@@ -1148,21 +1154,34 @@ procedure SetViewpointCore(
   const InitialCameraUp: TVector3Single;
   const GravityUp: TVector3Single);
 begin
-  { Change InitialCameraDir length, to adjust speed. }
-  if (NavigationNode = nil) or (NavigationNode.FdSpeed.Value = 0) then
+  { Change InitialCameraDir length, to adjust speed.
+    Also set MoveHorizontal/VerticalSpeed. }
+
+  if NavigationNode = nil then
   begin
     { Since we don't have NavigationNode.speed, we just calculate some
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
-      Box3dAvgSize(SceneAnimation.BoundingBoxSum).
-
-      TODO: For now this is also used when NavigationNode.speed = 0, which is bad.
-      We should set speed to zero in this case. But we can't do it by
-      setting InitialCameraDir to zero. This should be done by setting MoveSpeed
-      to 0, but this means that normal model loading should also somehow
-      reset MoveSpeed to some non-zero value (otherwise, user would
-      be stuck with speed = 0 until he exits view3dscene). }
+      Box3dAvgSize(SceneAnimation.BoundingBoxSum). }
     VectorAdjustToLengthTo1st(InitialCameraDir, CameraRadius * 0.4);
+    MatrixWalker.MoveHorizontalSpeed := 1;
+    MatrixWalker.MoveVerticalSpeed := 1;
+  end else
+  if NavigationNode.FdSpeed.Value = 0 then
+  begin
+    { Then user is not allowed to move at all.
+
+      InitialCameraDir must be non-zero (we normalize it just to satisfy
+      requirement that "length of InitialCameraDir doesn't matter" here,
+      in case user will later increase move speed by menu anyway.
+
+      So we do this is by setting MoveHorizontal/VerticalSpeed to zero.
+      This is also the reason why other SetViewpointCore must change
+      MoveHorizontal/VerticalSpeed to something different than zero
+      (otherwise, user would be stuck with speed = 0). }
+    NormalizeTo1st(InitialCameraDir);
+    MatrixWalker.MoveHorizontalSpeed := 0;
+    MatrixWalker.MoveVerticalSpeed := 0;
   end else
   begin
     { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
@@ -1178,6 +1197,8 @@ begin
     }
 
     VectorAdjustToLengthTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value / 50.0);
+    MatrixWalker.MoveHorizontalSpeed := 1;
+    MatrixWalker.MoveVerticalSpeed := 1;
   end;
 
   MatrixWalker.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
