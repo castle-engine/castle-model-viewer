@@ -439,8 +439,8 @@ begin
        Glw.NavWalker.MoveHorizontalSpeed ]));
   end else
   begin
-   strs.Append(Format('Rotation : %s, Move : %s, Scale : %f',
-     [ VectorToNiceStr(Glw.NavExaminer.RotationsAngle),
+   strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
+     [ VectorToNiceStr(Glw.NavExaminer.Rotations.Vector4),
        VectorToNiceStr(Glw.NavExaminer.MoveAmount),
        Glw.NavExaminer.ScaleFactor ]));
   end;
