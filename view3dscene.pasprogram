@@ -1071,7 +1071,7 @@ begin
     SceneTriangleOctree.DirectCollisionTestsCounter := 0;
     Result := SceneTriangleOctree.MoveAllowed(
       Navigator.CameraPos, ProposedNewPos, NewPos, CameraRadius,
-      NoItemIndex, nil);
+      false);
     {tests:
      Writeln('Octree efficiency : ',SceneTriangleOctree.DirectCollisionTestsCounter,
        ' direct tests with single triangles were needed to know that move is'
