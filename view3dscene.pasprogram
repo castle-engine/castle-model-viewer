@@ -1315,11 +1315,9 @@ var
 
   { This is set to non-nil by CreateMainMenu.
     It is used there and it is also used from LoadSceneCore, since
-    loading a scene may change value of HeadLight so we have to update
-    MenuHeadlight.Checked state.
-    Same for MenuGravity. }
-  MenuHeadlight: TMenuItemChecked;
-  MenuGravity: TMenuItemChecked;
+    loading a scene may change some values (like HeadLight, Gravity etc.)
+    so we have to update MenuHeadlight.Checked (and other menu's) state. }
+  MenuHeadlight, MenuGravity, MenuIgnoreAllInputs: TMenuItemChecked;
   MenuPreferGravityUpForRotations: TMenuItemChecked;
   MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
@@ -1619,6 +1617,7 @@ begin
           WalkNav.PreferGravityUpForRotations := true;
           WalkNav.PreferGravityUpForMoving := true;
           WalkNav.Gravity := true;
+          WalkNav.IgnoreAllInputs := false;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'FLY' then
@@ -1627,6 +1626,16 @@ begin
           WalkNav.PreferGravityUpForRotations := true;
           WalkNav.PreferGravityUpForMoving := false;
           WalkNav.Gravity := false;
+          WalkNav.IgnoreAllInputs := false;
+          Break;
+        end else
+        if NavigationNode.FdType.Items[I] = 'NONE' then
+        begin
+          SetNavigatorKind(Glw, nkWalk);
+          WalkNav.PreferGravityUpForRotations := true;
+          WalkNav.PreferGravityUpForMoving := true; { doesn't matter }
+          WalkNav.Gravity := false;
+          WalkNav.IgnoreAllInputs := true;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'EXAMINE' then
@@ -1637,6 +1646,8 @@ begin
 
     if MenuGravity <> nil then
       MenuGravity.Checked := WalkNav.Gravity;
+    if MenuIgnoreAllInputs <> nil then
+      MenuIgnoreAllInputs.Checked := WalkNav.IgnoreAllInputs;
     if MenuPreferGravityUpForRotations <> nil then
       MenuPreferGravityUpForRotations.Checked := WalkNav.PreferGravityUpForRotations;
     if MenuPreferGravityUpForMoving <> nil then
@@ -3125,6 +3136,7 @@ begin
   202: WalkNav.PreferGravityUpForRotations := not WalkNav.PreferGravityUpForRotations;
   203: WalkNav.PreferGravityUpForMoving := not WalkNav.PreferGravityUpForMoving;
   205: ChangeMoveSpeed;
+  210: WalkNav.IgnoreAllInputs := not WalkNav.IgnoreAllInputs;
 
   220: AnimationTimePlaying := not AnimationTimePlaying;
   221: begin
@@ -3414,6 +3426,11 @@ begin
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
+     M.Append(TMenuSeparator.Create);
+     MenuIgnoreAllInputs := TMenuItemChecked.Create(
+       'Disable normal navigation (VRML "NONE" navigation)',  210,
+       WalkNav.IgnoreAllInputs, true);
+     M2.Append(MenuIgnoreAllInputs);
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
      '_Collision Detection',                   123, 'c',
