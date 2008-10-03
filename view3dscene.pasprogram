@@ -48,7 +48,7 @@
     (like automatic normals generation based on creaseAngle).
   - render scene using TVRMLGLScene (actually TVRMLGLAnimation
     and TVRMLGLScene is inside)
-  - use MatrixNavigation and TGLWindowNavigated to let user navigate
+  - use Navigation and TGLWindowNavigated to let user navigate
     over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
@@ -70,7 +70,7 @@ program view3dscene;
 
 uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  ParseParametersUnit, ProgressUnit, MatrixNavigation, RaysWindow,
+  ParseParametersUnit, ProgressUnit, Navigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils,
   { OpenGL related units: }
@@ -426,23 +426,23 @@ begin
     S += ' (octree resources released)';
   strs.Append(S);
 
-  if Glw.Navigator is TMatrixWalker then
+  if Glw.Navigator is TWalkNavigator then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
-     [ VectorToNiceStr(Glw.NavWalker.CameraPos),
-       VectorToNiceStr(Glw.NavWalker.CameraDir),
-       VectorToNiceStr(Glw.NavWalker.CameraUp) ]));
+     [ VectorToNiceStr(Glw.WalkNav.CameraPos),
+       VectorToNiceStr(Glw.WalkNav.CameraDir),
+       VectorToNiceStr(Glw.WalkNav.CameraUp) ]));
    strs.Append(Format('Move speed : %f',
      [ { In view3dscene, MoveHorizontalSpeed is always equal to
          MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
          So it's enough to show just MoveHorizontalSpeed. }
-       Glw.NavWalker.MoveHorizontalSpeed ]));
+       Glw.WalkNav.MoveHorizontalSpeed ]));
   end else
   begin
    strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
-     [ VectorToNiceStr(Glw.NavExaminer.Rotations.Vector4),
-       VectorToNiceStr(Glw.NavExaminer.MoveAmount),
-       Glw.NavExaminer.ScaleFactor ]));
+     [ VectorToNiceStr(Glw.ExamineNav.Rotations.Vector4),
+       VectorToNiceStr(Glw.ExamineNav.MoveAmount),
+       Glw.ExamineNav.ScaleFactor ]));
   end;
 
   strs.Append(Format('Camera Kind : %s, Octree display : %s',
@@ -542,7 +542,7 @@ procedure Draw(Glwin: TGLWindow);
     glDisable(GL_DEPTH_TEST);
    end;
    try
-    CalculateFrustumPoints(FrustumPoints, MatrixWalker.Frustum, false);
+    CalculateFrustumPoints(FrustumPoints, WalkNav.Frustum, false);
     glColor3f(1, 1, 1);
     glEnableClientState(GL_VERTEX_ARRAY);
       glVertexPointer(3, GL_DOUBLE, 0, @FrustumPoints);
@@ -650,19 +650,19 @@ begin
  { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
    may be costly operation. So don't do this. }
  if Scene.BumpMappingMethod in bmGLSLAll then
-   Scene.BumpMappingLightPosition := MatrixWalker.CameraPos;
+   Scene.BumpMappingLightPosition := WalkNav.CameraPos;
 
  BeginRenderSceneWithLights(SceneAnimation);
 
-   if (Glw.Navigator is TMatrixWalker) then
+   if (Glw.Navigator is TWalkNavigator) then
    begin
      { For animations, DefaultShapeStateOctree is constructed only
        for the 1st scene. For the rest, we have to call normal
        RenderFrustum. Also, generation of octree may be turned off for
        speed purposes. }
      if Scene.DefaultShapeStateOctree <> nil then
-       Scene.RenderFrustumOctree(Glw.NavWalker.Frustum, tgAll) else
-       Scene.RenderFrustum(Glw.NavWalker.Frustum, tgAll);
+       Scene.RenderFrustumOctree(Glw.WalkNav.Frustum, tgAll) else
+       Scene.RenderFrustum(Glw.WalkNav.Frustum, tgAll);
    end else
      Scene.Render(nil, tgAll);
 
@@ -674,11 +674,11 @@ begin
  EndRenderSceneWithLights;
 
  { Note that there is no sense in showing viewing frustum in
-   NavigatorKind <> nkExaminer, since viewing frustum should
+   NavigatorKind <> nkExamine, since viewing frustum should
    be never visible then (or should be just at the exact borders
    or visibility, so it's actually unspecified whether OpenGL would
    show it or not). }
- if ShowFrustum and (NavigatorKind = nkExaminer) then
+ if ShowFrustum and (NavigatorKind = nkExamine) then
   DrawFrustum(ShowFrustumAlwaysVisible);
 
  if SelectedItem <> nil then
@@ -719,7 +719,7 @@ procedure Resize(Glwin: TGLWindow);
   var ProjectionMatrix: TMatrix4f;
   begin
    glGetFloatv(GL_PROJECTION_MATRIX, @ProjectionMatrix);
-   MatrixWalker.ProjectionMatrix := ProjectionMatrix;
+   WalkNav.ProjectionMatrix := ProjectionMatrix;
   end;
 
 var
@@ -752,7 +752,7 @@ begin
    daje Box3dAvgSize(Box)*0.006 a wiec prawie 20 razy mniej !
    Przy tak malym perspective near w trybie Examiner czesto byloby widac
    bledy z-bufora, patrz np. KingsHead.wrl. }
- if (Glw.Navigator is TMatrixExaminer) and
+ if (Glw.Navigator is TExamineNavigator) and
     (not IsEmptyBox3d(Box)) then
   zNear := Box3dAvgSize(Box) * 0.1 else
   zNear := WalkProjectionNear;
@@ -787,7 +787,7 @@ begin
     anything here (not even a warning about SOnlyInWalker,
     since it would only interfere with navigation). }
 
-  if Glw.Navigator is TMatrixWalker then
+  if Glw.Navigator is TWalkNavigator then
   begin
     if btn = mbLeft then
     begin
@@ -835,7 +835,7 @@ end;
 
 procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
 begin
-  if Glw.Navigator is TMatrixWalker then
+  if Glw.Navigator is TWalkNavigator then
   begin
     if btn = mbLeft then
     begin
@@ -869,7 +869,7 @@ var
   OldSensorsCount, NewSensorsCount: Cardinal;
 begin
   if (SceneAnimation.ScenesCount = 1 { ProcessEvents = true }) and
-     (Glw.Navigator is TMatrixWalker) and
+     (Glw.Navigator is TWalkNavigator) and
      (SceneTriangleOctree <> nil) then
   begin
     OldSensorsCount := SensorsCount;
@@ -1036,15 +1036,15 @@ begin
   end;
 end;
 
-{ TMatrixWalker collision detection using SceneTriangleOctree --------------- }
+{ TWalkNavigator collision detection using SceneTriangleOctree --------------- }
 
 type
   THelper = class
-    class function MoveAllowed(Navigator: TMatrixWalker;
+    class function MoveAllowed(Navigator: TWalkNavigator;
       const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
       const BecauseOfGravity: boolean): boolean;
 
-    class procedure GetCameraHeight(Navigator: TMatrixWalker;
+    class procedure GetCameraHeight(Navigator: TWalkNavigator;
       out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
 
     class procedure OpenRecent(const FileName: string);
@@ -1056,13 +1056,13 @@ type
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
-    class procedure WalkerMatrixChanged(Navigator: TMatrixNavigator);
+    class procedure WalkerMatrixChanged(Navigator: TNavigator);
   end;
 
 var
   Helper: THelper;
 
-class function THelper.MoveAllowed(Navigator: TMatrixWalker;
+class function THelper.MoveAllowed(Navigator: TWalkNavigator;
   const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
   const BecauseOfGravity: boolean): boolean;
 begin
@@ -1090,7 +1090,7 @@ begin
     Result := Box3dPointInside(NewPos, SceneAnimation.BoundingBoxSum);
 end;
 
-class procedure THelper.GetCameraHeight(Navigator: TMatrixWalker;
+class procedure THelper.GetCameraHeight(Navigator: TWalkNavigator;
   out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
 var
   GroundItemIndex: Integer;
@@ -1098,8 +1098,8 @@ begin
   if SceneTriangleOctree <> nil then
   begin
     SceneTriangleOctree.GetCameraHeight(
-      TMatrixWalker(Navigator).CameraPos,
-      TMatrixWalker(Navigator).GravityUp,
+      TWalkNavigator(Navigator).CameraPos,
+      TWalkNavigator(Navigator).GravityUp,
       IsAboveTheGround, SqrHeightAboveTheGround, GroundItemIndex,
       NoItemIndex, nil);
   end else
@@ -1144,7 +1144,7 @@ end;
   This takes into account NavigationNode, that is currently bound
   NavigationInfo node.
 
-  Besides initializing navigator by MatrixWalker.Init, it also
+  Besides initializing navigator by WalkNav.Init, it also
   takes care to initialize MoveHorizontal/VerticalSpeed.
 
   Note that the length of InitialCameraDir doesn't matter. }
@@ -1164,8 +1164,8 @@ begin
       CameraRadius in turn was calculated based on
       Box3dAvgSize(SceneAnimation.BoundingBoxSum). }
     VectorAdjustToLengthTo1st(InitialCameraDir, CameraRadius * 0.4);
-    MatrixWalker.MoveHorizontalSpeed := 1;
-    MatrixWalker.MoveVerticalSpeed := 1;
+    WalkNav.MoveHorizontalSpeed := 1;
+    WalkNav.MoveVerticalSpeed := 1;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
@@ -1180,8 +1180,8 @@ begin
       MoveHorizontal/VerticalSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
     NormalizeTo1st(InitialCameraDir);
-    MatrixWalker.MoveHorizontalSpeed := 0;
-    MatrixWalker.MoveVerticalSpeed := 0;
+    WalkNav.MoveHorizontalSpeed := 0;
+    WalkNav.MoveVerticalSpeed := 0;
   end else
   begin
     { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
@@ -1197,12 +1197,12 @@ begin
     }
 
     VectorAdjustToLengthTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value / 50.0);
-    MatrixWalker.MoveHorizontalSpeed := 1;
-    MatrixWalker.MoveVerticalSpeed := 1;
+    WalkNav.MoveHorizontalSpeed := 1;
+    WalkNav.MoveVerticalSpeed := 1;
   end;
 
-  MatrixWalker.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
-    GravityUp, MatrixWalker.CameraPreferredHeight, CameraRadius);
+  WalkNav.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
+    GravityUp, WalkNav.CameraPreferredHeight, CameraRadius);
 
   if not Glw.Closed then
   begin
@@ -1261,11 +1261,11 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.WalkerMatrixChanged(Navigator: TMatrixNavigator);
+class procedure THelper.WalkerMatrixChanged(Navigator: TNavigator);
 begin
   if SceneAnimation.ScenesCount = 1 then
     SceneAnimation.Scenes[0].ViewerPositionChanged(
-      (Navigator as TMatrixWalker).CameraPos);
+      (Navigator as TWalkNavigator).CameraPos);
   Glw.PostRedisplay;
 end;
 
@@ -1280,13 +1280,13 @@ begin
 
   ViewpointNode.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
 
-  MatrixWalker.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
+  WalkNav.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
 
   { TODO:
     - GravityUp is not passed
     - CameraDir, CameraUp are actually not used to update current viewpoint
     - and CameraDir has wrong length anyway... (we should make
-      a setting like NormalizedCameraDir for MatrixWalker?)
+      a setting like NormalizedCameraDir for WalkNav?)
 
     So for now above is used only to update viewer position relative
     to viewpoint position.
@@ -1562,10 +1562,10 @@ begin
     if not JumpToInitialViewpoint then
     begin
       { TODO: this should preserve previously bound viewpoint. }
-      SavedCameraPos := MatrixWalker.CameraPos;
-      SavedCameraDir := MatrixWalker.CameraDir;
-      SavedCameraUp := MatrixWalker.CameraUp;
-      SavedGravityUp := MatrixWalker.GravityUp;
+      SavedCameraPos := WalkNav.CameraPos;
+      SavedCameraDir := WalkNav.CameraDir;
+      SavedCameraUp := WalkNav.CameraUp;
+      SavedGravityUp := WalkNav.GravityUp;
     end;
 
     SceneInitMultiNavigators(SceneAnimation.BoundingBoxSum,
@@ -1579,10 +1579,10 @@ begin
 
     if not JumpToInitialViewpoint then
     begin
-      MatrixWalker.CameraPos := SavedCameraPos;
-      MatrixWalker.CameraDir := SavedCameraDir;
-      MatrixWalker.CameraUp := SavedCameraUp;
-      MatrixWalker.GravityUp := SavedGravityUp;
+      WalkNav.CameraPos := SavedCameraPos;
+      WalkNav.CameraDir := SavedCameraDir;
+      WalkNav.CameraUp := SavedCameraUp;
+      WalkNav.GravityUp := SavedGravityUp;
     end;
 
     SceneInitLights(SceneAnimation, NavigationNode);
@@ -1615,32 +1615,32 @@ begin
       for I := 0 to NavigationNode.FdType.Count - 1 do
         if NavigationNode.FdType.Items[I] = 'WALK' then
         begin
-          SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferGravityUpForRotations := true;
-          MatrixWalker.PreferGravityUpForMoving := true;
-          MatrixWalker.Gravity := true;
+          SetNavigatorKind(Glw, nkWalk);
+          WalkNav.PreferGravityUpForRotations := true;
+          WalkNav.PreferGravityUpForMoving := true;
+          WalkNav.Gravity := true;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'FLY' then
         begin
-          SetNavigatorKind(Glw, nkWalker);
-          MatrixWalker.PreferGravityUpForRotations := true;
-          MatrixWalker.PreferGravityUpForMoving := false;
-          MatrixWalker.Gravity := false;
+          SetNavigatorKind(Glw, nkWalk);
+          WalkNav.PreferGravityUpForRotations := true;
+          WalkNav.PreferGravityUpForMoving := false;
+          WalkNav.Gravity := false;
           Break;
         end else
         if NavigationNode.FdType.Items[I] = 'EXAMINE' then
         begin
-          SetNavigatorKind(Glw, nkExaminer);
+          SetNavigatorKind(Glw, nkExamine);
           Break;
         end;
 
     if MenuGravity <> nil then
-      MenuGravity.Checked := MatrixWalker.Gravity;
+      MenuGravity.Checked := WalkNav.Gravity;
     if MenuPreferGravityUpForRotations <> nil then
-      MenuPreferGravityUpForRotations.Checked := MatrixWalker.PreferGravityUpForRotations;
+      MenuPreferGravityUpForRotations.Checked := WalkNav.PreferGravityUpForRotations;
     if MenuPreferGravityUpForMoving <> nil then
-      MenuPreferGravityUpForMoving.Checked := MatrixWalker.PreferGravityUpForMoving;
+      MenuPreferGravityUpForMoving.Checked := WalkNav.PreferGravityUpForMoving;
 
     SceneOctreeCreate;
 
@@ -1661,7 +1661,7 @@ begin
       method is not walker --- we want to allow special ProximitySensor
       nodes that are placed just to start anim on loading to work. }
     if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].ViewerPositionChanged(MatrixWalker.CameraPos);
+      SceneAnimation.Scenes[0].ViewerPositionChanged(WalkNav.CameraPos);
 
     if not Glw.Closed then
     begin
@@ -2048,7 +2048,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var Answer: string;
       NewUp: TVector3Single;
   begin
-   if Glw.Navigator is TMatrixWalker then
+   if Glw.Navigator is TWalkNavigator then
    begin
     Answer := '';
     if MessageInputQuery(Glwin,
@@ -2068,7 +2068,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       end;
      end;
 
-     Glw.NavWalker.GravityUp := NewUp;
+     Glw.WalkNav.GravityUp := NewUp;
      Glw.PostRedisplay;
     end;
    end else
@@ -2079,16 +2079,16 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     MoveSpeed: Single;
   begin
-    if Glw.Navigator is TMatrixWalker then
+    if Glw.Navigator is TWalkNavigator then
     begin
       { in view3dscene, MoveHorizontalSpeed is always equal
         MoveVerticalSpeed }
 
-      MoveSpeed := Glw.NavWalker.MoveHorizontalSpeed;
+      MoveSpeed := Glw.WalkNav.MoveHorizontalSpeed;
       if MessageInputQuery(Glwin, 'New move speed:', MoveSpeed, taLeft) then
       begin
-        Glw.NavWalker.MoveHorizontalSpeed := MoveSpeed;
-        Glw.NavWalker.MoveVerticalSpeed := MoveSpeed;
+        Glw.WalkNav.MoveHorizontalSpeed := MoveSpeed;
+        Glw.WalkNav.MoveVerticalSpeed := MoveSpeed;
         Glw.PostRedisplay;
       end;
     end else
@@ -2650,10 +2650,10 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
   begin
     Writeln(MakeVRMLCameraStr(Version,
-      MatrixWalker.CameraPos,
-      MatrixWalker.CameraDir,
-      MatrixWalker.CameraUp,
-      MatrixWalker.GravityUp));
+      WalkNav.CameraPos,
+      WalkNav.CameraDir,
+      WalkNav.CameraUp,
+      WalkNav.GravityUp));
   end;
 
   procedure WriteBoundingBox(const Box: TBox3d);
@@ -2942,18 +2942,18 @@ begin
   41: AssignGLSLShader;
 
   { Before all calls to SetViewpointCore below, we don't really have to
-    swith to nkWalker. But user usually wants to switch to nkWalker ---
+    swith to nkWalk. But user usually wants to switch to nkWalk ---
     in nkExamine viewpoint result is not visible at all. }
   51: begin
-        SetNavigatorKind(Glw, nkWalker);
+        SetNavigatorKind(Glw, nkWalk);
         SetViewpointCore(StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   52: begin
-        SetNavigatorKind(Glw, nkWalker);
+        SetNavigatorKind(Glw, nkWalk);
         SetViewpointCore(StdVRMLCamPos[2], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
       end;
   53: begin
-        SetNavigatorKind(Glw, nkWalker);
+        SetNavigatorKind(Glw, nkWalk);
         SetViewpointForWholeScene;
       end;
 
@@ -3026,9 +3026,9 @@ begin
            Glw.Width, Glw.Height,
            SceneFilename,
            ExtractOnlyFileName(SceneFilename) + '-rt.png',
-           VectorToRawStr(MatrixWalker.CameraPos),
-           VectorToRawStr(MatrixWalker.CameraDir),
-           VectorToRawStr(MatrixWalker.CameraUp),
+           VectorToRawStr(WalkNav.CameraPos),
+           VectorToRawStr(WalkNav.CameraDir),
+           VectorToRawStr(WalkNav.CameraUp),
            FloatToStr(AngleOfViewX),
            BGColor[0], BGColor[1], BGColor[2] ]));
 
@@ -3038,12 +3038,12 @@ begin
   108: Writeln(
          'Current viewing frustum planes :' +nl+
          '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-         '  Left   : ' + VectorToRawStr(MatrixWalker.Frustum[fpLeft]) +nl+
-         '  Right  : ' + VectorToRawStr(MatrixWalker.Frustum[fpRight]) +nl+
-         '  Bottom : ' + VectorToRawStr(MatrixWalker.Frustum[fpBottom]) +nl+
-         '  Top    : ' + VectorToRawStr(MatrixWalker.Frustum[fpTop]) +nl+
-         '  Near   : ' + VectorToRawStr(MatrixWalker.Frustum[fpNear]) +nl+
-         '  Far    : ' + VectorToRawStr(MatrixWalker.Frustum[fpFar]));
+         '  Left   : ' + VectorToRawStr(WalkNav.Frustum[fpLeft]) +nl+
+         '  Right  : ' + VectorToRawStr(WalkNav.Frustum[fpRight]) +nl+
+         '  Bottom : ' + VectorToRawStr(WalkNav.Frustum[fpBottom]) +nl+
+         '  Top    : ' + VectorToRawStr(WalkNav.Frustum[fpTop]) +nl+
+         '  Near   : ' + VectorToRawStr(WalkNav.Frustum[fpNear]) +nl+
+         '  Far    : ' + VectorToRawStr(WalkNav.Frustum[fpFar]));
 
   109: WriteBoundingBox(SceneAnimation.BoundingBoxSum);
   110: WriteBoundingBox(SceneAnimation.SceneFromTime(AnimationTime).BoundingBox);
@@ -3058,15 +3058,15 @@ begin
   122: ShowStatus := not ShowStatus;
   123: SetCollisionCheck(not CollisionCheck, false);
   124: ChangeGravityUp;
-  125: if Glw.Navigator is TMatrixWalker then
+  125: if Glw.Navigator is TWalkNavigator then
        begin
          { We need an octree now }
          if SceneTriangleOctree = nil then
            SetCollisionCheck(true);
          Assert(SceneTriangleOctree <> nil);
          RaytraceToWin(Glwin, SceneTriangleOctree,
-           Glw.NavWalker.CameraPos,
-           Glw.NavWalker.CameraDir, Glw.NavWalker.CameraUp,
+           Glw.WalkNav.CameraPos,
+           Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
            AngleOfViewX, AngleOfViewY, BGColor,
            SceneAnimation.FirstScene.FogNode,
            SceneAnimation.FirstScene.FogDistanceScaling);
@@ -3080,21 +3080,21 @@ begin
          Glwin.SaveScreenDialog(FNameAutoInc(ProposedScreenShotName));
        end;
   128: begin
-         MatrixWalker.MouseLook := not MatrixWalker.MouseLook;
+         WalkNav.MouseLook := not WalkNav.MouseLook;
          Glw.UpdateMouseLook;
 
-         if MatrixWalker.MouseLook then
+         if WalkNav.MouseLook then
          begin
-           MatrixWalker.Input_LeftStrafe.AssignFromDefault(MatrixWalker.Input_LeftRot);
-           MatrixWalker.Input_RightStrafe.AssignFromDefault(MatrixWalker.Input_RightRot);
-           MatrixWalker.Input_LeftRot.AssignFromDefault(MatrixWalker.Input_LeftStrafe);
-           MatrixWalker.Input_RightRot.AssignFromDefault(MatrixWalker.Input_RightStrafe);
+           WalkNav.Input_LeftStrafe.AssignFromDefault(WalkNav.Input_LeftRot);
+           WalkNav.Input_RightStrafe.AssignFromDefault(WalkNav.Input_RightRot);
+           WalkNav.Input_LeftRot.AssignFromDefault(WalkNav.Input_LeftStrafe);
+           WalkNav.Input_RightRot.AssignFromDefault(WalkNav.Input_RightStrafe);
          end else
          begin
-           MatrixWalker.Input_LeftStrafe.MakeDefault;
-           MatrixWalker.Input_RightStrafe.MakeDefault;
-           MatrixWalker.Input_LeftRot.MakeDefault;
-           MatrixWalker.Input_RightRot.MakeDefault;
+           WalkNav.Input_LeftStrafe.MakeDefault;
+           WalkNav.Input_RightStrafe.MakeDefault;
+           WalkNav.Input_LeftRot.MakeDefault;
+           WalkNav.Input_RightRot.MakeDefault;
          end;
        end;
 
@@ -3121,9 +3121,9 @@ begin
 
   182: ChangePointSize;
 
-  201: MatrixWalker.Gravity := not MatrixWalker.Gravity;
-  202: MatrixWalker.PreferGravityUpForRotations := not MatrixWalker.PreferGravityUpForRotations;
-  203: MatrixWalker.PreferGravityUpForMoving := not MatrixWalker.PreferGravityUpForMoving;
+  201: WalkNav.Gravity := not WalkNav.Gravity;
+  202: WalkNav.PreferGravityUpForRotations := not WalkNav.PreferGravityUpForRotations;
+  203: WalkNav.PreferGravityUpForMoving := not WalkNav.PreferGravityUpForMoving;
   205: ChangeMoveSpeed;
 
   220: AnimationTimePlaying := not AnimationTimePlaying;
@@ -3139,10 +3139,10 @@ begin
 
   300..399:
     begin
-      { We could just bind given viewpoint, without swithing to nkWalker.
-        But user usually wants to switch to nkWalker --- in nkExamine
+      { We could just bind given viewpoint, without swithing to nkWalk.
+        But user usually wants to switch to nkWalk --- in nkExamine
         current viewpoint is not visible at all. }
-      SetNavigatorKind(Glw, nkWalker);
+      SetNavigatorKind(Glw, nkWalk);
       ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
         Send(true, SceneAnimation.FirstScene.WorldTime);
       { Sending set_bind = true works fine if it's not current viewpoint,
@@ -3399,18 +3399,18 @@ begin
    M2 := TMenu.Create('Walk mode Settings');
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, 'm',
-         MatrixWalker.MouseLook, true));
+         WalkNav.MouseLook, true));
      MenuGravity := TMenuItemChecked.Create(
        '_Gravity',                              201, 'g',
-       MatrixWalker.Gravity, true);
+       WalkNav.Gravity, true);
      M2.Append(MenuGravity);
      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
        'Rotate with Respect to Stable (Gravity) Camera Up',      202,
-       MatrixWalker.PreferGravityUpForRotations, true);
+       WalkNav.PreferGravityUpForRotations, true);
      M2.Append(MenuPreferGravityUpForRotations);
      MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
        'Move with Respect to Stable (Gravity) Camera Up',          203,
-       MatrixWalker.PreferGravityUpForMoving, true);
+       WalkNav.PreferGravityUpForMoving, true);
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));

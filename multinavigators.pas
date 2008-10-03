@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2006 Michalis Kamburelis.
+  Copyright 2003-2008 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -27,16 +27,16 @@ unit MultiNavigators;
 
 interface
 
-uses SysUtils, KambiUtils, GLWindow, MatrixNavigation, Boxes3d, VectorMath,
+uses SysUtils, KambiUtils, GLWindow, Navigation, Boxes3d, VectorMath,
   GL, GLU, GLExt, KambiGLUtils;
 
 type
-  TNavigatorKind = (nkExaminer, nkWalker);
+  TNavigatorKind = (nkExamine, nkWalk);
 
 { Call this ONCE on created glwin (glwin need not be after Init).
   This will take care of always providing proper glwin.Navigator
   for you. MoveAllowed will be used for collision detection
-  when NavigatorKind in [nkWalker].
+  when NavigatorKind in [nkWalk].
 
   You CAN NOT directly modify Navigators' properties
   (settings like InitialCameraXxx, Rotation, but also general settings
@@ -44,7 +44,7 @@ type
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  WalkerMatrixChanged: TMatrixNavigatorNotifyFunc);
+  WalkerMatrixChanged: TNavigatorNotifyFunc);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -77,9 +77,9 @@ function NavigatorKind: TNavigatorKind;
 procedure SetNavigatorKind(glwin: TGLWindowNavigated; Kind: TNavigatorKind);
 procedure ChangeNavigatorKind(glwin: TGLWindowNavigated; change: integer);
 
-{ This is MatrixWalker used when NavigationKind = nkWalker.
+{ This is TWalkNavigator used when NavigationKind = nkWalk.
   Use this e.g. to set it's ProjectionMatrix. }
-function MatrixWalker: TMatrixWalker;
+function WalkNav: TWalkNavigator;
 
 { Interpret and remove from ParStr(1) ... ParStr(ParCount)
   some params specific for this unit.
@@ -98,12 +98,12 @@ implementation
 uses ParseParametersUnit;
 
 const
-  NavigatorClasses: array[TNavigatorKind]of TMatrixNavigatorClass =
-  (TMatrixExaminer, TMatrixWalker);
+  NavigatorClasses: array[TNavigatorKind]of TNavigatorClass =
+  (TExamineNavigator, TWalkNavigator);
 
 var
-  FNavigatorKind: TNavigatorKind = nkExaminer;
-  Navigators: array[TNavigatorKind]of TMatrixNavigator;
+  FNavigatorKind: TNavigatorKind = nkExamine;
+  Navigators: array[TNavigatorKind]of TNavigator;
 
 procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated; value: TNavigatorKind);
 { This is private procedure in this module.
@@ -121,7 +121,7 @@ end;
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  WalkerMatrixChanged: TMatrixNavigatorNotifyFunc);
+  WalkerMatrixChanged: TNavigatorNotifyFunc);
 var nk: TNavigatorKind;
 begin
  { create navigators }
@@ -129,9 +129,9 @@ begin
    Navigators[nk] :=
      NavigatorClasses[nk].Create(@glwin.PostRedisplayOnMatrixChanged);
 
- TMatrixWalker(Navigators[nkWalker]).OnMoveAllowed := MoveAllowed;
- TMatrixWalker(Navigators[nkWalker]).OnGetCameraHeight := GetCameraHeight;
- TMatrixWalker(Navigators[nkWalker]).OnMatrixChanged := WalkerMatrixChanged;
+ TWalkNavigator(Navigators[nkWalk]).OnMoveAllowed := MoveAllowed;
+ TWalkNavigator(Navigators[nkWalk]).OnGetCameraHeight := GetCameraHeight;
+ TWalkNavigator(Navigators[nkWalk]).OnMatrixChanged := WalkerMatrixChanged;
 
  { init glwin.Navigator }
  glwin.OwnsNavigator := false;
@@ -145,8 +145,8 @@ procedure SceneInitMultiNavigators(
   const CameraPreferredHeight, CameraRadius: Single);
 begin
  { Init all navigators }
- TMatrixExaminer(Navigators[nkExaminer]).Init(ModelBox);
- TMatrixWalker  (Navigators[nkWalker  ]).Init(
+ TExamineNavigator(Navigators[nkExamine]).Init(ModelBox);
+ TWalkNavigator  (Navigators[nkWalk  ]).Init(
    InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp,
    CameraPreferredHeight, CameraRadius);
 end;
@@ -181,9 +181,9 @@ end;
 {$define ARRAY_POS_INDEX_TYPE := TNavigatorKind}
 IMPLEMENT_ARRAY_POS_CASE_CHECKED
 
-function MatrixWalker: TMatrixWalker;
+function WalkNav: TWalkNavigator;
 begin
- Result := TMatrixWalker(Navigators[nkWalker]);
+ Result := TWalkNavigator(Navigators[nkWalk]);
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
