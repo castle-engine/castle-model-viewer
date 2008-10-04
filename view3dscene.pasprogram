@@ -119,8 +119,6 @@ var
   { ustalane w Init, finalizowane w Close }
   StatusFont: TGLBitmapFont;
 
-  AngleOfViewX: Single = 60;
-
   RecentMenu: TGLRecentMenu;
 
   UseStippleForStatus: boolean;
@@ -149,8 +147,6 @@ var
   { vars below istotne tylko w trybach nawigacji ktore robia wykrywanie kolizji: }
   { must always be > 0 }
   CameraRadius: Single = 0.0;
-  { 0.0 means "no limit". }
-  VisibilityLimit: Single = 0.0;
   SceneHeadlight: TVRMLGLHeadlight;
 
   { (SelectedItem = nil) if and only if (SelectedItemIndex = NoItemIndex). }
@@ -187,35 +183,6 @@ var
   LastRender_AllShapeStatesCount: Cardinal;
 
 { Helper functions -------------------------------------------------- }
-
-function AngleOfViewY: Single;
-begin
-  Result := AdjustViewAngleDegToAspectRatio(
-    AngleOfViewX, Glw.Height / Glw.Width);
-end;
-
-function WalkProjectionNear: Single;
-begin
- Result := CameraRadius * 0.6;
-end;
-
-function WalkProjectionFar: Single;
-var
-  Box: TBox3d;
-begin
-  if VisibilityLimit <> 0.0 then
-    Result := VisibilityLimit else
-  begin
-    Box := SceneAnimation.BoundingBoxSum;
-
-    if IsEmptyBox3d(Box) then
-      { When IsEmptyBox3d, Result is not simply "any dummy value".
-        It must be appropriately larger than WalkProjectionNear
-        to provide sufficient space for rendering Background node. }
-      Result := WalkProjectionNear * 10 else
-      Result := Box3dAvgSize(Box) * 20.0;
-  end;
-end;
 
 procedure UpdateSelectedEnabled;
 begin
@@ -654,17 +621,13 @@ begin
 
  BeginRenderSceneWithLights(SceneAnimation);
 
-   if (Glw.Navigator is TWalkNavigator) then
-   begin
-     { For animations, DefaultShapeStateOctree is constructed only
-       for the 1st scene. For the rest, we have to call normal
-       RenderFrustum. Also, generation of octree may be turned off for
-       speed purposes. }
-     if Scene.DefaultShapeStateOctree <> nil then
-       Scene.RenderFrustumOctree(Glw.WalkNav.Frustum, tgAll) else
-       Scene.RenderFrustum(Glw.WalkNav.Frustum, tgAll);
-   end else
-     Scene.Render(nil, tgAll);
+   { For animations, DefaultShapeStateOctree is constructed only
+     for the 1st scene. For the rest, we have to call normal
+     RenderFrustum. Also, generation of octree may be turned off for
+     speed purposes. }
+   if Scene.DefaultShapeStateOctree <> nil then
+     Scene.RenderFrustumOctree(Glw.Navigator.Frustum, tgAll) else
+     Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
    LastRender_RenderedShapeStatesCount :=
      Scene.LastRender_RenderedShapeStatesCount;
@@ -713,64 +676,18 @@ begin
  end;
 end;
 
-procedure Resize(Glwin: TGLWindow);
-
-  procedure UpdateNavigatorProjectionMatrix;
-  var ProjectionMatrix: TMatrix4f;
-  begin
-   glGetFloatv(GL_PROJECTION_MATRIX, @ProjectionMatrix);
-   WalkNav.ProjectionMatrix := ProjectionMatrix;
-  end;
-
 var
-  MaxSize, zNear, zFar: TGLdouble;
-  FieldOfView: Single;
-  Box: TBox3d;
+  AngleOfViewX, AngleOfViewY: Single;
+
+procedure Resize(Glwin: TGLWindow);
 begin
- glViewport(0, 0, glwin.Width, glwin.Height);
+  SceneAnimation.FirstScene.GLProjection(
+    Glw.Navigator, SceneAnimation.BoundingBoxSum, CameraRadius,
+    Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY);
 
- Box := SceneAnimation.BoundingBoxSum;
-
- { Calculate AngleOfViewX, basing on ViewpointNode and Glw.Width,Height }
- { TODO: something similar should be done for OrthoViewpoint to take
-   into accound it's fieldOfView. }
- if (ViewpointNode <> nil) and
-    (ViewpointNode is TNodeViewpoint) then
-   FieldOfView := TNodeViewpoint(ViewpointNode).FdFieldOfView.Value else
-   FieldOfView := DefaultViewpointFieldOfView;
- AngleOfViewX := RadToDeg(TNodeViewpoint.ViewpointAngleOfView(
-   FieldOfView, Glw.Width / Glw.Height));
- { Tests:
-   Writeln(Format('Angle of view: x %f, y %f', [AngleOfViewX, AngleOfViewY])); }
-
- { Zeby zminimalizowac bledy depth buffera trzeba uzaleznic zNear/zFar
-   od wielkosci obiektu.
-
-   W trybie Examiner mozna uzywac duzo wiekszych near,
-   uzywam tu Box3dAvgSize(Box) * 0.1 i to daje dobra dokladnosc,
-   w Walk uzywam cameraRadius * 0.6 co standardowo
-   daje Box3dAvgSize(Box)*0.006 a wiec prawie 20 razy mniej !
-   Przy tak malym perspective near w trybie Examiner czesto byloby widac
-   bledy z-bufora, patrz np. KingsHead.wrl. }
- if (Glw.Navigator is TExamineNavigator) and
-    (not IsEmptyBox3d(Box)) then
-  zNear := Box3dAvgSize(Box) * 0.1 else
-  zNear := WalkProjectionNear;
- zFar := WalkProjectionFar;
-
- if CameraKind = ckPerspective then
-  ProjectionGLPerspective(AngleOfViewY, glwin.Width/glwin.Height,
-    zNear, zFar) else
- begin
-  if IsEmptyBox3d(Box) then
-   MaxSize := 1.0 { any dummy value } else
-   MaxSize := Box3dMaxSize(Box);
-  ProjectionGLOrtho(-MaxSize/2, MaxSize/2,
-                    -MaxSize/2, MaxSize/2,
-                    zNear, zFar);
- end;
-
- UpdateNavigatorProjectionMatrix;
+  { GLProjection set only current Navigator's ProjectionMatrix,
+    we want to pass ProjectionMatrix to all navigators. }
+  SetProjectionMatrix(Glw.Navigator.ProjectionMatrix);
 end;
 
 const
@@ -1552,11 +1469,6 @@ begin
       CameraPreferredHeight := NavigationNode.FdAvatarSize.Items[1] else
       CameraPreferredHeight := CameraRadius * 2;
 
-    { calculate VisibilityLimit }
-    if NavigationNode <> nil then
-      VisibilityLimit := NavigationNode.FdVisibilityLimit.Value else
-      VisibilityLimit := 0;
-
     if not JumpToInitialViewpoint then
     begin
       { TODO: this should preserve previously bound viewpoint. }
@@ -1601,12 +1513,6 @@ begin
     if Glw.Closed then
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
-
-    { calculate Scene.BackgroundSkySphereRadius (musi byc najpierw ustalone
-      Scene.BoundingBox i CameraRadius, sa potrzebne do WalkProjectionNear/Far) }
-    SceneAnimation.BackgroundSkySphereRadius :=
-      TBackgroundGL.NearFarToSkySphereRadius(
-        WalkProjectionNear, WalkProjectionFar);
 
     { Find recognized NavigationNode.FdType }
     if NavigationNode <> nil then
@@ -3047,7 +2953,7 @@ begin
   107: WritelnCameraSettings(2);
 
   108: Writeln(
-         'Current viewing frustum planes :' +nl+
+         'Current Walk navigation frustum planes :' +nl+
          '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
          '  Left   : ' + VectorToRawStr(WalkNav.Frustum[fpLeft]) +nl+
          '  Right  : ' + VectorToRawStr(WalkNav.Frustum[fpRight]) +nl+
@@ -3385,9 +3291,9 @@ begin
      MenuAppendTextureMagFilters(M2, 1200);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('Show in Examine mode Camera Frustum', 96,
+   M.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
      ShowFrustum, true));
-   M.Append(TMenuItemChecked.Create('When Showing Camera Frustum, ' +
+   M.Append(TMenuItemChecked.Create('When Showing Frustum, ' +
      'Show it Over All Other Objects (no depth test)', 180,
      ShowFrustumAlwaysVisible, true));
    M.Append(TMenuSeparator.Create);
@@ -3488,7 +3394,7 @@ begin
    M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
    M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107, CtrlC));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Current Camera _Frustum', 108));
+   M.Append(TMenuItem.Create('Print Current Walk _Frustum', 108));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
    M.Append(TMenuItem.Create('Print Bounding Box (of current animation frame)', 110));

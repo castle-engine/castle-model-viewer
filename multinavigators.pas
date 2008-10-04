@@ -77,6 +77,8 @@ function NavigatorKind: TNavigatorKind;
 procedure SetNavigatorKind(glwin: TGLWindowNavigated; Kind: TNavigatorKind);
 procedure ChangeNavigatorKind(glwin: TGLWindowNavigated; change: integer);
 
+procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
+
 { This is TWalkNavigator used when NavigationKind = nkWalk.
   Use this e.g. to set it's ProjectionMatrix. }
 function WalkNav: TWalkNavigator;
@@ -154,6 +156,15 @@ end;
 function NavigatorKind: TNavigatorKind;
 begin
  Result := FNavigatorKind;
+end;
+
+procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
+var
+  nk: TNavigatorKind;
+begin
+  { create navigators }
+  for nk := Low(nk) to High(nk) do
+    Navigators[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
 procedure SetNavigatorKind(glwin: TGLWindowNavigated; Kind: TNavigatorKind);
