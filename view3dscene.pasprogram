@@ -681,7 +681,7 @@ var
 
 procedure Resize(Glwin: TGLWindow);
 begin
-  SceneAnimation.FirstScene.GLProjection(
+  SceneAnimation.GLProjection(
     Glw.Navigator, SceneAnimation.BoundingBoxSum, CameraRadius,
     Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY);
 
