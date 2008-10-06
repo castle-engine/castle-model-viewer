@@ -3244,18 +3244,18 @@ begin
    M2 := TMenu.Create('_Fill Mode');
      MenuAppendFillModes(M2, 500);
      M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Next _Fill Mode', 520, 'f'));
+     M2.Append(TMenuItem.Create('Next _Fill Mode', 520, CtrlF));
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Set Wireframe Line Width ...', 530));
      M.Append(M2);
-   M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, 'b',
+   M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, CtrlB,
      ShowBBox, true));
-   M.Append(TMenuItemChecked.Create('_Smooth Shading',         83, 's',
+   M.Append(TMenuItemChecked.Create('_Smooth Shading',         83,
      SceneAnimation.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85,
      SceneAnimation.Attributes.UseFog, true));
-   M.Append(TMenuItemChecked.Create('Blending',                86, CtrlB,
+   M.Append(TMenuItemChecked.Create('Blending',                86,
      SceneAnimation.Attributes.Blending, true));
    M2 := TMenu.Create('Blending Source Factor');
      AppendBlendingFactors(M2, true, 400);
@@ -3273,16 +3273,16 @@ begin
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
-     '_Lighting Calculate (GL__LIGHTING enabled)',         91, 'l',
+     '_Lighting Calculate (GL__LIGHTING enabled)',         91, CtrlL,
      LightCalculate, true));
-   MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, 'h',
+   MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
      Headlight, true);
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
      SceneAnimation.Attributes.UseLights, true));
    M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Textures',           94, 't',
+   M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
      SceneAnimation.Attributes.EnableTextures, true));
    M2 := TMenu.Create('Texture Minification Method');
      MenuAppendTextureMinFilters(M2, 1100);
@@ -3312,14 +3312,14 @@ begin
    M2 := TMenu.Create('Navigation Mode');
      AppendNavigationTypes(M2);
      M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Switch to Next',                      111, 'v'));
+     M2.Append(TMenuItem.Create('Switch to Next', 111, CtrlN));
      M.Append(M2);
    M2 := TMenu.Create('Walk mode Settings');
      M2.Append(TMenuItemChecked.Create(
-       '_Use Mouse Look',                       128, 'm',
+       '_Use Mouse Look',                       128, CtrlM,
          WalkNav.MouseLook, true));
      MenuGravity := TMenuItemChecked.Create(
-       '_Gravity',                              201, 'g',
+       '_Gravity',                              201, CtrlG,
        WalkNav.Gravity, true);
      M2.Append(MenuGravity);
      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
@@ -3339,7 +3339,7 @@ begin
      M2.Append(MenuIgnoreAllInputs);
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
-     '_Collision Detection',                   123, 'c',
+     '_Collision Detection',                   123, CtrlC,
        CollisionCheck, true);
    M.Append(MenuCollisionCheck);
    Result.Append(M);
@@ -3389,10 +3389,9 @@ begin
    M.Append(TMenuItem.Create('Print Statistics of Octree Based on _ShapeStates', 103));
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View',
-     105, CtrlR));
+   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
    M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
-   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107, CtrlC));
+   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Current Walk _Frustum', 108));
    M.Append(TMenuSeparator.Create);
@@ -3400,7 +3399,7 @@ begin
    M.Append(TMenuItem.Create('Print Bounding Box (of current animation frame)', 110));
    Result.Append(M);
  M := TMenu.Create('_Display');
-   M.Append(TMenuItem.Create('_Raytrace !',                   125, 'r'));
+   M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Glw.FullScreen, true));
    M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
