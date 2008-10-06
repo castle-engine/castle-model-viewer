@@ -823,10 +823,10 @@ begin
     SceneAnimation.Scenes[0].KeyDown(Key, C, @Glwin.KeysDown);
 end;
 
-procedure KeyUp(Glwin: TGLWindow; Key: TKey);
+procedure KeyUp(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyUp(Key, #0 { TODO -- char for this key });
+    SceneAnimation.Scenes[0].KeyUp(Key, C);
 end;
 
 procedure Idle(Glwin: TGLWindow);
