@@ -1600,13 +1600,20 @@ begin
     for I := 0 to SceneAnimation.ScenesCount - 1 do
     begin
       { TODO: for now, SceneProcessEvents is always @true when scenes count = 1 }
+
+      { Order is somewhat important here: first turn DebugLogVRMLChanges on,
+        then turn events on, otherwise events on initialize() of scripts
+        will not be logged. }
+      SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
+
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
+
       SceneAnimation.Scenes[I].OnGeometryChanged := @Helper.GeometryChanged;
       SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @Helper.BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @Helper.ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @Helper.BoundViewpointVectorsChanged;
-      SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
+
     end;
 
     { Make initial ViewerPositionChanged to make initial events to
