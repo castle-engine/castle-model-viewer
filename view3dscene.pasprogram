@@ -133,7 +133,6 @@ var
     variables, "null values" mean that these variables have some *defined
     but useless* values, i.e.
       SceneAnimation.Loaded = false
-      SceneTriangleOctree = nil
       SceneFileName = '' }
   { Note that only one SceneAnimation object is created and present for the whole
     lifetime of this program, i.e. when I load new scene (from "Open"
@@ -202,8 +201,8 @@ function SceneTriangleOctree: TVRMLTriangleOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.DefaultTriangleOctree <> nil) then
-    Result := SceneAnimation.FirstScene.DefaultTriangleOctree else
+     (SceneAnimation.FirstScene.TriangleOctree <> nil) then
+    Result := SceneAnimation.FirstScene.TriangleOctree else
     Result := nil;
 end;
 
@@ -211,8 +210,8 @@ function SceneShapeStateOctree: TVRMLShapeStateOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.DefaultShapeStateOctree <> nil) then
-    Result := SceneAnimation.FirstScene.DefaultShapeStateOctree else
+     (SceneAnimation.FirstScene.ShapeStateOctree <> nil) then
+    Result := SceneAnimation.FirstScene.ShapeStateOctree else
     Result := nil;
 end;
 
@@ -249,7 +248,7 @@ begin
     if NeedMenuUpdate then
       MenuCollisionCheck.Checked := Value;
     if CollisionCheck and
-      (SceneAnimation.FirstScene.DefaultTriangleOctree = nil) then
+      (SceneAnimation.FirstScene.TriangleOctree = nil) then
       SceneOctreeCreate;
   end;
 end;
@@ -621,13 +620,12 @@ begin
 
  BeginRenderSceneWithLights(SceneAnimation);
 
-   { For animations, DefaultShapeStateOctree is constructed only
-     for the 1st scene. For the rest, we have to call normal
-     RenderFrustum. Also, generation of octree may be turned off for
-     speed purposes. }
-   if Scene.DefaultShapeStateOctree <> nil then
-     Scene.RenderFrustumOctree(Glw.Navigator.Frustum, tgAll) else
-     Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
+   { Scene.RenderFrustum will automatically use octree, if available.
+     Note that octree may be not available (for animations,
+     ShapeStateOctree is constructed only for the 1st scene.
+     Also, generation of octree may be turned off for
+     speed purposes.) }
+   Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
    LastRender_RenderedShapeStatesCount :=
      Scene.LastRender_RenderedShapeStatesCount;
@@ -1269,17 +1267,16 @@ begin
     Glw.OnBeforeDraw := nil;
     try
       { For now we construct and store octrees only for the 1st animation frame. }
-      SceneAnimation.FirstScene.OwnsDefaultTriangleOctree := false;
-      SceneAnimation.FirstScene.DefaultTriangleOctree :=
-        SceneAnimation.FirstScene.CreateTriangleOctree(
-          TriangleOctreeMaxDepth, TriangleOctreeMaxLeafItemsCount,
-          'Building triangle octree');
 
-      SceneAnimation.FirstScene.OwnsDefaultShapeStateOctree := false;
-      SceneAnimation.FirstScene.DefaultShapeStateOctree :=
-        SceneAnimation.FirstScene.CreateShapeStateOctree(
-          ShapeStateOctreeMaxDepth, ShapeStateOctreeMaxLeafItemsCount,
-          'Building ShapeState octree');
+      SceneAnimation.FirstScene.TriangleOctreeMaxDepth := TriangleOctreeMaxDepth;
+      SceneAnimation.FirstScene.TriangleOctreeMaxLeafItemsCount := TriangleOctreeMaxLeafItemsCount;
+      SceneAnimation.FirstScene.TriangleOctreeProgressTitle := 'Building triangle octree';
+
+      SceneAnimation.FirstScene.ShapeStateOctreeMaxDepth := ShapeStateOctreeMaxDepth;
+      SceneAnimation.FirstScene.ShapeStateOctreeMaxLeafItemsCount := ShapeStateOctreeMaxLeafItemsCount;
+      SceneAnimation.FirstScene.ShapeStateOctreeProgressTitle := 'Building ShapeState octree';
+
+      SceneAnimation.FirstScene.OctreeStrategy := osFull;
     finally
       Glw.OnDraw := OldDraw;
       Glw.OnBeforeDraw := OldBeforeDraw;
@@ -1296,11 +1293,7 @@ begin
     SceneAnimation.FirstScene.PointingDeviceClear;
     Glw.CursorNonMouseLook := gcDefault;
 
-    SceneAnimation.FirstScene.DefaultTriangleOctree.Free;
-    SceneAnimation.FirstScene.DefaultTriangleOctree := nil;
-
-    SceneAnimation.FirstScene.DefaultShapeStateOctree.Free;
-    SceneAnimation.FirstScene.DefaultShapeStateOctree := nil;
+    SceneAnimation.FirstScene.OctreeStrategy := osNone;
   end;
 end;
 
@@ -1877,10 +1870,17 @@ var
 begin
   BeginTime := KamTimer;
 
-  Unselect;
-  SceneOctreeFree;
-  SceneOctreeCreate;
+  { octrees are already updated by Scene.DoGeometryChanged.
 
+    Since some octree items are possibly completely different now,
+    we have to invalidate selection. TODO: do something better, as for
+    some geometry changes pointers don't change, so selection could
+    be kept. }
+
+  Unselect;
+
+  { TODO: detection of costly anims doesn't work now, since
+    CurrentGeometryChangedTime doesn't measure octree rebuild time. }
   CurrentGeometryChangedTime := KamTimer - BeginTime;
 end;
 
@@ -2835,8 +2835,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       { Since we just destroyed RootNode, and replaced it with completely
         different scene, we have to recalculate many things.
-        GeometryChanged takes care of recalculating
-        octree, invalidating SelectedItem and such. }
+        Recalculate octree.
+        GeometryChanged takes care of invalidating SelectedItem and such. }
+      SceneOctreeCreate;
       THelper.GeometryChanged(nil);
       THelper.ViewpointsChanged(SceneAnimation.FirstScene);
     end;
