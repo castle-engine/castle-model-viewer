@@ -197,21 +197,21 @@ begin
     MenuEditMaterial.Enabled := SelectedItem <> nil;
 end;
 
-function SceneTriangleOctree: TVRMLTriangleOctree;
+function SceneOctreeCollisions: TVRMLTriangleOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.TriangleOctree <> nil) then
-    Result := SceneAnimation.FirstScene.TriangleOctree else
+     (SceneAnimation.FirstScene.OctreeCollisions <> nil) then
+    Result := SceneAnimation.FirstScene.OctreeCollisions else
     Result := nil;
 end;
 
-function SceneShapeStateOctree: TVRMLShapeStateOctree;
+function SceneOctreeRendering: TVRMLShapeStateOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.ShapeStateOctree <> nil) then
-    Result := SceneAnimation.FirstScene.ShapeStateOctree else
+     (SceneAnimation.FirstScene.OctreeRendering <> nil) then
+    Result := SceneAnimation.FirstScene.OctreeRendering else
     Result := nil;
 end;
 
@@ -248,7 +248,7 @@ begin
     if NeedMenuUpdate then
       MenuCollisionCheck.Checked := Value;
     if CollisionCheck and
-      (SceneAnimation.FirstScene.TriangleOctree = nil) then
+      (SceneAnimation.FirstScene.OctreeCollisions = nil) then
       SceneOctreeCreate;
   end;
 end;
@@ -388,7 +388,7 @@ begin
   strs.Append(Format('Navigation mode: %s', [NavigatorNames[NavigatorKind]]));
 
   S := Format('Collision detection: %s', [ BoolToStrOO[collisionCheck] ]);
-  if SceneTriangleOctree = nil then
+  if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
   strs.Append(S);
 
@@ -583,17 +583,17 @@ begin
    is not really ready (e.g. when showing errors after scene loading),
    so we have to check here whether some things are initialized as they
    should. }
- if (SceneTriangleOctree <> nil) and
-    (SceneTriangleOctree.TreeRoot <> nil) then
+ if (SceneOctreeCollisions <> nil) and
+    (SceneOctreeCollisions.TreeRoot <> nil) then
  if OctreeDisplayWhole then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeWhole(SceneTriangleOctree.TreeRoot);
+   DisplayOctreeWhole(SceneOctreeCollisions.TreeRoot);
  end else
  if OctreeDisplayDepth >= 0 then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeDepth(SceneTriangleOctree.TreeRoot, OctreeDisplayDepth);
+   DisplayOctreeDepth(SceneOctreeCollisions.TreeRoot, OctreeDisplayDepth);
  end;
 
  if showBBox and (not MakingScreenShot) then
@@ -622,7 +622,7 @@ begin
 
    { Scene.RenderFrustum will automatically use octree, if available.
      Note that octree may be not available (for animations,
-     ShapeStateOctree is constructed only for the 1st scene.
+     OctreeRendering is constructed only for the 1st scene.
      Also, generation of octree may be turned off for
      speed purposes.) }
    Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
@@ -715,7 +715,7 @@ begin
     end else
     if btn = mbRight then
     begin
-      if SceneTriangleOctree = nil then
+      if SceneOctreeCollisions = nil then
       begin
         MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
         Exit;
@@ -723,10 +723,10 @@ begin
 
       Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
 
-      SceneTriangleOctree.DirectCollisionTestsCounter := 0;
+      SceneOctreeCollisions.DirectCollisionTestsCounter := 0;
 
       SelectedItemIndex :=
-        SceneTriangleOctree.RayCollision(
+        SceneOctreeCollisions.RayCollision(
           SelectedPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
 
       { DirectCollisionTestsCounter is not recorded,
@@ -734,11 +734,11 @@ begin
         For now it's commented out --- not interesting to typical user.
       Writeln(Format('%d tests for collisions between ray ' +
         'and triangles were needed to learn this.',
-        [ SceneTriangleOctree.DirectCollisionTestsCounter ])); }
+        [ SceneOctreeCollisions.DirectCollisionTestsCounter ])); }
 
       if SelectedItemIndex = NoItemIndex then
         SelectedItem := nil else
-        SelectedItem := SceneTriangleOctree.OctreeItems.
+        SelectedItem := SceneOctreeCollisions.OctreeItems.
           Pointers[SelectedItemIndex];
 
       UpdateSelectedEnabled;
@@ -785,18 +785,18 @@ var
 begin
   if (SceneAnimation.ScenesCount = 1 { ProcessEvents = true }) and
      (Glw.Navigator is TWalkNavigator) and
-     (SceneTriangleOctree <> nil) then
+     (SceneOctreeCollisions <> nil) then
   begin
     OldSensorsCount := SensorsCount;
 
     Glw.Ray(NewX, NewY, AngleOfViewX, AngleOfViewY, Ray0, RayVector);
 
-    ItemIndex := SceneTriangleOctree.RayCollision(
+    ItemIndex := SceneOctreeCollisions.RayCollision(
       OverPoint, Ray0, RayVector, true, NoItemIndex, false, nil);
 
     if ItemIndex = NoItemIndex then
       Item := nil else
-      Item := SceneTriangleOctree.OctreeItems.Pointers[ItemIndex];
+      Item := SceneOctreeCollisions.OctreeItems.Pointers[ItemIndex];
 
     SceneAnimation.Scenes[0].PointingDeviceMove(OverPoint, Item);
 
@@ -951,7 +951,7 @@ begin
   end;
 end;
 
-{ TWalkNavigator collision detection using SceneTriangleOctree --------------- }
+{ TWalkNavigator collision detection using SceneOctreeCollisions --------------- }
 
 type
   THelper = class
@@ -983,12 +983,12 @@ class function THelper.MoveAllowed(Navigator: TWalkNavigator;
 begin
   if CollisionCheck then
   begin
-    SceneTriangleOctree.DirectCollisionTestsCounter := 0;
-    Result := SceneTriangleOctree.MoveAllowed(
+    SceneOctreeCollisions.DirectCollisionTestsCounter := 0;
+    Result := SceneOctreeCollisions.MoveAllowed(
       Navigator.CameraPos, ProposedNewPos, NewPos, CameraRadius,
       false);
     {tests:
-     Writeln('Octree efficiency : ',SceneTriangleOctree.DirectCollisionTestsCounter,
+     Writeln('Octree efficiency : ',SceneOctreeCollisions.DirectCollisionTestsCounter,
        ' direct tests with single triangles were needed to know that move is'
        +BoolToStrNNN[result]+'allowed');
     }
@@ -1010,9 +1010,9 @@ class procedure THelper.GetCameraHeight(Navigator: TWalkNavigator;
 var
   GroundItemIndex: Integer;
 begin
-  if SceneTriangleOctree <> nil then
+  if SceneOctreeCollisions <> nil then
   begin
-    SceneTriangleOctree.GetCameraHeight(
+    SceneOctreeCollisions.GetCameraHeight(
       TWalkNavigator(Navigator).CameraPos,
       TWalkNavigator(Navigator).GravityUp,
       IsAboveTheGround, SqrHeightAboveTheGround, GroundItemIndex,
@@ -1276,7 +1276,7 @@ begin
       SceneAnimation.FirstScene.ShapeStateOctreeMaxLeafItemsCount := ShapeStateOctreeMaxLeafItemsCount;
       SceneAnimation.FirstScene.ShapeStateOctreeProgressTitle := 'Building ShapeState octree';
 
-      SceneAnimation.FirstScene.OctreeStrategy := osFull;
+      SceneAnimation.FirstScene.Octrees := [okRendering, okDynamicCollisions];
     finally
       Glw.OnDraw := OldDraw;
       Glw.OnBeforeDraw := OldBeforeDraw;
@@ -1293,7 +1293,7 @@ begin
     SceneAnimation.FirstScene.PointingDeviceClear;
     Glw.CursorNonMouseLook := gcDefault;
 
-    SceneAnimation.FirstScene.OctreeStrategy := osNone;
+    SceneAnimation.FirstScene.Octrees := [];
   end;
 end;
 
@@ -2280,13 +2280,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
        s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
          [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
 
-       ShadowingItemIndex := SceneTriangleOctree.SegmentCollision(
+       ShadowingItemIndex := SceneOctreeCollisions.SegmentCollision(
          SelectedPoint, ActiveLights.Items[i].TransfLocation,
            false, SelectedItemIndex, true, nil);
 
        if ShadowingItemIndex <> NoItemIndex then
        begin
-        ShadowingItem := SceneTriangleOctree.OctreeItems.
+        ShadowingItem := SceneOctreeCollisions.OctreeItems.
           Pointers[ShadowingItemIndex];
         s += Format('but no, this light is blocked by triangle %s from node %s.',
           [ TriangleToNiceStr(ShadowingItem^.Triangle),
@@ -2942,8 +2942,8 @@ begin
         end;
 
         Inc(octreeDisplayDepth);
-        if (SceneTriangleOctree <> nil) and
-           (octreeDisplayDepth > SceneTriangleOctree.MaxDepth) then
+        if (SceneOctreeCollisions <> nil) and
+           (octreeDisplayDepth > SceneOctreeCollisions.MaxDepth) then
           octreeDisplayDepth := -1;
       end;
 
@@ -2957,8 +2957,8 @@ begin
 
         Dec(octreeDisplayDepth);
         if octreeDisplayDepth < -1 then
-          if SceneTriangleOctree <> nil then
-            octreeDisplayDepth := SceneTriangleOctree.MaxDepth else
+          if SceneOctreeCollisions <> nil then
+            octreeDisplayDepth := SceneOctreeCollisions.MaxDepth else
             octreeDisplayDepth := 0;
       end;
 
@@ -2968,11 +2968,11 @@ begin
           OctreeDisplayDepth := -1;
       end;
 
-  101: if SceneTriangleOctree <> nil then
-         Writeln(SceneTriangleOctree.Statistics) else
+  101: if SceneOctreeCollisions <> nil then
+         Writeln(SceneOctreeCollisions.Statistics) else
          MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
-  103: if SceneShapeStateOctree <> nil then
-         Writeln(SceneShapeStateOctree.Statistics) else
+  103: if SceneOctreeRendering <> nil then
+         Writeln(SceneOctreeRendering.Statistics) else
          MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
   102: SceneAnimation.WritelnInfoNodes;
 
@@ -3022,10 +3022,10 @@ begin
   125: if Glw.Navigator is TWalkNavigator then
        begin
          { We need an octree now }
-         if SceneTriangleOctree = nil then
+         if SceneOctreeCollisions = nil then
            SetCollisionCheck(true);
-         Assert(SceneTriangleOctree <> nil);
-         RaytraceToWin(Glwin, SceneTriangleOctree,
+         Assert(SceneOctreeCollisions <> nil);
+         RaytraceToWin(Glwin, SceneOctreeCollisions,
            Glw.WalkNav.CameraPos,
            Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
            AngleOfViewX, AngleOfViewY, BGColor,
@@ -3344,8 +3344,8 @@ begin
    MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Octree',
      99, OctreeDisplayWhole, true);
    M.Append(MenuOctreeDisplayWhole);
-   M.Append(TMenuItem.Create('Show _Upper Level of Octree Based on Triangles', 97, CtrlU));
-   M.Append(TMenuItem.Create('Show _Lower Level of Octree Based on Triangles', 98, CtrlD));
+   M.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octree', 97, CtrlU));
+   M.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octree', 98, CtrlD));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
