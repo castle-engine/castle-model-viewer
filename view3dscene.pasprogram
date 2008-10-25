@@ -461,41 +461,85 @@ end;
 
 procedure Draw(Glwin: TGLWindow);
 
-  procedure DisplayOctreeDepth(octreenode: TOctreeNode; octreeDisplayDepth: integer);
+  procedure DisplayOctreeDepth(octreeDisplayDepth: integer);
+
+    procedure Doit(octreenode: TOctreeNode);
+    var
+      b0, b1, b2: boolean;
+    begin
+      with octreenode do
+        if Depth = octreeDisplayDepth then
+        begin
+          if not (IsLeaf and (ItemsCount = 0)) then
+            glDrawBox3dWire(Box);
+        end else
+        if not IsLeaf then
+        begin
+          for b0 := false to true do
+            for b1 := false to true do
+              for b2 := false to true do
+                Doit(TreeSubNodes[b0, b1, b2]);
+        end;
+    end;
+
   var
-    b0, b1, b2: boolean;
+    I: Integer;
   begin
-    with octreenode do
-      if Depth = octreeDisplayDepth then
+    { Octree is not always ready, as it's recalculation during animations
+      may hurt. Also, Draw may be called in various situations even when Scene
+      is not really ready (e.g. when showing errors after scene loading).
+      Also, octrees for particular shapestates are not necessarily
+      created, since some shapestates may be not collidable.
+      So we have to carefully check here whether appropriate things
+      are initialized. }
+
+    if (SceneAnimation <> nil) and
+       (SceneAnimation.ScenesCount <> 0) then
+    begin
+      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+        if SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles <> nil then
+          Doit(SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles.TreeRoot);
+    end;
+  end;
+
+  procedure DisplayOctreeWhole;
+
+    procedure Doit(OctreeNode: TOctreeNode);
+    var
+      b0, b1, b2: boolean;
+    begin
+      with OctreeNode do
       begin
         if not (IsLeaf and (ItemsCount = 0)) then
           glDrawBox3dWire(Box);
-      end else
-      if not IsLeaf then
-      begin
-        for b0 := false to true do
-          for b1 := false to true do
-            for b2 := false to true do
-              DisplayOctreeDepth(TreeSubNodes[b0, b1, b2], octreeDisplayDepth);
-      end;
-  end;
 
-  procedure DisplayOctreeWhole(OctreeNode: TOctreeNode);
+        if not IsLeaf then
+        begin
+          for b0 := false to true do
+            for b1 := false to true do
+              for b2 := false to true do
+                Doit(TreeSubNodes[b0, b1, b2]);
+        end;
+      end;
+    end;
+
   var
-    b0, b1, b2: boolean;
+    I: Integer;
   begin
-    with OctreeNode do
-    begin
-      if not (IsLeaf and (ItemsCount = 0)) then
-        glDrawBox3dWire(Box);
+    { Octree is not always ready, as it's recalculation during animations
+      may hurt. Also, Draw may be called in various situations even when Scene
+      is not really ready (e.g. when showing errors after scene loading).
+      Also, octrees for particular shapestates are not necessarily
+      created, since some shapestates may be not collidable.
+      So we have to carefully check here whether appropriate things
+      are initialized. }
 
-      if not IsLeaf then
-      begin
-        for b0 := false to true do
-          for b1 := false to true do
-            for b2 := false to true do
-              DisplayOctreeWhole(TreeSubNodes[b0, b1, b2]);
-      end;
+    if (SceneAnimation <> nil) and
+       (SceneAnimation.ScenesCount <> 0) then
+    begin
+      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+        if SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles <> nil then
+          Doit(SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles.TreeRoot);
     end;
   end;
 
@@ -578,22 +622,15 @@ begin
 
  glLoadMatrix(Glw.Navigator.Matrix);
 
- { Octree is not always ready, as it's recalculation during animations
-   may hurt. Also, Draw may be called in various situations even when Scene
-   is not really ready (e.g. when showing errors after scene loading),
-   so we have to check here whether some things are initialized as they
-   should. }
- if (SceneOctreeCollisions <> nil) and
-    (SceneOctreeCollisions.TreeRoot <> nil) then
  if OctreeDisplayWhole then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeWhole(SceneOctreeCollisions.TreeRoot);
+   DisplayOctreeWhole;
  end else
  if OctreeDisplayDepth >= 0 then
  begin
    glColorv(Yellow3Single);
-   DisplayOctreeDepth(SceneOctreeCollisions.TreeRoot, OctreeDisplayDepth);
+   DisplayOctreeDepth(OctreeDisplayDepth);
  end;
 
  if showBBox and (not MakingScreenShot) then
@@ -3341,11 +3378,11 @@ begin
      'Show it Over All Other Objects (no depth test)', 180,
      ShowFrustumAlwaysVisible, true));
    M.Append(TMenuSeparator.Create);
-   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Octree',
+   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
      99, OctreeDisplayWhole, true);
    M.Append(MenuOctreeDisplayWhole);
-   M.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octree', 97, CtrlU));
-   M.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octree', 98, CtrlD));
+   M.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 97, CtrlU));
+   M.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 98, CtrlD));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
