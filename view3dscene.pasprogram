@@ -1252,18 +1252,18 @@ end;
 
 const
   V3DSDefTriangleOctreeMaxDepth = 10;
-  V3DSDefTriangleOctreeMaxLeafItemsCount = 64;
+  V3DSDefTriangleOctreeLeafCapacity = 64;
 
 var
   { These are parameters for Load*Scene* telling how to construct octree.
     For description of their meaning, see VRMLOctree. }
   TriangleOctreeMaxDepth: Integer = V3DSDefTriangleOctreeMaxDepth;
-  TriangleOctreeMaxLeafItemsCount: integer =
-    V3DSDefTriangleOctreeMaxLeafItemsCount;
+  TriangleOctreeLeafCapacity: integer =
+    V3DSDefTriangleOctreeLeafCapacity;
 
   ShapeStateOctreeMaxDepth: Integer = DefShapeStateOctreeMaxDepth;
-  ShapeStateOctreeMaxLeafItemsCount: Integer =
-    DefShapeStateOctreeMaxLeafItemsCount;
+  ShapeStateOctreeLeafCapacity: Integer =
+    DefShapeStateOctreeLeafCapacity;
 
   { This is set to non-nil by CreateMainMenu.
     It is used there and it is also used from LoadSceneCore, since
@@ -1306,11 +1306,11 @@ begin
       { For now we construct and store octrees only for the 1st animation frame. }
 
       SceneAnimation.FirstScene.TriangleOctreeMaxDepth := TriangleOctreeMaxDepth;
-      SceneAnimation.FirstScene.TriangleOctreeMaxLeafItemsCount := TriangleOctreeMaxLeafItemsCount;
+      SceneAnimation.FirstScene.TriangleOctreeLeafCapacity := TriangleOctreeLeafCapacity;
       SceneAnimation.FirstScene.TriangleOctreeProgressTitle := 'Building triangle octree';
 
       SceneAnimation.FirstScene.ShapeStateOctreeMaxDepth := ShapeStateOctreeMaxDepth;
-      SceneAnimation.FirstScene.ShapeStateOctreeMaxLeafItemsCount := ShapeStateOctreeMaxLeafItemsCount;
+      SceneAnimation.FirstScene.ShapeStateOctreeLeafCapacity := ShapeStateOctreeLeafCapacity;
       SceneAnimation.FirstScene.ShapeStateOctreeProgressTitle := 'Building ShapeState octree';
 
       SceneAnimation.FirstScene.Octrees := [okRendering, okDynamicCollisions];
@@ -3520,7 +3520,7 @@ const
   Options: array[0..15] of TOption =
   (
     (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'triangle-octree-max-leaf-items-count'; Argument: oaRequired),
+    (Short:  #0; Long: 'triangle-octree-leaf-capacity'; Argument: oaRequired),
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
@@ -3529,7 +3529,7 @@ const
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'ss-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'ss-octree-max-leaf-items-count'; Argument: oaRequired),
+    (Short:  #0; Long: 'ss-octree-leaf-capacity'; Argument: oaRequired),
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
@@ -3545,7 +3545,7 @@ const
   begin
    case OptionNum of
     0 : TriangleOctreeMaxDepth := StrToInt(Argument);
-    1 : TriangleOctreeMaxLeafItemsCount := StrToInt(Argument);
+    1 : TriangleOctreeLeafCapacity := StrToInt(Argument);
     2 : Param_CameraRadius := StrToFloat(Argument);
     3 : Include(Param_SceneChanges, scNoNormals);
     4 : Include(Param_SceneChanges, scNoSolidObjects);
@@ -3579,21 +3579,21 @@ const
            VRMLNodesDetailOptionsHelp +NL+
            RendererOptimizationOptionsHelp +NL+
            '  --triangle-octree-max-depth DEPTH ,' +NL+
-           '  --triangle-octree-max-leaf-items-count COUNT' +NL+
+           '  --triangle-octree-leaf-capacity CAPACITY' +NL+
            '                        Set the parameters of generated octree.' +NL+
            '                        These concern octree based on triangles.' +NL+
            '                        Defaults are: max-depth = '+
              IntToStr(V3DSDefTriangleOctreeMaxDepth) + ',' +NL+
-           '                        max-leaf-items-count = '+
-             IntToStr(V3DSDefTriangleOctreeMaxLeafItemsCount) + '.' +NL+
+           '                        leaf-capacity = '+
+             IntToStr(V3DSDefTriangleOctreeLeafCapacity) + '.' +NL+
            '  --ss-octree-max-depth DEPTH ,' +NL+
-           '  --ss-octree-max-leaf-items-count COUNT' +NL+
+           '  --ss-octree-leaf-capacity CAPACITY' +NL+
            '                        Set the parameters of generated octree.' +NL+
            '                        These concern octree based on ShapeStates.' +NL+
            '                        Defaults are: max-depth = '+
              IntToStr(DefShapeStateOctreeMaxDepth) + ',' +NL+
-           '                        max-leaf-items-count = '+
-             IntToStr(DefShapeStateOctreeMaxLeafItemsCount) + '.' +NL+
+           '                        leaf-capacity = '+
+             IntToStr(DefShapeStateOctreeLeafCapacity) + '.' +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3631,7 +3631,7 @@ const
          ProgramBreak;
         end;
     9 : ShapeStateOctreeMaxDepth := StrToInt(Argument);
-    10: ShapeStateOctreeMaxLeafItemsCount := StrToInt(Argument);
+    10: ShapeStateOctreeLeafCapacity := StrToInt(Argument);
     11: begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
