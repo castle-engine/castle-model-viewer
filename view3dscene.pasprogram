@@ -427,7 +427,7 @@ begin
   strs.Append(Format('Rendered ShapeStates : %d of %d. FPS : %f',
     [ LastRender_RenderedShapeStatesCount,
       LastRender_AllShapeStatesCount,
-      Glw.FpsFrameTime ]));
+      Glw.Fps.FrameTime ]));
 
   if WorldTimeAtLoad = 0.0 then
     S := Format('World time: %f', [AnimationTime]) else
@@ -953,10 +953,10 @@ begin
     trigger costly anim detection, since each ProgressGL would be followed
     by one Idle call with IdleSpeed = 0. }
 
-  if AnimationTimePlaying and (Glwin.IdleSpeed <> 0) then
+  if AnimationTimePlaying and (Glwin.Fps.IdleSpeed <> 0) then
   begin
     OldAnimationTime := AnimationTime;
-    TimeIncrease := AnimationTimeSpeed * Glwin.IdleSpeed;
+    TimeIncrease := AnimationTimeSpeed * Glwin.Fps.IdleSpeed;
 
     DetectCostlyAnim1;
 
