@@ -195,7 +195,7 @@ begin
     MenuEditMaterial.Enabled := SelectedItem <> nil;
 end;
 
-function SceneOctreeCollisions: TVRMLTriangleOctree;
+function SceneOctreeCollisions: TVRMLItemsOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
@@ -758,7 +758,7 @@ begin
 
       Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
 
-      SceneOctreeCollisions.DirectCollisionTestsCounter := 0;
+      {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
 
       SelectedItem := SceneOctreeCollisions.RayCollision(
           SelectedPoint, Ray0, RayVector, true, nil, false, nil);
@@ -1007,7 +1007,7 @@ class function THelper.MoveAllowed(Navigator: TWalkNavigator;
 begin
   if CollisionCheck then
   begin
-    SceneOctreeCollisions.DirectCollisionTestsCounter := 0;
+    {TODO SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
     Result := SceneOctreeCollisions.MoveAllowed(
       Navigator.CameraPos, ProposedNewPos, NewPos, CameraRadius,
       false);
@@ -3045,6 +3045,8 @@ begin
          if SceneOctreeCollisions = nil then
            SetCollisionCheck(true);
          Assert(SceneOctreeCollisions <> nil);
+         { TODO: we use SceneOctreeCollisions --- maybe we should rather
+           request current triangles octree, and use this? update docs then. }
          RaytraceToWin(Glwin, SceneOctreeCollisions,
            Glw.WalkNav.CameraPos,
            Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
