@@ -685,9 +685,9 @@ begin
 
      glLineWidth(3.0); { saved by GL_LINE_BIT }
      glBegin(GL_LINE_LOOP);
-       glVertexv(SelectedItem^.Triangle[0]);
-       glVertexv(SelectedItem^.Triangle[1]);
-       glVertexv(SelectedItem^.Triangle[2]);
+       glVertexv(SelectedItem^.World.Triangle[0]);
+       glVertexv(SelectedItem^.World.Triangle[1]);
+       glVertexv(SelectedItem^.World.Triangle[2]);
      glEnd;
 
      glPointSize(5.0); { saved by GL_POINT_BIT }
@@ -2195,7 +2195,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
            'This triangle is part of the '+
            'node named %s. Node''s bounding box is %s. ',
            [VectorToNiceStr(SelectedPoint),
-            TriangleToNiceStr(SelectedItem^.Triangle),
+            TriangleToNiceStr(SelectedItem^.World.Triangle),
             NodeNiceName(SelectedGeometry),
             Box3dToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
 
@@ -2309,7 +2309,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
        if ShadowingItem <> nil then
        begin
         s += Format('but no, this light is blocked by triangle %s from node %s.',
-          [ TriangleToNiceStr(ShadowingItem^.Triangle),
+          [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
             NodeNiceName(ShadowingItem^.GeometryNode) ])
        end else
         s += 'hmm, yes ! No object blocks this light here.';
