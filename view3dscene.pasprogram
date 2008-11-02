@@ -485,6 +485,7 @@ procedure Draw(Glwin: TGLWindow);
 
   var
     I: Integer;
+    Shape: TVRMLShapeState;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -498,8 +499,16 @@ procedure Draw(Glwin: TGLWindow);
        (SceneAnimation.ScenesCount <> 0) then
     begin
       for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
-        if SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles <> nil then
-          Doit(SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles.TreeRoot);
+      begin
+        Shape := SceneAnimation.FirstScene.ShapeStates[I];
+        if Shape.OctreeTriangles <> nil then
+        begin
+          glPushMatrix;
+            glMultMatrix(Shape.State.Transform);
+            Doit(Shape.OctreeTriangles.TreeRoot);
+          glPopMatrix;
+        end;
+      end;
     end;
   end;
 
@@ -3086,8 +3095,16 @@ begin
          if SceneOctreeCollisions = nil then
            SetCollisionCheck(true);
          Assert(SceneOctreeCollisions <> nil);
+
          { TODO: we use SceneOctreeCollisions --- maybe we should rather
-           request current triangles octree, and use this? update docs then. }
+           request current triangles octree, and use this? update docs then.
+
+           Like
+             SceneAnimation.FirstScene.Octrees := SceneAnimation.FirstScene.Octrees + [okCollidableTriangles];
+           and then use
+             SceneAnimation.FirstScene.OctreeCollidableTriangles
+         }
+
          RaytraceToWin(Glwin, SceneOctreeCollisions,
            Glw.WalkNav.CameraPos,
            Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
