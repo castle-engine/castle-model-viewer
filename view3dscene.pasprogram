@@ -1312,7 +1312,7 @@ begin
       SceneAnimation.FirstScene.ShapeStateOctreeLeafCapacity := ShapeStateOctreeLeafCapacity;
       SceneAnimation.FirstScene.ShapeStateOctreeProgressTitle := 'Building ShapeState octree';
 
-      SceneAnimation.FirstScene.Octrees := [okRendering, okDynamicCollisions];
+      SceneAnimation.FirstScene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
       Glw.OnDraw := OldDraw;
       Glw.OnBeforeDraw := OldBeforeDraw;
@@ -1329,7 +1329,7 @@ begin
     SceneAnimation.FirstScene.PointingDeviceClear;
     Glw.CursorNonMouseLook := gcDefault;
 
-    SceneAnimation.FirstScene.Octrees := [];
+    SceneAnimation.FirstScene.Spatial := [];
   end;
 end;
 
