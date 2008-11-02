@@ -82,7 +82,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   VRMLNodes, Object3dAsVRML, VRMLGLScene, VRMLOctreeItems,
   VRMLScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
-  VRMLRendererOptimization, VRMLOpenGLRenderer,
+  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShapeState,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
@@ -152,6 +152,7 @@ var
   { SelectedPoint always lies on SelectedItem item,
     and it's meaningless when SelectedItem = nil. }
   SelectedPoint: TVector3Single;
+  MenuSelectedOctreeStat: TMenuItem;
   MenuSelectedInfo: TMenuItem;
   MenuSelectedLightsInfo: TMenuItem;
   MenuRemoveSelectedGeometry: TMenuItem;
@@ -185,6 +186,8 @@ procedure UpdateSelectedEnabled;
 begin
   if MenuSelectedInfo <> nil then
     MenuSelectedInfo.Enabled := SelectedItem <> nil;
+  if MenuSelectedOctreeStat <> nil then
+    MenuSelectedOctreeStat.Enabled := SelectedItem <> nil;
   if MenuSelectedLightsInfo <> nil then
     MenuSelectedLightsInfo.Enabled := SelectedItem <> nil;
   if MenuRemoveSelectedGeometry <> nil then
@@ -2863,6 +2866,43 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure SelectedShapeOctreeStat;
+  var
+    I: Integer;
+    Shape: TVRMLShapeState;
+  begin
+    if SelectedItem = nil then
+    begin
+      MessageOk(Glwin, 'Nothing selected.', taLeft);
+    end else
+    begin
+      Shape := nil;
+      { TODO: 1. this will be wrong when the same geometry node and state
+        will be within one TVRMLShapeState 2. TOctreeItem should just
+        have a link to ShapeState.
+
+        Great rename: TOctreeItem to TVRMLTriangle,
+        TVRMLShapeState to TVRMLShape. }
+      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+      begin
+        Shape := SceneAnimation.FirstScene.ShapeStates.Items[I];
+        if (Shape.GeometryNode = SelectedItem^.GeometryNode) and
+           (Shape.State = SelectedItem^.State) then
+          Break else
+          Shape := nil;
+      end;
+
+      if Shape = nil then
+        MessageOk(Glwin, 'Shape not found --- hmmm, this should not happen, report a bug.', taLeft) else
+      if Shape.OctreeTriangles = nil then
+        MessageOk(Glwin, 'No collision octree was initialized for this shape.', taLeft) else
+      begin
+        Writeln(Shape.OctreeTriangles.Statistics);
+        MessageOk(Glwin, 'Octree statistics dumped to console (stdout).', taLeft);
+      end;
+    end;
+  end;
+
 var
   S, ProposedScreenShotName: string;
 begin
@@ -2988,6 +3028,7 @@ begin
           OctreeDisplayDepth := -1;
       end;
 
+  100: SelectedShapeOctreeStat;
   101: if SceneOctreeCollisions <> nil then
          Writeln(SceneOctreeCollisions.Statistics) else
          MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
@@ -3451,18 +3492,21 @@ begin
      'Remove Special Nodes on "The Castle" Level', 35));
    Result.Append(M);
  M := TMenu.Create('_Console');
-   M.Append(TMenuItem.Create('Print Statistics of Octree Based on _Triangles', 101));
-   M.Append(TMenuItem.Create('Print Statistics of Octree Based on _ShapeStates', 103));
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
    M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
    M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107));
+   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
+   M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Current Walk _Frustum', 108));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
-   M.Append(TMenuItem.Create('Print Bounding Box (of current animation frame)', 110));
+   M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on ShapeStates)', 101));
+   MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
+   M.Append(MenuSelectedOctreeStat);
+   M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on ShapeStates)', 103));
    Result.Append(M);
  M := TMenu.Create('_Display');
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
