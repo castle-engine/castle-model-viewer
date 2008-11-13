@@ -86,7 +86,7 @@ begin
 
     glColor4f(0, 0, 1, 0.3);
     glPushAttrib(GL_LINE_BIT);
-      glLineWidth(3); { saved by GL_LINE_BIT }
+      glLineWidth(5); { saved by GL_LINE_BIT }
       Scene.RenderBorderEdges(IdentityMatrix4Single);
     glPopAttrib;
 
