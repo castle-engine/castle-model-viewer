@@ -41,10 +41,6 @@ Others:
     PerspetiveCamera { }
   ... and camera must not be translated in this case.
 
-- scene changing on WWWAnchor click
-  (some visual indication that mouse is over WWWAnchor -- cursor := crHand
-  and some status text "link to ...")
-
 - better welcome_scene.wrl
   (and add to last_update.php that we have nice welcome_scene)
 
