@@ -62,7 +62,7 @@ procedure LightModelAmbientChanged;
 
 implementation
 
-uses GL, GLU, GLExt, KambiGLUtils, ParseParametersUnit;
+uses GL, GLU, GLExt, KambiGLUtils, ParseParametersUnit, V3DSceneFillMode;
 
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
@@ -86,7 +86,11 @@ begin
   glPushAttrib(GL_LIGHTING_BIT);
     SetGLEnabled(GL_LIGHTING, LightCalculate and
       { PureGeometry tricks in V3DFillMode look best without the light }
-      not (SceneAnimation.Attributes.PureGeometry));
+      (not (SceneAnimation.Attributes.PureGeometry)) and
+      { fmSilhouetteBorderEdges doesn't set PureGeometry, but still
+        it's no sense to render it with lighting. }
+      (FillMode <> fmSilhouetteBorderEdges)
+      );
     SetGLEnabled(GL_LIGHT0, HeadLight);
 
   if SceneAnimation.Attributes.PureGeometry then

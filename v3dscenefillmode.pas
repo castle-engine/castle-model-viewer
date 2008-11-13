@@ -5,7 +5,7 @@ interface
 uses VRMLGLScene, GLWindow, VectorMath;
 
 type
-  TFillMode = 0..7;
+  TFillMode = 0..8;
 
 const
   FillModes: array [TFillMode] of record
@@ -26,13 +26,21 @@ const
     (Name: 'Solid shape'                          ; PureGeometry: true ; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
     (Name: 'Wireframe (single color)'             ; PureGeometry: true ; WireframeEffect: weWireframeOnly ; WireframeColor: (1, 1, 1); BackgroundWireframe: true ; ),
     (Name: 'Solid wireframe (single color)'       ; PureGeometry: true ; WireframeEffect: weSolidWireframe; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
-    (Name: 'Normal with silhouette (single color)'; PureGeometry: true ; WireframeEffect: weSilhouette    ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; )
+    (Name: 'Normal with silhouette (single color)'; PureGeometry: true ; WireframeEffect: weSilhouette    ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
+
+    (Name: 'Silhouette and border edges'          ;
+      { PureGeometry, WireframeEffect, WireframeColor don't matter for this }
+      PureGeometry: false; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0);
+      BackgroundWireframe: false)
   );
 
 var
   FillMode: TFillMode = 0;
 
   FillModesMenu: array [TFillMode] of TMenuItemRadio;
+
+const
+  fmSilhouetteBorderEdges = 8;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
