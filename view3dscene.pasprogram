@@ -3608,6 +3608,30 @@ begin
    Result.Append(M);
 end;
 
+{ initializing GL context --------------------------------------------------- }
+
+procedure MultiSamplingOff(Glwin: TGLWindow; const FailureMessage: string);
+begin
+  AntiAliasing := 0;
+  if AntiAliasingMenu[AntiAliasing] <> nil then
+    AntiAliasingMenu[AntiAliasing].Checked := true;
+  Writeln(FailureMessage);
+end;
+
+procedure StencilOff(Glwin: TGLWindow; const FailureMessage: string);
+begin
+  ShadowsPossibleCurrently := false;
+  Writeln(FailureMessage);
+end;
+
+{ Call Glw.Init, when anti-aliasing (multi-sampling) and shadows (stencil
+  buffer) are possibly allowed. If EGLContextNotPossible, will try to lower
+  requirements and initialize worse GL context. }
+procedure InitContext;
+begin
+  Glw.InitOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
+end;
+
 { main --------------------------------------------------------------------- }
 
 var
@@ -3870,32 +3894,17 @@ begin
         if ShadowsPossibleWanted then
         begin
           Glw.StencilBufferBits := 8;
-          { TODO: for now, ShadowsPossibleCurrently is just a copy of
-            ShadowsPossibleWanted. We should retry initializing
-            window without stencil when failed, so in the future this
-            may be set to false. }
+          { Assignment below essentially copies
+            ShadowsPossibleWanted to ShadowsPossibleCurrently.
+            ShadowsPossibleCurrently may be eventually turned to @false
+            by InitContext. }
           ShadowsPossibleCurrently := true;
         end;
+        Assert(ShadowsPossibleCurrently = ShadowsPossibleWanted);
 
         Glw.MultiSampling := AntiAliasingGlwMultiSampling;
-        try
-          Glw.Init;
-        except
-          on E: EGLContextNotPossible do
-          begin
-            if AntiAliasing > 0 then
-            begin
-              Writeln(ErrOutput, 'Cannot initialize GL context for anti-aliasing: ' + E.Message);
-              Writeln(ErrOutput, 'Retrying without anti-aliasing');
-              AntiAliasing := 0;
-              if AntiAliasingMenu[AntiAliasing] <> nil then
-                AntiAliasingMenu[AntiAliasing].Checked := true;
-              Glw.MultiSampling := AntiAliasingGlwMultiSampling;
-              Glw.Init;
-            end else
-              raise;
-          end;
-        end;
+
+        InitContext;
 
         if WasParam_SceneFileName then
           LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
