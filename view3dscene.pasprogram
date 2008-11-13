@@ -668,22 +668,7 @@ begin
  BeginRenderSceneWithLights(SceneAnimation);
 
    if FillMode = fmSilhouetteBorderEdges then
-   begin
-     glColor4f(0, 0, 1, 0.3);
-     glPushAttrib(GL_LINE_BIT);
-       { Draw BorderEdges first, with thicker width.
-         This way if some edge is both in BorderEdges and ManifoldEdges
-         (e.g. it's present 3 times in data), this will be visible here.
-         Otherwise RenderSilhouetteEdges would hide this edge, and we would
-         not see that it's a border edge. }
-       glLineWidth(3); { saved by GL_LINE_BIT }
-       Scene.RenderBorderEdges(IdentityMatrix4Single);
-     glPopAttrib;
-
-     glColor4f(1, 1, 0, 0.3);
-     Scene.RenderSilhouetteEdges(Vector4Single(WalkNav.CameraPos, 1),
-       IdentityMatrix4Single);
-   end else
+     RenderSilhouetteBorderEdges(Vector4Single(WalkNav.CameraPos, 1), Scene) else
    begin
      { Scene.RenderFrustum will automatically use octree, if available.
        Note that octree may be not available (for animations,
