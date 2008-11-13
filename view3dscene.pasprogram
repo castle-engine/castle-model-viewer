@@ -88,7 +88,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneDetectCostlyAnims;
+  V3DSceneDetectCostlyAnims, V3DSceneShadows;
 
 var
   ShowStatus: boolean = true;
@@ -223,6 +223,8 @@ end;
   Remember that you can call this only when gl context is already active
   (SceneAnimation.PrepareRender requires this) }
 procedure PrepareRender(AllowProgress: boolean);
+var
+  Options: TPrepareRenderOptions;
 begin
   AllowProgress := AllowProgress and
     (SceneAnimation.ScenesCount > 1);
@@ -230,8 +232,11 @@ begin
   if AllowProgress then
     Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation', true);
   try
-    SceneAnimation.PrepareRender([tgAll], [prBackground, prBoundingBox],
-      AllowProgress);
+    Options := [prBackground, prBoundingBox];
+    if ShadowsPossibleCurrently then
+      Options := Options + prShadowVolume;
+
+    SceneAnimation.PrepareRender([tgAll], Options, AllowProgress);
   finally
     if AllowProgress then
       Progress.Fini;
@@ -282,6 +287,8 @@ begin
 
  BGColorChanged;
 
+ ShadowsGLInit;
+
  AntiAliasingGLInit;
  AntiAliasingEnable;
 end;
@@ -290,6 +297,7 @@ procedure Close(Glwin: TGLWindow);
 begin
   if SceneAnimation <> nil then
     SceneAnimation.CloseGL;
+  ShadowsGLClose;
   FreeAndNil(statusFont);
 end;
 
@@ -535,6 +543,7 @@ procedure Draw(Glwin: TGLWindow);
 
   var
     I: Integer;
+    Shape: TVRMLShapeState;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -548,8 +557,16 @@ procedure Draw(Glwin: TGLWindow);
        (SceneAnimation.ScenesCount <> 0) then
     begin
       for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
-        if SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles <> nil then
-          Doit(SceneAnimation.FirstScene.ShapeStates[I].OctreeTriangles.TreeRoot);
+      begin
+        Shape := SceneAnimation.FirstScene.ShapeStates[I];
+        if Shape.OctreeTriangles <> nil then
+        begin
+          glPushMatrix;
+            glMultMatrix(Shape.State.Transform);
+            Doit(Shape.OctreeTriangles.TreeRoot);
+          glPopMatrix;
+        end;
+      end;
     end;
   end;
 
@@ -581,8 +598,13 @@ var
   procedure ClearAndRenderBackground;
   var
     BackgroundWireframe: boolean;
+    ClearBuffers: TGLbitfield;
   begin
-    glClear(GL_DEPTH_BUFFER_BIT);
+    ClearBuffers := GL_DEPTH_BUFFER_BIT;
+    if ShadowsPossibleCurrently and ShadowsOn then
+      ClearBuffers := ClearBuffers or GL_STENCIL_BUFFER_BIT;
+
+    glClear(ClearBuffers);
 
     if Scene.Background <> nil then
     begin
@@ -620,6 +642,8 @@ var
       glClear(GL_COLOR_BUFFER_BIT);
   end;
 
+var
+  MainLightPosition: TVector4Single;
 begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
 
@@ -670,12 +694,18 @@ begin
    if FillMode = fmSilhouetteBorderEdges then
      RenderSilhouetteBorderEdges(Vector4Single(WalkNav.CameraPos, 1), Scene) else
    begin
-     { Scene.RenderFrustum will automatically use octree, if available.
+     { Scene.RenderFrustum (below, or inside ShadowsRender)
+       will automatically use octree, if available.
        Note that octree may be not available (for animations,
        OctreeRendering is constructed only for the 1st scene.
        Also, generation of octree may be turned off for
        speed purposes.) }
-     Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
+
+     if ShadowsPossibleCurrently and
+        ShadowsOn and
+        Scene.MainLightForShadows(MainLightPosition) then
+       ShadowsRender(Scene, Glw.Navigator.Frustum, MainLightPosition) else
+       Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
      LastRender_RenderedShapeStatesCount :=
        Scene.LastRender_RenderedShapeStatesCount;
@@ -732,7 +762,8 @@ procedure Resize(Glwin: TGLWindow);
 begin
   SceneAnimation.GLProjection(
     Glw.Navigator, SceneAnimation.BoundingBoxSum, CameraRadius,
-    Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY);
+    Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY,
+    ShadowsPossibleCurrently);
 
   { GLProjection set only current Navigator's ProjectionMatrix,
     we want to pass ProjectionMatrix to all navigators. }
@@ -3229,6 +3260,10 @@ begin
 
   730: DetectTimeConsumingAnimations := not DetectTimeConsumingAnimations;
 
+  740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
+  750: ShadowsOn := not ShadowsOn;
+  760: DrawShadowVolumes := not DrawShadowVolumes;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
@@ -3367,6 +3402,8 @@ begin
        'Auto-Detect Time-Consuming Animations', 730,
        DetectTimeConsumingAnimations, true);
      M2.Append(MenuDetectTimeConsumingAnimations);
+     M2.Append(TMenuItemChecked.Create('_Shadows Possible (Restart view3dscene to Apply)',
+       740, ShadowsPossibleWanted, true));
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
@@ -3404,6 +3441,13 @@ begin
    M2 := TMenu.Create('Bump mapping');
      AppendBumpMappingMethods(M2);
      M.Append(M2);
+   MenuShadowsMenu := TMenu.Create('Shadows');
+     MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
+     MenuShadowsMenu.Append(TMenuItemChecked.Create('Use shadows (requires light with kambiShadowsMain)', 750,
+       ShadowsOn, true));
+     MenuShadowsMenu.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
+       DrawShadowVolumes, true));
+     M.Append(MenuShadowsMenu);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting Calculate (GL__LIGHTING enabled)',         91, CtrlL,
@@ -3424,17 +3468,20 @@ begin
      MenuAppendTextureMagFilters(M2, 1200);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
-     ShowFrustum, true));
-   M.Append(TMenuItemChecked.Create('When Showing Frustum, ' +
-     'Show it Over All Other Objects (no depth test)', 180,
-     ShowFrustumAlwaysVisible, true));
-   M.Append(TMenuSeparator.Create);
-   MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
-     99, OctreeDisplayWhole, true);
-   M.Append(MenuOctreeDisplayWhole);
-   M.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 97, CtrlU));
-   M.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 98, CtrlD));
+   M2 := TMenu.Create('Frustum visualization');
+     M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
+       ShowFrustum, true));
+     M2.Append(TMenuItemChecked.Create('When Showing Frustum, ' +
+       'Show it Over All Other Objects (no depth test)', 180,
+       ShowFrustumAlwaysVisible, true));
+     M.Append(M2);
+   M2 := TMenu.Create('Octree visualization');
+     MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
+       99, OctreeDisplayWhole, true);
+     M2.Append(MenuOctreeDisplayWhole);
+     M2.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 97, CtrlU));
+     M2.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 98, CtrlD));
+     M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
@@ -3819,8 +3866,18 @@ begin
         end;
 
         Glw.SetDemoOptions(K_None, #0, true);
-        Glw.MultiSampling := AntiAliasingGlwMultiSampling;
 
+        if ShadowsPossibleWanted then
+        begin
+          Glw.StencilBufferBits := 8;
+          { TODO: for now, ShadowsPossibleCurrently is just a copy of
+            ShadowsPossibleWanted. We should retry initializing
+            window without stencil when failed, so in the future this
+            may be set to false. }
+          ShadowsPossibleCurrently := true;
+        end;
+
+        Glw.MultiSampling := AntiAliasingGlwMultiSampling;
         try
           Glw.Init;
         except
