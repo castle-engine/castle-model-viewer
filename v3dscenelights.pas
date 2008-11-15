@@ -94,7 +94,7 @@ begin
     SetGLEnabled(GL_LIGHT0, HeadLight);
 
   if SceneAnimation.Attributes.PureGeometry then
-    glColorv(White3Single);
+    glColorv(PureGeometryColor);
 end;
 
 procedure EndRenderSceneWithLights;

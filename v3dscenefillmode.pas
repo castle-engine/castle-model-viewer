@@ -34,6 +34,9 @@ const
       BackgroundWireframe: false)
   );
 
+  PureGeometryColor: TVector3Single = (1, 1, 1);
+  PureGeometryShadowedColor: TVector3Single = (0.5, 0.5, 0.5);
+
 var
   FillMode: TFillMode = 0;
 

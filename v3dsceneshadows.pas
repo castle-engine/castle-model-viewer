@@ -31,7 +31,7 @@ procedure ShadowsRender(Scene: TVRMLGLscene;
 
 implementation
 
-uses SysUtils, V3DSceneConfig;
+uses SysUtils, V3DSceneConfig, GL, KambiGLUtils, V3DSceneFillMode;
 
 var
   SV: TShadowVolumes;
@@ -60,9 +60,31 @@ type
   end;
 
 procedure TRenderer.RenderScene(InShadow: boolean);
+var
+  OldColor: TVector4Single;
 begin
   if InShadow then
-    Scene.RenderFrustum(Frustum^, tgAll, @Scene.LightRenderInShadow) else
+  begin
+    { Thanks to using PureGeometryShadowedColor, shadow is visible
+      even when Attributes.PureGeometry. }
+    if Scene.Attributes.PureGeometry then
+    begin
+      glPushAttrib(GL_CURRENT_BIT);
+      glColorv(PureGeometryShadowedColor);
+    end;
+
+    { Thanks to changing BumpMappingLightDiffuseColor, shadow is visible
+      even when bump mapping is at work. }
+    OldColor := Scene.BumpMappingLightDiffuseColor;
+    Scene.BumpMappingLightDiffuseColor := Black4Single;
+
+    Scene.RenderFrustum(Frustum^, tgAll, @Scene.LightRenderInShadow);
+
+    Scene.BumpMappingLightDiffuseColor := OldColor;
+
+    if Scene.Attributes.PureGeometry then
+      glPopAttrib;
+  end else
     Scene.RenderFrustum(Frustum^, tgAll, nil);
 end;
 
