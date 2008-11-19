@@ -225,6 +225,7 @@ end;
 procedure PrepareRender(AllowProgress: boolean);
 var
   Options: TPrepareRenderOptions;
+  TG: TTransparentGroups;
 begin
   AllowProgress := AllowProgress and
     (SceneAnimation.ScenesCount > 1);
@@ -233,10 +234,14 @@ begin
     Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation', true);
   try
     Options := [prBackground, prBoundingBox];
+    TG := [tgAll];
     if ShadowsPossibleCurrently then
+    begin
       Options := Options + prShadowVolume;
+      TG := TG + [tgOpaque, tgTransparent];
+    end;
 
-    SceneAnimation.PrepareRender([tgAll], Options, AllowProgress);
+    SceneAnimation.PrepareRender(TG, Options, AllowProgress);
   finally
     if AllowProgress then
       Progress.Fini;

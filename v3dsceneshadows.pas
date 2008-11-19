@@ -55,11 +55,11 @@ type
   TRenderer = class
     Scene: TVRMLGLScene;
     Frustum: PFrustum;
-    procedure RenderScene(InShadow: boolean);
+    procedure RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup);
     procedure RenderShadowVolumes;
   end;
 
-procedure TRenderer.RenderScene(InShadow: boolean);
+procedure TRenderer.RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup);
 var
   OldColor: TVector4Single;
 begin
@@ -78,14 +78,14 @@ begin
     OldColor := Scene.BumpMappingLightDiffuseColor;
     Scene.BumpMappingLightDiffuseColor := Black4Single;
 
-    Scene.RenderFrustum(Frustum^, tgAll, @Scene.LightRenderInShadow);
+    Scene.RenderFrustum(Frustum^, TransparentGroup, @Scene.LightRenderInShadow);
 
     Scene.BumpMappingLightDiffuseColor := OldColor;
 
     if Scene.Attributes.PureGeometry then
       glPopAttrib;
   end else
-    Scene.RenderFrustum(Frustum^, tgAll, nil);
+    Scene.RenderFrustum(Frustum^, TransparentGroup, nil);
 end;
 
 procedure TRenderer.RenderShadowVolumes;
