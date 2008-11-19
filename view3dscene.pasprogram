@@ -235,7 +235,7 @@ begin
   try
     Options := [prBackground, prBoundingBox];
     TG := [tgAll];
-    if ShadowsPossibleCurrently then
+    if ShadowsPossibleCurrently and ShadowsOn then
     begin
       Options := Options + prShadowVolume;
       TG := TG + [tgOpaque, tgTransparent];
