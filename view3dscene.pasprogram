@@ -576,25 +576,37 @@ procedure Draw(Glwin: TGLWindow);
   end;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
-  var FrustumPoints: TFrustumPointsDouble;
+  var
+    FrustumPoints: TFrustumPointsDouble;
+    FrustumLines: Cardinal;
+    FrustumInfinite: boolean;
   begin
-   if AlwaysVisible then
-   begin
-    glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_DEPTH_TEST);
-   end;
-   try
-    CalculateFrustumPoints(FrustumPoints, WalkNav.Frustum, false);
-    glColor3f(1, 1, 1);
-    glEnableClientState(GL_VERTEX_ARRAY);
-      glVertexPointer(3, GL_DOUBLE, 0, @FrustumPoints);
-      glDrawElements(GL_LINES,
-        SizeOf(FrustumPointsLinesIndexes) div SizeOf(LongWord),
-        GL_UNSIGNED_INT, @FrustumPointsLinesIndexes);
-    glDisableClientState(GL_VERTEX_ARRAY);
-   finally
-    if AlwaysVisible then glPopAttrib;
-   end;
+    if AlwaysVisible then
+    begin
+      glPushAttrib(GL_ENABLE_BIT);
+      glDisable(GL_DEPTH_TEST);
+    end;
+    try
+      { TODO: it would be nicer to have 4-valued vectors returned by
+        CalculateFrustumPoints, and then for infinite zfar we would
+        have vectors with w=0 (directions, points into infinity --- like
+        for shadow volumes). Then the frustum could be drawn better,
+        currently for FrustumInfinite we just draw the near plane. }
+
+      FrustumInfinite := ShadowsPossibleCurrently;
+      CalculateFrustumPoints(FrustumPoints, WalkNav.Frustum, FrustumInfinite);
+      glColor3f(1, 1, 1);
+      glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(3, GL_DOUBLE, 0, @FrustumPoints);
+        if FrustumInfinite then
+          FrustumLines := 4 else
+          FrustumLines := 12;
+        glDrawElements(GL_LINES, FrustumLines * 2, GL_UNSIGNED_INT,
+          @FrustumPointsLinesIndexes);
+      glDisableClientState(GL_VERTEX_ARRAY);
+    finally
+      if AlwaysVisible then glPopAttrib;
+    end;
   end;
 
 var
