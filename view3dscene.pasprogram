@@ -53,7 +53,7 @@
     (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
     Walk navigation and to allow raytracer
-  - build TVRMLShapeStateOctree to allow frustum culling using
+  - build TVRMLShapeOctree to allow frustum culling using
     octree by TVRMLGLScene
   - use VRMLRayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
@@ -78,11 +78,11 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
   GLAntiAliasing, GLVersionUnit,
   { VRML (and possibly OpenGL) related units: }
-  VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeStateOctree,
+  VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeOctree,
   VRMLNodes, Object3dAsVRML, VRMLGLScene, VRMLOctreeItems,
   VRMLScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
-  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShapeState,
+  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
@@ -177,8 +177,8 @@ var
   MenuAnimationTimePlaying: TMenuItemChecked;
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
-  LastRender_RenderedShapeStatesCount: Cardinal;
-  LastRender_AllShapeStatesCount: Cardinal;
+  LastRender_RenderedShapesCount: Cardinal;
+  LastRender_AllShapesCount: Cardinal;
 
 { Helper functions -------------------------------------------------- }
 
@@ -207,7 +207,7 @@ begin
     Result := nil;
 end;
 
-function SceneOctreeRendering: TVRMLShapeStateOctree;
+function SceneOctreeRendering: TVRMLShapeOctree;
 begin
   if (SceneAnimation <> nil) and
      (SceneAnimation.ScenesCount <> 0) and
@@ -440,9 +440,9 @@ begin
     this makes no sense, of course.
     I can sensibly show here only Glw.FpsFrameTime.
     User will be able to see Glw.FpsRealTime only on window's Caption. }
-  strs.Append(Format('Rendered ShapeStates : %d of %d. FPS : %f',
-    [ LastRender_RenderedShapeStatesCount,
-      LastRender_AllShapeStatesCount,
+  strs.Append(Format('Rendered Shapes : %d of %d. FPS : %f',
+    [ LastRender_RenderedShapesCount,
+      LastRender_AllShapesCount,
       Glw.Fps.FrameTime ]));
 
   if WorldTimeAtLoad = 0.0 then
@@ -498,22 +498,22 @@ procedure Draw(Glwin: TGLWindow);
 
   var
     I: Integer;
-    Shape: TVRMLShapeState;
+    Shape: TVRMLShape;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
       is not really ready (e.g. when showing errors after scene loading).
-      Also, octrees for particular shapestates are not necessarily
-      created, since some shapestates may be not collidable.
+      Also, octrees for particular shapes are not necessarily
+      created, since some shapes may be not collidable.
       So we have to carefully check here whether appropriate things
       are initialized. }
 
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
       begin
-        Shape := SceneAnimation.FirstScene.ShapeStates[I];
+        Shape := SceneAnimation.FirstScene.Shapes[I];
         if Shape.OctreeTriangles <> nil then
         begin
           glPushMatrix;
@@ -548,22 +548,22 @@ procedure Draw(Glwin: TGLWindow);
 
   var
     I: Integer;
-    Shape: TVRMLShapeState;
+    Shape: TVRMLShape;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
       is not really ready (e.g. when showing errors after scene loading).
-      Also, octrees for particular shapestates are not necessarily
-      created, since some shapestates may be not collidable.
+      Also, octrees for particular shapes are not necessarily
+      created, since some shapes may be not collidable.
       So we have to carefully check here whether appropriate things
       are initialized. }
 
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
       begin
-        Shape := SceneAnimation.FirstScene.ShapeStates[I];
+        Shape := SceneAnimation.FirstScene.Shapes[I];
         if Shape.OctreeTriangles <> nil then
         begin
           glPushMatrix;
@@ -724,10 +724,10 @@ begin
        ShadowsRender(Scene, Glw.Navigator.Frustum, MainLightPosition) else
        Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
-     LastRender_RenderedShapeStatesCount :=
-       Scene.LastRender_RenderedShapeStatesCount;
-     LastRender_AllShapeStatesCount :=
-       Scene.LastRender_AllShapeStatesCount;
+     LastRender_RenderedShapesCount :=
+       Scene.LastRender_RenderedShapesCount;
+     LastRender_AllShapesCount :=
+       Scene.LastRender_AllShapesCount;
    end;
 
  EndRenderSceneWithLights;
@@ -1314,9 +1314,9 @@ var
   TriangleOctreeLeafCapacity: integer =
     V3DSDefTriangleOctreeLeafCapacity;
 
-  ShapeStateOctreeMaxDepth: Integer = DefShapeStateOctreeMaxDepth;
-  ShapeStateOctreeLeafCapacity: Integer =
-    DefShapeStateOctreeLeafCapacity;
+  ShapeOctreeMaxDepth: Integer = DefShapeOctreeMaxDepth;
+  ShapeOctreeLeafCapacity: Integer =
+    DefShapeOctreeLeafCapacity;
 
   { This is set to non-nil by CreateMainMenu.
     It is used there and it is also used from LoadSceneCore, since
@@ -1362,9 +1362,9 @@ begin
       SceneAnimation.FirstScene.TriangleOctreeLeafCapacity := TriangleOctreeLeafCapacity;
       SceneAnimation.FirstScene.TriangleOctreeProgressTitle := 'Building triangle octree';
 
-      SceneAnimation.FirstScene.ShapeStateOctreeMaxDepth := ShapeStateOctreeMaxDepth;
-      SceneAnimation.FirstScene.ShapeStateOctreeLeafCapacity := ShapeStateOctreeLeafCapacity;
-      SceneAnimation.FirstScene.ShapeStateOctreeProgressTitle := 'Building ShapeState octree';
+      SceneAnimation.FirstScene.ShapeOctreeMaxDepth := ShapeOctreeMaxDepth;
+      SceneAnimation.FirstScene.ShapeOctreeLeafCapacity := ShapeOctreeLeafCapacity;
+      SceneAnimation.FirstScene.ShapeOctreeProgressTitle := 'Building Shape octree';
 
       SceneAnimation.FirstScene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
@@ -2938,7 +2938,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   procedure SelectedShapeOctreeStat;
   var
     I: Integer;
-    Shape: TVRMLShapeState;
+    Shape: TVRMLShape;
   begin
     if SelectedItem = nil then
     begin
@@ -2947,14 +2947,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       Shape := nil;
       { TODO: 1. this will be wrong when the same geometry node and state
-        will be within one TVRMLShapeState 2. TOctreeItem should just
-        have a link to ShapeState.
+        will be within one TVRMLShape 2. TOctreeItem should just
+        have a link to Shape.
 
         Great rename: TOctreeItem to TVRMLTriangle,
-        TVRMLShapeState to TVRMLShape. }
-      for I := 0 to SceneAnimation.FirstScene.ShapeStates.Count - 1 do
+        TVRMLShape to TVRMLShape. }
+      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
       begin
-        Shape := SceneAnimation.FirstScene.ShapeStates.Items[I];
+        Shape := SceneAnimation.FirstScene.Shapes.Items[I];
         if (Shape.GeometryNode = SelectedItem^.GeometryNode) and
            (Shape.State = SelectedItem^.State) then
           Break else
@@ -3596,10 +3596,10 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Current Walk _Frustum', 108));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on ShapeStates)', 101));
+   M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
    MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
    M.Append(MenuSelectedOctreeStat);
-   M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on ShapeStates)', 103));
+   M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
    Result.Append(M);
  M := TMenu.Create('_Display');
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
@@ -3674,8 +3674,8 @@ const
     (Short:  #0; Long: 'write-to-vrml'; Argument: oaNone),
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
-    (Short:  #0; Long: 'ss-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'ss-octree-leaf-capacity'; Argument: oaRequired),
+    (Short:  #0; Long: 'shape-octree-max-depth'; Argument: oaRequired),
+    (Short:  #0; Long: 'shape-octree-leaf-capacity'; Argument: oaRequired),
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
@@ -3732,14 +3732,14 @@ const
              IntToStr(V3DSDefTriangleOctreeMaxDepth) + ',' +NL+
            '                        leaf-capacity = '+
              IntToStr(V3DSDefTriangleOctreeLeafCapacity) + '.' +NL+
-           '  --ss-octree-max-depth DEPTH ,' +NL+
-           '  --ss-octree-leaf-capacity CAPACITY' +NL+
+           '  --shape-octree-max-depth DEPTH ,' +NL+
+           '  --shape-octree-leaf-capacity CAPACITY' +NL+
            '                        Set the parameters of generated octree.' +NL+
-           '                        These concern octree based on ShapeStates.' +NL+
+           '                        These concern octree based on Shapes.' +NL+
            '                        Defaults are: max-depth = '+
-             IntToStr(DefShapeStateOctreeMaxDepth) + ',' +NL+
+             IntToStr(DefShapeOctreeMaxDepth) + ',' +NL+
            '                        leaf-capacity = '+
-             IntToStr(DefShapeStateOctreeLeafCapacity) + '.' +NL+
+             IntToStr(DefShapeOctreeLeafCapacity) + '.' +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3776,8 +3776,8 @@ const
          Writeln(Version);
          ProgramBreak;
         end;
-    9 : ShapeStateOctreeMaxDepth := StrToInt(Argument);
-    10: ShapeStateOctreeLeafCapacity := StrToInt(Argument);
+    9 : ShapeOctreeMaxDepth := StrToInt(Argument);
+    10: ShapeOctreeLeafCapacity := StrToInt(Argument);
     11: begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);

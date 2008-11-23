@@ -24,7 +24,7 @@ implementation
 uses V3DSceneConfig;
 
 const
-  DefaultOptimization = roSeparateShapeStates;
+  DefaultOptimization = roSeparateShapes;
 
 procedure MenuAppendOptimization(M: TMenu; BaseIntData: Cardinal);
 var
