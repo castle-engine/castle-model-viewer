@@ -497,8 +497,7 @@ procedure Draw(Glwin: TGLWindow);
     end;
 
   var
-    I: Integer;
-    Shape: TVRMLShape;
+    SI: TVRMLShapeTreeIterator;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -511,17 +510,17 @@ procedure Draw(Glwin: TGLWindow);
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
-      begin
-        Shape := SceneAnimation.FirstScene.Shapes[I];
-        if Shape.OctreeTriangles <> nil then
-        begin
-          glPushMatrix;
-            glMultMatrix(Shape.State.Transform);
-            Doit(Shape.OctreeTriangles.TreeRoot);
-          glPopMatrix;
-        end;
-      end;
+      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      try
+        while SI.GetNext do
+          if SI.Current.OctreeTriangles <> nil then
+          begin
+            glPushMatrix;
+              glMultMatrix(SI.Current.State.Transform);
+              Doit(SI.Current.OctreeTriangles.TreeRoot);
+            glPopMatrix;
+          end;
+      finally FreeAndNil(SI) end;
     end;
   end;
 
@@ -547,8 +546,7 @@ procedure Draw(Glwin: TGLWindow);
     end;
 
   var
-    I: Integer;
-    Shape: TVRMLShape;
+    SI: TVRMLShapeTreeIterator;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -561,17 +559,17 @@ procedure Draw(Glwin: TGLWindow);
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
-      begin
-        Shape := SceneAnimation.FirstScene.Shapes[I];
-        if Shape.OctreeTriangles <> nil then
-        begin
-          glPushMatrix;
-            glMultMatrix(Shape.State.Transform);
-            Doit(Shape.OctreeTriangles.TreeRoot);
-          glPopMatrix;
-        end;
-      end;
+      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      try
+        while SI.GetNext do
+          if SI.Current.OctreeTriangles <> nil then
+          begin
+            glPushMatrix;
+              glMultMatrix(SI.Current.State.Transform);
+              Doit(SI.Current.OctreeTriangles.TreeRoot);
+            glPopMatrix;
+          end;
+      finally FreeAndNil(SI) end;
     end;
   end;
 
@@ -2937,7 +2935,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure SelectedShapeOctreeStat;
   var
-    I: Integer;
+    SI: TVRMLShapeTreeIterator;
     Shape: TVRMLShape;
   begin
     if SelectedItem = nil then
@@ -2950,16 +2948,19 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         will be within one TVRMLShape 2. TOctreeItem should just
         have a link to Shape.
 
-        Great rename: TOctreeItem to TVRMLTriangle,
-        TVRMLShape to TVRMLShape. }
-      for I := 0 to SceneAnimation.FirstScene.Shapes.Count - 1 do
-      begin
-        Shape := SceneAnimation.FirstScene.Shapes.Items[I];
-        if (Shape.GeometryNode = SelectedItem^.GeometryNode) and
-           (Shape.State = SelectedItem^.State) then
-          Break else
-          Shape := nil;
-      end;
+        Great rename: TOctreeItem to TVRMLTriangle. }
+
+      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, false);
+      try
+        while SI.GetNext do
+        begin
+          Shape := SI.Current;
+          if (Shape.GeometryNode = SelectedItem^.GeometryNode) and
+             (Shape.State = SelectedItem^.State) then
+            Break else
+            Shape := nil;
+        end;
+      finally FreeAndNil(SI) end;
 
       if Shape = nil then
         MessageOk(Glwin, 'Shape not found --- hmmm, this should not happen, report a bug.', taLeft) else
