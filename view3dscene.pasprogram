@@ -235,7 +235,9 @@ begin
   try
     Options := [prBackground, prBoundingBox];
     TG := [tgAll];
-    if ShadowsPossibleCurrently and ShadowsOn then
+    if ShadowsPossibleCurrently and
+       ShadowsOn and
+       SceneAnimation.SceneFromTime(AnimationTime).MainLightForShadowsExists then
     begin
       Options := Options + prShadowVolume;
       TG := TG + [tgOpaque, tgTransparent];
@@ -616,7 +618,9 @@ var
     ClearBuffers: TGLbitfield;
   begin
     ClearBuffers := GL_DEPTH_BUFFER_BIT;
-    if ShadowsPossibleCurrently and ShadowsOn then
+    if ShadowsPossibleCurrently and
+       ShadowsOn and
+       Scene.MainLightForShadowsExists then
       ClearBuffers := ClearBuffers or GL_STENCIL_BUFFER_BIT;
 
     glClear(ClearBuffers);
@@ -657,8 +661,6 @@ var
       glClear(GL_COLOR_BUFFER_BIT);
   end;
 
-var
-  MainLightPosition: TVector4Single;
 begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
 
@@ -718,8 +720,8 @@ begin
 
      if ShadowsPossibleCurrently and
         ShadowsOn and
-        Scene.MainLightForShadows(MainLightPosition) then
-       ShadowsRender(Scene, Glw.Navigator.Frustum, MainLightPosition) else
+        Scene.MainLightForShadowsExists then
+       ShadowsRender(Scene, Glw.Navigator.Frustum, Scene.MainLightForShadows) else
        Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
      LastRender_RenderedShapesCount :=
