@@ -38,9 +38,9 @@ type
   {$I objectslist_1.inc}
   TViewpointsList = class(TObjectsList_1)
   private
-    procedure AddViewpoint(Node: TVRMLNode;
-      State: TVRMLGraphTraverseState;
-      ParentInfo: PTraversingInfo);
+    procedure AddViewpoint(
+      Node: TVRMLNode; State: TVRMLGraphTraverseState;
+      ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
     FBoundViewpoint: TVRMLViewpointNode;
     procedure SetBoundViewpoint(const Value: TVRMLViewpointNode);
 
@@ -100,9 +100,9 @@ begin
     Result := Copy(Result, 1, 50) + '...';
 end;
 
-procedure TViewpointsList.AddViewpoint(Node: TVRMLNode;
-  State: TVRMLGraphTraverseState;
-  ParentInfo: PTraversingInfo);
+procedure TViewpointsList.AddViewpoint(
+  Node: TVRMLNode; State: TVRMLGraphTraverseState;
+  ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
 begin
   Add(Node as TVRMLViewpointNode);
 end;
