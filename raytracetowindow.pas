@@ -27,7 +27,7 @@ unit RaytraceToWindow;
 
 interface
 
-uses GL, GLU, GLExt, GLWindow, VRMLOctreeItems, VectorMath, VRMLNodes,
+uses GL, GLU, GLExt, GLWindow, VRMLTriangle, VectorMath, VRMLNodes,
   KambiFilesUtils, KambiStringUtils;
 
 const
@@ -36,7 +36,7 @@ const
   DEF_NON_PRIMARY_SAMPLES_COUNT = 4;
 
 procedure RaytraceToWin(glwin: TGLWindow;
-  Octree: TVRMLItemsOctree;
+  Octree: TVRMLBaseTrianglesOctree;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const ViewAngleDegX, ViewAngleDegY: Single;
   const SceneBGColor: TVector3Single;
@@ -207,7 +207,7 @@ end;
 { ----------------------------------------------------------------------------- }
 
 procedure RaytraceToWin(glwin: TGLWindow;
-  Octree: TVRMLItemsOctree;
+  Octree: TVRMLBaseTrianglesOctree;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const ViewAngleDegX, ViewAngleDegY: Single;
   const SceneBGColor: TVector3Single;
