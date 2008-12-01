@@ -365,7 +365,7 @@ var
     end;
 
   var
-    Sensors: TVRMLNodesList;
+    Sensors: TPointingDeviceSensorsList;
     I: Integer;
   begin
     Strs.Clear;
@@ -376,7 +376,8 @@ var
       begin
         Sensors := SceneAnimation.Scenes[0].PointingDeviceSensors;
         for I := 0 to Sensors.Count - 1 do
-          Strs.Append('Over sensor: ' + DescribeSensor(Sensors[I]));
+          if Sensors.Enabled(I) then
+            Strs.Append('Over enabled sensor: ' + DescribeSensor(Sensors[I]));
       end;
       if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
         Strs.Append('Active sensor: ' +
@@ -866,7 +867,7 @@ var
   function SensorsCount: Cardinal;
   begin
     if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
-      Result := SceneAnimation.Scenes[0].PointingDeviceSensors.Count else
+      Result := SceneAnimation.Scenes[0].PointingDeviceSensors.EnabledCount else
       Result := 0;
     if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
       Inc(Result);
