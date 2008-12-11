@@ -2635,11 +2635,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
-  procedure SetViewpointForWholeScene;
+  procedure SetViewpointForWholeScene(const WantedCameraUp: Integer);
   var
     CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single;
   begin
     CameraViewpointForWholeScene(SceneAnimation.BoundingBoxSum,
+      WantedCameraUp,
       CameraPos, CameraDir, CameraUp, GravityUp);
     SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
   end;
@@ -3046,7 +3047,11 @@ begin
       end;
   53: begin
         SetNavigatorKind(Glw, nkWalk);
-        SetViewpointForWholeScene;
+        SetViewpointForWholeScene(1);
+      end;
+  54: begin
+        SetNavigatorKind(Glw, nkWalk);
+        SetViewpointForWholeScene(2);
       end;
 
   82: ShowBBox := not ShowBBox;

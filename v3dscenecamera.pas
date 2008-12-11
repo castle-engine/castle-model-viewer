@@ -186,7 +186,8 @@ begin
   MenuJumpToViewpoint.Append(TMenuSeparator.Create);
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 2.0 viewpoint', 52));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the whole scene', 53));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the whole scene (+Y up)', 53));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the whole scene (+Z up)', 54));
 end;
 
 initialization
