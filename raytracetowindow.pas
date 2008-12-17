@@ -28,7 +28,7 @@ unit RaytraceToWindow;
 interface
 
 uses GL, GLU, GLExt, GLWindow, VRMLTriangle, VectorMath, VRMLNodes,
-  KambiFilesUtils, KambiStringUtils;
+  KambiFilesUtils, KambiStringUtils, VRMLScene;
 
 const
   DEF_RAYTRACE_DEPTH = 3;
@@ -36,7 +36,7 @@ const
   DEF_NON_PRIMARY_SAMPLES_COUNT = 4;
 
 procedure RaytraceToWin(glwin: TGLWindow;
-  Octree: TVRMLBaseTrianglesOctree;
+  Scene: TVRMLScene;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const ViewAngleDegX, ViewAngleDegY: Single;
   const SceneBGColor: TVector3Single;
@@ -207,7 +207,7 @@ end;
 { ----------------------------------------------------------------------------- }
 
 procedure RaytraceToWin(glwin: TGLWindow;
-  Octree: TVRMLBaseTrianglesOctree;
+  Scene: TVRMLScene;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const ViewAngleDegX, ViewAngleDegY: Single;
   const SceneBGColor: TVector3Single;
@@ -294,18 +294,29 @@ begin
          end;
       end;
 
-      RayTracer.Image := CallData.Image;
-      RayTracer.Octree := Octree;
-      RayTracer.CamPosition := CamPosition;
-      RayTracer.CamDirection := CamDir;
-      RayTracer.CamUp := CamUp;
-      RayTracer.ViewAngleDegX := ViewAngleDegX;
-      RayTracer.ViewAngleDegY := ViewAngleDegY;
-      RayTracer.SceneBGColor := SceneBGColor;
-      RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
-      RayTracer.PixelsMadeNotifierData := glwin;
+      { For ray-tracing, we create and use OctreeVisibleTriangles.
 
-      RayTracer.Execute;
+        Although OctreeDynamicCollisions (usually already prepared for Scene,
+        when CollisionChecking is active) has quite excellent performance,
+        and ray-tracer can work with it.
+        But OctreeCollidableTriangles has only *collidable* geometry ---
+        while we want only *visible* geometry for ray-tracer.
+        When using Collision node, these may be two different things. }
+      Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
+      try
+        RayTracer.Image := CallData.Image;
+        RayTracer.Octree := Scene.OctreeVisibleTriangles;
+        RayTracer.CamPosition := CamPosition;
+        RayTracer.CamDirection := CamDir;
+        RayTracer.CamUp := CamUp;
+        RayTracer.ViewAngleDegX := ViewAngleDegX;
+        RayTracer.ViewAngleDegY := ViewAngleDegY;
+        RayTracer.SceneBGColor := SceneBGColor;
+        RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
+        RayTracer.PixelsMadeNotifierData := glwin;
+
+        RayTracer.Execute;
+      finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
 
      finally glPopAttrib end;
 

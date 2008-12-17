@@ -3047,21 +3047,7 @@ begin
   124: ChangeGravityUp;
   125: if Glw.Navigator is TWalkNavigator then
        begin
-         { We need an octree now }
-         if SceneOctreeCollisions = nil then
-           SetCollisionCheck(true);
-         Assert(SceneOctreeCollisions <> nil);
-
-         { TODO: we use SceneOctreeCollisions --- maybe we should rather
-           request current triangles octree, and use this? update docs then.
-
-           Like
-             SceneAnimation.FirstScene.Octrees := SceneAnimation.FirstScene.Octrees + [okCollidableTriangles];
-           and then use
-             SceneAnimation.FirstScene.OctreeCollidableTriangles
-         }
-
-         RaytraceToWin(Glwin, SceneOctreeCollisions,
+         RaytraceToWin(Glwin, SceneAnimation.FirstScene,
            Glw.WalkNav.CameraPos,
            Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
            AngleOfViewX, AngleOfViewY, BGColor,
