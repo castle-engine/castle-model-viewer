@@ -149,9 +149,11 @@ var
   SceneHeadlight: TVRMLGLHeadlight;
 
   SelectedItem: PVRMLTriangle;
-  { SelectedPoint always lies on SelectedItem item,
-    and it's meaningless when SelectedItem = nil. }
-  SelectedPoint: TVector3Single;
+  { SelectedPoint* always lies on SelectedItem item,
+    and it's meaningless when SelectedItem = nil.
+    World is in world coords,
+    local in local shape (SelectedItem^.State.Transform) coords. }
+  SelectedPointWorld, SelectedPointLocal: TVector3Single;
   MenuSelectedOctreeStat: TMenuItem;
   MenuSelectedInfo: TMenuItem;
   MenuSelectedLightsInfo: TMenuItem;
@@ -756,7 +758,7 @@ begin
 
      glPointSize(5.0); { saved by GL_POINT_BIT }
      glBegin(GL_POINTS);
-       glVertexv(SelectedPoint);
+       glVertexv(SelectedPointWorld);
      glEnd;
    glPopAttrib;
  end;
@@ -826,7 +828,19 @@ begin
       {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
 
       SelectedItem := SceneOctreeCollisions.RayCollision(
-          SelectedPoint, Ray0, RayVector, true, nil, false, nil);
+        SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
+
+      { calculate SelectedPointLocal }
+      if SelectedItem <> nil then
+      begin
+        try
+          SelectedPointLocal := MatrixMultPoint(
+            SelectedItem^.State.InvertedTransform, SelectedPointWorld);
+        except
+          on ETransformedResultInvalid do
+            SelectedItem := nil;
+        end;
+      end;
 
       { DirectCollisionTestsCounter is not recorded,
         so I may write it now on console in case it will be useful.
@@ -956,7 +970,8 @@ type
 
     class procedure OpenRecent(const FileName: string);
 
-    class procedure GeometryChanged(Scene: TVRMLScene);
+    class procedure GeometryChanged(Scene: TVRMLScene;
+      const SomeLocalGeometryChanged: boolean);
     class procedure PostRedisplay(Scene: TVRMLScene);
 
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
@@ -1853,15 +1868,32 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
-class procedure THelper.GeometryChanged(Scene: TVRMLScene);
+class procedure THelper.GeometryChanged(Scene: TVRMLScene;
+  const SomeLocalGeometryChanged: boolean);
 begin
-  { octrees are already updated by Scene.DoGeometryChanged.
+  if SomeLocalGeometryChanged then
+    { Since some PVRMLTriangle pointers are possibly completely different now,
+      we have to invalidate selection. }
+    Unselect else
+  if SelectedItem <> nil then
+  begin
+    { We can keep SelectedItem, but we have to take into account that it's
+      transformation possibly changed. So world coordinates of this triangle
+      are different. }
+    SelectedItem^.UpdateWorld;
 
-    Since some octree items are possibly completely different now,
-    we have to invalidate selection. TODO: do something better, as for
-    some geometry changes pointers don't change, so selection could
-    be kept. }
-  Unselect;
+    { Also SelectedPointWorld changed now. To apply the change, convert
+      SelectedPointLocal to world coords by new trasform.
+      This is the main reason why we keep SelectedPointLocal recorded. }
+    try
+      SelectedPointWorld := MatrixMultPoint(SelectedItem^.State.Transform,
+        SelectedPointLocal);
+    except
+      on ETransformedResultInvalid do
+        Unselect;
+    end;
+
+  end;
 end;
 
 class procedure THelper.PostRedisplay(Scene: TVRMLScene);
@@ -2151,7 +2183,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
            nl+
            'This triangle is part of the '+
            'node named %s. Node''s bounding box is %s. ',
-           [VectorToNiceStr(SelectedPoint),
+           [VectorToNiceStr(SelectedPointWorld),
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             NodeNiceName(SelectedGeometry),
             Box3dToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
@@ -2260,7 +2292,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
          [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
 
        ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-         SelectedPoint, ActiveLights.Items[i].TransfLocation,
+         SelectedPointWorld, ActiveLights.Items[i].TransfLocation,
            false, SelectedItem, true, nil);
 
        if ShadowingItem <> nil then
@@ -2821,7 +2853,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         Recalculate octree.
         GeometryChanged takes care of invalidating SelectedItem and such. }
       SceneOctreeCreate;
-      THelper.GeometryChanged(nil);
+      THelper.GeometryChanged(nil, true);
       THelper.ViewpointsChanged(SceneAnimation.FirstScene);
     end;
   end;
