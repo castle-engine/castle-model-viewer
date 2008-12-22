@@ -180,7 +180,7 @@ var
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapesCount: Cardinal;
-  LastRender_AllShapesCount: Cardinal;
+  LastRender_VisibleShapesCount: Cardinal;
 
 { Helper functions -------------------------------------------------- }
 
@@ -447,7 +447,7 @@ begin
     User will be able to see Glw.FpsRealTime only on window's Caption. }
   strs.Append(Format('Rendered Shapes : %d of %d. FPS : %f',
     [ LastRender_RenderedShapesCount,
-      LastRender_AllShapesCount,
+      LastRender_VisibleShapesCount,
       Glw.Fps.FrameTime ]));
 
   if WorldTimeAtLoad = 0.0 then
@@ -727,10 +727,8 @@ begin
        ShadowsRender(Scene, Glw.Navigator.Frustum, Scene.MainLightForShadows) else
        Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
 
-     LastRender_RenderedShapesCount :=
-       Scene.LastRender_RenderedShapesCount;
-     LastRender_AllShapesCount :=
-       Scene.LastRender_AllShapesCount;
+     LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
+     LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
    end;
 
  EndRenderSceneWithLights;
