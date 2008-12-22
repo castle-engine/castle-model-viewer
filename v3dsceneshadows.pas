@@ -63,6 +63,9 @@ procedure TRenderer.RenderScene(InShadow: boolean; TransparentGroup: TTransparen
 var
   OldColor: TVector4Single;
 begin
+  if TransparentGroup = tgTransparent then
+    Scene.LastRender_SumNext;
+
   if InShadow then
   begin
     { Thanks to using PureGeometryShadowedColor, shadow is visible
