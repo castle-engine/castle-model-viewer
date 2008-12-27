@@ -121,8 +121,6 @@ var
 
   RecentMenu: TGLRecentMenu;
 
-  UseStippleForStatus: boolean;
-
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
@@ -277,10 +275,6 @@ procedure Init(Glwin: TGLWindow);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
-  { Under ATI, using stipple terribly slows down rendering.
-    Since this stipple is not really so important, I turn it off under Radeon. }
-  UseStippleForStatus := not GLVersion.IsVendorATI;
-
  { normalize normals because we will scale our objects in Examiner navigation;
    chwilowo i tak w Scene.Render zawsze jest wlaczane glEnable(GL_NORMALIZE)
    ale to nie zawsze bedzie prawdziwe.  }
@@ -321,10 +315,13 @@ procedure DrawStatus(data: Pointer);
       Result := 'none';
   end;
 
-const BoolToStrOO: array[boolean] of string=('OFF','ON');
+const
+  BoolToStrOO: array[boolean] of string = ('OFF','ON');
+  StatusInsideCol: TVector4f = (0, 0, 0, 0.7);
+  StatusBorderCol: TVector4f = (0, 1, 0, 1);
+  StatusTextCol  : TVector4f = (1, 1, 0, 1);
 var
   strs: TStringList;
-  Stipple: PPolygonStipple;
 
   { Describe pointing-device sensors (under the mouse, and also active
     one (if any)). }
@@ -390,9 +387,9 @@ var
     begin
       glLoadIdentity;
       glTranslatef(5, 0, 0);
-      statusFont.printStringsBorderedRectTop(strs, 0,
-        Black4Single, Green4Single, Yellow4Single,
-        Stipple, 5, 1, 1, Glw.Height, 5);
+      statusFont.PrintStringsBorderedRectTop(strs, 0,
+        StatusInsideCol, StatusBorderCol, StatusTextCol,
+        nil, 5, 1, 1, Glw.Height, 5);
     end;
   end;
 
@@ -461,15 +458,16 @@ begin
   {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
     nil, 5, 1, 1);}
 
-  if UseStippleForStatus then
-    Stipple := @HalftoneStipple else
-    Stipple := nil;
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
 
-  statusFont.printStringsBorderedRect(strs, 0,
-    Black4Single, Green4Single, Yellow4Single,
-    Stipple, 5, 1, 1);
+    statusFont.printStringsBorderedRect(strs, 0,
+      StatusInsideCol, StatusBorderCol, StatusTextCol,
+      nil, 5, 1, 1);
 
-  DescribeSensors;
+    DescribeSensors;
+
+  glDisable(GL_BLEND);
  finally strs.Free end;
 end;
 
