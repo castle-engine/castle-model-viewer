@@ -589,13 +589,13 @@ procedure Draw(Glwin: TGLWindow);
     end;
     try
       { TODO: it would be nicer to have 4-valued vectors returned by
-        CalculateFrustumPoints, and then for infinite zfar we would
+        Frustum.CalculatePoints, and then for infinite zfar we would
         have vectors with w=0 (directions, points into infinity --- like
         for shadow volumes). Then the frustum could be drawn better,
         currently for FrustumInfinite we just draw the near plane. }
 
       FrustumInfinite := ShadowsPossibleCurrently;
-      CalculateFrustumPoints(FrustumPoints, WalkNav.Frustum, FrustumInfinite);
+      WalkNav.Frustum.CalculatePoints(FrustumPoints, FrustumInfinite);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(3, GL_DOUBLE, 0, @FrustumPoints);
@@ -3053,12 +3053,12 @@ begin
   108: Writeln(
          'Current Walk navigation frustum planes :' +nl+
          '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-         '  Left   : ' + VectorToRawStr(WalkNav.Frustum[fpLeft]) +nl+
-         '  Right  : ' + VectorToRawStr(WalkNav.Frustum[fpRight]) +nl+
-         '  Bottom : ' + VectorToRawStr(WalkNav.Frustum[fpBottom]) +nl+
-         '  Top    : ' + VectorToRawStr(WalkNav.Frustum[fpTop]) +nl+
-         '  Near   : ' + VectorToRawStr(WalkNav.Frustum[fpNear]) +nl+
-         '  Far    : ' + VectorToRawStr(WalkNav.Frustum[fpFar]));
+         '  Left   : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpLeft]) +nl+
+         '  Right  : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpRight]) +nl+
+         '  Bottom : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpBottom]) +nl+
+         '  Top    : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpTop]) +nl+
+         '  Near   : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpNear]) +nl+
+         '  Far    : ' + VectorToRawStr(WalkNav.Frustum.Planes[fpFar]));
 
   109: WriteBoundingBox(SceneAnimation.BoundingBoxSum);
   110: WriteBoundingBox(SceneAnimation.SceneFromTime(AnimationTime).BoundingBox);
