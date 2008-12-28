@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses ShadowVolumes, GLWindow, VRMLGLScene, VectorMath;
+uses ShadowVolumes, GLWindow, VRMLGLScene, VectorMath, Frustum;
 
 var
   MenuShadowsMenu: TMenu;
