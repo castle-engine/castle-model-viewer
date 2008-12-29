@@ -69,5 +69,5 @@ mk_screnshot ()
 
 # mk_screnshot --renderer-optimization none
 # mk_screnshot --renderer-optimization scene-as-a-whole
-# mk_screnshot --renderer-optimization separate-shape-states
-# mk_screnshot --renderer-optimization separate-shape-states-no-transform
+# mk_screnshot --renderer-optimization separate-shapes
+# mk_screnshot --renderer-optimization separate-shapes-no-transform
