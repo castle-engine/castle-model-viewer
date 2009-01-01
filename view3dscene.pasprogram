@@ -2875,7 +2875,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         MessageOk(Glwin, 'No collision octree was initialized for this shape.', taLeft) else
       begin
         Writeln(Shape.OctreeTriangles.Statistics);
-        MessageOk(Glwin, 'Octree statistics dumped to console (stdout).', taLeft);
       end;
     end;
   end;
