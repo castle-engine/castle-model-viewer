@@ -1209,20 +1209,7 @@ end;
 
 { Scene operations ---------------------------------------------------------- }
 
-const
-  V3DSDefTriangleOctreeMaxDepth = 10;
-  V3DSDefTriangleOctreeLeafCapacity = 64;
-  V3DSDefTriangleOctreeLimits: TOctreeLimits = (
-    MaxDepth: V3DSDefTriangleOctreeMaxDepth;
-    LeafCapacity: V3DSDefTriangleOctreeLeafCapacity
-  );
-
 var
-  { These are parameters for Load*Scene* telling how to construct octree.
-    For description of their meaning, see VRMLOctree. }
-  TriangleOctreeLimits: TOctreeLimits{ = V3DSDefTriangleOctreeLimits};
-  ShapeOctreeLimits: TOctreeLimits{ = DefShapeOctreeLimits};
-
   { This is set to non-nil by CreateMainMenu.
     It is used there and it is also used from LoadSceneCore, since
     loading a scene may change some values (like HeadLight, Gravity etc.)
@@ -1263,12 +1250,8 @@ begin
     try
       { For now we construct and store octrees only for the 1st animation frame. }
 
-      SceneAnimation.FirstScene.TriangleOctreeLimits^ := TriangleOctreeLimits;
       SceneAnimation.FirstScene.TriangleOctreeProgressTitle := 'Building triangle octree';
-
-      SceneAnimation.FirstScene.ShapeOctreeLimits^ := ShapeOctreeLimits;
       SceneAnimation.FirstScene.ShapeOctreeProgressTitle := 'Building Shape octree';
-
       SceneAnimation.FirstScene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
       Glw.OnDraw := OldDraw;
@@ -3554,10 +3537,8 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..15] of TOption =
+  Options: array[0..11] of TOption =
   (
-    (Short:  #0; Long: 'triangle-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'triangle-octree-leaf-capacity'; Argument: oaRequired),
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
@@ -3565,8 +3546,6 @@ const
     (Short:  #0; Long: 'write-to-vrml'; Argument: oaNone),
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
-    (Short:  #0; Long: 'shape-octree-max-depth'; Argument: oaRequired),
-    (Short:  #0; Long: 'shape-octree-leaf-capacity'; Argument: oaRequired),
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
@@ -3581,14 +3560,12 @@ const
     RangeScreenShot: TRangeScreenShot;
   begin
    case OptionNum of
-    0 : TriangleOctreeLimits.MaxDepth := StrToInt(Argument);
-    1 : TriangleOctreeLimits.LeafCapacity := StrToInt(Argument);
-    2 : Param_CameraRadius := StrToFloat(Argument);
-    3 : Include(Param_SceneChanges, scNoNormals);
-    4 : Include(Param_SceneChanges, scNoSolidObjects);
-    5 : Include(Param_SceneChanges, scNoConvexFaces);
-    6 : WasParam_WriteToVRML := true;
-    7 : begin
+    0 : Param_CameraRadius := StrToFloat(Argument);
+    1 : Include(Param_SceneChanges, scNoNormals);
+    2 : Include(Param_SceneChanges, scNoSolidObjects);
+    3 : Include(Param_SceneChanges, scNoConvexFaces);
+    4 : WasParam_WriteToVRML := true;
+    5 : begin
          InfoWrite(
            'view3dscene: VRML (1.0 and 2.0, aka VRML 97), Kanim,' +NL+
            '3DS, MD3, Wavefront OBJ and Collada viewer.' +NL+
@@ -3615,22 +3592,6 @@ const
            LightsOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
            RendererOptimizationOptionsHelp +NL+
-           '  --triangle-octree-max-depth DEPTH ,' +NL+
-           '  --triangle-octree-leaf-capacity CAPACITY' +NL+
-           '                        Set the parameters of generated octree.' +NL+
-           '                        These concern octree based on triangles.' +NL+
-           '                        Defaults are: max-depth = '+
-             IntToStr(V3DSDefTriangleOctreeLimits.MaxDepth) + ',' +NL+
-           '                        leaf-capacity = '+
-             IntToStr(V3DSDefTriangleOctreeLimits.LeafCapacity) + '.' +NL+
-           '  --shape-octree-max-depth DEPTH ,' +NL+
-           '  --shape-octree-leaf-capacity CAPACITY' +NL+
-           '                        Set the parameters of generated octree.' +NL+
-           '                        These concern octree based on Shapes.' +NL+
-           '                        Defaults are: max-depth = '+
-             IntToStr(DefShapeOctreeLimits.MaxDepth) + ',' +NL+
-           '                        leaf-capacity = '+
-             IntToStr(DefShapeOctreeLimits.LeafCapacity) + '.' +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3663,19 +3624,17 @@ const
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
         end;
-    8 : begin
+    6 : begin
          Writeln(Version);
          ProgramBreak;
         end;
-    9 : ShapeOctreeLimits.MaxDepth := StrToInt(Argument);
-    10: ShapeOctreeLimits.LeafCapacity := StrToInt(Argument);
-    11: begin
+    7 : begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
           SingleScreenShot.FileNamePattern := SeparateArgs[2];
           ScreenShotsList.Add(SingleScreenShot);
         end;
-    12: begin
+    8 : begin
           RangeScreenShot := TRangeScreenShot.Create;
           RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
           RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
@@ -3683,12 +3642,12 @@ const
           RangeScreenShot.FileNamePattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
-    13: InitializeLog(Version);
-    14: begin
+    9 : InitializeLog(Version);
+    10: begin
           InitializeLog(Version);
           DebugLogVRMLChanges := true;
         end;
-    15: begin
+    11: begin
           { for proper menu display, we have to keep AntiAliasing
             within 0..MaxAntiAliasing range (although GLAntiAliasing
             unit accepts any cardinal value). }
@@ -3701,9 +3660,6 @@ const
   end;
 
 begin
-  TriangleOctreeLimits := V3DSDefTriangleOctreeLimits;
-  ShapeOctreeLimits := DefShapeOctreeLimits;
-
   { parse parameters }
   { glw params }
   Glw.ParseParameters(StandardParseOptions);
