@@ -3046,6 +3046,7 @@ begin
   125: if Glw.Navigator is TWalkNavigator then
        begin
          RaytraceToWin(Glwin, SceneAnimation.FirstScene,
+           HeadLight, SceneHeadLight,
            Glw.WalkNav.CameraPos,
            Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
            AngleOfViewX, AngleOfViewY, BGColor,
