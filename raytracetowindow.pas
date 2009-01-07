@@ -282,6 +282,9 @@ begin
             TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
             TClassicRayTracer(RayTracer).FogNode := FogNode;
             TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
+            TClassicRayTracer(RayTracer).HeadLightExists := Scene.HeadLight <> nil;
+            if Scene.HeadLight <> nil then
+              TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight.ActiveLight(CamPosition, CamDir);
           end;
         rtkPathTracer:
           begin
