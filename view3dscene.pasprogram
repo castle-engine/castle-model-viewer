@@ -1191,16 +1191,13 @@ begin
 
   ViewpointNode.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
 
+  { keep InitialCameraDir length the same }
+  VectorAdjustToLengthTo1st(CameraDir, VectorLength(WalkNav.InitialCameraDir));
+
   WalkNav.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
 
   { TODO:
     - GravityUp is not passed
-    - CameraDir, CameraUp are actually not used to update current viewpoint
-    - and CameraDir has wrong length anyway... (we should make
-      a setting like NormalizedCameraDir for WalkNav?)
-
-    So for now above is used only to update viewer position relative
-    to viewpoint position.
   }
 
   { PostRedisplay will be automatically called by SetInitialCameraLookDir,
