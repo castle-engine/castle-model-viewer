@@ -1192,7 +1192,7 @@ begin
   ViewpointNode.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
 
   { keep InitialCameraDir length the same }
-  VectorAdjustToLengthTo1st(CameraDir, VectorLength(WalkNav.InitialCameraDir));
+  VectorAdjustToLengthTo1st(CameraDir, VectorLen(WalkNav.InitialCameraDir));
 
   WalkNav.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
 
