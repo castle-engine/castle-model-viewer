@@ -6,6 +6,12 @@ set -eu
 # from [http://vrmlengine.sourceforge.net/kambi_vrml_test_suite.php],
 # such that it's a sibling of view3dscene.
 #
+# This requires
+# - view3dscene binary compiled (either in current dir,
+#   or on the $PATH, see run_test_once.sh script setting VIEW3DSCENE variable)
+# - stringoper binary compiled and available on $PATH
+#   (stringoper comes from ../kambi_vrml_game_engine/base/tools/stringoper.pasprogram)
+#
 # For details what is tested, see run_test_once.sh script.
 # By default tests are fully automatic, although you can uncomment some
 # things to peek inside.
