@@ -8,6 +8,13 @@ set -eu
 # that have heaptrc compiled in)
 export HEAPTRC=disabled
 
+if [ -f view3dscene ]; then
+  VIEW3DSCENE=./view3dscene
+else
+  # expect view3dscene on $PATH
+  VIEW3DSCENE=view3dscene
+fi
+
 FILE="$1"
 
 # It's important that temp_file is inside the same directory,
@@ -17,7 +24,7 @@ TEMP_FILE=`dirname "$FILE"`/view3dscene_test_temporary_file.wrl
 
 echo '---- Reading' "$FILE"
 #echo '(temp is ' "$TEMP_FILE" ')'
-view3dscene "$FILE" --write-to-vrml > "$TEMP_FILE"
+"$VIEW3DSCENE" "$FILE" --write-to-vrml > "$TEMP_FILE"
 
 # Check input file and output file headers.
 # They indicate VRML version used to write the file.
@@ -51,7 +58,7 @@ if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
 fi
 
 echo '---- Reading again' "$FILE"
-view3dscene "$TEMP_FILE" --write-to-vrml > /dev/null
+"$VIEW3DSCENE" "$TEMP_FILE" --write-to-vrml > /dev/null
 
 rm -f "$TEMP_FILE"
 
@@ -59,7 +66,7 @@ mk_screnshot ()
 {
   echo '---- Rendering and making screenshot' "$@"
   TEMP_SCREENSHOT=/tmp/view3dscene_test_screenshot.png
-  view3dscene "$FILE" --screenshot 0 "$TEMP_SCREENSHOT" "$@"
+  "$VIEW3DSCENE" "$FILE" --screenshot 0 "$TEMP_SCREENSHOT" "$@"
   # display "$TEMP_SCREENSHOT"
   rm -f "$TEMP_SCREENSHOT"
 }
