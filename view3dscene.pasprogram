@@ -168,6 +168,9 @@ var
     (0.0 in case of normal VRML files, usually 0.0 in case of Kanim). }
   WorldTimeAtLoad: TKamTime = 0;
 
+  LastIsAboveTheGround: boolean;
+  LastHeightAboveTheGround: Single;
+
 var
   { When setting this, always update also WorldTime }
   AnimationTime: TKamTime = 0.0;
@@ -393,6 +396,17 @@ var
     end;
   end;
 
+  function CurrentHeightAboveTheGround: string;
+  begin
+    if SceneOctreeCollisions = nil then
+      Result := 'no collisions' else
+    if not WalkNav.Gravity then
+      Result := 'no gravity' else
+    if not LastIsAboveTheGround then
+      Result := 'no ground beneath' else
+      Result := FloatToNiceStr(LastHeightAboveTheGround);
+  end;
+
 var
   s: string;
 begin
@@ -414,11 +428,13 @@ begin
      [ VectorToNiceStr(Glw.WalkNav.CameraPos),
        VectorToNiceStr(Glw.WalkNav.CameraDir),
        VectorToNiceStr(Glw.WalkNav.CameraUp) ]));
-   strs.Append(Format('Move speed : %f',
+   strs.Append(Format('Move speed : %f, Avatar height: %f (current height above the ground: %s)',
      [ { In view3dscene, MoveHorizontalSpeed is always equal to
          MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
          So it's enough to show just MoveHorizontalSpeed. }
-       Glw.WalkNav.MoveHorizontalSpeed ]));
+       Glw.WalkNav.MoveHorizontalSpeed,
+       Glw.WalkNav.CameraPreferredHeight,
+       CurrentHeightAboveTheGround ]));
   end else
   begin
    strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
@@ -1011,6 +1027,9 @@ begin
       TWalkNavigator(Navigator).GravityUp,
       IsAboveTheGround, SqrHeightAboveTheGround, GroundItem,
       nil, nil);
+    LastIsAboveTheGround := IsAboveTheGround;
+    if LastIsAboveTheGround then
+      LastHeightAboveTheGround := Sqrt(SqrHeightAboveTheGround);
   end else
   begin
     IsAboveTheGround := false;
