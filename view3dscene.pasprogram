@@ -425,7 +425,7 @@ begin
      [ VectorToNiceStr(Glw.WalkNav.CameraPos),
        VectorToNiceStr(Glw.WalkNav.CameraDir),
        VectorToNiceStr(Glw.WalkNav.CameraUp) ]));
-   strs.Append(Format('Move speed : %f, Avatar height: %f (current height above the ground: %s)',
+   strs.Append(Format('Move speed : %f, Avatar height: %f (last height above the ground: %s)',
      [ { In view3dscene, MoveHorizontalSpeed is always equal to
          MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
          So it's enough to show just MoveHorizontalSpeed. }
