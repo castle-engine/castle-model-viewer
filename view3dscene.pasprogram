@@ -141,9 +141,6 @@ var
     from "Open" menu item. }
   SceneAnimation: TVRMLGLAnimation;
   SceneFilename: string;
-  { vars below istotne tylko w trybach nawigacji ktore robia wykrywanie kolizji: }
-  { must always be > 0 }
-  CameraRadius: Single = 0.0;
   SceneHeadlight: TVRMLGLHeadlight;
 
   SelectedItem: PVRMLTriangle;
@@ -784,7 +781,7 @@ var
 procedure Resize(Glwin: TGLWindow);
 begin
   SceneAnimation.GLProjection(
-    Glw.Navigator, SceneAnimation.BoundingBoxSum, CameraRadius,
+    Glw.Navigator, SceneAnimation.BoundingBoxSum,
     Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY,
     ShadowsPossibleCurrently);
 
@@ -995,7 +992,7 @@ begin
   begin
     {TODO SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
     Result := SceneOctreeCollisions.MoveAllowed(
-      Navigator.CameraPos, ProposedNewPos, NewPos, CameraRadius,
+      Navigator.CameraPos, ProposedNewPos, NewPos, Navigator.CameraRadius,
       false);
     {tests:
      Writeln('Octree efficiency : ',SceneOctreeCollisions.DirectCollisionTestsCounter,
@@ -1091,7 +1088,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3dAvgSize(SceneAnimation.BoundingBoxSum). }
-    VectorAdjustToLengthTo1st(InitialCameraDir, CameraRadius * 0.4);
+    VectorAdjustToLengthTo1st(InitialCameraDir, WalkNav.CameraRadius * 0.4);
     WalkNav.MoveHorizontalSpeed := 1;
     WalkNav.MoveVerticalSpeed := 1;
   end else
@@ -1130,7 +1127,7 @@ begin
   end;
 
   WalkNav.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
-    GravityUp, WalkNav.CameraPreferredHeight, CameraRadius);
+    GravityUp, WalkNav.CameraPreferredHeight, WalkNav.CameraRadius);
 
   if not Glw.Closed then
   begin
@@ -1152,7 +1149,7 @@ end;
   don't use this procedure --- instead send set_bind = true event
   to given viewpoint, and this will indirectly call this procedure.
 
-  Uses CameraRadius, NavigationNode, so make sure these are already
+  Uses WalkNav.CameraRadius, NavigationNode, so make sure these are already
   set as needed }
 procedure UpdateViewpointNode;
 var
@@ -1473,7 +1470,7 @@ procedure LoadSceneCore(
 
 var
   NewCaption: string;
-  CameraPreferredHeight: Single;
+  CameraPreferredHeight, CameraRadius: Single;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedCameraPos, SavedCameraDir, SavedCameraUp, SavedGravityUp: TVector3Single;

@@ -147,7 +147,7 @@ procedure SceneInitMultiNavigators(
   const CameraPreferredHeight, CameraRadius: Single);
 begin
  { Init all navigators }
- TExamineNavigator(Navigators[nkExamine]).Init(ModelBox);
+ TExamineNavigator(Navigators[nkExamine]).Init(ModelBox, CameraRadius);
  TWalkNavigator  (Navigators[nkWalk  ]).Init(
    InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp,
    CameraPreferredHeight, CameraRadius);
