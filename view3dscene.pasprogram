@@ -2161,7 +2161,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       s := 'Nothing selected.';
     end else
     begin
-      SelectedGeometry := SelectedItem^.GeometryNode;
+      SelectedGeometry := SelectedItem^.Geometry;
       s := Format(
            'Selected point %s from triangle %s.' +nl+
            nl+
@@ -2283,7 +2283,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
        begin
         s += Format('but no, this light is blocked by triangle %s from node %s.',
           [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
-            NodeNiceName(ShadowingItem^.GeometryNode) ])
+            NodeNiceName(ShadowingItem^.Geometry) ])
        end else
         s += 'hmm, yes ! No object blocks this light here.';
       end;
@@ -2297,7 +2297,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.GeometryNode, so this is only for the frame where
+        SelectedItem^.Geometry, so this is only for the frame where
         octree is available. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
@@ -2309,7 +2309,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SelectedItem^.GeometryNode.FreeRemovingFromAllParents;
+      SelectedItem^.Geometry.FreeRemovingFromAllParents;
       SceneAnimation.Scenes[0].ChangedAll;
     end;
   end;
@@ -2327,13 +2327,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
 
   var
-    GeometryNode: TVRMLGeometryNode;
+    Geometry: TVRMLGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.GeometryNode, so this is only for the frame where
+        SelectedItem^.Geometry, so this is only for the frame where
         octree is available. Moreover, we call
         SceneAnimation.FirstScene.ChangedFields. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
@@ -2354,31 +2354,31 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    GeometryNode := SelectedItem^.GeometryNode;
+    Geometry := SelectedItem^.Geometry;
 
-    if GeometryNode is TNodeIndexedFaceSet_1 then
+    if Geometry is TNodeIndexedFaceSet_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedFaceSet_1(GeometryNode).FdCoordIndex.Items;
-      Materials := TNodeIndexedFaceSet_1(GeometryNode).FdMaterialIndex.Items;
-      Normals := TNodeIndexedFaceSet_1(GeometryNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_1(GeometryNode).FdTextureCoordIndex.Items;
+      Coords := TNodeIndexedFaceSet_1(Geometry).FdCoordIndex.Items;
+      Materials := TNodeIndexedFaceSet_1(Geometry).FdMaterialIndex.Items;
+      Normals := TNodeIndexedFaceSet_1(Geometry).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_1(Geometry).FdTextureCoordIndex.Items;
     end else
-    if GeometryNode is TNodeIndexedFaceSet_2 then
+    if Geometry is TNodeIndexedFaceSet_2 then
     begin
-      Colors := TNodeIndexedFaceSet_2(GeometryNode).FdColorIndex.Items;
-      Coords := TNodeIndexedFaceSet_2(GeometryNode).FdCoordIndex.Items;
+      Colors := TNodeIndexedFaceSet_2(Geometry).FdColorIndex.Items;
+      Coords := TNodeIndexedFaceSet_2(Geometry).FdCoordIndex.Items;
       Materials := nil;
-      Normals := TNodeIndexedFaceSet_2(GeometryNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_2(GeometryNode).FdTexCoordIndex.Items;
+      Normals := TNodeIndexedFaceSet_2(Geometry).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedFaceSet_2(Geometry).FdTexCoordIndex.Items;
     end else
-    if GeometryNode is TNodeIndexedTriangleMesh_1 then
+    if Geometry is TNodeIndexedTriangleMesh_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedTriangleMesh_1(GeometryNode).FdCoordIndex.Items;
-      Materials := TNodeIndexedTriangleMesh_1(GeometryNode).FdMaterialIndex.Items;
-      Normals := TNodeIndexedTriangleMesh_1(GeometryNode).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedTriangleMesh_1(GeometryNode).FdTextureCoordIndex.Items;
+      Coords := TNodeIndexedTriangleMesh_1(Geometry).FdCoordIndex.Items;
+      Materials := TNodeIndexedTriangleMesh_1(Geometry).FdMaterialIndex.Items;
+      Normals := TNodeIndexedTriangleMesh_1(Geometry).FdNormalIndex.Items;
+      TexCoords := TNodeIndexedTriangleMesh_1(Geometry).FdTextureCoordIndex.Items;
     end else
     begin
       ShowAndWrite('Internal error: cannot get the coordIndex field.');
@@ -2406,7 +2406,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.FaceCoordIndexEnd -
         SelectedItem^.FaceCoordIndexBegin + 1);
 
-    SceneAnimation.FirstScene.ChangedFields(GeometryNode, nil);
+    SceneAnimation.FirstScene.ChangedFields(Geometry, nil);
   end;
 
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
@@ -2862,7 +2862,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         while SI.GetNext do
         begin
           Shape := SI.Current;
-          if (Shape.GeometryNode = SelectedItem^.GeometryNode) and
+          if (Shape.Geometry = SelectedItem^.Geometry) and
              (Shape.State = SelectedItem^.State) then
             Break else
             Shape := nil;
