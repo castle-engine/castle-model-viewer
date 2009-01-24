@@ -987,6 +987,8 @@ var
 class function THelper.MoveAllowed(Navigator: TWalkNavigator;
   const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
   const BecauseOfGravity: boolean): boolean;
+var
+  GravityPlane: TVector4Single;
 begin
   if CollisionCheck then
   begin
@@ -1006,10 +1008,21 @@ begin
   end;
 
   if Result and BecauseOfGravity then
-    { TODO: instead of setting Result to false, this should
-      actually move NewPos so that it's *exactly* on the border
-      of bounding box. }
-    Result := Box3dPointInside(NewPos, SceneAnimation.BoundingBoxSum);
+  begin
+    if IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
+      Result := false else
+    begin
+      { TODO: instead of setting Result to false, this should
+        actually move NewPos so that it's *exactly* on the GravityPlane. }
+
+      GravityPlane := Box3dMinimumPlane(SceneAnimation.BoundingBoxSum,
+        TWalkNavigator(Navigator).GravityUp);
+      Result := GravityPlane[0] * NewPos[0] +
+                GravityPlane[1] * NewPos[1] +
+                GravityPlane[2] * NewPos[2] +
+                GravityPlane[3] >= 0;
+    end;
+  end;
 end;
 
 class procedure THelper.GetCameraHeight(Navigator: TWalkNavigator;
