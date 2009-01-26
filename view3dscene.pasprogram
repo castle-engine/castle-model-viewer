@@ -2217,7 +2217,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       end;
 
       { calculate Tex }
-      Tex := SelectedItem^.State.AnyTexture;
+      Tex := SelectedItem^.State.Texture;
 
       { calculate TextureDescription }
       if Tex = nil then
