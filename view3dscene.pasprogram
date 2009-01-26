@@ -2168,6 +2168,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     M1: TNodeMaterial_1;
     M2: TNodeMaterial_2;
     SelectedGeometry: TVRMLGeometryNode;
+    Tex: TNodeX3DTextureNode;
   begin
     if SelectedItem = nil then
     begin
@@ -2215,11 +2216,17 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
               [VCNotOver, TCNotOver, VCOver, TCOver]);
       end;
 
-      if SelectedItem^.State.Texture = nil then
+      { calculate Tex }
+      Tex := SelectedItem^.State.AnyTexture;
+
+      { calculate TextureDescription }
+      if Tex = nil then
         TextureDescription := 'none' else
-        TextureDescription := SelectedItem^.State.Texture.TextureDescription;
-      S += Format(nl +nl+
-            'Node''s texture : %s.', [TextureDescription]);
+      if Tex is TVRMLTextureNode then
+        TextureDescription := TVRMLTextureNode(Tex).TextureDescription else
+        TextureDescription := Tex.NodeTypeName;
+
+      S += Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
 
       S += nl+ nl;
       if SelectedItem^.State.ParentShape <> nil then
