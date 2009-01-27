@@ -25,4 +25,4 @@ rm -f opengl/glwindow.o \
       opengl/GLWindow.o \
       opengl/GLWindow.ppu
 
-fpc -dRELEASE @kambi.cfg ../view3dscene/view3dscene.pasprogram
+fpc -dRELEASE "${KAMBI_FPC_OPTIONS:-}" @kambi.cfg ../view3dscene/view3dscene.pasprogram
