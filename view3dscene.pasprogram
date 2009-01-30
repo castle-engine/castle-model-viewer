@@ -1231,11 +1231,22 @@ var
 
   DebugLogVRMLChanges: boolean = false;
 
-procedure VRMLNonFatalError_Warning(const s: string);
+procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
+var
+  S1: string;
+begin
+  S1 := '[' + WarningTypeToStr[WarningType] + ']: ' + S;
+  { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
+    we write to output VRML contents. }
+  Writeln(ErrOutput, ProgramName + ': VRML Warning' + S1);
+  SceneWarnings.Add(S1);
+end;
+
+procedure DoDataWarning(const s: string);
 begin
   { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
     we write to output VRML contents. }
-  Writeln(ErrOutput, ProgramName + ': WARNING: ' + S);
+  Writeln(ErrOutput, ProgramName + ': Data Warning: ' + S);
   SceneWarnings.Add(S);
 end;
 
@@ -3711,8 +3722,8 @@ begin
 
   SceneWarnings := TSceneWarnings.Create;
   try
-    VRMLNonFatalError := @VRMLNonFatalError_Warning;
-    DataNonFatalError := @VRMLNonFatalError_Warning;
+    VRMLWarning := @DoVRMLWarning;
+    DataWarning := @DoDataWarning;
 
     if WasParam_WriteToVRML then
     begin

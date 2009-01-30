@@ -246,7 +246,7 @@ begin
 
     if Executable = '' then
     begin
-      DataNonFatalError(Format('You must have "ffmpeg" program from ' +
+      DataWarning(Format('You must have "ffmpeg" program from ' +
         '[http://ffmpeg.mplayerhq.hu/] installed and available on $PATH to be able to ' +
         'create movie files". Leaving generated temporary images "%s"',
         [TemporaryImagesPattern]));
@@ -267,7 +267,7 @@ begin
       begin
         TempFile := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter);
         if not DeleteFile(TempFile) then
-          DataNonFatalError(Format('Cannot delete temporary file "%s"', [TempFile]));
+          DataWarning(Format('Cannot delete temporary file "%s"', [TempFile]));
       end;
       Writeln('done.');
     end;
