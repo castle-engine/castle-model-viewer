@@ -1236,7 +1236,7 @@ begin
   { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
     we write to output VRML contents. }
   Writeln(ErrOutput, ProgramName + ': VRML Warning: ' + S);
-  SceneWarnings.Add(S1);
+  SceneWarnings.Add(S);
 end;
 
 procedure DoDataWarning(const s: string);
