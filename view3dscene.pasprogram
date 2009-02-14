@@ -674,6 +674,7 @@ begin
    SceneHeadlight.Render(0, false);
 
  glLoadMatrix(Glw.Navigator.Matrix);
+ CameraMatrix := Glw.Navigator.Matrix;
 
  if OctreeDisplayWhole then
  begin
