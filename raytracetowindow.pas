@@ -167,26 +167,37 @@ end;
 { menu things ---------------------------------------------------------------- }
 
 procedure MenuCommand(glwin: TGLWindow; Item: TMenuItem);
-var D: PCallData;
-    SaveAsFilename: string;
+var
+  D: PCallData;
+  SaveAsFilename: string;
+  ImgFormat: TImageFormat;
 begin
  D := PCallData(glwin.UserData);
 
  case Item.IntData of
   10: begin
-       { this will be called only when rendering is done }
-       MessageOK(glwin,
-         'First some notes about saving raytraced image from view3dscene as ' +
-         'RGBE: you _can_ choose here rgbe format. But you '+
-         'should note that image is already stored in memory in RGB '+
-         '(8 bits per component) format (this was required to quickly display '+
-         'image in OpenGL) so any precision (beyond 8-bits) is already lost. '+
-         'Use rayhunter if you want to have RGBE image with precise colors.',
-         taLeft);
-       SaveAsFilename := ProgramName + '_rt.png';
-       if glwin.FileDialog('Save image', SaveAsFilename, false,
-         SaveImage_FileFilters) then
-        SaveImage(D^.Image, SaveAsFilename);
+        { This may be called only when rendering is done }
+        SaveAsFilename := ProgramName + '_rt.png';
+        if Glwin.FileDialog('Save image', SaveAsFilename, false,
+          SaveImage_FileFilters) then
+        begin
+          { Determine ImgFormat exactly the same like SaveImage() does. }
+          ImgFormat := FileExtToImageFormatDef(ExtractFileExt(SaveAsFilename), false, true,
+            DefaultSaveImageFormat);
+
+          if ImgFormat = ifRGBE then
+            MessageOK(glwin,
+              'Note: When saving raytraced image from view3dscene to ' +
+              'RGBE file format, you will *not* get image with perfect ' +
+              'RGB+Exponent precision. ' +
+              'That''s because image is already stored in memory in RGB ' +
+              '(8 bits per component) format (this was required to quickly display ' +
+              'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
+              'Use rayhunter if you want to have RGBE image with precise colors.',
+              taLeft);
+
+          SaveImage(D^.Image, SaveAsFilename);
+        end;
       end;
   20: D^.UserWantsToQuit := true;
  end;
