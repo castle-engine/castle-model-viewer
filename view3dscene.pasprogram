@@ -2940,7 +2940,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos, @Draw3d, true, 0, 0);
+          GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos, @Draw3d,
+            SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
+            true, 0, 0);
           glViewport(0, 0, Glwin.Width, Glwin.Height);
 
           case Orientation of
@@ -3004,7 +3006,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
       begin
-        DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos, @Draw3d, true, 0, 0);
+        DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos, @Draw3d,
+          SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
+          true, 0, 0);
         try
           glViewport(0, 0, Glwin.Width, Glwin.Height);
           DDS.SaveToFile(FileName);
