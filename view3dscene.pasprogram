@@ -73,7 +73,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   ParseParametersUnit, ProgressUnit, Navigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap,
+  Images, CubeMap, DDS,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
@@ -2900,6 +2900,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  const
+    DefaultCubeMapSize = 256;
+
   procedure ScreenShotToCubeMap;
   var
     Side: TCubeMapSide;
@@ -2926,11 +2929,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if SceneFileName <> '' then
         FileNamePattern := ExtractOnlyFileName(SceneFileName) + '_cubemap_%s.png' else
-        FileNamePattern := 'view3dscene_cubemap_%d.png';
+        FileNamePattern := 'view3dscene_cubemap_%s.png';
 
       if Glwin.FileDialog('Image name template to save', FileNamePattern, false) then
       begin
-        Size := 64;
+        Size := DefaultCubeMapSize;
 
         if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
         begin
@@ -2981,6 +2984,31 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             FreeAndNil(CubeMapImg[Side]);
         end;
+      end;
+    end;
+  end;
+
+  procedure ScreenShotToCubeMapDDS;
+  var
+    DDS: TDDSImage;
+    FileName: string;
+    Size: Cardinal;
+  begin
+    if SceneFileName <> '' then
+      FileName := ExtractOnlyFileName(SceneFileName) + '_cubemap.dds' else
+      FileName := 'view3dscene_cubemap.dds';
+
+    if Glwin.FileDialog('Save image to file', FileName, false) then
+    begin
+      Size := DefaultCubeMapSize;
+
+      if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
+      begin
+        DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos, @Draw3d, true, 0, 0);
+        try
+          glViewport(0, 0, Glwin.Width, Glwin.Height);
+          DDS.SaveToFile(FileName);
+        finally FreeAndNil(DDS) end;
       end;
     end;
   end;
@@ -3277,6 +3305,7 @@ begin
 
   540: ScreenShotToVideo;
   550: ScreenShotToCubeMap;
+  555: ScreenShotToCubeMapDDS;
 
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
@@ -3602,8 +3631,9 @@ begin
    Result.Append(M);
  M := TMenu.Create('_Display');
    M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
-   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around Walk position) ...',  550));
    M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
+   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around Walk position) ...',  550));
+   M.Append(TMenuItem.Create('Screenshot to cube map DDS (environment around Walk position) ...',  555));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
