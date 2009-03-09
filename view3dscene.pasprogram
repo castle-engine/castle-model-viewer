@@ -73,10 +73,11 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   ParseParametersUnit, ProgressUnit, Navigation, RaysWindow,
   KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
+  Images, CubeMap,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
-  GLAntiAliasing, GLVersionUnit,
+  GLAntiAliasing, GLVersionUnit, GLCubeMap,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeOctree,
   VRMLNodes, Object3dAsVRML, VRMLGLScene, VRMLTriangle,
@@ -489,7 +490,9 @@ begin
   PrepareRender(false);
 end;
 
-procedure Draw(Glwin: TGLWindow);
+procedure Draw3d(const ForCubeMap: boolean;
+  const CameraMatrix, CameraRotationOnlyMatrix: TMatrix4Single;
+  const Frustum: TFrustum);
 
   procedure DisplayOctreeDepth(octreeDisplayDepth: integer);
 
@@ -654,7 +657,7 @@ var
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       end;
       try
-        glLoadMatrix(Glw.Navigator.RotationOnlyMatrix);
+        glLoadMatrix(CameraRotationOnlyMatrix);
         Scene.Background.Render;
       finally
         if BackgroundWireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -665,7 +668,6 @@ var
 
 begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
-
  ClearAndRenderBackground;
 
  { Set properties of headlight. Actual enabled state of headlight will be
@@ -673,8 +675,8 @@ begin
  if SceneHeadlight <> nil then
    SceneHeadlight.Render(0, false);
 
- glLoadMatrix(Glw.Navigator.Matrix);
- CameraMatrix := Glw.Navigator.Matrix;
+ glLoadMatrix(CameraMatrix);
+ VRMLOpenGLRenderer.CameraMatrix := CameraMatrix;
 
  if OctreeDisplayWhole then
  begin
@@ -724,8 +726,8 @@ begin
      if ShadowsPossibleCurrently and
         ShadowsOn and
         Scene.MainLightForShadowsExists then
-       ShadowsRender(Scene, Glw.Navigator.Frustum, Scene.MainLightForShadows) else
-       Scene.RenderFrustum(Glw.Navigator.Frustum, tgAll);
+       ShadowsRender(Scene, Frustum, Scene.MainLightForShadows) else
+       Scene.RenderFrustum(Frustum, tgAll);
 
      LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
      LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
@@ -763,6 +765,12 @@ begin
      glEnd;
    glPopAttrib;
  end;
+end;
+
+procedure Draw(Glwin: TGLWindow);
+begin
+ Draw3d(false, Glw.Navigator.Matrix, Glw.Navigator.RotationOnlyMatrix,
+   Glw.Navigator.Frustum);
 
  if ShowStatus and (not MakingScreenShot) then
  begin
@@ -2892,6 +2900,91 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure ScreenShotToCubeMap;
+  var
+    Side: TCubeMapSide;
+    CubeMapImg: TCubeMapImages;
+    FileNamePattern: string;
+    Orientation: char;
+    Size: Cardinal;
+  begin
+    Orientation := MessageChar(Glwin,
+      'This function will save six separate image files that show cube map environment around you.' + NL +
+      NL +
+      'In a moment you will be asked to choose directory and base filename for saving these images, right now you have to decide how the cube map faces will be oriented and named. ("Names" of cube map faces will be placed instead of "%s" in image file pattern.)' + NL +
+      NL +
+      '[B] : VRML/X3D Background orientation (left/right/...)' + NL +
+      '[O] : OpenGL orientation (positive/negative x/y/z)' + NL +
+      '[D] : DirectX (and DDS) orientation (positive/negative x/y/z, in left-handed coord system)' + NL +
+      NL +
+      '[Escape] Cancel',
+      ['b', 'o', 'd', CharEscape],
+      'Press [B], [O], [D] or [Escape]',
+      taLeft, true);
+
+    if Orientation <> CharEscape then
+    begin
+      if SceneFileName <> '' then
+        FileNamePattern := ExtractOnlyFileName(SceneFileName) + '_cubemap_%s.png' else
+        FileNamePattern := 'view3dscene_cubemap_%d.png';
+
+      if Glwin.FileDialog('Image name template to save', FileNamePattern, false) then
+      begin
+        Size := 64;
+
+        if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
+        begin
+          for Side := Low(Side) to High(Side) do
+            CubeMapImg[Side] := TRGBImage.Create(Size, Size);
+
+          GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos, @Draw3d, true, 0, 0);
+          glViewport(0, 0, Glwin.Width, Glwin.Height);
+
+          case Orientation of
+            'b':
+              begin
+                CubeMapImg[csPositiveX].Rotate(2);
+                CubeMapImg[csNegativeX].Rotate(2);
+                CubeMapImg[csPositiveZ].Rotate(2);
+                CubeMapImg[csNegativeZ].Rotate(2);
+                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['right']));
+                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['left']));
+                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['top']));
+                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['bottom']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['back']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['front']));
+              end;
+            'o':
+              begin
+                { This is the most natural Orientation,
+                  our csXxx names match OpenGL names and orientation. }
+                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['positive_x']));
+                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['negative_x']));
+                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['positive_y']));
+                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['negative_y']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['positive_z']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['negative_z']));
+              end;
+            'd':
+              begin
+                { Swap positive/negative y, since DirectX is left-handed. }
+                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['positive_x']));
+                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['negative_x']));
+                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['positive_y']));
+                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['negative_y']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['positive_z']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['negative_z']));
+              end;
+            else EInternalError.Create('orient?');
+          end;
+
+          for Side := Low(Side) to High(Side) do
+            FreeAndNil(CubeMapImg[Side]);
+        end;
+      end;
+    end;
+  end;
+
 var
   S, ProposedScreenShotName: string;
 begin
@@ -3183,6 +3276,7 @@ begin
   530: ChangeWireframeWidth;
 
   540: ScreenShotToVideo;
+  550: ScreenShotToCubeMap;
 
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
@@ -3507,11 +3601,13 @@ begin
    M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
    Result.Append(M);
  M := TMenu.Create('_Display');
+   M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
+   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around Walk position) ...',  550));
+   M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
+   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Glw.FullScreen, true));
-   M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
-   M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItemChecked.Create('Show Status _Text',           122, K_F1,
