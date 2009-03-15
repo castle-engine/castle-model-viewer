@@ -672,7 +672,12 @@ begin
 
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
- if SceneHeadlight <> nil then
+ if (SceneHeadlight <> nil )
+    and (not ForCubeMap) { TODO: temporarily,
+      for cube maps headlight is not rendered Ok (it should be from
+      player pos/dir, not currect camera then). Temporarily just disable
+      them for cube maps. }
+    then
    SceneHeadlight.Render(0, false);
 
  glLoadMatrix(CameraMatrix);
@@ -689,7 +694,7 @@ begin
    DisplayOctreeDepth(OctreeDisplayDepth);
  end;
 
- if showBBox and (not MakingScreenShot) then
+ if showBBox and (not MakingScreenShot) and (not ForCubeMap) then
  begin
    { Display current bounding box only if there's a chance that it's
      different than whole BoundingBoxSum --- this requires that animation
@@ -769,6 +774,11 @@ end;
 
 procedure Draw(Glwin: TGLWindow);
 begin
+ SceneAnimation.FirstScene.UpdateGeneratedTextures(@Draw3d,
+   SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
+   true, 0, 0);
+ glViewport(0, 0, Glwin.Width, Glwin.Height);
+
  Draw3d(false, Glw.Navigator.Matrix, Glw.Navigator.RotationOnlyMatrix,
    Glw.Navigator.Frustum);
 
