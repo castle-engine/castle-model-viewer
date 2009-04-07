@@ -2188,12 +2188,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       SelectedGeometry := SelectedItem^.Geometry;
       s := Format(
-           'Selected point %s from triangle %s.' +nl+
+           'Selected point %s from triangle %s (triangle id: %s).' +nl+
            nl+
            'This triangle is part of the '+
            'node named %s. Node''s bounding box is %s. ',
            [VectorToNiceStr(SelectedPointWorld),
             TriangleToNiceStr(SelectedItem^.World.Triangle),
+            PointerToStr(SelectedItem),
             NodeNiceName(SelectedGeometry),
             Box3dToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
 
@@ -2247,13 +2248,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         if M2 <> nil then
         begin
           S += Format(
-                 'Material:' +nl+
+                 'Material (VRML >= 2.0):' +nl+
                  '  name : %s' +nl+
-                 '  ambientIntensity[0] : %s' +nl+
-                 '  diffuseColor[0] : %s' +nl+
-                 '  specular[0] : %s' +nl+
-                 '  shininess[0] : %s' +nl+
-                 '  transparency[0] : %s',
+                 '  ambientIntensity : %s' +nl+
+                 '  diffuseColor : %s' +nl+
+                 '  specular : %s' +nl+
+                 '  shininess : %s' +nl+
+                 '  transparency : %s',
                  [ M2.NodeName,
                    FloatToNiceStr(M2.FdAmbientIntensity.Value),
                    VectorToNiceStr(M2.FdDiffuseColor.Value),
@@ -2266,7 +2267,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       begin
         M1 := SelectedItem^.State.LastNodes.Material;
         S += Format(
-            'Material:' +nl+
+            'Material (VRML <= 1.0):' +nl+
             '  name : %s' +nl+
             '  ambientColor[0] : %s' +nl+
             '  diffuseColor[0] : %s' +nl+
