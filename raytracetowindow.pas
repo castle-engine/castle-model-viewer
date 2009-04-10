@@ -233,6 +233,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
   FogNode: TNodeFog; const FogDistanceScaling: Single);
 var SavedMode: TGLMode;
     CallData: TCallData;
+    RealScreenWidth: Cardinal;
 
     RaytracerKind: TRaytracerKind;
     RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
@@ -273,7 +274,7 @@ begin
   { switch to our mode }
   SavedMode := TGLMode.Create(glwin, GL_ENABLE_BIT, false);
   try
-   CallData.Image := glwin.SaveScreen;
+   CallData.Image := glwin.SaveAlignedScreen(RealScreenWidth);
    try
 
     { set initial state }
