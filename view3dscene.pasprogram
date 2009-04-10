@@ -670,18 +670,18 @@ begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
  ClearAndRenderBackground;
 
- { Set properties of headlight. Actual enabled state of headlight will be
-   set later by BeginRenderSceneWithLights. }
- if (SceneHeadlight <> nil )
-    and (not ForCubeMap) { TODO: temporarily,
-      for cube maps headlight is not rendered Ok (it should be from
-      player pos/dir, not currect camera then). Temporarily just disable
-      them for cube maps. }
-    then
-   SceneHeadlight.Render(0, false);
-
  glLoadMatrix(CameraMatrix);
  VRMLOpenGLRenderer.CameraMatrix := CameraMatrix;
+
+ { Set properties of headlight. Actual enabled state of headlight will be
+   set later by BeginRenderSceneWithLights. }
+ if (SceneHeadlight <> nil) then
+   SceneHeadlight.Render(0, false, not ForCubeMap,
+     { TODO: this isn't nice. We should just pass here current
+       Glw.Navigator, so that headlight in Examine mode would work too.
+       But we can't, since current TExamineNavigator doesn't provide
+       CameraPos, CameraDir... }
+     WalkNav);
 
  if OctreeDisplayWhole then
  begin
