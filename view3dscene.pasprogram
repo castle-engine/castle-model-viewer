@@ -244,6 +244,11 @@ begin
       TG := TG + [tgOpaque, tgTransparent];
     end;
 
+    { VRMLOpenGLRenderer.CameraMatrix must be already set,
+      since PrepareRender may do some operations on texture gen modes
+      in WORLDSPACE*. }
+    VRMLOpenGLRenderer.CameraMatrix := Glw.Navigator.Matrix;
+
     SceneAnimation.PrepareRender(TG, Options, AllowProgress);
   finally
     if AllowProgress then
