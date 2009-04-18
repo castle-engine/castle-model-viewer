@@ -750,10 +750,10 @@ begin
    be never visible then (or should be just at the exact borders
    or visibility, so it's actually unspecified whether OpenGL would
    show it or not). }
- if ShowFrustum and (NavigatorKind = nkExamine) then
+ if ShowFrustum and (NavigatorKind = nkExamine) and (not ForCubeMap) then
   DrawFrustum(ShowFrustumAlwaysVisible);
 
- if SelectedItem <> nil then
+ if (SelectedItem <> nil) and (not ForCubeMap) then
  begin
    if not GLVersion.BuggyPointSetAttrib then
      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT) else
