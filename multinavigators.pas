@@ -21,14 +21,17 @@
 unit MultiNavigators;
 
 { modulik ulatwiajacy view3dmodelowi uzywac roznych Navigatorow
-  z okienkiem typu TGLWindowNavigated. }
+  z okienkiem typu TGLWindowNavigated.
+
+  SceneAnimation is used only to call ResetOcclusionQuery.
+  You can pass @nil if SceneAnimation is not initialized yet. }
 
 {$I openglmac.inc}
 
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Navigation, Boxes3d, VectorMath,
-  GL, GLU, GLExt, KambiGLUtils;
+  GL, GLU, GLExt, KambiGLUtils, VRMLGLAnimation;
 
 type
   TNavigatorKind = (nkExamine, nkWalk);
@@ -42,6 +45,7 @@ type
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
   WalkerMatrixChanged: TNavigatorNotifyFunc);
@@ -74,8 +78,10 @@ function NavigatorKind: TNavigatorKind;
   (why they call glwin.PostRedisplay is obvious --- changing
   Navigator in fact changed Navigator.Matrix, so we must
   do the same thing that would be done in Navigator.OnMatrixChange) }
-procedure SetNavigatorKind(glwin: TGLWindowNavigated; Kind: TNavigatorKind);
-procedure ChangeNavigatorKind(glwin: TGLWindowNavigated; change: integer);
+procedure SetNavigatorKind(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
+procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation; change: integer);
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
 
@@ -107,7 +113,8 @@ var
   FNavigatorKind: TNavigatorKind = nkExamine;
   Navigators: array[TNavigatorKind]of TNavigator;
 
-procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated; value: TNavigatorKind);
+procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation; value: TNavigatorKind);
 { This is private procedure in this module.
   Look at SetNavigatorKind for something that you can publicly use.
   This procedure does not do some things that SetNavigatorKind does
@@ -118,9 +125,14 @@ begin
   Glwin.UpdateMouseLook;
   if NavigatorRadios[FNavigatorKind] <> nil then
     NavigatorRadios[FNavigatorKind].Checked := true;
+
+  if SceneAnimation <> nil then
+    { Changing navigator changes also the view rapidly, so reset occlusion query }
+    SceneAnimation.ResetOcclusionQuery;
 end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
   WalkerMatrixChanged: TNavigatorNotifyFunc);
@@ -137,7 +149,7 @@ begin
 
  { init glwin.Navigator }
  glwin.OwnsNavigator := false;
- SetNavigatorKindInternal(glwin, FNavigatorKind);
+ SetNavigatorKindInternal(glwin, SceneAnimation, FNavigatorKind);
 end;
 
 procedure SceneInitMultiNavigators(
@@ -167,9 +179,10 @@ begin
     Navigators[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
-procedure SetNavigatorKind(glwin: TGLWindowNavigated; Kind: TNavigatorKind);
+procedure SetNavigatorKind(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
 begin
- SetNavigatorKindInternal(glwin, Kind);
+ SetNavigatorKindInternal(glwin, SceneAnimation, Kind);
  glwin.PostRedisplay;
  { wywolaj EventResize zeby dostosowal zNear naszego projection do
    aktualnego glw.Navigator }
@@ -178,12 +191,13 @@ end;
 
 {$I MacChangeEnum.inc}
 
-procedure ChangeNavigatorKind(glwin: TGLWindowNavigated; Change: integer);
+procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
+  SceneAnimation: TVRMLGLAnimation; Change: integer);
 begin
  {$define CHANGE_ENUM_TYPE := TNavigatorKind}
  {$define CHANGE_ENUM_NAME := NavigatorKind}
  {$define CHANGE_ENUM_CHANGE := Change}
- SetNavigatorKind(glwin, CHANGE_ENUM);
+ SetNavigatorKind(glwin, SceneAnimation, CHANGE_ENUM);
 end;
 
 {$I MacArrayPos.inc}
