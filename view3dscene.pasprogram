@@ -3117,6 +3117,7 @@ begin
   85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
   86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
   87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
+  88: with SceneAnimation do Attributes.UseOcclusionQuery := not Attributes.UseOcclusionQuery;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -3535,6 +3536,8 @@ begin
      MenuAppendTextureMagFilters(M2, 1200);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
+     SceneAnimation.Attributes.UseOcclusionQuery, true));
    M2 := TMenu.Create('Frustum visualization');
      M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
        ShowFrustum, true));
