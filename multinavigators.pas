@@ -127,8 +127,8 @@ begin
     NavigatorRadios[FNavigatorKind].Checked := true;
 
   if SceneAnimation <> nil then
-    { Changing navigator changes also the view rapidly, so reset occlusion query }
-    SceneAnimation.ResetOcclusionQuery;
+    { Changing navigator changes also the view rapidly. }
+    SceneAnimation.ViewChangedSuddenly;
 end;
 
 procedure InitMultiNavigators(glwin: TGLWindowNavigated;
