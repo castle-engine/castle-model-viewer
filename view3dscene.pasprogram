@@ -3476,7 +3476,7 @@ begin
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
    RecentMenu.NextMenuItem := NextRecentMenuItem;
-   M.Append(TMenuItem.Create('_Exit',             12, CharEscape));
+   M.Append(TMenuItem.Create('_Exit',             12, CtrlW));
    Result.Append(M);
  M := TMenu.Create('_View');
    M2 := TMenu.Create('_Fill Mode');
