@@ -3118,6 +3118,7 @@ begin
   86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
   87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
   88: with SceneAnimation do Attributes.UseOcclusionQuery := not Attributes.UseOcclusionQuery;
+  89: with SceneAnimation do Attributes.BlendingSort := not Attributes.BlendingSort;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -3501,6 +3502,8 @@ begin
    M2 := TMenu.Create('Blending Destination Factor');
      AppendBlendingFactors(M2, false, 420);
      M.Append(M2);
+   M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
+     SceneAnimation.Attributes.BlendingSort, true));
    M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
