@@ -179,6 +179,7 @@ var
 
   { These are set by Draw right after rendering a SceneAnimation frame. }
   LastRender_RenderedShapesCount: Cardinal;
+  LastRender_BoxesOcclusionQueriedCount: Cardinal;
   LastRender_VisibleShapesCount: Cardinal;
 
 { Helper functions -------------------------------------------------- }
@@ -461,8 +462,12 @@ begin
     this makes no sense, of course.
     I can sensibly show here only Glw.FpsFrameTime.
     User will be able to see Glw.FpsRealTime only on window's Caption. }
-  strs.Append(Format('Rendered Shapes : %d of %d. FPS : %f',
+  if SceneAnimation.Attributes.UseOcclusionQuery then
+    S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
+    S := '';
+  strs.Append(Format('Rendered Shapes : %d%s of %d. FPS : %f',
     [ LastRender_RenderedShapesCount,
+      S,
       LastRender_VisibleShapesCount,
       Glw.Fps.FrameTime ]));
 
@@ -740,6 +745,7 @@ begin
        Scene.RenderFrustum(Frustum, tgAll);
 
      LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
+     LastRender_BoxesOcclusionQueriedCount := Scene.LastRender_BoxesOcclusionQueriedCount;
      LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
    end;
 
