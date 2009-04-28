@@ -3006,6 +3006,7 @@ begin
   88: with SceneAnimation do Attributes.UseOcclusionQuery := not Attributes.UseOcclusionQuery;
   89: with SceneAnimation do Attributes.BlendingSort := not Attributes.BlendingSort;
   90: with SceneAnimation do Attributes.UseHierarchicalOcclusionQuery := not Attributes.UseHierarchicalOcclusionQuery;
+  891: with SceneAnimation do Attributes.DebugHierOcclusionQueryResults := not Attributes.DebugHierOcclusionQueryResults;
 
   91: LightCalculate := not LightCalculate;
   92: HeadLight := not HeadLight;
@@ -3407,6 +3408,8 @@ begin
      SceneAnimation.Attributes.UseOcclusionQuery, true));
    M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery, true));
+   M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
+     SceneAnimation.Attributes.DebugHierOcclusionQueryResults, true));
    M2 := TMenu.Create('Frustum visualization');
      M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
        ShowFrustum, true));
