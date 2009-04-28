@@ -89,7 +89,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows;
+  V3DSceneShadows, V3DSceneOctreeVisualize;
 
 var
   ShowStatus: boolean = true;
@@ -97,11 +97,6 @@ var
 
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
-
-  OctreeDisplayWhole: boolean = false;
-  { This is meaningful only if OctreeDisplayWhole = false.
-    -1 means "don't display octree". }
-  OctreeDisplayDepth: integer = -1;
 
   { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia
     wykrywanie kolizji:
@@ -312,16 +307,6 @@ begin
 end;
 
 procedure DrawStatus(data: Pointer);
-
-  function OctreeDisplayToStr: string;
-  begin
-    if OctreeDisplayWhole then
-      Result := 'whole' else
-    if OctreeDisplayDepth <> -1 then
-      Result := 'depth ' + IntToStr(OctreeDisplayDepth) else
-      Result := 'none';
-  end;
-
 const
   BoolToStrOO: array[boolean] of string = ('OFF','ON');
   StatusInsideCol: TVector4f = (0, 0, 0, 0.7);
@@ -447,9 +432,9 @@ begin
        Glw.ExamineNav.ScaleFactor ]));
   end;
 
-  strs.Append(Format('Camera Kind : %s, Octree display : %s',
-    [ VRMLCameraKindToStr[CameraKind],
-      OctreeDisplayToStr ]));
+  strs.Append(
+    Format('Camera Kind : %s', [VRMLCameraKindToStr[CameraKind]]) +
+    OctreeDisplayStatus);
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
@@ -504,104 +489,6 @@ end;
 procedure Draw3d(const ForCubeMap: boolean;
   const CameraMatrix, CameraRotationOnlyMatrix: TMatrix4Single;
   const Frustum: TFrustum);
-
-  procedure DisplayOctreeDepth(octreeDisplayDepth: integer);
-
-    procedure Doit(octreenode: TOctreeNode);
-    var
-      b0, b1, b2: boolean;
-    begin
-      with octreenode do
-        if Depth = octreeDisplayDepth then
-        begin
-          if not (IsLeaf and (ItemsCount = 0)) then
-            glDrawBox3dWire(Box);
-        end else
-        if not IsLeaf then
-        begin
-          for b0 := false to true do
-            for b1 := false to true do
-              for b2 := false to true do
-                Doit(TreeSubNodes[b0, b1, b2]);
-        end;
-    end;
-
-  var
-    SI: TVRMLShapeTreeIterator;
-  begin
-    { Octree is not always ready, as it's recalculation during animations
-      may hurt. Also, Draw may be called in various situations even when Scene
-      is not really ready (e.g. when showing errors after scene loading).
-      Also, octrees for particular shapes are not necessarily
-      created, since some shapes may be not collidable.
-      So we have to carefully check here whether appropriate things
-      are initialized. }
-
-    if (SceneAnimation <> nil) and
-       (SceneAnimation.ScenesCount <> 0) then
-    begin
-      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
-      try
-        while SI.GetNext do
-          if SI.Current.OctreeTriangles <> nil then
-          begin
-            glPushMatrix;
-              glMultMatrix(SI.Current.State.Transform);
-              Doit(SI.Current.OctreeTriangles.TreeRoot);
-            glPopMatrix;
-          end;
-      finally FreeAndNil(SI) end;
-    end;
-  end;
-
-  procedure DisplayOctreeWhole;
-
-    procedure Doit(OctreeNode: TOctreeNode);
-    var
-      b0, b1, b2: boolean;
-    begin
-      with OctreeNode do
-      begin
-        if not (IsLeaf and (ItemsCount = 0)) then
-          glDrawBox3dWire(Box);
-
-        if not IsLeaf then
-        begin
-          for b0 := false to true do
-            for b1 := false to true do
-              for b2 := false to true do
-                Doit(TreeSubNodes[b0, b1, b2]);
-        end;
-      end;
-    end;
-
-  var
-    SI: TVRMLShapeTreeIterator;
-  begin
-    { Octree is not always ready, as it's recalculation during animations
-      may hurt. Also, Draw may be called in various situations even when Scene
-      is not really ready (e.g. when showing errors after scene loading).
-      Also, octrees for particular shapes are not necessarily
-      created, since some shapes may be not collidable.
-      So we have to carefully check here whether appropriate things
-      are initialized. }
-
-    if (SceneAnimation <> nil) and
-       (SceneAnimation.ScenesCount <> 0) then
-    begin
-      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
-      try
-        while SI.GetNext do
-          if SI.Current.OctreeTriangles <> nil then
-          begin
-            glPushMatrix;
-              glMultMatrix(SI.Current.State.Transform);
-              Doit(SI.Current.OctreeTriangles.TreeRoot);
-            glPopMatrix;
-          end;
-      finally FreeAndNil(SI) end;
-    end;
-  end;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -694,16 +581,7 @@ begin
        CameraPos, CameraDir... }
      WalkNav);
 
- if OctreeDisplayWhole then
- begin
-   glColorv(Yellow3Single);
-   DisplayOctreeWhole;
- end else
- if OctreeDisplayDepth >= 0 then
- begin
-   glColorv(Yellow3Single);
-   DisplayOctreeDepth(OctreeDisplayDepth);
- end;
+ OctreeDisplay(SceneAnimation);
 
  if showBBox and (not MakingScreenShot) and (not ForCubeMap) then
  begin
@@ -1979,9 +1857,6 @@ const
   Version = '3.3.0';
   DisplayProgramName = 'view3dscene';
 
-var
-  MenuOctreeDisplayWhole: TMenuItemChecked;
-
 type
   THelperSpecialCastleNodes = class
     procedure Remove(ParentNode: TVRMLNode; var Node: TVRMLNode);
@@ -3136,40 +3011,17 @@ begin
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
 
-  97: begin
-        if OctreeDisplayWhole then
-        begin
-          OctreeDisplayWhole := false;
-          MenuOctreeDisplayWhole.Checked := OctreeDisplayWhole;
-          OctreeDisplayDepth := -1;
-        end;
+  97: OctreeTrianglesDisplay.DoMenuToggleWhole;
+  98: OctreeTrianglesDisplay.DoMenuIncDepth;
+  99: OctreeTrianglesDisplay.DoMenuDecDepth;
 
-        Inc(octreeDisplayDepth);
-        if (SceneOctreeCollisions <> nil) and
-           (octreeDisplayDepth > SceneOctreeCollisions.MaxDepth) then
-          octreeDisplayDepth := -1;
-      end;
+  190: OctreeVisibleShapesDisplay.DoMenuToggleWhole;
+  191: OctreeVisibleShapesDisplay.DoMenuIncDepth;
+  192: OctreeVisibleShapesDisplay.DoMenuDecDepth;
 
-  98: begin
-        if OctreeDisplayWhole then
-        begin
-          OctreeDisplayWhole := false;
-          MenuOctreeDisplayWhole.Checked := OctreeDisplayWhole;
-          OctreeDisplayDepth := -1;
-        end;
-
-        Dec(octreeDisplayDepth);
-        if octreeDisplayDepth < -1 then
-          if SceneOctreeCollisions <> nil then
-            octreeDisplayDepth := SceneOctreeCollisions.MaxDepth else
-            octreeDisplayDepth := 0;
-      end;
-
-  99: begin
-        OctreeDisplayWhole := not OctreeDisplayWhole;
-        if not OctreeDisplayWhole then
-          OctreeDisplayDepth := -1;
-      end;
+  195: OctreeCollidableShapesDisplay.DoMenuToggleWhole;
+  196: OctreeCollidableShapesDisplay.DoMenuIncDepth;
+  197: OctreeCollidableShapesDisplay.DoMenuDecDepth;
 
   100: SelectedShapeOctreeStat;
   101: if SceneOctreeCollisions <> nil then
@@ -3559,11 +3411,26 @@ begin
        ShowFrustumAlwaysVisible, true));
      M.Append(M2);
    M2 := TMenu.Create('Octree visualization');
-     MenuOctreeDisplayWhole := TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
-       99, OctreeDisplayWhole, true);
-     M2.Append(MenuOctreeDisplayWhole);
-     M2.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 97, CtrlU));
-     M2.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 98, CtrlD));
+     OctreeTrianglesDisplay.MenuWhole :=
+       TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
+       97, OctreeTrianglesDisplay.Whole, true);
+     M2.Append(OctreeTrianglesDisplay.MenuWhole);
+     M2.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 98, CtrlU));
+     M2.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 99, CtrlD));
+     M2.Append(TMenuSeparator.Create);
+     OctreeVisibleShapesDisplay.MenuWhole :=
+       TMenuItemChecked.Create('Show Whole Visible Shapes Octree',
+       190, OctreeVisibleShapesDisplay.Whole, true);
+     M2.Append(OctreeVisibleShapesDisplay.MenuWhole);
+     M2.Append(TMenuItem.Create('Show _Upper Level of Visible Shapes Octree', 191));
+     M2.Append(TMenuItem.Create('Show _Lower Level of Visible Shapes Octree', 192));
+     M2.Append(TMenuSeparator.Create);
+     OctreeCollidableShapesDisplay.MenuWhole :=
+       TMenuItemChecked.Create('Show Whole Collidable Shapes Octree',
+       195, OctreeCollidableShapesDisplay.Whole, true);
+     M2.Append(OctreeCollidableShapesDisplay.MenuWhole);
+     M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
+     M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Set Point Size ...', 182));
