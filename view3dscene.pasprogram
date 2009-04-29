@@ -490,7 +490,7 @@ begin
   PrepareRender(false);
 end;
 
-procedure Draw3d(const ForCubeMap: boolean;
+procedure Draw3d(const RenderTarget: TRenderTarget;
   const CameraMatrix, CameraRotationOnlyMatrix: TMatrix4Single;
   const Frustum: TFrustum);
 
@@ -578,7 +578,7 @@ begin
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
  if (SceneHeadlight <> nil) then
-   SceneHeadlight.Render(0, false, not ForCubeMap,
+   SceneHeadlight.Render(0, false, RenderTarget = rtScreen,
      { TODO: this isn't nice. We should just pass here current
        Glw.Navigator, so that headlight in Examine mode would work too.
        But we can't, since current TExamineNavigator doesn't provide
@@ -587,7 +587,7 @@ begin
 
  OctreeDisplay(SceneAnimation);
 
- if showBBox and (not MakingScreenShot) and (not ForCubeMap) then
+ if showBBox and (not MakingScreenShot) and (RenderTarget = rtScreen) then
  begin
    { Display current bounding box only if there's a chance that it's
      different than whole BoundingBoxSum --- this requires that animation
@@ -639,10 +639,10 @@ begin
    be never visible then (or should be just at the exact borders
    or visibility, so it's actually unspecified whether OpenGL would
    show it or not). }
- if ShowFrustum and (NavigatorKind = nkExamine) and (not ForCubeMap) then
+ if ShowFrustum and (NavigatorKind = nkExamine) and (RenderTarget = rtScreen) then
   DrawFrustum(ShowFrustumAlwaysVisible);
 
- if (SelectedItem <> nil) and (not ForCubeMap) then
+ if (SelectedItem <> nil) and (RenderTarget = rtScreen) then
  begin
    if not GLVersion.BuggyPointSetAttrib then
      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT) else
@@ -672,7 +672,7 @@ begin
    SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
    true, 0, 0, { Original Viewport: } 0, 0, Glwin.Width, Glwin.Height);
 
- Draw3d(false, Glw.Navigator.Matrix, Glw.Navigator.RotationOnlyMatrix,
+ Draw3d(rtScreen, Glw.Navigator.Matrix, Glw.Navigator.RotationOnlyMatrix,
    Glw.Navigator.Frustum);
 
  if ShowStatus and (not MakingScreenShot) then
