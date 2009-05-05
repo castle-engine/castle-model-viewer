@@ -575,6 +575,8 @@ begin
  glLoadMatrix(CameraMatrix);
  VRMLOpenGLRenderer.CameraMatrix := CameraMatrix;
 
+ Scene.CameraMatrixChanged(CameraMatrix);
+
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
  if (SceneHeadlight <> nil) then
