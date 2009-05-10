@@ -89,7 +89,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows, V3DSceneOctreeVisualize;
+  V3DSceneShadows, V3DSceneOctreeVisualize, RenderStateUnit;
 
 var
   ShowStatus: boolean = true;
@@ -243,7 +243,9 @@ begin
     { VRMLOpenGLRenderer.CameraMatrix must be already set,
       since PrepareRender may do some operations on texture gen modes
       in WORLDSPACE*. }
-    VRMLOpenGLRenderer.CameraMatrix := Glw.Navigator.Matrix;
+    RenderState.CameraMatrix := Glw.Navigator.Matrix;
+    RenderState.CameraInverseMatrixDone := false;
+    RenderState.CameraMatrixChanged;
 
     SceneAnimation.PrepareRender(TG, Options, AllowProgress);
   finally
@@ -573,9 +575,12 @@ begin
  ClearAndRenderBackground;
 
  glLoadMatrix(CameraMatrix);
- VRMLOpenGLRenderer.CameraMatrix := CameraMatrix;
 
- Scene.CameraMatrixChanged(CameraMatrix);
+ RenderState.CameraMatrix := CameraMatrix;
+ RenderState.CameraInverseMatrixDone := false;
+ RenderState.CameraMatrixChanged;
+
+ Scene.CameraMatrixChanged;
 
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
