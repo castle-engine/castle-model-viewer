@@ -245,6 +245,8 @@ begin
       in WORLDSPACE*. }
     RenderState.CameraMatrix := Glw.Navigator.Matrix;
     RenderState.CameraInverseMatrixDone := false;
+    RenderState.CameraRotationMatrix := Glw.Navigator.RotationMatrix;
+    RenderState.CameraRotationInverseMatrixDone := false;
     RenderState.CameraChanged;
 
     SceneAnimation.PrepareRender(TG, Options, AllowProgress);
@@ -493,7 +495,7 @@ begin
 end;
 
 procedure Draw3d(const RenderTarget: TRenderTarget;
-  const CameraMatrix, CameraRotationOnlyMatrix: TMatrix4Single;
+  const CameraMatrix, CameraRotationMatrix: TMatrix4Single;
   const Frustum: TFrustum);
 
   procedure DrawFrustum(AlwaysVisible: boolean);
@@ -561,7 +563,7 @@ var
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       end;
       try
-        glLoadMatrix(CameraRotationOnlyMatrix);
+        glLoadMatrix(CameraRotationMatrix);
         Scene.Background.Render;
       finally
         if BackgroundWireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -578,6 +580,8 @@ begin
 
  RenderState.CameraMatrix := CameraMatrix;
  RenderState.CameraInverseMatrixDone := false;
+ RenderState.CameraRotationMatrix := CameraRotationMatrix;
+ RenderState.CameraRotationInverseMatrixDone := false;
  RenderState.CameraChanged;
 
  { Set properties of headlight. Actual enabled state of headlight will be
@@ -677,7 +681,7 @@ begin
    SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
    true, 0, 0, { Original Viewport: } 0, 0, Glwin.Width, Glwin.Height);
 
- Draw3d(rtScreen, Glw.Navigator.Matrix, Glw.Navigator.RotationOnlyMatrix,
+ Draw3d(rtScreen, Glw.Navigator.Matrix, Glw.Navigator.RotationMatrix,
    Glw.Navigator.Frustum);
 
  if ShowStatus and (not MakingScreenShot) then
