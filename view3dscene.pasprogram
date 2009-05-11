@@ -240,12 +240,12 @@ begin
       TG := TG + [tgOpaque, tgTransparent];
     end;
 
-    { VRMLOpenGLRenderer.CameraMatrix must be already set,
+    { RenderState.Camera* must be already set,
       since PrepareRender may do some operations on texture gen modes
       in WORLDSPACE*. }
     RenderState.CameraMatrix := Glw.Navigator.Matrix;
     RenderState.CameraInverseMatrixDone := false;
-    RenderState.CameraMatrixChanged;
+    RenderState.CameraChanged;
 
     SceneAnimation.PrepareRender(TG, Options, AllowProgress);
   finally
@@ -578,9 +578,7 @@ begin
 
  RenderState.CameraMatrix := CameraMatrix;
  RenderState.CameraInverseMatrixDone := false;
- RenderState.CameraMatrixChanged;
-
- Scene.CameraMatrixChanged;
+ RenderState.CameraChanged;
 
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
