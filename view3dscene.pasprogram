@@ -243,11 +243,7 @@ begin
     { RenderState.Camera* must be already set,
       since PrepareRender may do some operations on texture gen modes
       in WORLDSPACE*. }
-    RenderState.CameraMatrix := Glw.Navigator.Matrix;
-    RenderState.CameraInverseMatrixDone := false;
-    RenderState.CameraRotationMatrix := Glw.Navigator.RotationMatrix;
-    RenderState.CameraRotationInverseMatrixDone := false;
-    RenderState.CameraChanged;
+    RenderState.CameraFromNavigator(Glw.Navigator);
 
     SceneAnimation.PrepareRender(TG, Options, AllowProgress);
   finally
@@ -494,9 +490,7 @@ begin
   PrepareRender(false);
 end;
 
-procedure Draw3d(const RenderTarget: TRenderTarget;
-  const CameraMatrix, CameraRotationMatrix: TMatrix4Single;
-  const Frustum: TFrustum);
+procedure Draw3d(const RenderTarget: TRenderTarget);
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -563,7 +557,7 @@ var
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
       end;
       try
-        glLoadMatrix(CameraRotationMatrix);
+        glLoadMatrix(RenderState.CameraRotationMatrix);
         Scene.Background.Render;
       finally
         if BackgroundWireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -576,13 +570,7 @@ begin
  Scene := SceneAnimation.SceneFromTime(AnimationTime);
  ClearAndRenderBackground;
 
- glLoadMatrix(CameraMatrix);
-
- RenderState.CameraMatrix := CameraMatrix;
- RenderState.CameraInverseMatrixDone := false;
- RenderState.CameraRotationMatrix := CameraRotationMatrix;
- RenderState.CameraRotationInverseMatrixDone := false;
- RenderState.CameraChanged;
+ glLoadMatrix(RenderState.CameraMatrix);
 
  { Set properties of headlight. Actual enabled state of headlight will be
    set later by BeginRenderSceneWithLights. }
@@ -633,8 +621,8 @@ begin
      if ShadowsPossibleCurrently and
         ShadowsOn and
         Scene.MainLightForShadowsExists then
-       ShadowsRender(Scene, Frustum, Scene.MainLightForShadows) else
-       Scene.RenderFrustum(Frustum, tgAll);
+       ShadowsRender(Scene, RenderState.CameraFrustum, Scene.MainLightForShadows) else
+       Scene.RenderFrustum(RenderState.CameraFrustum, tgAll);
 
      LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
      LastRender_BoxesOcclusionQueriedCount := Scene.LastRender_BoxesOcclusionQueriedCount;
@@ -681,8 +669,8 @@ begin
    SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
    true, 0, 0, { Original Viewport: } 0, 0, Glwin.Width, Glwin.Height);
 
- Draw3d(rtScreen, Glw.Navigator.Matrix, Glw.Navigator.RotationMatrix,
-   Glw.Navigator.Frustum);
+ RenderState.CameraFromNavigator(Glw.Navigator);
+ Draw3d(rtScreen);
 
  if ShowStatus and (not MakingScreenShot) then
  begin
