@@ -201,11 +201,38 @@ type
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
     class procedure WalkerMatrixChanged(Navigator: TNavigator);
-
-    class procedure RenderFromView(const RenderTarget: TRenderTarget);
   end;
 
-{ Helper functions -------------------------------------------------- }
+{ SceneManager --------------------------------------------------------------- }
+
+type
+  TV3DSceneManager = class(TV3DShadowsSceneManager)
+  protected
+    procedure RenderHeadLight(const RenderTarget: TRenderTarget); override;
+    procedure RenderFromView3D(const RenderTarget: TRenderTarget); override;
+  public
+    procedure InitProperties(AScene: TVRMLGLScene);
+  end;
+
+var
+  SceneManager: TV3DSceneManager;
+
+procedure TV3DSceneManager.InitProperties(AScene: TVRMLGLScene);
+begin
+  InitShadowsProperties;
+
+  Scene := AScene;
+  Navigator := Glw.Navigator;
+
+  ViewportX := 0;
+  ViewportY := 0;
+  ViewportWidth := Glw.Width;
+  ViewportHeight := Glw.Height;
+
+  BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+end;
+
+{ Helper functions ----------------------------------------------------------- }
 
 procedure UpdateSelectedEnabled;
 begin
@@ -254,6 +281,10 @@ var
 begin
   AllowProgress := AllowProgress and
     (SceneAnimation.ScenesCount > 1);
+
+  { TODO: this should go through SceneManager.PrepareRender in the future,
+    except that SceneManager for now works only with a single TVRMLGLScene,
+    not TVRMLGLAnimation. }
 
   if AllowProgress then
     Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation', true);
@@ -518,7 +549,20 @@ begin
   PrepareRender(false);
 end;
 
-class procedure THelper.RenderFromView(const RenderTarget: TRenderTarget);
+procedure TV3DSceneManager.RenderHeadLight(const RenderTarget: TRenderTarget);
+begin
+  { Set properties of headlight. Actual enabled state of headlight will be
+    set later by BeginRenderSceneWithLights inside RenderFromView3D. }
+  if (SceneHeadlight <> nil) then
+    SceneHeadlight.Render(0, false, RenderTarget = rtScreen,
+      { TODO: this isn't nice. We should just pass here current
+        Glw.Navigator, so that headlight in Examine mode would work too.
+        But we can't, since current TExamineNavigator doesn't provide
+        CameraPos, CameraDir... }
+      WalkNav);
+end;
+
+procedure TV3DSceneManager.RenderFromView3D(const RenderTarget: TRenderTarget);
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -542,175 +586,104 @@ class procedure THelper.RenderFromView(const RenderTarget: TRenderTarget);
     end;
   end;
 
-var
-  Scene: TVRMLGLScene;
-
-  procedure ClearAndRenderBackground;
-  var
-    BackgroundWireframe: boolean;
-    ClearBuffers: TGLbitfield;
-  begin
-    ClearBuffers := GL_DEPTH_BUFFER_BIT;
-    if ShadowsPossibleCurrently and
-       ShadowsOn and
-       Scene.MainLightForShadowsExists then
-      ClearBuffers := ClearBuffers or GL_STENCIL_BUFFER_BIT;
-
-    glClear(ClearBuffers);
-
-    if Scene.Background <> nil then
-    begin
-      { jezeli BackgroundWireframe i mamy Background to rysujemy
-        Backgr w trybie wireframe (czyszczac
-        poprzednio teren przez glClear(GL_COLOR_BUFFER_BIT)) - nawet jezeli nie jest
-        zdefiniowane czy Backgr.Render nie bedzie takze uzywalo glClear do wyczyszczenia
-        ekranu. W rezultacie wynik renderowania jest nieco niezdefiniowany (zalezy
-        od tego jak bedzie dzialac Backgr.Render - czy ekran bedzie pokazywal szkielet
-        jakiejs kuli i za nim kolor BGColor czy tez moze bedzie wypelniony kolorem
-        Backgr.FdSkyColors[0]) ale to nic - to co widac w trybie wireframe nigdy nie mialo
-        byc jasno zdefiniowane i zawsze bylo w tym widac sporo implementation-specific
-        rzeczy.
-
-        Nie zdecydowalem sie na prostsze rozwiazanie (i dajace lepiej zdefiniowany
-        rezultat renderowania) aby zignorowac Wireframe przy rysowaniu Backgr.
-        Zrobilem to dlatego ze ogladanie nieba w trybie wireframe jest pomocne -
-        czasem wygodnie jest wiedziec gdzie przebiegaja krawedzie szescianu nieba
-        aby zobaczyc czy niebo tam dobrze pasuje. Jest to tez pomocne mi abym mogl
-        sprawdzic czy BackgroundGL dziala dobrze.
-      }
-      BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
-      if BackgroundWireframe then
-      begin
-        glClear(GL_COLOR_BUFFER_BIT);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      end;
-      try
-        glLoadMatrix(RenderState.CameraRotationMatrix);
-        Scene.Background.Render;
-      finally
-        if BackgroundWireframe then glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      end;
-    end else
-      glClear(GL_COLOR_BUFFER_BIT);
-  end;
-
 begin
- Scene := SceneAnimation.SceneFromTime(AnimationTime);
- ClearAndRenderBackground;
+  { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
+    may be costly operation. So don't do this. }
+  if Scene.BumpMappingMethod in bmGLSLAll then
+    Scene.BumpMappingLightPosition := WalkNav.CameraPos;
 
- glLoadMatrix(RenderState.CameraMatrix);
+  BeginRenderSceneWithLights(SceneAnimation);
 
- { Set properties of headlight. Actual enabled state of headlight will be
-   set later by BeginRenderSceneWithLights. }
- if (SceneHeadlight <> nil) then
-   SceneHeadlight.Render(0, false, RenderTarget = rtScreen,
-     { TODO: this isn't nice. We should just pass here current
-       Glw.Navigator, so that headlight in Examine mode would work too.
-       But we can't, since current TExamineNavigator doesn't provide
-       CameraPos, CameraDir... }
-     WalkNav);
+    if FillMode = fmSilhouetteBorderEdges then
+      RenderSilhouetteBorderEdges(Vector4Single(WalkNav.CameraPos, 1), Scene) else
+    begin
+      { Scene.RenderFrustum (inside inherited)
+        will automatically use octree, if available.
+        Note that octree may be not available (for animations,
+        OctreeRendering is constructed only for the 1st scene.
+        Also, generation of octree may be turned off for
+        speed purposes.) }
 
- OctreeDisplay(SceneAnimation);
+      inherited;
 
- if showBBox and (not MakingScreenShot) and (RenderTarget = rtScreen) then
- begin
-   { Display current bounding box only if there's a chance that it's
-     different than whole BoundingBoxSum --- this requires that animation
-     has at least two frames. }
-   if SceneAnimation.ScenesCount > 1 then
-   begin
-     glColorv(Red3Single);
-     if not IsEmptyBox3d(Scene.BoundingBox) then
-       glDrawBox3dWire(Scene.BoundingBox);
-   end;
+      LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
+      LastRender_BoxesOcclusionQueriedCount := Scene.LastRender_BoxesOcclusionQueriedCount;
+      LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
+    end;
 
-   glColorv(Green3Single);
-   if not IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
-     glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
- end;
+  EndRenderSceneWithLights;
 
- { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
-   may be costly operation. So don't do this. }
- if Scene.BumpMappingMethod in bmGLSLAll then
-   Scene.BumpMappingLightPosition := WalkNav.CameraPos;
+  OctreeDisplay(SceneAnimation);
 
- BeginRenderSceneWithLights(SceneAnimation);
+  if RenderTarget = rtScreen then
+  begin
+    if showBBox and (not MakingScreenShot) then
+    begin
+      { Display current bounding box only if there's a chance that it's
+        different than whole BoundingBoxSum --- this requires that animation
+        has at least two frames. }
+      if SceneAnimation.ScenesCount > 1 then
+      begin
+        glColorv(Red3Single);
+        if not IsEmptyBox3d(Scene.BoundingBox) then
+          glDrawBox3dWire(Scene.BoundingBox);
+      end;
 
-   if FillMode = fmSilhouetteBorderEdges then
-     RenderSilhouetteBorderEdges(Vector4Single(WalkNav.CameraPos, 1), Scene) else
-   begin
-     { Scene.RenderFrustum (below, or inside ShadowsRender)
-       will automatically use octree, if available.
-       Note that octree may be not available (for animations,
-       OctreeRendering is constructed only for the 1st scene.
-       Also, generation of octree may be turned off for
-       speed purposes.) }
+      glColorv(Green3Single);
+      if not IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
+        glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
+    end;
 
-     if ShadowsPossibleCurrently and
-        ShadowsOn and
-        Scene.MainLightForShadowsExists then
-       ShadowsRender(Scene, RenderState.CameraFrustum, Scene.MainLightForShadows) else
-       Scene.RenderFrustum(RenderState.CameraFrustum, tgAll);
+    { Note that there is no sense in showing viewing frustum in
+      NavigatorKind <> nkExamine, since viewing frustum should
+      be never visible then (or should be just at the exact borders
+      or visibility, so it's actually unspecified whether OpenGL would
+      show it or not). }
+    if ShowFrustum and (NavigatorKind = nkExamine) then
+     DrawFrustum(ShowFrustumAlwaysVisible);
 
-     LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
-     LastRender_BoxesOcclusionQueriedCount := Scene.LastRender_BoxesOcclusionQueriedCount;
-     LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
-   end;
+    if SelectedItem <> nil then
+    begin
+      if not GLVersion.BuggyPointSetAttrib then
+        glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT) else
+        glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
 
- EndRenderSceneWithLights;
+        glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
+        glColorv(White3Single);
 
- { Note that there is no sense in showing viewing frustum in
-   NavigatorKind <> nkExamine, since viewing frustum should
-   be never visible then (or should be just at the exact borders
-   or visibility, so it's actually unspecified whether OpenGL would
-   show it or not). }
- if ShowFrustum and (NavigatorKind = nkExamine) and (RenderTarget = rtScreen) then
-  DrawFrustum(ShowFrustumAlwaysVisible);
+        glLineWidth(3.0); { saved by GL_LINE_BIT }
+        glBegin(GL_LINE_LOOP);
+          glVertexv(SelectedItem^.World.Triangle[0]);
+          glVertexv(SelectedItem^.World.Triangle[1]);
+          glVertexv(SelectedItem^.World.Triangle[2]);
+        glEnd;
 
- if (SelectedItem <> nil) and (RenderTarget = rtScreen) then
- begin
-   if not GLVersion.BuggyPointSetAttrib then
-     glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT) else
-     glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
-
-     glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-     glColorv(White3Single);
-
-     glLineWidth(3.0); { saved by GL_LINE_BIT }
-     glBegin(GL_LINE_LOOP);
-       glVertexv(SelectedItem^.World.Triangle[0]);
-       glVertexv(SelectedItem^.World.Triangle[1]);
-       glVertexv(SelectedItem^.World.Triangle[2]);
-     glEnd;
-
-     glPointSize(5.0); { saved by GL_POINT_BIT }
-     glBegin(GL_POINTS);
-       glVertexv(SelectedPointWorld);
-     glEnd;
-   glPopAttrib;
- end;
+        glPointSize(5.0); { saved by GL_POINT_BIT }
+        glBegin(GL_POINTS);
+          glVertexv(SelectedPointWorld);
+        glEnd;
+      glPopAttrib;
+    end;
+  end;
 end;
 
 procedure Draw(Glwin: TGLWindow);
 begin
- SceneAnimation.FirstScene.UpdateGeneratedTextures(
-   @THelper(nil).RenderFromView,
-   SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
-   true, 0, 0, { Original Viewport: } 0, 0, Glwin.Width, Glwin.Height);
+  SceneManager.InitProperties(
+    SceneAnimation.SceneFromTime(AnimationTime));
 
- RenderState.CameraFromNavigator(Glw.Navigator);
- THelper.RenderFromView(rtScreen);
+  SceneManager.Render;
 
- if ShowStatus and (not MakingScreenShot) then
- begin
-  { Note that DrawStatus changes current modelview matrix,
-    so you want to always leave drawing status at the end of this Draw
-    procedure. }
-  glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Glwin.Width, 0, Glwin.Height);
-  glPopAttrib;
- end;
+  if ShowStatus and (not MakingScreenShot) then
+  begin
+    { Note that DrawStatus changes current modelview matrix,
+      so you want to always leave drawing status at the end of this Draw
+      procedure. }
+    glPushAttrib(GL_ENABLE_BIT);
+      glDisable(GL_DEPTH_TEST);
+      glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Glwin.Width, 0, Glwin.Height);
+    glPopAttrib;
+  end;
 end;
 
 var
@@ -2843,7 +2816,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
           GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos,
-            @THelper(nil).RenderFromView,
+            @SceneManager.RenderFromView,
             SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
             true, 0, 0);
           glViewport(0, 0, Glwin.Width, Glwin.Height);
@@ -2910,7 +2883,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
       begin
         DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos,
-          @THelper(nil).RenderFromView,
+          @SceneManager.RenderFromView,
           SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
           true, 0, 0);
         try
@@ -3756,6 +3729,8 @@ begin
     OptimizationSaveConfig := false;
   end;
 
+  SceneManager := TV3DSceneManager.Create;
+
   SceneWarnings := TSceneWarnings.Create;
   try
     VRMLWarning := @DoVRMLWarning;
@@ -3863,7 +3838,10 @@ begin
         RecentMenu.SaveToConfig(ConfigFile, 'recent_files');
       FreeAndNil(RecentMenu);
     end;
-  finally FreeAndNil(SceneWarnings); end;
+  finally
+    FreeAndNil(SceneWarnings);
+    FreeAndNil(SceneManager);
+  end;
 end.
 
 {

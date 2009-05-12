@@ -2,7 +2,19 @@ unit V3DSceneShadows;
 
 interface
 
-uses ShadowVolumes, GLWindow, VRMLGLScene, VectorMath, Frustum;
+uses ShadowVolumes, GLWindow, VRMLGLScene, VectorMath, Frustum,
+  SceneManagerUnit;
+
+type
+  { TSceneManager descendant that takes care of setting
+    TSceneManager shadow volume properties, and modifies a little
+    shadow volume rendering to work nicely with all view3dscene
+    configurations (bump mapping, fill modes etc.) }
+  TV3DShadowsSceneManager = class(TSceneManager)
+  protected
+    procedure InitShadowsProperties;
+    procedure RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup); override;
+  end;
 
 var
   MenuShadowsMenu: TMenu;
@@ -26,8 +38,6 @@ var
 
 procedure ShadowsGLInit;
 procedure ShadowsGLClose;
-procedure ShadowsRender(Scene: TVRMLGLscene;
-  const Frustum: TFrustum; const MainLightPosition: TVector4Single);
 
 implementation
 
@@ -51,21 +61,19 @@ begin
   FreeAndNil(SV);
 end;
 
-type
-  TRenderer = class
-    Scene: TVRMLGLScene;
-    Frustum: PFrustum;
-    procedure RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup);
-    procedure RenderShadowVolumes;
-  end;
+procedure TV3DShadowsSceneManager.InitShadowsProperties;
+begin
+  ShadowVolumesPossible := ShadowsPossibleCurrently;
+  ShadowVolumes := ShadowsOn;
+  SV := V3DSceneShadows.SV;
+  ShadowVolumesDraw := DrawShadowVolumes;
+end;
 
-procedure TRenderer.RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup);
+procedure TV3DShadowsSceneManager.RenderScene(
+  InShadow: boolean; TransparentGroup: TTransparentGroup);
 var
   OldColor: TVector4Single;
 begin
-  if TransparentGroup = tgTransparent then
-    Scene.LastRender_SumNext;
-
   if InShadow then
   begin
     { Thanks to using PureGeometryShadowedColor, shadow is visible
@@ -81,38 +89,14 @@ begin
     OldColor := Scene.BumpMappingLightDiffuseColor;
     Scene.BumpMappingLightDiffuseColor := Black4Single;
 
-    Scene.RenderFrustum(Frustum^, TransparentGroup, @Scene.LightRenderInShadow);
+    inherited;
 
     Scene.BumpMappingLightDiffuseColor := OldColor;
 
     if Scene.Attributes.PureGeometry then
       glPopAttrib;
   end else
-    Scene.RenderFrustum(Frustum^, TransparentGroup, nil);
-end;
-
-procedure TRenderer.RenderShadowVolumes;
-begin
-  Scene.InitAndRenderShadowVolume(SV, true, IdentityMatrix4Single);
-end;
-
-procedure ShadowsRender(Scene: TVRMLGLscene;
-  const Frustum: TFrustum; const MainLightPosition: TVector4Single);
-var
-  R: TRenderer;
-begin
-  R := TRenderer.Create;
-  try
-    R.Scene := Scene;
-    R.Frustum := @Frustum;
-
-    SV.InitFrustumAndLight(Frustum, MainLightPosition);
-    SV.Render(
-      nil,
-      @R.RenderScene,
-      @R.RenderShadowVolumes,
-      DrawShadowVolumes);
-  finally FreeAndNil(R) end;
+    inherited;
 end;
 
 initialization
