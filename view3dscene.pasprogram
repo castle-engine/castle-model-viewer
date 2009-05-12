@@ -177,6 +177,34 @@ var
   LastRender_BoxesOcclusionQueriedCount: Cardinal;
   LastRender_VisibleShapesCount: Cardinal;
 
+{ Helper class ---------------------------------------------------------------
+  Some callbacks here require methods, so we just use this
+  dummy class to add them into. }
+
+type
+  THelper = class
+    class function MoveAllowed(Navigator: TWalkNavigator;
+      const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
+      const BecauseOfGravity: boolean): boolean;
+
+    class procedure GetCameraHeight(Navigator: TWalkNavigator;
+      out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
+
+    class procedure OpenRecent(const FileName: string);
+
+    class procedure GeometryChanged(Scene: TVRMLScene;
+      const SomeLocalGeometryChanged: boolean);
+    class procedure PostRedisplay(Scene: TVRMLScene);
+
+    class procedure BoundViewpointChanged(Scene: TVRMLScene);
+    class procedure ViewpointsChanged(Scene: TVRMLScene);
+    class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
+
+    class procedure WalkerMatrixChanged(Navigator: TNavigator);
+
+    class procedure RenderFromView(const RenderTarget: TRenderTarget);
+  end;
+
 { Helper functions -------------------------------------------------- }
 
 procedure UpdateSelectedEnabled;
@@ -490,7 +518,7 @@ begin
   PrepareRender(false);
 end;
 
-procedure Draw3d(const RenderTarget: TRenderTarget);
+class procedure THelper.RenderFromView(const RenderTarget: TRenderTarget);
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -665,12 +693,13 @@ end;
 
 procedure Draw(Glwin: TGLWindow);
 begin
- SceneAnimation.FirstScene.UpdateGeneratedTextures(@Draw3d,
+ SceneAnimation.FirstScene.UpdateGeneratedTextures(
+   @THelper(nil).RenderFromView,
    SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
    true, 0, 0, { Original Viewport: } 0, 0, Glwin.Width, Glwin.Height);
 
  RenderState.CameraFromNavigator(Glw.Navigator);
- Draw3d(rtScreen);
+ THelper.RenderFromView(rtScreen);
 
  if ShowStatus and (not MakingScreenShot) then
  begin
@@ -867,31 +896,6 @@ begin
 end;
 
 { TWalkNavigator collision detection using SceneOctreeCollisions --------------- }
-
-type
-  THelper = class
-    class function MoveAllowed(Navigator: TWalkNavigator;
-      const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
-      const BecauseOfGravity: boolean): boolean;
-
-    class procedure GetCameraHeight(Navigator: TWalkNavigator;
-      out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
-
-    class procedure OpenRecent(const FileName: string);
-
-    class procedure GeometryChanged(Scene: TVRMLScene;
-      const SomeLocalGeometryChanged: boolean);
-    class procedure PostRedisplay(Scene: TVRMLScene);
-
-    class procedure BoundViewpointChanged(Scene: TVRMLScene);
-    class procedure ViewpointsChanged(Scene: TVRMLScene);
-    class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
-
-    class procedure WalkerMatrixChanged(Navigator: TNavigator);
-  end;
-
-var
-  Helper: THelper;
 
 class function THelper.MoveAllowed(Navigator: TWalkNavigator;
   const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
@@ -1507,11 +1511,11 @@ begin
 
       SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
 
-      SceneAnimation.Scenes[I].OnGeometryChanged := @Helper.GeometryChanged;
-      SceneAnimation.Scenes[I].OnPostRedisplay := @Helper.PostRedisplay;
-      SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @Helper.BoundViewpointChanged;
-      SceneAnimation.Scenes[I].OnViewpointsChanged := @Helper.ViewpointsChanged;
-      SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @Helper.BoundViewpointVectorsChanged;
+      SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
+      SceneAnimation.Scenes[I].OnPostRedisplay := @THelper(nil).PostRedisplay;
+      SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @THelper(nil).BoundViewpointChanged;
+      SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
+      SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
 
     end;
 
@@ -2838,7 +2842,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos, @Draw3d,
+          GLCaptureCubeMapImages(CubeMapImg, WalkNav.CameraPos,
+            @THelper(nil).RenderFromView,
             SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
             true, 0, 0);
           glViewport(0, 0, Glwin.Width, Glwin.Height);
@@ -2904,7 +2909,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
       begin
-        DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos, @Draw3d,
+        DDS := GLCaptureCubeMapDDS(Size, WalkNav.CameraPos,
+          @THelper(nil).RenderFromView,
           SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
           true, 0, 0);
         try
@@ -3772,7 +3778,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     InitMultiNavigators(glw, SceneAnimation,
-      @Helper.MoveAllowed, @Helper.GetCameraHeight, @Helper.WalkerMatrixChanged);
+      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).WalkerMatrixChanged);
 
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create;
@@ -3786,7 +3792,7 @@ begin
 
       RecentMenu := TGLRecentMenu.Create;
       RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
-      RecentMenu.OnOpenRecent := @Helper.OpenRecent;
+      RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
       { init "scene global variables" to non-null values }
       LoadClearScene;
