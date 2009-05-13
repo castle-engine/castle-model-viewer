@@ -208,8 +208,8 @@ type
 type
   TV3DSceneManager = class(TV3DShadowsSceneManager)
   protected
-    procedure RenderHeadLight(const RenderTarget: TRenderTarget); override;
-    procedure RenderFromView3D(const RenderTarget: TRenderTarget); override;
+    procedure RenderHeadLight; override;
+    procedure RenderFromView3D; override;
   public
     procedure InitProperties(AScene: TVRMLGLScene);
   end;
@@ -549,12 +549,12 @@ begin
   PrepareRender(false);
 end;
 
-procedure TV3DSceneManager.RenderHeadLight(const RenderTarget: TRenderTarget);
+procedure TV3DSceneManager.RenderHeadLight;
 begin
   { Set properties of headlight. Actual enabled state of headlight will be
     set later by BeginRenderSceneWithLights inside RenderFromView3D. }
   if (SceneHeadlight <> nil) then
-    SceneHeadlight.Render(0, false, RenderTarget = rtScreen,
+    SceneHeadlight.Render(0, false, RenderState.Target = rtScreen,
       { TODO: this isn't nice. We should just pass here current
         Glw.Navigator, so that headlight in Examine mode would work too.
         But we can't, since current TExamineNavigator doesn't provide
@@ -562,7 +562,7 @@ begin
       WalkNav);
 end;
 
-procedure TV3DSceneManager.RenderFromView3D(const RenderTarget: TRenderTarget);
+procedure TV3DSceneManager.RenderFromView3D;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -615,7 +615,7 @@ begin
 
   OctreeDisplay(SceneAnimation);
 
-  if RenderTarget = rtScreen then
+  if RenderState.Target = rtScreen then
   begin
     if showBBox and (not MakingScreenShot) then
     begin
