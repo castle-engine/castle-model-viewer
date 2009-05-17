@@ -83,18 +83,15 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   VRMLNodes, Object3dAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
-  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape,
+  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape, RenderStateUnit,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   MultiNavigators, SceneChangesUnit, BGColors, V3DSceneCamera,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows, V3DSceneOctreeVisualize, RenderStateUnit;
+  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig;
 
 var
-  ShowStatus: boolean = true;
-  ShowBBox: boolean = true;
-
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
 
@@ -3178,6 +3175,9 @@ begin
   750: ShadowsOn := not ShadowsOn;
   760: DrawShadowVolumes := not DrawShadowVolumes;
 
+  770: InitialShowBBox := not InitialShowBBox;
+  771: InitialShowStatus := not InitialShowStatus;
+
   1000..1099: SetColorModulatorType(
     TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
@@ -3314,6 +3314,10 @@ begin
        M2.Append(M3);
      M2.Append(TMenuItemChecked.Create('_Shadows Possible (Restart view3dscene to Apply)',
        740, ShadowsPossibleWanted, true));
+     M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
+       InitialShowBBox, true));
+     M2.Append(TMenuItemChecked.Create('Show Status Text at Start', 771,
+       InitialShowStatus, true));
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
@@ -3579,7 +3583,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..11] of TOption =
+  Options: array[0..12] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3592,7 +3596,8 @@ const
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-vrml-changes'; Argument: oaNone),
-    (Short:  #0; Long: 'anti-alias'; Argument: oaRequired)
+    (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
+    (Short: 'H'; Long: 'hide-extras'; Argument: oaNone)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3621,6 +3626,9 @@ const
            'Available options are:' +NL+
            HelpOptionHelp +NL+
            VersionOptionHelp +NL+
+           '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
+           '                        or bounding box) when program starts.' +NL+
+           '                        Show only the 3D world.' +NL+
            '  --camera-radius RADIUS' +NL+
            '                        Set camera sphere radius used for collisions' +NL+
            '                        and determinig moving speed' +NL+
@@ -3696,6 +3704,10 @@ const
           AntiAliasing := Clamped(StrToInt(Argument), 0, MaxAntiAliasing);
           if AntiAliasingMenu[AntiAliasing] <> nil then
             AntiAliasingMenu[AntiAliasing].Checked := true;
+        end;
+    12: begin
+          ShowBBox := false;
+          ShowStatus := false;
         end;
     else raise EInternalError.Create('OptionProc');
    end;
