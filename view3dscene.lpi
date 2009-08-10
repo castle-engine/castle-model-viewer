@@ -41,7 +41,7 @@
         <PackageName Value="kambi_units"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="33">
+    <Units Count="34">
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
@@ -243,8 +243,8 @@
       <Unit31>
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
         <UnitName Value="VRMLScene"/>
-        <CursorPos X="1" Y="4974"/>
-        <TopLine Value="4962"/>
+        <CursorPos X="19" Y="2283"/>
+        <TopLine Value="2266"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
@@ -253,12 +253,21 @@
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
         <CursorPos X="43" Y="482"/>
         <TopLine Value="474"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit32>
+      <Unit33>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlshape.pas"/>
+        <UnitName Value="VRMLShape"/>
+        <CursorPos X="23" Y="855"/>
+        <TopLine Value="837"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit33>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="17" HistoryIndex="16">
       <Position1>
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="3171" Column="13" TopLine="3165"/>
@@ -295,6 +304,38 @@
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
         <Caret Line="14" Column="27" TopLine="1"/>
       </Position9>
+      <Position10>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="4974" Column="1" TopLine="4962"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="4943" Column="1" TopLine="4909"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="4885" Column="28" TopLine="4853"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="4886" Column="28" TopLine="4853"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlshape.pas"/>
+        <Caret Line="855" Column="23" TopLine="837"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="2283" Column="27" TopLine="2264"/>
+      </Position15>
+      <Position16>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="4943" Column="1" TopLine="4926"/>
+      </Position16>
+      <Position17>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="2283" Column="26" TopLine="2266"/>
+      </Position17>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
