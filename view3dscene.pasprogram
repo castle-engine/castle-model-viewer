@@ -209,6 +209,7 @@ type
     procedure RenderFromView3D; override;
   public
     procedure InitProperties(AScene: TVRMLGLScene);
+    function ViewerToChanges: TPostRedisplayChanges; override;
   end;
 
 var
@@ -553,6 +554,13 @@ begin
   if (SceneHeadlight <> nil) then
     SceneHeadlight.Render(0, false, RenderState.Target = rtScreen,
       Glw.Navigator);
+end;
+
+function TV3DSceneManager.ViewerToChanges: TPostRedisplayChanges;
+begin
+  if HeadLight then
+    Result := [prVisibleSceneNonGeometry] else
+    Result := [];
 end;
 
 procedure TV3DSceneManager.RenderFromView3D;
@@ -1059,17 +1067,10 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-function HeadlightToChanges: TPostRedisplayChanges;
-begin
-  if HeadLight then
-    Result := [prVisibleSceneNonGeometry] else
-    Result := [];
-end;
-
 class procedure THelper.MatrixChanged(Navigator: TNavigator);
 begin
   SceneAnimation.SceneFromTime(AnimationTime).ViewerChanged(
-    Navigator, HeadlightToChanges);
+    Navigator, SceneManager.ViewerToChanges);
   { ViewerChanged already did PostRedisplay }
 end;
 
@@ -1488,7 +1489,7 @@ begin
 
     { Make initial ViewerChanged to make initial events to
       ProximitySensor, if user is within. }
-    SceneAnimation.Scenes[0].ViewerChanged(Glw.Navigator, HeadlightToChanges);
+    SceneAnimation.Scenes[0].ViewerChanged(Glw.Navigator, SceneManager.ViewerToChanges);
 
     if not Glw.Closed then
     begin
