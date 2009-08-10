@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
     <Version Value="7"/>
     <General>
       <Flags>
@@ -12,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -42,50 +41,50 @@
         <PackageName Value="kambi_units"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="33">
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="37" Y="3169"/>
+        <CursorPos X="26" Y="3173"/>
         <TopLine Value="3165"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="welcome_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit1>
       <Unit2>
         <Filename Value="bgcolors.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit2>
       <Unit3>
         <Filename Value="clear_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit3>
       <Unit4>
         <Filename Value="colormodulators.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit4>
       <Unit5>
         <Filename Value="multinavigators.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit5>
       <Unit6>
         <Filename Value="raytracetowindow.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit6>
       <Unit7>
         <Filename Value="scenechangesunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit7>
       <Unit8>
         <Filename Value="texturefilters.pas"/>
@@ -93,22 +92,22 @@
         <UnitName Value="TextureFilters"/>
         <CursorPos X="5" Y="29"/>
         <TopLine Value="15"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit8>
       <Unit9>
         <Filename Value="v3dsceneblending.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit9>
       <Unit10>
         <Filename Value="v3dscenecamera.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit10>
       <Unit11>
         <Filename Value="v3dsceneconfig.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit11>
       <Unit12>
         <Filename Value="v3dscenelights.pas"/>
@@ -116,7 +115,7 @@
         <UnitName Value="V3DSceneLights"/>
         <CursorPos X="38" Y="114"/>
         <TopLine Value="96"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
       </Unit12>
       <Unit13>
         <Filename Value="../kambi_vrml_game_engine/opengl/glwindow.pas"/>
@@ -241,8 +240,62 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <UnitName Value="VRMLScene"/>
+        <CursorPos X="1" Y="4974"/>
+        <TopLine Value="4962"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
+        <CursorPos X="43" Y="482"/>
+        <TopLine Value="474"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit32>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="9" HistoryIndex="8">
+      <Position1>
+        <Filename Value="view3dscene.pasprogram"/>
+        <Caret Line="3171" Column="13" TopLine="3165"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="5079" Column="1" TopLine="5062"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="5" Column="34" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="779" Column="29" TopLine="767"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
+        <Caret Line="482" Column="43" TopLine="474"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="18" Column="32" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="779" Column="29" TopLine="767"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="5575" Column="36" TopLine="5562"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Caret Line="14" Column="27" TopLine="1"/>
+      </Position9>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
@@ -279,7 +332,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="ECodetoolError"/>
       </Item1>
@@ -292,6 +345,15 @@
       <Item4>
         <Name Value="BreakIsNodePresent"/>
       </Item4>
+      <Item5>
+        <Name Value="BreakTransformChangeSuccess"/>
+      </Item5>
+      <Item6>
+        <Name Value="ERouteSetEndingError"/>
+      </Item6>
+      <Item7>
+        <Name Value="BreakTransformChangeFailed"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>
