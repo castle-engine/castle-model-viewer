@@ -1059,11 +1059,18 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
+function HeadlightToChanges: TPostRedisplayChanges;
+begin
+  if HeadLight then
+    Result := [prVisibleSceneNonGeometry] else
+    Result := [];
+end;
+
 class procedure THelper.MatrixChanged(Navigator: TNavigator);
 begin
-  if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].ViewerChanged(Navigator);
-  Glw.PostRedisplay;
+  SceneAnimation.SceneFromTime(AnimationTime).ViewerChanged(
+    Navigator, HeadlightToChanges);
+  { ViewerChanged already did PostRedisplay }
 end;
 
 class procedure THelper.BoundViewpointVectorsChanged(Scene: TVRMLScene);
@@ -1481,15 +1488,14 @@ begin
 
     { Make initial ViewerChanged to make initial events to
       ProximitySensor, if user is within. }
-    if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].ViewerChanged(Glw.Navigator);
+    SceneAnimation.Scenes[0].ViewerChanged(Glw.Navigator, HeadlightToChanges);
 
     if not Glw.Closed then
     begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
       Glw.EventResize;
-      Glw.PostRedisplay;
+      SceneAnimation.Scenes[0].PostRedisplay([]);
     end;
 
     if MenuReopen <> nil then
@@ -3189,7 +3195,11 @@ begin
   else raise EInternalError.Create('not impl menu item');
  end;
 
- glwin.PostRedisplay;
+ { This may be called when headlight on / off state changes,
+   so prVisibleSceneNonGeometry is possible.
+   For safety, pass also prVisibleSceneGeometry now. }
+ SceneAnimation.SceneFromTime(AnimationTime).PostRedisplay(
+   [prVisibleSceneGeometry, prVisibleSceneNonGeometry]);
 end;
 
 function CreateMainMenu: TMenu;
