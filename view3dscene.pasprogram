@@ -704,74 +704,72 @@ procedure MouseDown(Glwin: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
 begin
-  { In Examiner mode, mouse clicks start dragging, so don't do
-    anything here (not even a warning about SOnlyInWalker,
-    since it would only interfere with navigation). }
-
-  if Glw.Navigator is TWalkNavigator then
+  if btn = mbLeft then
   begin
-    if btn = mbLeft then
+    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
     begin
-      if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
-      begin
-        SceneAnimation.Scenes[0].PointingDeviceActive := true;
-        { Our status text displays current sensors, so we have to redisplay. }
-        Glwin.PostRedisplay;
-      end;
-    end else
-    if btn = mbRight then
-    begin
-      if SceneOctreeCollisions = nil then
-      begin
-        MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
-        Exit;
-      end;
-
-      Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
-
-      {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
-
-      SelectedItem := SceneOctreeCollisions.RayCollision(
-        SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
-
-      { calculate SelectedPointLocal }
-      if SelectedItem <> nil then
-      begin
-        try
-          SelectedPointLocal := MatrixMultPoint(
-            SelectedItem^.State.InvertedTransform, SelectedPointWorld);
-        except
-          on ETransformedResultInvalid do
-            SelectedItem := nil;
-        end;
-      end;
-
-      { DirectCollisionTestsCounter is not recorded,
-        so I may write it now on console in case it will be useful.
-        For now it's commented out --- not interesting to typical user.
-      Writeln(Format('%d tests for collisions between ray ' +
-        'and triangles were needed to learn this.',
-        [ SceneOctreeCollisions.DirectCollisionTestsCounter ])); }
-
-      UpdateSelectedEnabled;
-
-      Glw.PostRedisplay;
+      SceneAnimation.Scenes[0].PointingDeviceActive := true;
+      { Our status text displays current sensors, so we have to redisplay. }
+      Glwin.PostRedisplay;
     end;
+  end else
+  if (btn = mbRight) and
+     { Support selecting item by right button click only in Walk mode.
+
+       In Examine mode, it would collide with zooming in / out,
+       making  user select item on each zoom in / out by dragging
+       right mouse button. Mouse clicks start dragging, so don't do
+       anything here (not even a warning about SOnlyInWalker,
+       since it would only interfere with navigation). }
+     (Glw.Navigator is TWalkNavigator) then
+  begin
+    if SceneOctreeCollisions = nil then
+    begin
+      MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
+      Exit;
+    end;
+
+    Glw.MousePickedRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
+
+    {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
+
+    SelectedItem := SceneOctreeCollisions.RayCollision(
+      SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
+
+    { calculate SelectedPointLocal }
+    if SelectedItem <> nil then
+    begin
+      try
+        SelectedPointLocal := MatrixMultPoint(
+          SelectedItem^.State.InvertedTransform, SelectedPointWorld);
+      except
+        on ETransformedResultInvalid do
+          SelectedItem := nil;
+      end;
+    end;
+
+    { DirectCollisionTestsCounter is not recorded,
+      so I may write it now on console in case it will be useful.
+      For now it's commented out --- not interesting to typical user.
+    Writeln(Format('%d tests for collisions between ray ' +
+      'and triangles were needed to learn this.',
+      [ SceneOctreeCollisions.DirectCollisionTestsCounter ])); }
+
+    UpdateSelectedEnabled;
+
+    Glw.PostRedisplay;
   end;
 end;
 
 procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
 begin
-  if Glw.Navigator is TWalkNavigator then
+  if btn = mbLeft then
   begin
-    if btn = mbLeft then
+    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
     begin
-      if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
-      begin
-        SceneAnimation.Scenes[0].PointingDeviceActive := false;
-        { Our status text displays current sensors, so we have to redisplay. }
-        Glwin.PostRedisplay;
-      end;
+      SceneAnimation.Scenes[0].PointingDeviceActive := false;
+      { Our status text displays current sensors, so we have to redisplay. }
+      Glwin.PostRedisplay;
     end;
   end;
 end;
@@ -795,7 +793,6 @@ var
   OldSensorsCount, NewSensorsCount: Cardinal;
 begin
   if (SceneAnimation.ScenesCount = 1 { ProcessEvents = true }) and
-     (Glw.Navigator is TWalkNavigator) and
      (SceneOctreeCollisions <> nil) then
   begin
     OldSensorsCount := SensorsCount;
@@ -2881,6 +2878,19 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure Raytrace;
+  var
+    Pos, Dir, Up: TVector3Single;
+  begin
+    Glw.Navigator.GetCameraVectors(Pos, Dir, Up);
+    RaytraceToWin(Glwin, SceneAnimation.FirstScene,
+      HeadLight, SceneHeadLight,
+      Pos, Dir, Up,
+      AngleOfViewX, AngleOfViewY, BGColor,
+      SceneAnimation.FirstScene.FogNode,
+      SceneAnimation.FirstScene.FogDistanceScaling);
+  end;
+
 var
   S, ProposedScreenShotName: string;
 begin
@@ -3043,17 +3053,7 @@ begin
   122: ShowStatus := not ShowStatus;
   123: SetCollisionCheck(not CollisionCheck, false);
   124: ChangeGravityUp;
-  125: if Glw.Navigator is TWalkNavigator then
-       begin
-         RaytraceToWin(Glwin, SceneAnimation.FirstScene,
-           HeadLight, SceneHeadLight,
-           Glw.WalkNav.CameraPos,
-           Glw.WalkNav.CameraDir, Glw.WalkNav.CameraUp,
-           AngleOfViewX, AngleOfViewY, BGColor,
-           SceneAnimation.FirstScene.FogNode,
-           SceneAnimation.FirstScene.FogDistanceScaling);
-       end else
-         MessageOK(Glwin, SOnlyInWalker);
+  125: Raytrace;
   126: Glw.SwapFullScreen;
   127: begin
          if SceneFileName <> '' then

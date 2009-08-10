@@ -148,6 +148,12 @@ begin
  for nk := Low(nk) to High(nk) do
    Navigators[nk] := NavigatorClasses[nk].Create(MatrixChanged);
 
+ { Useful and works sensibly with our view3dscene events that pass
+   mouse / keys to VRML/X3D scene. This way in Examine mode you can
+   activate pointing device sensors.
+   Note: This is the default now. }
+ TExamineNavigator(Navigators[nkExamine]).InputsExclusive := false;
+
  TWalkNavigator(Navigators[nkWalk]).OnMoveAllowed := MoveAllowed;
  TWalkNavigator(Navigators[nkWalk]).OnGetCameraHeight := GetCameraHeight;
 
