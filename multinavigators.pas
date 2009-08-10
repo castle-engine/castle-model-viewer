@@ -48,7 +48,7 @@ procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  WalkerMatrixChanged: TNavigatorNotifyFunc);
+  MatrixChanged: TNavigatorNotifyFunc);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -70,18 +70,24 @@ var
   NavigatorRadios: array [TNavigatorKind] of TMenuItemRadio;
 
 function NavigatorKind: TNavigatorKind;
-{ Note that Set/ChangeNavigatorKind call glwin.PostRedisplay and
-  glwin.EventResize. They call glwin.EventResize so that you can adjust
+
+{ Change current NavigatorKind.
+
+  Set/ChangeNavigatorKind call OnMatrixChanged on new navigator.
+  That's because changing Navigator in fact changed
+  Navigator.Matrix, so we must do the same thing that would be done in
+  Navigator.OnMatrixChange.
+
+  Also glwin.EventResize is called, so that you can adjust
   your projection settings (specifically, projection zNear/zFar)
   to different values of NavigatorKind.
 
-  (why they call glwin.PostRedisplay is obvious --- changing
-  Navigator in fact changed Navigator.Matrix, so we must
-  do the same thing that would be done in Navigator.OnMatrixChange) }
+  @groupBegin }
 procedure SetNavigatorKind(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
 procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; change: integer);
+{ @groupEnd }
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
 
@@ -135,17 +141,15 @@ procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  WalkerMatrixChanged: TNavigatorNotifyFunc);
+  MatrixChanged: TNavigatorNotifyFunc);
 var nk: TNavigatorKind;
 begin
  { create navigators }
  for nk := Low(nk) to High(nk) do
-   Navigators[nk] :=
-     NavigatorClasses[nk].Create(@glwin.PostRedisplayOnMatrixChanged);
+   Navigators[nk] := NavigatorClasses[nk].Create(MatrixChanged);
 
  TWalkNavigator(Navigators[nkWalk]).OnMoveAllowed := MoveAllowed;
  TWalkNavigator(Navigators[nkWalk]).OnGetCameraHeight := GetCameraHeight;
- TWalkNavigator(Navigators[nkWalk]).OnMatrixChanged := WalkerMatrixChanged;
 
  { init glwin.Navigator }
  glwin.OwnsNavigator := false;
@@ -183,7 +187,8 @@ procedure SetNavigatorKind(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
 begin
  SetNavigatorKindInternal(glwin, SceneAnimation, Kind);
- glwin.PostRedisplay;
+ Glwin.Navigator.OnMatrixChanged(Glwin.Navigator);
+
  { wywolaj EventResize zeby dostosowal zNear naszego projection do
    aktualnego glw.Navigator }
  glwin.EventResize;
@@ -193,11 +198,31 @@ end;
 
 procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; Change: integer);
+var
+  NewNavigatorKind: TNavigatorKind;
+  { Pos, Dir, Up: TVector3Single; }
 begin
- {$define CHANGE_ENUM_TYPE := TNavigatorKind}
- {$define CHANGE_ENUM_NAME := NavigatorKind}
- {$define CHANGE_ENUM_CHANGE := Change}
- SetNavigatorKind(glwin, SceneAnimation, CHANGE_ENUM);
+  {$define CHANGE_ENUM_TYPE := TNavigatorKind}
+  {$define CHANGE_ENUM_NAME := NavigatorKind}
+  {$define CHANGE_ENUM_CHANGE := Change}
+  NewNavigatorKind := CHANGE_ENUM;
+
+  (*
+  Test TExamineNavigator.GetCameraVectors: when switching from Examine
+  to Walk, set Walk navigator view to match Examine.
+
+  if (NavigatorKind = nkExamine) and
+     (NewNavigatorKind = nkWalk) then
+  begin
+    Navigators[nkExamine].GetCameraVectors(Pos, Dir, Up);
+
+    WalkNav.CameraPos := Pos;
+    WalkNav.CameraDir := Dir;
+    WalkNav.CameraUp  := Up ;
+  end;
+  *)
+
+  SetNavigatorKind(glwin, SceneAnimation, NewNavigatorKind);
 end;
 
 {$I MacArrayPos.inc}

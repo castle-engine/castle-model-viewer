@@ -197,7 +197,7 @@ type
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
-    class procedure WalkerMatrixChanged(Navigator: TNavigator);
+    class procedure MatrixChanged(Navigator: TNavigator);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -552,11 +552,7 @@ begin
     set later by BeginRenderSceneWithLights inside RenderFromView3D. }
   if (SceneHeadlight <> nil) then
     SceneHeadlight.Render(0, false, RenderState.Target = rtScreen,
-      { TODO: this isn't nice. We should just pass here current
-        Glw.Navigator, so that headlight in Examine mode would work too.
-        But we can't, since current TExamineNavigator doesn't provide
-        CameraPos, CameraDir... }
-      WalkNav);
+      Glw.Navigator);
 end;
 
 procedure TV3DSceneManager.RenderFromView3D;
@@ -1066,13 +1062,15 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.WalkerMatrixChanged(Navigator: TNavigator);
+class procedure THelper.MatrixChanged(Navigator: TNavigator);
+var
+  Pos, Dir, Up: TVector3Single;
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].ViewerChanged(
-      (Navigator as TWalkNavigator).CameraPos,
-      (Navigator as TWalkNavigator).CameraDir,
-      (Navigator as TWalkNavigator).CameraUp);
+  begin
+    Navigator.GetCameraVectors(Pos, Dir, Up);
+    SceneAnimation.Scenes[0].ViewerChanged(Pos, Dir, Up);
+  end;
   Glw.PostRedisplay;
 end;
 
@@ -3765,7 +3763,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     InitMultiNavigators(glw, SceneAnimation,
-      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).WalkerMatrixChanged);
+      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).MatrixChanged);
 
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create;
