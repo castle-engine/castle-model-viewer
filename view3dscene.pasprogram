@@ -1063,14 +1063,9 @@ begin
 end;
 
 class procedure THelper.MatrixChanged(Navigator: TNavigator);
-var
-  Pos, Dir, Up: TVector3Single;
 begin
   if SceneAnimation.ScenesCount = 1 then
-  begin
-    Navigator.GetCameraVectors(Pos, Dir, Up);
-    SceneAnimation.Scenes[0].ViewerChanged(Pos, Dir, Up);
-  end;
+    SceneAnimation.Scenes[0].ViewerChanged(Navigator);
   Glw.PostRedisplay;
 end;
 
@@ -1488,12 +1483,9 @@ begin
     end;
 
     { Make initial ViewerChanged to make initial events to
-      ProximitySensor, if user is within. Even when default navigation
-      method is not walker --- we want to allow special ProximitySensor
-      nodes that are placed just to start anim on loading to work. }
+      ProximitySensor, if user is within. }
     if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].ViewerChanged(
-        WalkNav.CameraPos, WalkNav.CameraDir, WalkNav.CameraUp);
+      SceneAnimation.Scenes[0].ViewerChanged(Glw.Navigator);
 
     if not Glw.Closed then
     begin
