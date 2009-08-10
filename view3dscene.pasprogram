@@ -583,7 +583,7 @@ begin
   { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
     may be costly operation. So don't do this. }
   if Scene.BumpMappingMethod in bmGLSLAll then
-    Scene.BumpMappingLightPosition := WalkNav.CameraPos;
+    Scene.BumpMappingLightPosition := Glw.Navigator.GetCameraPos;
 
   BeginRenderSceneWithLights(SceneAnimation);
 
