@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -41,7 +41,7 @@
         <PackageName Value="kambi_units"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="37">
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
@@ -188,9 +188,11 @@
       <Unit23>
         <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglscene.pas"/>
         <UnitName Value="VRMLGLScene"/>
-        <CursorPos X="1" Y="1179"/>
-        <TopLine Value="1156"/>
+        <CursorPos X="1" Y="3155"/>
+        <TopLine Value="3142"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="../kambi_vrml_game_engine/3dmodels/x3dxmltovrml.pas"/>
@@ -243,8 +245,8 @@
       <Unit31>
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
         <UnitName Value="VRMLScene"/>
-        <CursorPos X="19" Y="2283"/>
-        <TopLine Value="2266"/>
+        <CursorPos X="40" Y="2288"/>
+        <TopLine Value="2269"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
@@ -253,89 +255,163 @@
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
         <CursorPos X="43" Y="482"/>
         <TopLine Value="474"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit32>
       <Unit33>
         <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlshape.pas"/>
         <UnitName Value="VRMLShape"/>
         <CursorPos X="23" Y="855"/>
-        <TopLine Value="837"/>
+        <TopLine Value="841"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit33>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <UnitName Value="GLImages"/>
+        <CursorPos X="1" Y="1696"/>
+        <TopLine Value="1683"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <UnitName Value="VRMLOpenGLRenderer"/>
+        <CursorPos X="1" Y="3655"/>
+        <TopLine Value="3642"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit36>
     </Units>
-    <JumpHistory Count="17" HistoryIndex="16">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="view3dscene.pasprogram"/>
-        <Caret Line="3171" Column="13" TopLine="3165"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1738" Column="1" TopLine="1725"/>
       </Position1>
       <Position2>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="5079" Column="1" TopLine="5062"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1739" Column="1" TopLine="1726"/>
       </Position2>
       <Position3>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="5" Column="34" TopLine="1"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1740" Column="1" TopLine="1727"/>
       </Position3>
       <Position4>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="779" Column="29" TopLine="767"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1741" Column="1" TopLine="1728"/>
       </Position4>
       <Position5>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
-        <Caret Line="482" Column="43" TopLine="474"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1743" Column="1" TopLine="1730"/>
       </Position5>
       <Position6>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="18" Column="32" TopLine="1"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1744" Column="1" TopLine="1731"/>
       </Position6>
       <Position7>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="779" Column="29" TopLine="767"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1745" Column="1" TopLine="1732"/>
       </Position7>
       <Position8>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="5575" Column="36" TopLine="5562"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1746" Column="1" TopLine="1733"/>
       </Position8>
       <Position9>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="14" Column="27" TopLine="1"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1749" Column="1" TopLine="1736"/>
       </Position9>
       <Position10>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="4974" Column="1" TopLine="4962"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1750" Column="1" TopLine="1737"/>
       </Position10>
       <Position11>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="4943" Column="1" TopLine="4909"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1753" Column="1" TopLine="1740"/>
       </Position11>
       <Position12>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="4885" Column="28" TopLine="4853"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1754" Column="1" TopLine="1741"/>
       </Position12>
       <Position13>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="4886" Column="28" TopLine="4853"/>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1696" Column="1" TopLine="1683"/>
       </Position13>
       <Position14>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlshape.pas"/>
-        <Caret Line="855" Column="23" TopLine="837"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Caret Line="1562" Column="1" TopLine="1549"/>
       </Position14>
       <Position15>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="2283" Column="27" TopLine="2264"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3508" Column="1" TopLine="3495"/>
       </Position15>
       <Position16>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="4943" Column="1" TopLine="4926"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3513" Column="1" TopLine="3500"/>
       </Position16>
       <Position17>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
-        <Caret Line="2283" Column="26" TopLine="2266"/>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3514" Column="1" TopLine="3501"/>
       </Position17>
+      <Position18>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3517" Column="1" TopLine="3504"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3654" Column="1" TopLine="3641"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Caret Line="3655" Column="1" TopLine="3642"/>
+      </Position20>
+      <Position21>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Caret Line="1729" Column="22" TopLine="1711"/>
+      </Position21>
+      <Position22>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Caret Line="1561" Column="1" TopLine="1548"/>
+      </Position22>
+      <Position23>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1689" Column="1" TopLine="1676"/>
+      </Position23>
+      <Position24>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1690" Column="1" TopLine="1677"/>
+      </Position24>
+      <Position25>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1692" Column="1" TopLine="1679"/>
+      </Position25>
+      <Position26>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1693" Column="1" TopLine="1680"/>
+      </Position26>
+      <Position27>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1694" Column="1" TopLine="1681"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1695" Column="1" TopLine="1682"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Caret Line="1696" Column="1" TopLine="1683"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Caret Line="1562" Column="1" TopLine="1549"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -373,6 +449,16 @@
     </Other>
   </CompilerOptions>
   <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Source Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Line Value="0"/>
+      </Item1>
+      <Item2>
+        <Source Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Line Value="0"/>
+      </Item2>
+    </BreakPoints>
     <Exceptions Count="7">
       <Item1>
         <Name Value="ECodetoolError"/>
