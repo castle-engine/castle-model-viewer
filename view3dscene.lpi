@@ -449,15 +449,11 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="1">
       <Item1>
         <Source Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
         <Line Value="0"/>
       </Item1>
-      <Item2>
-        <Source Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
-        <Line Value="0"/>
-      </Item2>
     </BreakPoints>
     <Exceptions Count="7">
       <Item1>
