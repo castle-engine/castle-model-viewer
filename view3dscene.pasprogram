@@ -3193,6 +3193,8 @@ begin
       }
       SceneAnimation.Optimization := Optimization;
     end;
+  1600..1699: SetTextureModeRGB(
+    TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   else raise EInternalError.Create('not impl menu item');
  end;
 
@@ -3383,6 +3385,9 @@ begin
      M.Append(M2);
    M2 := TMenu.Create('Texture Magnification Method');
      MenuAppendTextureMagFilters(M2, 1200);
+     M.Append(M2);
+   M2 := TMenu.Create('RGB Textures Color Mode');
+     MenuAppendTextureModeRGB(M2, 1600);
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,

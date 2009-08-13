@@ -37,18 +37,24 @@ type
   TTextureMinFilter = (tminNearest, tminLinear, tminNearestMipmapNearest,
     tminNearestMipmapLinear, tminLinearMipmapNearest, tminLinearMipmapLinear);
   TTextureMagFilter = (tmagNearest, tmagLinear);
+  TTextureMode = (tmModulate, tmReplace);
 
 const
-  TextureMinFilterNames: array[TTextureMinFilter]of string =
+  TextureMinFilterNames: array [TTextureMinFilter] of string =
   ( 'GL_NEAREST (fastest)',
     'GL_LINEAR',
     'GL_NEAREST_MIPMAP_NEAREST',
     'GL_NEAREST_MIPMAP_LINEAR',
     'GL_LINEAR_MIPMAP_NEAREST',
     'GL_LINEAR_MIPMAP_LINEAR (best looking)');
-  TextureMagFilterNames: array[TTextureMagFilter]of string =
+
+  TextureMagFilterNames: array [TTextureMagFilter] of string =
   ( 'GL_NEAREST (fastest)',
     'GL_LINEAR (best looking)');
+
+  TextureModeRGBNames: array [TTextureMode] of string =
+  ( 'GL_MODULATE (texture * light)',
+    'GL_REPLACE (texture color overrides light)' );
 
 procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
 
@@ -58,27 +64,43 @@ procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLA
 function TextureMagFilter: TTextureMagFilter;
 procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
 
+function TextureModeRGB: TTextureMode;
+procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TVRMLGLAnimation);
+
 procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
 procedure MenuAppendTextureMagFilters(M: TMenu; BaseIntData: Cardinal);
+procedure MenuAppendTextureModeRGB(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
 const
-  TextureMinFilterToGL: array[TTextureMinFilter]of TGLint =
-  ( GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
-    GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
-  TextureMagFilterToGL: array[TTextureMagFilter]of TGLint =
-  ( GL_NEAREST, GL_LINEAR);
+  TextureMinFilterToGL: array [TTextureMinFilter] of TGLint =
+  ( GL_NEAREST, GL_LINEAR,
+    GL_NEAREST_MIPMAP_NEAREST,
+    GL_NEAREST_MIPMAP_LINEAR,
+    GL_LINEAR_MIPMAP_NEAREST,
+    GL_LINEAR_MIPMAP_LINEAR );
+
+  TextureMagFilterToGL: array [TTextureMagFilter] of TGLint =
+  ( GL_NEAREST, GL_LINEAR );
+
+  TextureModeRGBToGL: array [TTextureMode] of TGLenum =
+  ( GL_MODULATE, GL_REPLACE );
 
 var
   FTextureMinFilter: TTextureMinFilter;
   FTextureMagFilter: TTextureMagFilter;
+  FTextureModeRGB: TTextureMode;
 
 procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
 begin
  SetTextureMinFilter(tminLinearMipmapLinear, SceneAnimation);
  SetTextureMagFilter(tmagLinear, SceneAnimation);
+ SetTextureModeRGB(tmModulate, SceneAnimation);
 end;
+
+function TextureMinFilter: TTextureMinFilter;
+begin Result := FTextureMinFilter end;
 
 procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLAnimation);
 begin
@@ -86,17 +108,23 @@ begin
  SceneAnimation.Attributes.TextureMinFilter := TextureMinFilterToGL[Value];
 end;
 
+function TextureMagFilter: TTextureMagFilter;
+begin Result := FTextureMagFilter end;
+
 procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
 begin
  FTextureMagFilter := value;
  SceneAnimation.Attributes.TextureMagFilter := TextureMagFilterToGL[Value];
 end;
 
-function TextureMinFilter: TTextureMinFilter;
-begin Result := FTextureMinFilter end;
+function TextureModeRGB: TTextureMode;
+begin Result := FTextureModeRGB end;
 
-function TextureMagFilter: TTextureMagFilter;
-begin Result := FTextureMagFilter end;
+procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TVRMLGLAnimation);
+begin
+ FTextureModeRGB := value;
+ SceneAnimation.Attributes.TextureModeRGB := TextureModeRGBToGL[Value];
+end;
 
 procedure MenuAppendTextureMinFilters(M: TMenu;
   BaseIntData: Cardinal);
@@ -131,6 +159,25 @@ begin
     Radio := TMenuItemRadio.Create(
       SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
       Cardinal(Ord(TexMag)) + BaseIntData, TexMag = TextureMagFilter, true);
+    if RadioGroup = nil then
+      RadioGroup := Radio.Group else
+      Radio.Group := RadioGroup;
+    M.Append(Radio);
+  end;
+end;
+
+procedure MenuAppendTextureModeRGB(M: TMenu; BaseIntData: Cardinal);
+var
+  TexMode: TTextureMode;
+  Radio: TMenuItemRadio;
+  RadioGroup: TMenuItemRadioGroup;
+begin
+  RadioGroup := nil;
+  for TexMode := Low(TexMode) to High(TexMode) do
+  begin
+    Radio := TMenuItemRadio.Create(
+      SQuoteMenuEntryCaption(TextureModeRGBNames[TexMode]),
+      Cardinal(Ord(TexMode)) + BaseIntData, TexMode = TextureModeRGB, true);
     if RadioGroup = nil then
       RadioGroup := Radio.Group else
       Radio.Group := RadioGroup;
