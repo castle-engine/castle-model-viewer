@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -41,7 +41,7 @@
         <PackageName Value="kambi_units"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="39">
       <Unit0>
         <Filename Value="view3dscene.pasprogram"/>
         <IsPartOfProject Value="True"/>
@@ -286,12 +286,25 @@
         <TopLine Value="576"/>
         <UsageCount Value="10"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/object3dopengl.pas"/>
+        <UnitName Value="Object3dOpenGL"/>
+        <CursorPos X="91" Y="166"/>
+        <TopLine Value="152"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit38>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="3173" Column="26" TopLine="3165"/>
       </Position1>
+      <Position2>
+        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/object3dopengl.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
