@@ -41,9 +41,10 @@ type
     procedure AddViewpoint(
       Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
       ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
+  private
     FBoundViewpoint: TVRMLViewpointNode;
     procedure SetBoundViewpoint(const Value: TVRMLViewpointNode);
-
+  private
     ViewpointsRadioGroup: TMenuItemRadioGroup;
   public
     MenuJumpToViewpoint: TMenu;

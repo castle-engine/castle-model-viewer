@@ -34,7 +34,7 @@ type
   public
     { Constructor, initially display is none (Whole = @false and Depth = -1). }
     constructor Init(const AName: string);
-
+  public
     Whole: boolean;
 
     { This is meaningful only if Whole = false.

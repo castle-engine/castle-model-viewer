@@ -19,7 +19,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-
+  public
     Items: TStringList;
     property Count: Cardinal read FCount;
 
