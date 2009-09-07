@@ -69,6 +69,10 @@ type
     procedure NoSolid_Sphere(node: TVRMLNode);
     procedure NoSolid_Text(node: TVRMLNode);
     procedure NoSolid_Text3D(node: TVRMLNode);
+    procedure NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
+    procedure NoSolid_NurbsSweptSurface(Node: TVRMLNode);
+    procedure NoSolid_NurbsSwungSurface(Node: TVRMLNode);
+    procedure NoSolid_NurbsSurface(Node: TVRMLNode);
 
     procedure NoConvex_ShapeHints(node: TVRMLNode);
     procedure NoConvex_IFS_2(node: TVRMLNode);
@@ -138,6 +142,26 @@ end;
 procedure TSceneChangesDo.NoSolid_Text3D(Node: TVRMLNode);
 begin
   (Node As TNodeText3D).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
+begin
+  (Node As TNodeX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TVRMLNode);
+begin
+  (Node As TNodeNurbsSweptSurface).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_NurbsSwungSurface(Node: TVRMLNode);
+begin
+  (Node As TNodeNurbsSwungSurface).FdSolid.Value := false;
+end;
+
+procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TVRMLNode);
+begin
+  (Node As TNodeNurbsSurface).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoConvex_ShapeHints(node: TVRMLNode);
@@ -227,6 +251,14 @@ begin
       @DoChanges.NoSolid_Text, false);
     scene.RootNode.EnumerateNodes(TNodeText3D,
       @DoChanges.NoSolid_Text3D, false);
+    scene.RootNode.EnumerateNodes(TNodeX3DNurbsSurfaceGeometryNode,
+      @DoChanges.NoSolid_X3DNurbsSurfaceGeometryNode, false);
+    scene.RootNode.EnumerateNodes(TNodeNurbsSweptSurface,
+      @DoChanges.NoSolid_NurbsSweptSurface, false);
+    scene.RootNode.EnumerateNodes(TNodeNurbsSwungSurface,
+      @DoChanges.NoSolid_NurbsSwungSurface, false);
+    scene.RootNode.EnumerateNodes(TNodeNurbsSurface,
+      @DoChanges.NoSolid_NurbsSurface, false);
   finally FreeAndNil(DoChanges) end;
 end;
 
