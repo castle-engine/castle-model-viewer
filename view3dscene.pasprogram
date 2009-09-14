@@ -161,6 +161,21 @@ var
   LastIsAboveTheGround: boolean;
   LastHeightAboveTheGround: Single;
 
+  { Does user want to process VRML/X3D events? Set by menu item.
+
+    When false, this also makes WorldTime stopped (just like
+    AnimationTimePlaying = @false. IOW, you should never test
+    only "AnimationTimePlaying", always test
+    "AnimationTimePlaying and ProcessEventsWanted").
+
+    This is simpler for user --- ProcessEventsWanted=false is something
+    stricly "stronger" than AnimationTimePlaying=false. Actually, the engine
+    *could* do something otherwise, if we would allow WorldTime to pass
+    with ProcessEventsWanted=false: time-dependent  MovieTexture
+    would still play, as this is not using events (also precalculated
+    animation would play). }
+  ProcessEventsWanted: boolean = true;
+
 var
   { When setting this, always update also WorldTime }
   AnimationTime: TKamTime = 0.0;
@@ -524,6 +539,8 @@ begin
       [AnimationTime - WorldTimeAtLoad, AnimationTime]);
   if not AnimationTimePlaying then
     S += ' (paused)';
+  if not ProcessEventsWanted then
+    S += ' (paused, not processing VRML events)';
   strs.Append(S);
 
   {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
@@ -714,7 +731,7 @@ var
 begin
   if btn = mbLeft then
   begin
-    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    if SceneAnimation.ScenesCount = 1 then
     begin
       SceneAnimation.Scenes[0].PointingDeviceActive := true;
       { Our status text displays current sensors, so we have to redisplay. }
@@ -773,7 +790,7 @@ procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
 begin
   if btn = mbLeft then
   begin
-    if SceneAnimation.ScenesCount = 1 { ProcessEvents = true } then
+    if SceneAnimation.ScenesCount = 1 then
     begin
       SceneAnimation.Scenes[0].PointingDeviceActive := false;
       { Our status text displays current sensors, so we have to redisplay. }
@@ -800,7 +817,7 @@ var
 var
   OldSensorsCount, NewSensorsCount: Cardinal;
 begin
-  if (SceneAnimation.ScenesCount = 1 { ProcessEvents = true }) and
+  if (SceneAnimation.ScenesCount = 1) and
      (SceneOctreeCollisions <> nil) then
   begin
     OldSensorsCount := SensorsCount;
@@ -848,7 +865,7 @@ begin
     In this case, TimeIncrease will be zero so the whole code
     will not do anything anyway. }
 
-  if AnimationTimePlaying and (Glwin.Fps.IdleSpeed <> 0) then
+  if AnimationTimePlaying and ProcessEventsWanted and (Glwin.Fps.IdleSpeed <> 0) then
   begin
     OldAnimationTime := AnimationTime;
     TimeIncrease := AnimationTimeSpeed * Glwin.Fps.IdleSpeed;
@@ -1180,7 +1197,7 @@ end;
 
 procedure ResetWorldTime(const NewValue: TKamTime);
 begin
-  { Ignored when SceneAnimation.ScenesCount <> 1, as ProcessEvents
+  { Ignored when SceneAnimation.ScenesCount <> 1, as scenes' ProcessEvents
     is always false then and WorldTime wouldn't have much sense anyway. }
   if SceneAnimation.ScenesCount = 1 then
     SceneAnimation.Scenes[0].ResetWorldTime(NewValue);
@@ -1212,6 +1229,22 @@ begin
   Unselect;
 
   FreeAndNil(SceneHeadlight);
+end;
+
+{ Update state of ProcessEvents for all SceneAnimation.Scenes[].
+
+  This looks at ProcessEventsWanted and SceneAnimation.ScenesCount,
+  so should be repeated when they change, and when new Scenes[] are loaded. }
+procedure UpdateProcessEvents;
+var
+  I: Integer;
+  Value: boolean;
+begin
+  { Always disable ProcessEvents for TVRMLGLAnimation consisting of many models. }
+  Value := ProcessEventsWanted and (SceneAnimation.ScenesCount = 1);
+
+  for I := 0 to SceneAnimation.ScenesCount - 1 do
+    SceneAnimation.Scenes[I].ProcessEvents := Value;
 end;
 
 procedure LoadClearScene; forward;
@@ -1470,22 +1503,19 @@ begin
 
     for I := 0 to SceneAnimation.ScenesCount - 1 do
     begin
-      { TODO: for now, SceneProcessEvents is always @true when scenes count = 1 }
-
       { Order is somewhat important here: first turn DebugLogVRMLChanges on,
         then turn events on, otherwise events on initialize() of scripts
         will not be logged. }
       SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
-
-      SceneAnimation.Scenes[I].ProcessEvents := SceneAnimation.ScenesCount = 1;
 
       SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
       SceneAnimation.Scenes[I].OnPostRedisplay := @THelper(nil).PostRedisplay;
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @THelper(nil).BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
-
     end;
+
+    UpdateProcessEvents;
 
     { Make initial ViewerChanged to make initial events to
       ProximitySensor, if user is within. }
@@ -3125,6 +3155,11 @@ begin
   222: ChangeAnimationTimeSpeed;
   223: ChangeAnimationTimeSpeedWhenLoading;
 
+  224: begin
+         ProcessEventsWanted := not ProcessEventsWanted;
+         UpdateProcessEvents;
+       end;
+
   225: PrecalculateAnimationFromVRMLEvents;
 
   300..399:
@@ -3457,7 +3492,7 @@ begin
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(TMenuSeparator.Create);
      MenuIgnoreAllInputs := TMenuItemChecked.Create(
-       'Disable normal navigation (VRML "NONE" navigation)',  210,
+       'Disable normal navigation (VRML/X3D "NONE" navigation)',  210,
        WalkNav.IgnoreAllInputs, true);
      M2.Append(MenuIgnoreAllInputs);
      M.Append(M2);
@@ -3475,7 +3510,9 @@ begin
    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Precalculate Animation from VRML Events ...', 225));
+   M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
    Result.Append(M);
  M := TMenu.Create('_Edit');
    MenuRemoveSelectedGeometry :=
@@ -3491,7 +3528,7 @@ begin
    M.Append(MenuEditMaterial);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
-     'Remove VRML Nodes with Name Matching ...', 34));
+     'Remove VRML/X3D Nodes with Name Matching ...', 34));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Remove Normals Info from Scene (forces normals to be calculated)',
@@ -3511,7 +3548,7 @@ begin
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
-   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0)',    107));
+   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0, X3D)',    107));
    M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
