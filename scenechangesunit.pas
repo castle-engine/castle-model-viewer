@@ -21,6 +21,14 @@
 { }
 unit SceneChangesUnit;
 
+{ This unit honours KAMBI_HAS_NURBS symbol, avoiding using nurbs nodes
+  if not available. But note that *view3dscene (including this unit)
+  is still GPL-only (strict), not LGPL*. So it could actually safely
+  assume that nurbs nodes are available, and KAMBI_HAS_NURBS is always defined...
+
+  The possibility to work without KAMBI_HAS_NURBS is purely for testing. }
+{$I kambiconf.inc}
+
 interface
 
 uses VRMLScene, VRMLNodes, KambiUtils, VRMLGLAnimation;
@@ -69,10 +77,12 @@ type
     procedure NoSolid_Sphere(node: TVRMLNode);
     procedure NoSolid_Text(node: TVRMLNode);
     procedure NoSolid_Text3D(node: TVRMLNode);
+    {$ifdef KAMBI_HAS_NURBS}
     procedure NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
     procedure NoSolid_NurbsSweptSurface(Node: TVRMLNode);
     procedure NoSolid_NurbsSwungSurface(Node: TVRMLNode);
     procedure NoSolid_NurbsSurface(Node: TVRMLNode);
+    {$endif KAMBI_HAS_NURBS}
 
     procedure NoConvex_ShapeHints(node: TVRMLNode);
     procedure NoConvex_IFS_2(node: TVRMLNode);
@@ -144,6 +154,8 @@ begin
   (Node As TNodeText3D).FdSolid.Value := false;
 end;
 
+{$ifdef KAMBI_HAS_NURBS}
+
 procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
 begin
   (Node As TNodeX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
@@ -163,6 +175,8 @@ procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TVRMLNode);
 begin
   (Node As TNodeNurbsSurface).FdSolid.Value := false;
 end;
+
+{$endif KAMBI_HAS_NURBS}
 
 procedure TSceneChangesDo.NoConvex_ShapeHints(node: TVRMLNode);
 begin
@@ -251,6 +265,8 @@ begin
       @DoChanges.NoSolid_Text, false);
     scene.RootNode.EnumerateNodes(TNodeText3D,
       @DoChanges.NoSolid_Text3D, false);
+
+    {$ifdef KAMBI_HAS_NURBS}
     scene.RootNode.EnumerateNodes(TNodeX3DNurbsSurfaceGeometryNode,
       @DoChanges.NoSolid_X3DNurbsSurfaceGeometryNode, false);
     scene.RootNode.EnumerateNodes(TNodeNurbsSweptSurface,
@@ -259,6 +275,8 @@ begin
       @DoChanges.NoSolid_NurbsSwungSurface, false);
     scene.RootNode.EnumerateNodes(TNodeNurbsSurface,
       @DoChanges.NoSolid_NurbsSurface, false);
+    {$endif KAMBI_HAS_NURBS}
+
   finally FreeAndNil(DoChanges) end;
 end;
 
