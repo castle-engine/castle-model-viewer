@@ -152,7 +152,7 @@ begin
    mouse / keys to VRML/X3D scene. This way in Examine mode you can
    activate pointing device sensors.
    Note: This is the default now. }
- TExamineNavigator(Navigators[nkExamine]).InputsExclusive := false;
+ TExamineNavigator(Navigators[nkExamine]).ExclusiveEvents := false;
 
  TWalkNavigator(Navigators[nkWalk]).OnMoveAllowed := MoveAllowed;
  TWalkNavigator(Navigators[nkWalk]).OnGetCameraHeight := GetCameraHeight;
