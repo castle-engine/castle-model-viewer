@@ -91,7 +91,7 @@ procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
 
-{ This is TWalkNavigator used when NavigationKind = nkWalk.
+{ The TWalkNavigator used when NavigationKind = nkWalk.
   Use this e.g. to set it's ProjectionMatrix. }
 function WalkNav: TWalkNavigator;
 
@@ -121,7 +121,7 @@ var
 
 procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; value: TNavigatorKind);
-{ This is private procedure in this module.
+{ This is a private procedure in this module.
   Look at SetNavigatorKind for something that you can publicly use.
   This procedure does not do some things that SetNavigatorKind does
   because this is used from InitMultiNavigators. }

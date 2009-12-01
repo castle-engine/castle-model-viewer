@@ -37,7 +37,7 @@ type
   public
     Whole: boolean;
 
-    { This is meaningful only if Whole = false.
+    { Depth to dispay. Meaningful only if Whole = false.
       -1 means "don't display octree". }
     Depth: Integer;
 
