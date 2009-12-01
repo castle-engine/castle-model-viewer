@@ -146,7 +146,10 @@ var nk: TNavigatorKind;
 begin
  { create navigators }
  for nk := Low(nk) to High(nk) do
-   Navigators[nk] := NavigatorClasses[nk].Create(MatrixChanged);
+ begin
+   Navigators[nk] := NavigatorClasses[nk].Create(nil);
+   Navigators[nk].OnMatrixChanged := MatrixChanged;
+ end;
 
  { Useful and works sensibly with our view3dscene events that pass
    mouse / keys to VRML/X3D scene. This way in Examine mode you can
@@ -158,7 +161,6 @@ begin
  TWalkNavigator(Navigators[nkWalk]).OnGetCameraHeight := GetCameraHeight;
 
  { init glwin.Navigator }
- glwin.OwnsNavigator := false;
  SetNavigatorKindInternal(glwin, SceneAnimation, FNavigatorKind);
 end;
 
