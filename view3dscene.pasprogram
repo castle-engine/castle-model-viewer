@@ -212,7 +212,7 @@ type
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
-    class procedure MatrixChanged(Navigator: TNavigator);
+    class procedure VisibleChange(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -1084,10 +1084,10 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.MatrixChanged(Navigator: TNavigator);
+class procedure THelper.VisibleChange(Sender: TObject);
 begin
   SceneAnimation.SceneFromTime(AnimationTime).ViewerChanged(
-    Navigator, SceneManager.ViewerToChanges);
+    Sender as TNavigator, SceneManager.ViewerToChanges);
   { ViewerChanged already did PostRedisplay }
 end;
 
@@ -3808,7 +3808,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     InitMultiNavigators(glw, SceneAnimation,
-      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).MatrixChanged);
+      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).VisibleChange);
 
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create;

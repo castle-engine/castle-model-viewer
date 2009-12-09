@@ -31,7 +31,7 @@ unit MultiNavigators;
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Navigation, Boxes3d, VectorMath,
-  GL, GLU, GLExt, KambiGLUtils, VRMLGLAnimation;
+  GL, GLU, GLExt, KambiGLUtils, VRMLGLAnimation, Classes;
 
 type
   TNavigatorKind = (nkExamine, nkWalk);
@@ -48,7 +48,7 @@ procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  MatrixChanged: TNavigatorNotifyFunc);
+  VisibleChange: TNotifyEvent);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -73,10 +73,10 @@ function NavigatorKind: TNavigatorKind;
 
 { Change current NavigatorKind.
 
-  Set/ChangeNavigatorKind call OnMatrixChanged on new navigator.
+  Set/ChangeNavigatorKind call VisibleChange on new navigator.
   That's because changing Navigator in fact changed
   Navigator.Matrix, so we must do the same thing that would be done in
-  Navigator.OnMatrixChange.
+  Navigator.VisibleChange.
 
   Also glwin.EventResize is called, so that you can adjust
   your projection settings (specifically, projection zNear/zFar)
@@ -141,14 +141,14 @@ procedure InitMultiNavigators(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
-  MatrixChanged: TNavigatorNotifyFunc);
+  VisibleChange: TNotifyEvent);
 var nk: TNavigatorKind;
 begin
  { create navigators }
  for nk := Low(nk) to High(nk) do
  begin
    Navigators[nk] := NavigatorClasses[nk].Create(nil);
-   Navigators[nk].OnMatrixChanged := MatrixChanged;
+   Navigators[nk].OnVisibleChange := VisibleChange;
  end;
 
  { Useful and works sensibly with our view3dscene events that pass
@@ -195,7 +195,7 @@ procedure SetNavigatorKind(glwin: TGLWindowNavigated;
   SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
 begin
  SetNavigatorKindInternal(glwin, SceneAnimation, Kind);
- Glwin.Navigator.OnMatrixChanged(Glwin.Navigator);
+ Glwin.Navigator.VisibleChange;
 
  { wywolaj EventResize zeby dostosowal zNear naszego projection do
    aktualnego glw.Navigator }
