@@ -3885,7 +3885,7 @@ begin
           Exit;
         end;
 
-        Glwm.Loop;
+        Application.Run;
       finally FreeScene end;
     finally
       FreeAndNil(SceneAnimation);

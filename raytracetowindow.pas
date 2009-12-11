@@ -151,7 +151,7 @@ begin
    Format(' working %d%%',[Round(100*RowsMadeCount/D^.Image.Height)]);
 
  { zeby szybkosc rysowania wierszy nie obnizala znaczaco szybkosci renderingu
-   nie wyswietlamy kazdego wiersza osobno i nie wywolujemy glwm.ProcessMessage
+   nie wyswietlamy kazdego wiersza osobno i nie wywolujemy Application.ProcessMessage
    po kazdym wierszu. Robimy to wszystko co ROWS_SHOW_COUNT wierszy. }
  if (RowsMadeCount mod ROWS_SHOW_COUNT) = 0 then
  begin
@@ -159,7 +159,7 @@ begin
   ImageDrawRows(D^.Image, RowsMadeCount-ROWS_SHOW_COUNT, ROWS_SHOW_COUNT);
   glFlush;
 
-  glwm.ProcessAllMessages;
+  Application.ProcessAllMessages;
   if D^.UserWantsToQuit then raise BreakRaytracing.Create;
  end;
 end;
@@ -350,7 +350,7 @@ begin
      glwin.Caption := CaptionBegin+ ' done';
      glwin.OnDraw := @DrawRaytraced;
      glwin.MainMenu := AfterRTMainMenu;
-     repeat glwm.ProcessMessage(true) until CallData.UserWantsToQuit;
+     repeat Application.ProcessMessage(true) until CallData.UserWantsToQuit;
 
     except on BreakRaytracing do ; end;
    finally FreeAndNil(CallData.Image) end;
