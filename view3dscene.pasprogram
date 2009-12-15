@@ -75,7 +75,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS,
   { OpenGL related units: }
-  GL, GLU, GLExt, GLWindow, GLW_Navigated, KambiGLUtils, OpenGLBmpFonts,
+  GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap,
   { VRML (and possibly OpenGL) related units: }
@@ -92,6 +92,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig;
 
 var
+  Glw: TGLWindowNavigated;
+
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
 
@@ -3757,6 +3759,8 @@ const
   end;
 
 begin
+  Glw := TGLWindowNavigated.Create(Application);
+
   { parse parameters }
   { glw params }
   Glw.ParseParameters(StandardParseOptions);

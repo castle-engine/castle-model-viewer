@@ -199,7 +199,8 @@ begin
 
  { wywolaj EventResize zeby dostosowal zNear naszego projection do
    aktualnego glw.Navigator }
- glwin.EventResize;
+ if not Glwin.Closed then
+   Glwin.EventResize;
 end;
 
 {$I MacChangeEnum.inc}
