@@ -30,16 +30,13 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="kambi_glwindow_navigated"/>
+        <PackageName Value="kambi_glwindow"/>
       </Item1>
       <Item2>
-        <PackageName Value="kambi_glwindow"/>
-      </Item2>
-      <Item3>
         <PackageName Value="kambi_base"/>
-      </Item3>
+      </Item2>
     </RequiredPackages>
     <Units Count="39">
       <Unit0>
