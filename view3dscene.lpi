@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -288,20 +288,14 @@
         <UnitName Value="Object3dOpenGL"/>
         <CursorPos X="91" Y="166"/>
         <TopLine Value="152"/>
-        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
         <Filename Value="view3dscene.pasprogram"/>
         <Caret Line="3173" Column="26" TopLine="3165"/>
       </Position1>
-      <Position2>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/object3dopengl.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
