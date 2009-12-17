@@ -129,7 +129,7 @@
         <UsageCount Value="10"/>
       </Unit14>
       <Unit15>
-        <Filename Value="../kambi_vrml_game_engine/3dgraph/backgroundbase.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/3d/backgroundbase.pas"/>
         <UnitName Value="BackgroundBase"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
@@ -143,7 +143,7 @@
         <UsageCount Value="10"/>
       </Unit16>
       <Unit17>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlfields.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlfields.pas"/>
         <UnitName Value="VRMLFields"/>
         <CursorPos X="60" Y="219"/>
         <TopLine Value="196"/>
@@ -164,14 +164,14 @@
         <UsageCount Value="10"/>
       </Unit19>
       <Unit20>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglanimation.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglanimation.pas"/>
         <UnitName Value="VRMLGLAnimation"/>
         <CursorPos X="1" Y="854"/>
         <TopLine Value="831"/>
         <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3d_grouping.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/x3d_grouping.inc"/>
         <CursorPos X="42" Y="254"/>
         <TopLine Value="245"/>
         <UsageCount Value="10"/>
@@ -183,14 +183,14 @@
         <UsageCount Value="10"/>
       </Unit22>
       <Unit23>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlglscene.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglscene.pas"/>
         <UnitName Value="VRMLGLScene"/>
         <CursorPos X="1" Y="3155"/>
         <TopLine Value="3142"/>
         <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/x3dxmltovrml.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/x3dxmltovrml.pas"/>
         <UnitName Value="X3DXmlToVRML"/>
         <CursorPos X="1" Y="259"/>
         <TopLine Value="230"/>
@@ -224,7 +224,7 @@
         <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlnodes.pas"/>
         <UnitName Value="VRMLNodes"/>
         <CursorPos X="1" Y="7179"/>
         <TopLine Value="7165"/>
@@ -238,27 +238,27 @@
         <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlscene.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlscene.pas"/>
         <UnitName Value="VRMLScene"/>
         <CursorPos X="40" Y="2288"/>
         <TopLine Value="2269"/>
         <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlnodes_triangulating.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlnodes_triangulating.inc"/>
         <CursorPos X="43" Y="482"/>
         <TopLine Value="474"/>
         <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels/vrmlshape.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlshape.pas"/>
         <UnitName Value="VRMLShape"/>
         <CursorPos X="23" Y="855"/>
         <TopLine Value="841"/>
         <UsageCount Value="10"/>
       </Unit33>
       <Unit34>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
@@ -271,20 +271,20 @@
         <UsageCount Value="10"/>
       </Unit35>
       <Unit36>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlopenglrenderer.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlopenglrenderer.pas"/>
         <UnitName Value="VRMLOpenGLRenderer"/>
         <CursorPos X="45" Y="4303"/>
         <TopLine Value="4298"/>
         <UsageCount Value="10"/>
       </Unit36>
       <Unit37>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/vrmlbumpmappingrenderer.inc"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlbumpmappingrenderer.inc"/>
         <CursorPos X="53" Y="587"/>
         <TopLine Value="576"/>
         <UsageCount Value="10"/>
       </Unit37>
       <Unit38>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/object3dopengl.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/object3dopengl.pas"/>
         <UnitName Value="Object3dOpenGL"/>
         <CursorPos X="91" Y="166"/>
         <TopLine Value="152"/>
@@ -299,7 +299,7 @@
         <Caret Line="3173" Column="26" TopLine="3165"/>
       </Position1>
       <Position2>
-        <Filename Value="../kambi_vrml_game_engine/3dmodels.gl/object3dopengl.pas"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/object3dopengl.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position2>
     </JumpHistory>
@@ -341,7 +341,7 @@
   <Debugging>
     <BreakPoints Count="1">
       <Item1>
-        <Source Value="../kambi_vrml_game_engine/3dmodels.gl/vrmltexturerenderer.inc"/>
+        <Source Value="../kambi_vrml_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
         <Line Value="0"/>
       </Item1>
     </BreakPoints>

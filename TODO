@@ -53,4 +53,4 @@ Others:
 - Transform to using Lazarus form, with some OpenGL component wrapping
   GtkGLExt inside.
 
-  This is started in ../kambi_vrml_game_engine/3dmodels.gl/examples/lazarus_vrml_browser/
+  This is started in ../kambi_vrml_game_engine/vrml/opengl/examples/lazarus_vrml_browser/
