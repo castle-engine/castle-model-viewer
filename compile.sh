@@ -20,9 +20,9 @@ cd ../kambi_vrml_game_engine/
 # Of course this means that compilation time will suffer a little,
 # since GLWindow unit will be possibly rebuild without any real need.
 # Comment out line below if you want.
-rm -f glwindow/glwindow.o \
-      glwindow/glwindow.ppu \
-      glwindow/GLWindow.o \
-      glwindow/GLWindow.ppu
+rm -f src/glwindow/glwindow.o \
+      src/glwindow/glwindow.ppu \
+      src/glwindow/GLWindow.o \
+      src/glwindow/GLWindow.ppu
 
 fpc -dRELEASE "${KAMBI_FPC_OPTIONS:-}" @kambi.cfg ../view3dscene/view3dscene.pasprogram
