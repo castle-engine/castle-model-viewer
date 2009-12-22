@@ -76,7 +76,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   Images, CubeMap, DDS,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
-  GLWinMessages, ProgressGL, GLWindowRecentMenu, GLImages,
+  GLWinMessages, ProgressGL, GLWindowRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeOctree,
@@ -114,7 +114,7 @@ var
   { ustalane w Init, finalizowane w Close }
   StatusFont: TGLBitmapFont;
 
-  RecentMenu: TGLRecentMenu;
+  RecentMenu: TGLRecentFiles;
 
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
@@ -3824,7 +3824,7 @@ begin
       InitColorModulator(SceneAnimation);
       InitTextureFilters(SceneAnimation);
 
-      RecentMenu := TGLRecentMenu.Create;
+      RecentMenu := TGLRecentFiles.Create(nil);
       RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
       RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
