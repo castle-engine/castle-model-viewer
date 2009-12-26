@@ -21,7 +21,7 @@
 unit MultiNavigators;
 
 { modulik ulatwiajacy view3dmodelowi uzywac roznych Navigatorow
-  z okienkiem typu TGLWindowNavigated.
+  z okienkiem typu TGLUIWindow.
 
   SceneAnimation is used only to call ResetOcclusionQuery.
   You can pass @nil if SceneAnimation is not initialized yet. }
@@ -44,7 +44,7 @@ type
   You CAN NOT directly modify Navigators' properties
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
-procedure InitMultiNavigators(glwin: TGLWindowNavigated;
+procedure InitMultiNavigators(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
@@ -83,9 +83,9 @@ function NavigatorKind: TNavigatorKind;
   to different values of NavigatorKind.
 
   @groupBegin }
-procedure SetNavigatorKind(glwin: TGLWindowNavigated;
+procedure SetNavigatorKind(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
-procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
+procedure ChangeNavigatorKind(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation; change: integer);
 { @groupEnd }
 
@@ -119,7 +119,7 @@ var
   FNavigatorKind: TNavigatorKind = nkExamine;
   Navigators: array[TNavigatorKind]of TNavigator;
 
-procedure SetNavigatorKindInternal(glwin: TGLWindowNavigated;
+procedure SetNavigatorKindInternal(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation; value: TNavigatorKind);
 { This is a private procedure in this module.
   Look at SetNavigatorKind for something that you can publicly use.
@@ -137,7 +137,7 @@ begin
     SceneAnimation.ViewChangedSuddenly;
 end;
 
-procedure InitMultiNavigators(glwin: TGLWindowNavigated;
+procedure InitMultiNavigators(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
@@ -191,7 +191,7 @@ begin
     Navigators[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
-procedure SetNavigatorKind(glwin: TGLWindowNavigated;
+procedure SetNavigatorKind(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation; Kind: TNavigatorKind);
 begin
  SetNavigatorKindInternal(glwin, SceneAnimation, Kind);
@@ -205,7 +205,7 @@ end;
 
 {$I MacChangeEnum.inc}
 
-procedure ChangeNavigatorKind(glwin: TGLWindowNavigated;
+procedure ChangeNavigatorKind(glwin: TGLUIWindow;
   SceneAnimation: TVRMLGLAnimation; Change: integer);
 var
   NewNavigatorKind: TNavigatorKind;

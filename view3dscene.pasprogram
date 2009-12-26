@@ -48,7 +48,7 @@
     (like automatic normals generation based on creaseAngle).
   - render scene using TVRMLGLScene (actually TVRMLGLAnimation
     and TVRMLGLScene is inside)
-  - use Navigation and TGLWindowNavigated to let user navigate
+  - use Navigation and TGLUIWindow to let user navigate
     over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
   - build TVRMLTriangleOctree to allow collision detection for
@@ -92,7 +92,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig;
 
 var
-  Glw: TGLWindowNavigated;
+  Glw: TGLUIWindow;
 
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
@@ -3759,7 +3759,7 @@ const
   end;
 
 begin
-  Glw := TGLWindowNavigated.Create(Application);
+  Glw := TGLUIWindow.Create(Application);
 
   { parse parameters }
   { glw params }
