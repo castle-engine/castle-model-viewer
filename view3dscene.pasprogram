@@ -849,7 +849,7 @@ end;
 procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyDown(Key, C{, Glwin.Pressed});
+    SceneAnimation.Scenes[0].KeyDown(Key, C);
 end;
 
 procedure KeyUp(Glwin: TGLWindow; Key: TKey; C: char);
