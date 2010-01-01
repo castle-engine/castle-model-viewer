@@ -735,7 +735,7 @@ begin
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
-      SceneAnimation.Scenes[0].PointingDeviceActive := true;
+      SceneAnimation.Scenes[0].MouseDown(Glwin.MouseX, Glwin.MouseY, Btn, Glwin.MousePressed);
       { Our status text displays current sensors, so we have to redisplay. }
       Glwin.PostRedisplay;
     end;
@@ -794,7 +794,7 @@ begin
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
-      SceneAnimation.Scenes[0].PointingDeviceActive := false;
+      SceneAnimation.Scenes[0].MouseUp(Glwin.MouseX, Glwin.MouseY, Btn, Glwin.MousePressed);
       { Our status text displays current sensors, so we have to redisplay. }
       Glwin.PostRedisplay;
     end;
@@ -802,10 +802,6 @@ begin
 end;
 
 procedure MouseMove(Glwin: TGLWindow; NewX, NewY: Integer);
-var
-  Ray0, RayVector: TVector3Single;
-  OverPoint: TVector3Single;
-  Item: PVRMLTriangle;
 
   function SensorsCount: Cardinal;
   begin
@@ -824,12 +820,9 @@ begin
   begin
     OldSensorsCount := SensorsCount;
 
-    Glw.Navigator.Ray(NewX, NewY, AngleOfViewX, AngleOfViewY, Ray0, RayVector);
-
-    Item := SceneOctreeCollisions.RayCollision(
-      OverPoint, Ray0, RayVector, true, nil, false, nil);
-
-    SceneAnimation.Scenes[0].PointingDeviceMove(OverPoint, Item);
+    SceneAnimation.Scenes[0].MouseMove(Glw.Navigator,
+      AngleOfViewX, AngleOfViewY,
+      Glwin.MouseX, Glwin.MouseY, NewX, NewY, Glwin.MousePressed, Glw.Pressed);
 
     NewSensorsCount := SensorsCount;
 
@@ -849,13 +842,13 @@ end;
 procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyDown(Key, C);
+    SceneAnimation.Scenes[0].KeyDown(Key, C, Glwin.Pressed);
 end;
 
 procedure KeyUp(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyUp(Key, C);
+    SceneAnimation.Scenes[0].KeyUp(Key, C, Glwin.Pressed);
 end;
 
 procedure Idle(Glwin: TGLWindow);
