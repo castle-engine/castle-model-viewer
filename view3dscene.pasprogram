@@ -832,7 +832,6 @@ begin
   begin
     OldSensorsCount := SensorsCount;
 
-    SceneAnimation.Scenes[0].Navigator := Glw.Navigator; { TODO: move this elsewhere }
     SceneAnimation.Scenes[0].MouseMove(Glwin.MouseX, Glwin.MouseY,
       NewX, NewY, Glwin.MousePressed, Glw.Pressed);
 
@@ -1515,6 +1514,7 @@ begin
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).UpdateCursor;
+      SceneAnimation.Scenes[I].Navigator := Glw.Navigator;
     end;
 
     UpdateProcessEvents;

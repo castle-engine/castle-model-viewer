@@ -133,8 +133,11 @@ begin
     NavigatorRadios[FNavigatorKind].Checked := true;
 
   if SceneAnimation <> nil then
+  begin
+    SceneAnimation.Navigator := Glwin.Navigator;
     { Changing navigator changes also the view rapidly. }
     SceneAnimation.ViewChangedSuddenly;
+  end;
 end;
 
 procedure InitMultiNavigators(glwin: TGLUIWindow;
