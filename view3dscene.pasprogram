@@ -216,7 +216,7 @@ type
 
     class procedure VisibleChange(Sender: TObject);
 
-    class procedure UpdateCursor(Sender: TObject);
+    class procedure PointingDeviceSensorsChange(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -733,11 +733,7 @@ begin
   if btn = mbLeft then
   begin
     if SceneAnimation.ScenesCount = 1 then
-    begin
       SceneAnimation.Scenes[0].MouseDown(Btn);
-      { Our status text displays current sensors, so we have to redisplay. }
-      Glwin.PostRedisplay;
-    end;
   end else
   if (btn = mbRight) and
      { Support selecting item by right button click only in Walk mode.
@@ -790,27 +786,21 @@ end;
 
 procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
 begin
-  if btn = mbLeft then
+  if SceneAnimation.ScenesCount = 1 then
+    SceneAnimation.Scenes[0].MouseUp(Btn);
+end;
+
+class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
+
+  function SensorsCount: Cardinal;
   begin
-    if SceneAnimation.ScenesCount = 1 then
-    begin
-      SceneAnimation.Scenes[0].MouseUp(Btn);
-      { Our status text displays current sensors, so we have to redisplay. }
-      Glwin.PostRedisplay;
-    end;
+    if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
+      Result := SceneAnimation.Scenes[0].PointingDeviceSensors.EnabledCount else
+      Result := 0;
+    if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
+      Inc(Result);
   end;
-end;
 
-function SensorsCount: Cardinal;
-begin
-  if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
-    Result := SceneAnimation.Scenes[0].PointingDeviceSensors.EnabledCount else
-    Result := 0;
-  if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
-    Inc(Result);
-end;
-
-class procedure THelper.UpdateCursor(Sender: TObject);
 var
   NewSensorsCount: Cardinal;
 begin
@@ -821,27 +811,17 @@ begin
   if NewSensorsCount <> 0 then
     Glw.CursorNonMouseLook := gcHand else
     Glw.CursorNonMouseLook := gcDefault;
+
+  { Our status text displays current sensors (under the mouse,
+    and currently active (if any)), so we have to redisplay. }
+  Glw.PostRedisplay;
 end;
 
 procedure MouseMove(Glwin: TGLWindow; NewX, NewY: Integer);
-var
-  OldSensorsCount, NewSensorsCount: Cardinal;
 begin
-  if (SceneAnimation.ScenesCount = 1) and
-     (SceneOctreeCollisions <> nil) then
-  begin
-    OldSensorsCount := SensorsCount;
-
+  if SceneAnimation.ScenesCount = 1 then
     SceneAnimation.Scenes[0].MouseMove(Glwin.MouseX, Glwin.MouseY,
       NewX, NewY);
-
-    NewSensorsCount := SensorsCount;
-
-    if (OldSensorsCount <> 0) or
-       (NewSensorsCount <> 0) then
-      { Our status text displays current sensors, so we have to redisplay. }
-      Glwin.PostRedisplay;
-  end;
 end;
 
 procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
@@ -1513,7 +1493,7 @@ begin
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @THelper(nil).BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
-      SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).UpdateCursor;
+      SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
       SceneAnimation.Scenes[I].Navigator := Glw.Navigator;
     end;
 
