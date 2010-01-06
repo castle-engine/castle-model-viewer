@@ -376,8 +376,6 @@ end;
 
 procedure Close(Glwin: TGLWindow);
 begin
-  if SceneAnimation <> nil then
-    SceneAnimation.GLContextClose;
   ShadowsGLClose;
   FreeAndNil(statusFont);
 end;
