@@ -377,7 +377,7 @@ end;
 procedure Close(Glwin: TGLWindow);
 begin
   if SceneAnimation <> nil then
-    SceneAnimation.CloseGL;
+    SceneAnimation.GLContextClose;
   ShadowsGLClose;
   FreeAndNil(statusFont);
 end;
@@ -1155,12 +1155,12 @@ end;
 
 { Frees (and sets to some null values) "scene global variables".
 
-  Note about OpenGL context: remember that changing calling Close
-  on SceneAnimation also calls CloseGL  that closes all connections
+  Note about OpenGL context: remember that calling Close
+  on SceneAnimation also calls GLContextClose  that closes all connections
   of Scene to OpenGL context. This means that:
   1) SceneAnimation must not be Loaded, or Scene must not have any
      connections with OpenGL context (like e.g. after calling
-     SceneAnimation.CloseGL)
+     SceneAnimation.GLContextClose)
   2) or you must call FreeScene in the same OpenGL context that the
      SceneAnimation is connected to. }
 procedure FreeScene;
