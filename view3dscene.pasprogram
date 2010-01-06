@@ -708,14 +708,11 @@ begin
   end;
 end;
 
-var
-  AngleOfViewX, AngleOfViewY: Single;
-
 procedure Resize(Glwin: TGLWindow);
 begin
   SceneAnimation.GLProjection(
     Glw.Navigator, SceneAnimation.BoundingBoxSum,
-    Glwin.Width, Glwin.Height, AngleOfViewX, AngleOfViewY,
+    Glwin.Width, Glwin.Height,
     ShadowsPossibleCurrently);
 
   { GLProjection set only current Navigator's ProjectionMatrix,
@@ -758,7 +755,8 @@ begin
       Exit;
     end;
 
-    Glw.Navigator.MouseRay(AngleOfViewX, AngleOfViewY, Ray0, RayVector);
+    Glw.Navigator.MouseRay(
+      SceneAnimation.AngleOfViewX, SceneAnimation.AngleOfViewY, Ray0, RayVector);
 
     {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
 
@@ -834,9 +832,9 @@ begin
   begin
     OldSensorsCount := SensorsCount;
 
-    SceneAnimation.Scenes[0].MouseMove(Glw.Navigator,
-      AngleOfViewX, AngleOfViewY,
-      Glwin.MouseX, Glwin.MouseY, NewX, NewY, Glwin.MousePressed, Glw.Pressed);
+    SceneAnimation.Scenes[0].Navigator := Glw.Navigator; { TODO: move this elsewhere }
+    SceneAnimation.Scenes[0].MouseMove(Glwin.MouseX, Glwin.MouseY,
+      NewX, NewY, Glwin.MousePressed, Glw.Pressed);
 
     NewSensorsCount := SensorsCount;
 
@@ -2927,7 +2925,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     RaytraceToWin(Glwin, SceneAnimation.FirstScene,
       HeadLight, SceneHeadLight,
       Pos, Dir, Up,
-      AngleOfViewX, AngleOfViewY, BGColor,
+      SceneAnimation.AngleOfViewX, SceneAnimation.AngleOfViewY, BGColor,
       SceneAnimation.FirstScene.FogNode,
       SceneAnimation.FirstScene.FogDistanceScaling);
   end;
@@ -3065,7 +3063,7 @@ begin
            VectorToRawStr(WalkNav.CameraPos),
            VectorToRawStr(WalkNav.CameraDir),
            VectorToRawStr(WalkNav.CameraUp),
-           FloatToStr(AngleOfViewX),
+           FloatToStr(SceneAnimation.AngleOfViewX),
            BGColor[0], BGColor[1], BGColor[2] ]));
 
   106: WritelnCameraSettings(1);
