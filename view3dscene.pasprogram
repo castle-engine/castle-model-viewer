@@ -730,11 +730,6 @@ procedure MouseDown(Glwin: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
 begin
-  if btn = mbLeft then
-  begin
-    if SceneAnimation.ScenesCount = 1 then
-      SceneAnimation.Scenes[0].MouseDown(Btn);
-  end else
   if (btn = mbRight) and
      { Support selecting item by right button click only in Walk mode.
 
@@ -784,12 +779,6 @@ begin
   end;
 end;
 
-procedure MouseUp(Glwin: TGLWindow; btn: TMouseButton);
-begin
-  if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].MouseUp(Btn);
-end;
-
 class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
 
   function SensorsCount: Cardinal;
@@ -815,25 +804,6 @@ begin
   { Our status text displays current sensors (under the mouse,
     and currently active (if any)), so we have to redisplay. }
   Glw.PostRedisplay;
-end;
-
-procedure MouseMove(Glwin: TGLWindow; NewX, NewY: Integer);
-begin
-  if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].MouseMove(Glwin.MouseX, Glwin.MouseY,
-      NewX, NewY);
-end;
-
-procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
-begin
-  if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyDown(Key, C);
-end;
-
-procedure KeyUp(Glwin: TGLWindow; Key: TKey; C: char);
-begin
-  if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyUp(Key, C);
 end;
 
 procedure Idle(Glwin: TGLWindow);
@@ -3791,9 +3761,6 @@ begin
       (and we don't want to clutter stdout). }
     Progress.UserInterface := ProgressNullInterface;
 
-    InitMultiNavigators(glw, SceneAnimation,
-      @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).VisibleChange);
-
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create;
     try
@@ -3801,6 +3768,10 @@ begin
       SceneAnimation.Optimization := Optimization;
       SceneAnimation.Attributes.UseLights := true;
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
+      Glw.Controls.Insert(0, SceneAnimation);
+
+      InitMultiNavigators(glw, SceneAnimation,
+        @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).VisibleChange);
       InitColorModulator(SceneAnimation);
       InitTextureFilters(SceneAnimation);
 
@@ -3820,11 +3791,7 @@ begin
         Glw.OnInit := @Init;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
-        Glw.OnMouseUp := @MouseUp;
-        Glw.OnMouseMove := @MouseMove;
         Glw.OnIdle := @Idle;
-        Glw.OnKeyDown := @KeyDown;
-        Glw.OnKeyUp := @KeyUp;
 
         { For the screenshot, leave BeforeDraw and Draw as @nil,
           we'll want to call them manually later to have control
