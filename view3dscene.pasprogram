@@ -734,7 +734,7 @@ begin
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
-      SceneAnimation.Scenes[0].MouseDown(Glwin.MouseX, Glwin.MouseY, Btn, Glwin.MousePressed);
+      SceneAnimation.Scenes[0].MouseDown(Btn);
       { Our status text displays current sensors, so we have to redisplay. }
       Glwin.PostRedisplay;
     end;
@@ -794,7 +794,7 @@ begin
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
-      SceneAnimation.Scenes[0].MouseUp(Glwin.MouseX, Glwin.MouseY, Btn, Glwin.MousePressed);
+      SceneAnimation.Scenes[0].MouseUp(Btn);
       { Our status text displays current sensors, so we have to redisplay. }
       Glwin.PostRedisplay;
     end;
@@ -833,7 +833,7 @@ begin
     OldSensorsCount := SensorsCount;
 
     SceneAnimation.Scenes[0].MouseMove(Glwin.MouseX, Glwin.MouseY,
-      NewX, NewY, Glwin.MousePressed, Glw.Pressed);
+      NewX, NewY);
 
     NewSensorsCount := SensorsCount;
 
@@ -847,13 +847,13 @@ end;
 procedure KeyDown(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyDown(Key, C, Glwin.Pressed);
+    SceneAnimation.Scenes[0].KeyDown(Key, C);
 end;
 
 procedure KeyUp(Glwin: TGLWindow; Key: TKey; C: char);
 begin
   if SceneAnimation.ScenesCount = 1 then
-    SceneAnimation.Scenes[0].KeyUp(Key, C, Glwin.Pressed);
+    SceneAnimation.Scenes[0].KeyUp(Key, C);
 end;
 
 procedure Idle(Glwin: TGLWindow);
