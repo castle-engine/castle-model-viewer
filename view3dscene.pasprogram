@@ -202,7 +202,7 @@ type
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
 
-    class procedure VisibleChange(Sender: TObject);
+    class procedure NavigatorVisibleChange(Sender: TObject);
 
     class procedure PointingDeviceSensorsChange(Sender: TObject);
   end;
@@ -992,7 +992,7 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.VisibleChange(Sender: TObject);
+class procedure THelper.NavigatorVisibleChange(Sender: TObject);
 begin
   SceneAnimation.CurrentScene.ViewerChanged(
     Sender as TNavigator, SceneManager.ViewerToChanges);
@@ -3704,7 +3704,7 @@ begin
       Glw.Controls.Insert(0, SceneAnimation);
 
       InitMultiNavigators(glw, SceneAnimation,
-        @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).VisibleChange);
+        @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).NavigatorVisibleChange);
       InitColorModulator(SceneAnimation);
       InitTextureFilters(SceneAnimation);
 
