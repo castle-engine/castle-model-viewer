@@ -197,7 +197,6 @@ type
 
     class procedure GeometryChanged(Scene: TVRMLScene;
       const SomeLocalGeometryChanged: boolean);
-    class procedure PostRedisplay(Scene: TVRMLScene);
 
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
@@ -217,7 +216,7 @@ type
     procedure RenderFromView3D; override;
   public
     procedure InitProperties(AScene: TVRMLGLScene);
-    function ViewerToChanges: TPostRedisplayChanges; override;
+    function ViewerToChanges: TVisibleSceneChanges; override;
   end;
 
 var
@@ -564,7 +563,7 @@ begin
       Glw.Navigator);
 end;
 
-function TV3DSceneManager.ViewerToChanges: TPostRedisplayChanges;
+function TV3DSceneManager.ViewerToChanges: TVisibleSceneChanges;
 begin
   if HeadLight then
     Result := [prVisibleSceneNonGeometry] else
@@ -1397,7 +1396,6 @@ begin
       SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
 
       SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
-      SceneAnimation.Scenes[I].OnPostRedisplay := @THelper(nil).PostRedisplay;
       SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @THelper(nil).BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
@@ -1416,7 +1414,7 @@ begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
       Glw.EventResize;
-      SceneAnimation.Scenes[0].PostRedisplay([]);
+      SceneAnimation.Scenes[0].VisibleSceneChange([]);
     end;
 
     if MenuReopen <> nil then
@@ -1680,11 +1678,6 @@ begin
     end;
 
   end;
-end;
-
-class procedure THelper.PostRedisplay(Scene: TVRMLScene);
-begin
-  Glw.PostRedisplay;
 end;
 
 { make screen shots ---------------------------------------------------------- }
@@ -3128,7 +3121,7 @@ begin
  { This may be called when headlight on / off state changes,
    so prVisibleSceneNonGeometry is possible.
    For safety, pass also prVisibleSceneGeometry now. }
- SceneAnimation.CurrentScene.PostRedisplay(
+ SceneAnimation.CurrentScene.VisibleSceneChange(
    [prVisibleSceneGeometry, prVisibleSceneNonGeometry]);
 end;
 
