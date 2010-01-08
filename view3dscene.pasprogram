@@ -3695,7 +3695,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to null values }
-    SceneAnimation := TVRMLGLAnimation.Create;
+    SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
       { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
       SceneAnimation.Optimization := Optimization;
