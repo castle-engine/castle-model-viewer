@@ -132,7 +132,7 @@ begin
   if NavigatorRadios[FNavigatorKind] <> nil then
     NavigatorRadios[FNavigatorKind].Checked := true;
 
-  if (SceneAnimation <> nil) and SceneAnimation.Loaded then
+  if SceneAnimation <> nil then
   begin
     SceneAnimation.Navigator := Glwin.Navigator;
     { Changing navigator changes also the view rapidly. }
