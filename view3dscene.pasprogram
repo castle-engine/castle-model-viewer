@@ -1639,8 +1639,9 @@ procedure WriteToVRML(const ASceneFileName: string;
   const SceneChanges: TSceneChanges);
 var Scene: TVRMLScene;
 begin
- Scene := TVRMLScene.Create(LoadAsVRML(ASceneFileName, true), true);
+ Scene := TVRMLScene.Create(nil);
  try
+  Scene.Load(ASceneFileName, true);
   ChangeScene(SceneChanges, Scene);
   SaveToVRMLFile(Scene.RootNode, StdOutStream,
     SavedVRMLPrecedingComment(ASceneFileName));
