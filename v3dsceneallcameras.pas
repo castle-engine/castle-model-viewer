@@ -61,7 +61,7 @@ procedure InitCameras(glwin: TGLUIWindow;
   You must call InitCameras before using this. }
 procedure SceneInitCameras(
   const ModelBox: TBox3d;
-  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
+  const InitialPosition, InitialDirection, InitialUp,
     GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
 
@@ -173,14 +173,14 @@ end;
 
 procedure SceneInitCameras(
   const ModelBox: TBox3d;
-  const InitialCameraPos, InitialCameraDir, InitialCameraUp,
+  const InitialPosition, InitialDirection, InitialUp,
     GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
 begin
  { Init all cameras }
  TExamineCamera(AllCameras[cmExamine]).Init(ModelBox, CameraRadius);
  TWalkCamera   (AllCameras[cmWalk  ]).Init(
-   InitialCameraPos, InitialCameraDir, InitialCameraUp, GravityUp,
+   InitialPosition, InitialDirection, InitialUp, GravityUp,
    CameraPreferredHeight, CameraRadius);
 end;
 
@@ -232,9 +232,9 @@ begin
   begin
     AllCameras[cmExamine].GetCameraVectors(Pos, Dir, Up);
 
-    WalkCamera.CameraPos := Pos;
-    WalkCamera.CameraDir := Dir;
-    WalkCamera.CameraUp  := Up ;
+    WalkCamera.Position  := Pos;
+    WalkCamera.Direction := Dir;
+    WalkCamera.Up        := Up ;
   end;
   *)
 

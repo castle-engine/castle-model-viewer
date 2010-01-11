@@ -476,9 +476,9 @@ begin
   if Glw.Camera is TWalkCamera then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
-     [ VectorToNiceStr(WalkCamera.CameraPos),
-       VectorToNiceStr(WalkCamera.CameraDir),
-       VectorToNiceStr(WalkCamera.CameraUp) ]));
+     [ VectorToNiceStr(WalkCamera.Position),
+       VectorToNiceStr(WalkCamera.Direction),
+       VectorToNiceStr(WalkCamera.Up) ]));
    strs.Append(Format('Move speed : %f, Avatar height: %f (last height above the ground: %s)',
      [ { In view3dscene, MoveHorizontalSpeed is always equal to
          MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
@@ -598,12 +598,12 @@ begin
   { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
     may be costly operation. So don't do this. }
   if Scene.BumpMappingMethod in bmGLSLAll then
-    Scene.BumpMappingLightPosition := Glw.Camera.GetCameraPos;
+    Scene.BumpMappingLightPosition := Glw.Camera.GetPosition;
 
   BeginRenderSceneWithLights(SceneAnimation);
 
     if FillMode = fmSilhouetteBorderEdges then
-      RenderSilhouetteBorderEdges(Vector4Single(WalkCamera.CameraPos, 1), Scene) else
+      RenderSilhouetteBorderEdges(Vector4Single(WalkCamera.Position, 1), Scene) else
     begin
       { Scene.RenderFrustum (inside inherited)
         will automatically use octree, if available.
@@ -801,7 +801,7 @@ begin
   begin
     {TODO SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
     Result := SceneOctreeCollisions.MoveAllowed(
-      Camera.CameraPos, ProposedNewPos, NewPos, Camera.CameraRadius);
+      Camera.Position, ProposedNewPos, NewPos, Camera.CameraRadius);
     {tests:
      Writeln('Octree efficiency : ',SceneOctreeCollisions.DirectCollisionTestsCounter,
        ' direct tests with single triangles were needed to know that move is'
@@ -826,7 +826,7 @@ begin
   if SceneOctreeCollisions <> nil then
   begin
     SceneOctreeCollisions.GetCameraHeight(
-      TWalkCamera(Camera).CameraPos,
+      TWalkCamera(Camera).Position,
       TWalkCamera(Camera).GravityUp,
       IsAboveTheGround, SqrHeightAboveTheGround, GroundItem,
       nil, nil);
@@ -878,14 +878,14 @@ end;
   Besides initializing camera by WalkCamera.Init, it also
   takes care to initialize MoveHorizontal/VerticalSpeed.
 
-  Note that the length of InitialCameraDir doesn't matter. }
+  Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
-  const InitialCameraPos: TVector3Single;
-  InitialCameraDir: TVector3Single;
-  const InitialCameraUp: TVector3Single;
+  const InitialPosition: TVector3Single;
+  InitialDirection: TVector3Single;
+  const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
 begin
-  { Change InitialCameraDir length, to adjust speed.
+  { Change InitialDirection length, to adjust speed.
     Also set MoveHorizontal/VerticalSpeed. }
 
   if NavigationNode = nil then
@@ -894,7 +894,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3dAvgSize(SceneAnimation.BoundingBoxSum). }
-    VectorAdjustToLengthTo1st(InitialCameraDir, WalkCamera.CameraRadius * 0.8);
+    VectorAdjustToLengthTo1st(InitialDirection, WalkCamera.CameraRadius * 0.8);
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
   end else
@@ -902,21 +902,21 @@ begin
   begin
     { Then user is not allowed to move at all.
 
-      InitialCameraDir must be non-zero (we normalize it just to satisfy
-      requirement that "length of InitialCameraDir doesn't matter" here,
+      InitialDirection must be non-zero (we normalize it just to satisfy
+      requirement that "length of InitialDirection doesn't matter" here,
       in case user will later increase move speed by menu anyway.
 
       So we do this is by setting MoveHorizontal/VerticalSpeed to zero.
       This is also the reason why other SetViewpointCore must change
       MoveHorizontal/VerticalSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    NormalizeTo1st(InitialCameraDir);
+    NormalizeTo1st(InitialDirection);
     WalkCamera.MoveHorizontalSpeed := 0;
     WalkCamera.MoveVerticalSpeed := 0;
   end else
   begin
     { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
-      They set InitialCameraDir length to
+      They set InitialDirection length to
         CameraRadius * 0.4 * NavigationNode.FdSpeed.Value
       Effectively, speed per second was
         CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50 / second
@@ -927,12 +927,12 @@ begin
       FloatToRawStr(CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50));
     }
 
-    VectorAdjustToLengthTo1st(InitialCameraDir, NavigationNode.FdSpeed.Value / 50.0);
+    VectorAdjustToLengthTo1st(InitialDirection, NavigationNode.FdSpeed.Value / 50.0);
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
   end;
 
-  WalkCamera.Init(InitialCameraPos, InitialCameraDir, InitialCameraUp,
+  WalkCamera.Init(InitialPosition, InitialDirection, InitialUp,
     GravityUp, WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
 
   if not Glw.Closed then
@@ -959,27 +959,27 @@ end;
   set as needed }
 procedure UpdateViewpointNode;
 var
-  CameraPos: TVector3Single;
-  CameraDir: TVector3Single;
-  CameraUp: TVector3Single;
+  Position: TVector3Single;
+  Direction: TVector3Single;
+  Up: TVector3Single;
   GravityUp: TVector3Single;
   V: TVRMLViewpointNode;
 begin
   V := ViewpointNode;
   if V <> nil then
   begin
-    V.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
+    V.GetCameraVectors(Position, Direction, Up, GravityUp);
   end else
   begin
-    CameraPos := StdVRMLCamPos[1];
-    CameraDir := StdVRMLCamDir;
-    CameraUp := StdVRMLCamUp;
+    Position := StdVRMLCamPos[1];
+    Direction := StdVRMLCamDir;
+    Up := StdVRMLCamUp;
     GravityUp := StdVRMLGravityUp;
   end;
 
   ViewpointsList.BoundViewpoint := V;
 
-  SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
+  SetViewpointCore(Position, Direction, Up, GravityUp);
 end;
 
 class procedure THelper.BoundViewpointChanged(Scene: TVRMLScene);
@@ -1001,19 +1001,19 @@ end;
 
 class procedure THelper.BoundViewpointVectorsChanged(Scene: TVRMLScene);
 var
-  CameraPos: TVector3Single;
-  CameraDir: TVector3Single;
-  CameraUp: TVector3Single;
+  Position: TVector3Single;
+  Direction: TVector3Single;
+  Up: TVector3Single;
   GravityUp: TVector3Single;
 begin
   Assert(ViewpointNode <> nil);
 
-  ViewpointNode.GetCameraVectors(CameraPos, CameraDir, CameraUp, GravityUp);
+  ViewpointNode.GetCameraVectors(Position, Direction, Up, GravityUp);
 
-  { keep InitialCameraDir length the same }
-  VectorAdjustToLengthTo1st(CameraDir, VectorLen(WalkCamera.InitialCameraDir));
+  { keep InitialDirection length the same }
+  VectorAdjustToLengthTo1st(Direction, VectorLen(WalkCamera.InitialDirection));
 
-  WalkCamera.SetInitialCameraLookDir(CameraPos, CameraDir, CameraUp, true);
+  WalkCamera.SetInitialCameraLookDir(Position, Direction, Up, true);
 
   { TODO:
     - GravityUp is not passed
@@ -1292,7 +1292,7 @@ var
   CameraPreferredHeight, CameraRadius: Single;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
-  SavedCameraPos, SavedCameraDir, SavedCameraUp, SavedGravityUp: TVector3Single;
+  SavedPosition, SavedDirection, SavedUp, SavedGravityUp: TVector3Single;
 begin
   FreeScene;
 
@@ -1342,9 +1342,9 @@ begin
     if not JumpToInitialViewpoint then
     begin
       { TODO: this should preserve previously bound viewpoint. }
-      SavedCameraPos := WalkCamera.CameraPos;
-      SavedCameraDir := WalkCamera.CameraDir;
-      SavedCameraUp := WalkCamera.CameraUp;
+      SavedPosition := WalkCamera.Position;
+      SavedDirection := WalkCamera.Direction;
+      SavedUp := WalkCamera.Up;
       SavedGravityUp := WalkCamera.GravityUp;
     end;
 
@@ -1359,9 +1359,9 @@ begin
 
     if not JumpToInitialViewpoint then
     begin
-      WalkCamera.CameraPos := SavedCameraPos;
-      WalkCamera.CameraDir := SavedCameraDir;
-      WalkCamera.CameraUp := SavedCameraUp;
+      WalkCamera.Position := SavedPosition;
+      WalkCamera.Direction := SavedDirection;
+      WalkCamera.Up := SavedUp;
       WalkCamera.GravityUp := SavedGravityUp;
     end;
 
@@ -2343,14 +2343,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
-  procedure SetViewpointForWholeScene(const WantedCameraUp: Integer);
+  procedure SetViewpointForWholeScene(const WantedUp: Integer);
   var
-    CameraPos, CameraDir, CameraUp, GravityUp: TVector3Single;
+    Position, Direction, Up, GravityUp: TVector3Single;
   begin
     CameraViewpointForWholeScene(SceneAnimation.BoundingBoxSum,
-      WantedCameraUp,
-      CameraPos, CameraDir, CameraUp, GravityUp);
-    SetViewpointCore(CameraPos, CameraDir, CameraUp, GravityUp);
+      WantedUp,
+      Position, Direction, Up, GravityUp);
+    SetViewpointCore(Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2407,9 +2407,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
   begin
     Writeln(MakeVRMLCameraStr(Version,
-      WalkCamera.CameraPos,
-      WalkCamera.CameraDir,
-      WalkCamera.CameraUp,
+      WalkCamera.Position,
+      WalkCamera.Direction,
+      WalkCamera.Up,
       WalkCamera.GravityUp));
   end;
 
@@ -2722,7 +2722,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, WalkCamera.CameraPos,
+          GLCaptureCubeMapImages(CubeMapImg, WalkCamera.Position,
             @SceneManager.RenderFromView,
             SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
             true, 0, 0);
@@ -2789,7 +2789,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
       begin
-        DDS := GLCaptureCubeMapDDS(Size, WalkCamera.CameraPos,
+        DDS := GLCaptureCubeMapDDS(Size, WalkCamera.Position,
           @SceneManager.RenderFromView,
           SceneAnimation.WalkProjectionNear, SceneAnimation.WalkProjectionFar,
           true, 0, 0);
@@ -2944,9 +2944,9 @@ begin
            Glw.Width, Glw.Height,
            SceneFilename,
            ExtractOnlyFileName(SceneFilename) + '-rt.png',
-           VectorToRawStr(WalkCamera.CameraPos),
-           VectorToRawStr(WalkCamera.CameraDir),
-           VectorToRawStr(WalkCamera.CameraUp),
+           VectorToRawStr(WalkCamera.Position),
+           VectorToRawStr(WalkCamera.Direction),
+           VectorToRawStr(WalkCamera.Up),
            FloatToStr(SceneAnimation.AngleOfViewX),
            BGColor[0], BGColor[1], BGColor[2] ]));
 
