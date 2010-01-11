@@ -133,7 +133,6 @@ procedure SetCameraModeInternal(glwin: TGLUIWindow;
 begin
   FCameraMode := value;
   Glwin.Camera := AllCameras[FCameraMode];
-  Glwin.UpdateMouseLook;
   if CameraRadios[FCameraMode] <> nil then
     CameraRadios[FCameraMode].Checked := true;
 

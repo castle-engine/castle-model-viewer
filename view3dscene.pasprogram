@@ -2986,7 +2986,6 @@ begin
        end;
   128: begin
          WalkCamera.MouseLook := not WalkCamera.MouseLook;
-         Glw.UpdateMouseLook;
 
          if WalkCamera.MouseLook then
          begin
