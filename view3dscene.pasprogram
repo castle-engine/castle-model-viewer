@@ -229,11 +229,6 @@ begin
   Scene := AScene;
   Camera := Glw.Camera;
 
-  ViewportX := 0;
-  ViewportY := 0;
-  ViewportWidth := Glw.Width;
-  ViewportHeight := Glw.Height;
-
   BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
 end;
 
