@@ -1089,9 +1089,11 @@ begin
   if SceneAnimation.ScenesCount <> 0 then
   begin
     { Since we destroy our PVRMLTriangles, make sure SceneAnimation.FirstScene
-      doesn't hold a reference to it. }
+      doesn't hold a reference to it.
+
+      Note: PointingDeviceClear will automatically update current cursor
+      (by calling OnPointingDeviceSensorsChange that leads to our method). }
     SceneAnimation.FirstScene.PointingDeviceClear;
-    Glw.CursorNonMouseLook := gcDefault;
 
     SceneAnimation.FirstScene.Spatial := [];
   end;
