@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses ShadowVolumes, GLWindow, VRMLGLScene, VectorMath, Frustum,
+uses GLWindow, VRMLGLScene, VectorMath, Frustum,
   SceneManagerUnit;
 
 type
