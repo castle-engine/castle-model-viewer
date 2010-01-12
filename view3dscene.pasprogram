@@ -3671,7 +3671,8 @@ begin
     OptimizationSaveConfig := false;
   end;
 
-  SceneManager := TV3DSceneManager.Create;
+  SceneManager := TV3DSceneManager.Create(nil);
+  Glw.Controls.Add(SceneManager);
 
   SceneWarnings := TSceneWarnings.Create;
   try

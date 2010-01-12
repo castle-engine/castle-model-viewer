@@ -43,29 +43,19 @@ implementation
 
 uses SysUtils, V3DSceneConfig, GL, KambiGLUtils, V3DSceneFillMode;
 
-var
-  SV: TShadowVolumes;
-
 procedure ShadowsGLInit;
 begin
-  if ShadowsPossibleCurrently then
-  begin
-    SV := TShadowVolumes.Create;
-    SV.InitGLContext;
-  end;
   MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
 end;
 
 procedure ShadowsGLClose;
 begin
-  FreeAndNil(SV);
 end;
 
 procedure TV3DShadowsSceneManager.InitShadowsProperties;
 begin
   ShadowVolumesPossible := ShadowsPossibleCurrently;
   ShadowVolumes := ShadowsOn;
-  SV := V3DSceneShadows.SV;
   ShadowVolumesDraw := DrawShadowVolumes;
 end;
 
