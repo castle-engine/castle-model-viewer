@@ -623,7 +623,7 @@ begin
     if showBBox and (not MakingScreenShot) then
     begin
       { Display current bounding box only if there's a chance that it's
-        different than whole BoundingBoxSum --- this requires that animation
+        different than whole animation BoundingBox --- this requires that animation
         has at least two frames. }
       if SceneAnimation.ScenesCount > 1 then
       begin
@@ -633,8 +633,8 @@ begin
       end;
 
       glColorv(Green3Single);
-      if not IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
-        glDrawBox3dWire(SceneAnimation.BoundingBoxSum);
+      if not IsEmptyBox3d(SceneAnimation.BoundingBox) then
+        glDrawBox3dWire(SceneAnimation.BoundingBox);
     end;
 
     { Note that there is no sense in showing viewing frustum in
@@ -691,7 +691,7 @@ end;
 procedure Resize(Glwin: TGLWindow);
 begin
   SceneAnimation.GLProjection(
-    Glw.Camera, SceneAnimation.BoundingBoxSum,
+    Glw.Camera, SceneAnimation.BoundingBox,
     Glwin.Width, Glwin.Height,
     ShadowsPossibleCurrently);
 
@@ -809,7 +809,7 @@ begin
   end;
 
   if Result and BecauseOfGravity then
-    Result := SimpleKeepAboveMinPlane(NewPos, SceneAnimation.BoundingBoxSum,
+    Result := SimpleKeepAboveMinPlane(NewPos, SceneAnimation.BoundingBox,
       Camera.GravityUp);
 end;
 
@@ -888,7 +888,7 @@ begin
     { Since we don't have NavigationNode.speed, we just calculate some
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
-      Box3dAvgSize(SceneAnimation.BoundingBoxSum). }
+      Box3dAvgSize(SceneAnimation.BoundingBox). }
     VectorAdjustToLengthTo1st(InitialDirection, WalkCamera.CameraRadius * 0.8);
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
@@ -1322,9 +1322,9 @@ begin
       if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
         CameraRadius := NavigationNode.FdAvatarSize.Items[0];
       if CameraRadius = 0.0 then
-        if IsEmptyBox3d(SceneAnimation.BoundingBoxSum) then
+        if IsEmptyBox3d(SceneAnimation.BoundingBox) then
           CameraRadius := 1.0 { any non-zero dummy value } else
-          CameraRadius := Box3dAvgSize(SceneAnimation.BoundingBoxSum) * 0.005;
+          CameraRadius := Box3dAvgSize(SceneAnimation.BoundingBox) * 0.005;
     end;
 
     { calculate CameraPreferredHeight }
@@ -1345,7 +1345,7 @@ begin
       SavedGravityUp := WalkCamera.GravityUp;
     end;
 
-    SceneInitCameras(SceneAnimation.BoundingBoxSum,
+    SceneInitCameras(SceneAnimation.BoundingBox,
       StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
@@ -2344,7 +2344,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     Position, Direction, Up, GravityUp: TVector3Single;
   begin
-    CameraViewpointForWholeScene(SceneAnimation.BoundingBoxSum,
+    CameraViewpointForWholeScene(SceneAnimation.BoundingBox,
       WantedUp,
       Position, Direction, Up, GravityUp);
     SetViewpointCore(Position, Direction, Up, GravityUp);
@@ -2960,7 +2960,7 @@ begin
          '  Near   : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpNear]) +nl+
          '  Far    : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpFar]));
 
-  109: WriteBoundingBox(SceneAnimation.BoundingBoxSum);
+  109: WriteBoundingBox(SceneAnimation.BoundingBox);
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
 
   111: ChangeCameraMode(glw, SceneAnimation, +1);
