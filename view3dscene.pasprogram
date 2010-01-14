@@ -226,7 +226,15 @@ procedure TV3DSceneManager.InitProperties(AScene: TVRMLGLScene);
 begin
   InitShadowsProperties;
 
-  Scene := AScene;
+  MainScene := AScene;
+
+  { Make AScene the one and only item on Items }
+  if (Items.List.Count <> 1) or (Items.List[0] <> AScene) then
+  begin
+    Items.List.Clear;
+    Items.List.Add(AScene);
+  end;
+
   Camera := Glw.Camera;
 
   BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
@@ -592,13 +600,13 @@ procedure TV3DSceneManager.RenderFromView3D;
 begin
   { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
     may be costly operation. So don't do this. }
-  if Scene.BumpMappingMethod in bmGLSLAll then
-    Scene.BumpMappingLightPosition := Glw.Camera.GetPosition;
+  if MainScene.BumpMappingMethod in bmGLSLAll then
+    MainScene.BumpMappingLightPosition := Glw.Camera.GetPosition;
 
   BeginRenderSceneWithLights(SceneAnimation);
 
     if FillMode = fmSilhouetteBorderEdges then
-      RenderSilhouetteBorderEdges(Vector4Single(WalkCamera.Position, 1), Scene) else
+      RenderSilhouetteBorderEdges(Vector4Single(WalkCamera.Position, 1), MainScene) else
     begin
       { Scene.RenderFrustum (inside inherited)
         will automatically use octree, if available.
@@ -609,9 +617,9 @@ begin
 
       inherited;
 
-      LastRender_RenderedShapesCount := Scene.LastRender_RenderedShapesCount;
-      LastRender_BoxesOcclusionQueriedCount := Scene.LastRender_BoxesOcclusionQueriedCount;
-      LastRender_VisibleShapesCount  := Scene.LastRender_VisibleShapesCount;
+      LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
+      LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
+      LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
     end;
 
   EndRenderSceneWithLights;
@@ -628,8 +636,8 @@ begin
       if SceneAnimation.ScenesCount > 1 then
       begin
         glColorv(Red3Single);
-        if not IsEmptyBox3d(Scene.BoundingBox) then
-          glDrawBox3dWire(Scene.BoundingBox);
+        if not IsEmptyBox3d(MainScene.BoundingBox) then
+          glDrawBox3dWire(MainScene.BoundingBox);
       end;
 
       glColorv(Green3Single);

@@ -68,7 +68,7 @@ begin
   begin
     { Thanks to using PureGeometryShadowedColor, shadow is visible
       even when Attributes.PureGeometry. }
-    if Scene.Attributes.PureGeometry then
+    if MainScene.Attributes.PureGeometry then
     begin
       glPushAttrib(GL_CURRENT_BIT);
       glColorv(PureGeometryShadowedColor);
@@ -76,14 +76,14 @@ begin
 
     { Thanks to changing BumpMappingLightDiffuseColor, shadow is visible
       even when bump mapping is at work. }
-    OldColor := Scene.BumpMappingLightDiffuseColor;
-    Scene.BumpMappingLightDiffuseColor := Black4Single;
+    OldColor := MainScene.BumpMappingLightDiffuseColor;
+    MainScene.BumpMappingLightDiffuseColor := Black4Single;
 
     inherited;
 
-    Scene.BumpMappingLightDiffuseColor := OldColor;
+    MainScene.BumpMappingLightDiffuseColor := OldColor;
 
-    if Scene.Attributes.PureGeometry then
+    if MainScene.Attributes.PureGeometry then
       glPopAttrib;
   end else
     inherited;
