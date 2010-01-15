@@ -218,6 +218,8 @@ type
   public
     procedure InitProperties(AScene: TVRMLGLScene);
     function ViewerToChanges: TVisibleSceneChanges; override;
+    procedure BeforeDraw; override;
+    procedure Draw(const Focused: boolean); override;
   end;
 
 var
@@ -651,12 +653,22 @@ begin
   end;
 end;
 
+procedure TV3DSceneManager.BeforeDraw;
+begin
+  { Make sure to call InitProperties before inherited. }
+  InitProperties(SceneAnimation.CurrentScene);
+  inherited;
+end;
+
+procedure TV3DSceneManager.Draw(const Focused: boolean);
+begin
+  { Make sure to call InitProperties before inherited. }
+  InitProperties(SceneAnimation.CurrentScene);
+  inherited;
+end;
+
 procedure Draw(Glwin: TGLWindow);
 begin
-  SceneManager.InitProperties(SceneAnimation.CurrentScene);
-
-  SceneManager.Render;
-
   if ShowStatus and (not MakingScreenShot) then
   begin
     { Note that DrawStatus changes current modelview matrix,
