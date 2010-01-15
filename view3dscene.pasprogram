@@ -1397,7 +1397,6 @@ begin
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
-      SceneAnimation.Scenes[I].Camera := Glw.Camera;
     end;
 
     UpdateProcessEvents;
