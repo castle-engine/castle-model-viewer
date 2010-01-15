@@ -214,6 +214,7 @@ type
   protected
     procedure RenderHeadLight; override;
     procedure RenderFromView3D; override;
+    procedure ApplyProjection; override;
   public
     procedure InitProperties(AScene: TVRMLGLScene);
     function ViewerToChanges: TVisibleSceneChanges; override;
@@ -238,6 +239,16 @@ begin
   Camera := Glw.Camera;
 
   BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+end;
+
+procedure TV3DSceneManager.ApplyProjection;
+begin
+  inherited;
+
+  { inherited already called appropriate TVRMLGLScene.GLProjection,
+    that updated Camera.ProjectionMatrix. But we have other cameras too,
+    and we want to update their ProjectionMatrix too. }
+  SetProjectionMatrix(Camera.ProjectionMatrix);
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -694,18 +705,6 @@ begin
       glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Glwin.Width, 0, Glwin.Height);
     glPopAttrib;
   end;
-end;
-
-procedure Resize(Glwin: TGLWindow);
-begin
-  SceneAnimation.GLProjection(
-    Glw.Camera, SceneAnimation.BoundingBox,
-    Glwin.Width, Glwin.Height,
-    ShadowsPossibleCurrently);
-
-  { GLProjection set only current Camera.ProjectionMatrix,
-    we want to pass ProjectionMatrix to all cameras. }
-  SetProjectionMatrix(Glw.Camera.ProjectionMatrix);
 end;
 
 const
@@ -3726,7 +3725,6 @@ begin
         Glw.GtkIconName := 'view3dscene';
         Glw.MainMenu := CreateMainMenu;
         Glw.OnMenuCommand := @MenuCommand;
-        Glw.OnResize := @Resize;
         Glw.OnInit := @Init;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
