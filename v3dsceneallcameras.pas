@@ -23,10 +23,10 @@
 { Keeping all camera types (two for now: Examine and Walk),
   making them switchable at runtime.
 
-  SceneAnimation parameter for some procedures here
-  is used only to call Scene.ViewChangedSuddenly,
-  and to set Scene.Camera to current Camera.
-  You can pass @nil if SceneAnimation is not initialized yet. }
+  SceneManager parameter for some procedures here
+  is used only to set SceneManager.Camera to current Camera
+  (this also causes ViewChangedSuddenly now, which is good).
+  You can pass @nil if SceneManager is not initialized yet. }
 unit V3DSceneAllCameras;
 
 {$I openglmac.inc}
@@ -34,7 +34,7 @@ unit V3DSceneAllCameras;
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3d, VectorMath,
-  GL, GLU, GLExt, KambiGLUtils, VRMLGLAnimation, Classes;
+  GL, GLU, GLExt, KambiGLUtils, SceneManagerUnit, Classes;
 
 type
   TCameraMode = (cmExamine, cmWalk);
@@ -48,7 +48,7 @@ type
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitCameras(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation;
+  SceneManager: TSceneManager;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
   VisibleChange: TNotifyEvent);
@@ -87,9 +87,9 @@ function CameraMode: TCameraMode;
 
   @groupBegin }
 procedure SetCameraMode(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation; Kind: TCameraMode);
+  SceneManager: TSceneManager; Kind: TCameraMode);
 procedure ChangeCameraMode(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation; change: integer);
+  SceneManager: TSceneManager; change: integer);
 { @groupEnd }
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
@@ -125,7 +125,7 @@ var
   AllCameras: array [TCameraMode] of TCamera;
 
 procedure SetCameraModeInternal(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation; value: TCameraMode);
+  SceneManager: TSceneManager; value: TCameraMode);
 { This is a private procedure in this module.
   Look at SetCameraMode for something that you can publicly use.
   This procedure does not do some things that SetCameraMode does
@@ -136,16 +136,12 @@ begin
   if CameraRadios[FCameraMode] <> nil then
     CameraRadios[FCameraMode].Checked := true;
 
-  if SceneAnimation <> nil then
-  begin
-    SceneAnimation.Camera := Glwin.Camera;
-    { Changing camera changes also the view rapidly. }
-    SceneAnimation.ViewChangedSuddenly;
-  end;
+  if SceneManager <> nil then
+    SceneManager.Camera := Glwin.Camera;
 end;
 
 procedure InitCameras(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation;
+  SceneManager: TSceneManager;
   MoveAllowed: TMoveAllowedFunc;
   GetCameraHeight: TGetCameraHeight;
   VisibleChange: TNotifyEvent);
@@ -168,7 +164,7 @@ begin
  TWalkCamera(AllCameras[cmWalk]).OnGetCameraHeight := GetCameraHeight;
 
  { init glwin.Camera }
- SetCameraModeInternal(glwin, SceneAnimation, FCameraMode);
+ SetCameraModeInternal(glwin, SceneManager, FCameraMode);
 end;
 
 procedure SceneInitCameras(
@@ -199,9 +195,9 @@ begin
 end;
 
 procedure SetCameraMode(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation; Kind: TCameraMode);
+  SceneManager: TSceneManager; Kind: TCameraMode);
 begin
- SetCameraModeInternal(glwin, SceneAnimation, Kind);
+ SetCameraModeInternal(glwin, SceneManager, Kind);
  Glwin.Camera.VisibleChange;
 
  { wywolaj EventResize zeby dostosowal zNear naszego projection do
@@ -210,10 +206,10 @@ begin
    Glwin.EventResize;
 end;
 
-{$I MacChangeEnum.inc}
+{$I macchangeenum.inc}
 
 procedure ChangeCameraMode(glwin: TGLUIWindow;
-  SceneAnimation: TVRMLGLAnimation; Change: integer);
+  SceneManager: TSceneManager; Change: integer);
 var
   NewCameraMode: TCameraMode;
   { Pos, Dir, Up: TVector3Single; }
@@ -238,7 +234,7 @@ begin
   end;
   *)
 
-  SetCameraMode(glwin, SceneAnimation, NewCameraMode);
+  SetCameraMode(glwin, SceneManager, NewCameraMode);
 end;
 
 {$I MacArrayPos.inc}
