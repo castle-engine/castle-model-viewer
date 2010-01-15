@@ -278,47 +278,18 @@ begin
     Result := nil;
 end;
 
-{ This calls SceneAnimation.PrepareRender.
+{ This calls SceneManager.PrepareRender
+  (that causes SceneAnimation.PrepareRender).
   Additionally, if AllowProgess and some other conditions are met,
   this show progress of operation.
 
   Remember that you can call this only when gl context is already active
   (SceneAnimation.PrepareRender requires this) }
 procedure PrepareRender(AllowProgress: boolean);
-var
-  Options: TPrepareRenderOptions;
-  TG: TTransparentGroups;
 begin
-  AllowProgress := AllowProgress and
-    (SceneAnimation.ScenesCount > 1);
-
-  { TODO: this should go through SceneManager.PrepareRender in the future,
-    except that SceneManager for now works only with a single TVRMLGLScene,
-    not TVRMLGLAnimation. }
-
-  if AllowProgress then
-    Progress.Init(SceneAnimation.ScenesCount, 'Preparing animation', true);
-  try
-    Options := [prBackground, prBoundingBox];
-    TG := [tgAll];
-    if ShadowsPossibleCurrently and
-       ShadowsOn and
-       SceneAnimation.CurrentScene.MainLightForShadowsExists then
-    begin
-      Options := Options + prShadowVolume;
-      TG := TG + [tgOpaque, tgTransparent];
-    end;
-
-    { RenderState.Camera* must be already set,
-      since PrepareRender may do some operations on texture gen modes
-      in WORLDSPACE*. }
-    RenderState.CameraFromCameraObject(Glw.Camera);
-
-    SceneAnimation.PrepareRender(TG, Options, AllowProgress);
-  finally
-    if AllowProgress then
-      Progress.Fini;
-  end;
+  if AllowProgress and (SceneAnimation.ScenesCount > 1) then
+    SceneManager.PrepareRender('Preparing animation') else
+    SceneManager.PrepareRender;
 end;
 
 procedure SceneOctreeCreate; forward;
@@ -638,8 +609,8 @@ begin
       if SceneAnimation.ScenesCount > 1 then
       begin
         glColorv(Red3Single);
-        if not IsEmptyBox3d(MainScene.BoundingBox) then
-          glDrawBox3dWire(MainScene.BoundingBox);
+        if not IsEmptyBox3d(SceneAnimation.CurrentScene.BoundingBox) then
+          glDrawBox3dWire(SceneAnimation.CurrentScene.BoundingBox);
       end;
 
       glColorv(Green3Single);
