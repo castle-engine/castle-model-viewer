@@ -230,10 +230,10 @@ begin
   MainScene := AScene;
 
   { Make AScene the one and only item on Items }
-  if (Items.List.Count <> 1) or (Items.List[0] <> AScene) then
+  if (Items.List.Count <> 1) or (Items.List[0] <> SceneAnimation) then
   begin
     Items.List.Clear;
-    Items.List.Add(AScene);
+    Items.List.Add(SceneAnimation);
   end;
 
   Camera := Glw.Camera;
@@ -734,7 +734,7 @@ begin
     end;
 
     Glw.Camera.MouseRay(
-      SceneAnimation.AngleOfViewX, SceneAnimation.AngleOfViewY, Ray0, RayVector);
+      SceneManager.AngleOfViewX, SceneManager.AngleOfViewY, Ray0, RayVector);
 
     {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
 
@@ -2813,7 +2813,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     RaytraceToWin(Glwin, SceneAnimation.FirstScene,
       HeadLight, SceneHeadLight,
       Pos, Dir, Up,
-      SceneAnimation.AngleOfViewX, SceneAnimation.AngleOfViewY, BGColor,
+      SceneManager.AngleOfViewX, SceneManager.AngleOfViewY, BGColor,
       SceneAnimation.FirstScene.FogNode,
       SceneAnimation.FirstScene.FogDistanceScaling);
   end;
@@ -2951,7 +2951,7 @@ begin
            VectorToRawStr(WalkCamera.Position),
            VectorToRawStr(WalkCamera.Direction),
            VectorToRawStr(WalkCamera.Up),
-           FloatToStr(SceneAnimation.AngleOfViewX),
+           FloatToStr(SceneManager.AngleOfViewX),
            BGColor[0], BGColor[1], BGColor[2] ]));
 
   106: WritelnCameraSettings(1);
@@ -3706,7 +3706,6 @@ begin
       SceneAnimation.Optimization := Optimization;
       SceneAnimation.Attributes.UseLights := true;
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
-      Glw.Controls.Insert(0, SceneAnimation);
 
       InitCameras(glw, SceneAnimation,
         @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).CameraVisibleChange);
