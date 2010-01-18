@@ -183,14 +183,10 @@ var
 type
   THelper = class
     class procedure OpenRecent(const FileName: string);
-
     class procedure GeometryChanged(Scene: TVRMLScene;
       const SomeLocalGeometryChanged: boolean);
-
-    class procedure BoundViewpointChanged(Scene: TVRMLScene);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
-    class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
-
+    class procedure BoundViewpointChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
   end;
 
@@ -890,38 +886,15 @@ begin
   SetViewpointCore(Position, Direction, Up, GravityUp);
 end;
 
-class procedure THelper.BoundViewpointChanged(Scene: TVRMLScene);
-begin
-  UpdateViewpointNode;
-end;
-
 class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
 begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.BoundViewpointVectorsChanged(Scene: TVRMLScene);
-var
-  Position: TVector3Single;
-  Direction: TVector3Single;
-  Up: TVector3Single;
-  GravityUp: TVector3Single;
+class procedure THelper.BoundViewpointChanged(Sender: TObject);
 begin
-  Assert(ViewpointNode <> nil);
-
-  ViewpointNode.GetCameraVectors(Position, Direction, Up, GravityUp);
-
-  { keep InitialDirection length the same }
-  VectorAdjustToLengthTo1st(Direction, VectorLen(WalkCamera.InitialDirection));
-
-  WalkCamera.SetInitialCameraLookDir(Position, Direction, Up, true);
-
-  { TODO:
-    - GravityUp is not passed
-  }
-
-  { PostRedisplay will be automatically called by SetInitialCameraLookDir,
-    as matrix changed. }
+  ViewpointsList.BoundViewpoint := SceneManager.MainScene.ViewpointStack.Top
+    as TVRMLViewpointNode;
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -1301,9 +1274,7 @@ begin
       SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
 
       SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
-      SceneAnimation.Scenes[I].ViewpointStack.OnBoundChanged := @THelper(nil).BoundViewpointChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
-      SceneAnimation.Scenes[I].OnBoundViewpointVectorsChanged := @THelper(nil).BoundViewpointVectorsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
     end;
 
@@ -3577,6 +3548,7 @@ begin
 
   SceneManager := TV3DSceneManager.Create(nil);
   Glw.Controls.Add(SceneManager);
+  SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
 
   SceneWarnings := TSceneWarnings.Create;
   try
