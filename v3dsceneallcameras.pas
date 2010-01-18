@@ -40,18 +40,13 @@ type
   TCameraMode = (cmExamine, cmWalk);
 
 { Call this ONCE on created glwin (glwin need not be after Init).
-  This will take care of always providing proper glwin.Camera
-  for you. MoveAllowed will be used for collision detection
-  when CameraMode in [cmWalk].
+  This will take care of always providing proper glwin.Camera for you.
 
   You CAN NOT directly modify Cameras' properties
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitCameras(glwin: TGLUIWindow;
-  SceneManager: TSceneManager;
-  MoveAllowed: TMoveAllowedFunc;
-  GetCameraHeight: TGetCameraHeight;
-  VisibleChange: TNotifyEvent);
+  SceneManager: TSceneManager);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -141,17 +136,13 @@ begin
 end;
 
 procedure InitCameras(glwin: TGLUIWindow;
-  SceneManager: TSceneManager;
-  MoveAllowed: TMoveAllowedFunc;
-  GetCameraHeight: TGetCameraHeight;
-  VisibleChange: TNotifyEvent);
+  SceneManager: TSceneManager);
 var nk: TCameraMode;
 begin
  { create cameras }
  for nk := Low(nk) to High(nk) do
  begin
    AllCameras[nk] := CameraClasses[nk].Create(nil);
-   AllCameras[nk].OnVisibleChange := VisibleChange;
  end;
 
  { Useful and works sensibly with our view3dscene events that pass
@@ -159,9 +150,6 @@ begin
    activate pointing device sensors.
    Note: This is the default now. }
  TExamineCamera(AllCameras[cmExamine]).ExclusiveEvents := false;
-
- TWalkCamera(AllCameras[cmWalk]).OnMoveAllowed := MoveAllowed;
- TWalkCamera(AllCameras[cmWalk]).OnGetCameraHeight := GetCameraHeight;
 
  { init glwin.Camera }
  SetCameraModeInternal(glwin, SceneManager, FCameraMode);

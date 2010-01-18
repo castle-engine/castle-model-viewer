@@ -100,15 +100,14 @@ var
   { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia
     wykrywanie kolizji:
 
-    When CollisionCheck = true, octree is always initialized
-    (were after SceneOctreeCreate, before SceneOctreeDestroy).
-    Otherwise, when CollisionCheck = false, octree *may* be available
-    but doesn't have to. When setting CollisionCheck to false we do not
+    When SceneAnimation.Collides = true, octree is always initialized
+    (we're after SceneOctreeCreate, before SceneOctreeDestroy).
+    Otherwise, when SceneAnimation.Collides = false, octree *may* be available
+    but doesn't have to. When setting SceneAnimation.Collides to false we do not
     immediately destroy the octree (in case user will just go back
-    to CollisionCheck = true next), but it will be destroyed on next
+    to SceneAnimation.Collides = true next), but it will be destroyed on next
     rebuild of octree (when we will just destroy old and not recreate new).
   }
-  CollisionCheck: boolean = true;
   MenuCollisionCheck: TMenuItemChecked;
 
   { ustalane w Init, finalizowane w Close }
@@ -186,13 +185,6 @@ var
 
 type
   THelper = class
-    class function MoveAllowed(Camera: TWalkCamera;
-      const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
-      const BecauseOfGravity: boolean): boolean;
-
-    class procedure GetCameraHeight(Camera: TWalkCamera;
-      out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
-
     class procedure OpenRecent(const FileName: string);
 
     class procedure GeometryChanged(Scene: TVRMLScene;
@@ -201,8 +193,6 @@ type
     class procedure BoundViewpointChanged(Scene: TVRMLScene);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointVectorsChanged(Scene: TVRMLScene);
-
-    class procedure CameraVisibleChange(Sender: TObject);
 
     class procedure PointingDeviceSensorsChange(Sender: TObject);
   end;
@@ -299,12 +289,12 @@ procedure SceneOctreeCreate; forward;
 procedure SetCollisionCheck(const Value: boolean;
   const NeedMenuUpdate: boolean = true);
 begin
-  if CollisionCheck <> Value then
+  if SceneAnimation.Collides <> Value then
   begin
-    CollisionCheck := Value;
+    SceneAnimation.Collides := Value;
     if NeedMenuUpdate then
       MenuCollisionCheck.Checked := Value;
-    if CollisionCheck and
+    if SceneAnimation.Collides and
       (SceneAnimation.FirstScene.OctreeCollisions = nil) then
       SceneOctreeCreate;
   end;
@@ -446,7 +436,7 @@ begin
  try
   strs.Append(Format('Navigation mode: %s', [CameraNames[CameraMode]]));
 
-  S := Format('Collision detection: %s', [ BoolToStrOO[collisionCheck] ]);
+  S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
   if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
   strs.Append(S);
@@ -767,53 +757,14 @@ begin
   Glw.PostRedisplay;
 end;
 
-{ TWalkCamera collision detection using SceneOctreeCollisions --------------- }
+{ TODO: we lost values of
 
-class function THelper.MoveAllowed(Camera: TWalkCamera;
-  const ProposedNewPos: TVector3Single; out NewPos: TVector3Single;
-  const BecauseOfGravity: boolean): boolean;
-begin
-  if CollisionCheck then
-  begin
-    {TODO SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
-    Result := SceneOctreeCollisions.MoveAllowed(
-      Camera.Position, ProposedNewPos, NewPos, Camera.CameraRadius);
-    {tests:
-     Writeln('Octree efficiency : ',SceneOctreeCollisions.DirectCollisionTestsCounter,
-       ' direct tests with single triangles were needed to know that move is'
-       +BoolToStrNNN[result]+'allowed');
-    }
-  end else
-  begin
-    Result := true;
-    NewPos := ProposedNewPos;
-  end;
-
-  if Result and BecauseOfGravity then
-    Result := SimpleKeepAboveMinPlane(NewPos, SceneAnimation.BoundingBox,
-      Camera.GravityUp);
-end;
-
-class procedure THelper.GetCameraHeight(Camera: TWalkCamera;
-  out IsAboveTheGround: boolean; out SqrHeightAboveTheGround: Single);
-var
-  GroundItem: PVRMLTriangle;
-begin
-  if SceneOctreeCollisions <> nil then
-  begin
-    SceneOctreeCollisions.GetCameraHeight(
-      TWalkCamera(Camera).Position,
-      TWalkCamera(Camera).GravityUp,
-      IsAboveTheGround, SqrHeightAboveTheGround, GroundItem,
-      nil, nil);
     LastIsAboveTheGround := IsAboveTheGround;
     if LastIsAboveTheGround then
       LastHeightAboveTheGround := Sqrt(SqrHeightAboveTheGround);
-  end else
-  begin
-    IsAboveTheGround := false;
-  end;
-end;
+
+  implement it in SceneManager?
+}
 
 { Setting viewpoint ---------------------------------------------------------- }
 
@@ -968,13 +919,6 @@ begin
   ViewpointsList.Recalculate(Scene);
 end;
 
-class procedure THelper.CameraVisibleChange(Sender: TObject);
-begin
-  SceneAnimation.CurrentScene.ViewerChanged(
-    Sender as TCamera, SceneManager.ViewerToChanges);
-  { ViewerChanged already did PostRedisplay }
-end;
-
 class procedure THelper.BoundViewpointVectorsChanged(Scene: TVRMLScene);
 var
   Position: TVector3Single;
@@ -1033,11 +977,11 @@ procedure SceneOctreeCreate;
 var
   OldDraw, OldBeforeDraw: TDrawFunc;
 begin
-  { Do not create octrees when CollisionCheck = false. This makes
-    setting to CollisionCheck an optimization: octree doesn't have to
+  { Do not create octrees when SceneAnimation.Collides = false. This makes
+    setting SceneAnimation.Collides to false an optimization: octree doesn't have to
     be recomputed when animation frame changes, or new scene is loaded etc. }
 
-  if CollisionCheck then
+  if SceneAnimation.Collides then
   begin
     { Beware: constructing octrees will cause progress drawing,
       and progress drawing may cause FlushRedisplay,
@@ -2953,7 +2897,7 @@ begin
            SceneAnimation.Info(true, true, false));
        end;
   122: ShowStatus := not ShowStatus;
-  123: SetCollisionCheck(not CollisionCheck, false);
+  123: SetCollisionCheck(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
   126: Glw.SwapFullScreen;
@@ -3362,7 +3306,7 @@ begin
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
      '_Collision Detection',                   123, CtrlC,
-       CollisionCheck, true);
+       SceneAnimation.Collides, true);
    M.Append(MenuCollisionCheck);
    Result.Append(M);
  M := TMenu.Create('_Animation');
@@ -3683,8 +3627,7 @@ begin
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
       SceneManager.Items.List.Add(SceneAnimation);
 
-      InitCameras(glw, SceneManager,
-        @THelper(nil).MoveAllowed, @THelper(nil).GetCameraHeight, @THelper(nil).CameraVisibleChange);
+      InitCameras(glw, SceneManager);
       InitColorModulator(SceneAnimation);
       InitTextureFilters(SceneAnimation);
 
