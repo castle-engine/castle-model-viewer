@@ -123,8 +123,8 @@ begin
 end;
 
 const
-  { We don't add more than 100 menu item entries for viewpoints. }
-  MaxMenuItems = 100;
+  { We don't add more menu item entries for viewpoints. }
+  MaxMenuItems = 20;
 
 procedure TViewpointsList.SetBoundViewpoint(const Value: TVRMLViewpointNode);
 var
