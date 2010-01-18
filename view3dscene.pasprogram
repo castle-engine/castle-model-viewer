@@ -692,8 +692,6 @@ begin
     Glw.Camera.MouseRay(
       SceneManager.AngleOfViewX, SceneManager.AngleOfViewY, Ray0, RayVector);
 
-    {TODO: SceneOctreeCollisions.DirectCollisionTestsCounter := 0;}
-
     SelectedItem := SceneOctreeCollisions.RayCollision(
       SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
 
@@ -748,15 +746,6 @@ begin
     and currently active (if any)), so we have to redisplay. }
   Glw.PostRedisplay;
 end;
-
-{ TODO: we lost values of
-
-    LastIsAboveTheGround := IsAboveTheGround;
-    if LastIsAboveTheGround then
-      LastHeightAboveTheGround := Sqrt(SqrHeightAboveTheGround);
-
-  implement it in SceneManager?
-}
 
 { Setting viewpoint ---------------------------------------------------------- }
 
