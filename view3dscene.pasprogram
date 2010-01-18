@@ -152,9 +152,6 @@ var
 
   SceneWarnings: TSceneWarnings;
 
-  LastIsAboveTheGround: boolean;
-  LastHeightAboveTheGround: Single;
-
   { Does user want to process VRML/X3D events? Set by menu item.
 
     When false, this also makes WorldTime stopped (just like
@@ -421,9 +418,9 @@ var
       Result := 'no collisions' else
     if not WalkCamera.Gravity then
       Result := 'no gravity' else
-    if not LastIsAboveTheGround then
+    if not WalkCamera.LastIsAboveTheGround then
       Result := 'no ground beneath' else
-      Result := FloatToNiceStr(LastHeightAboveTheGround);
+      Result := FloatToNiceStr(Sqrt(WalkCamera.LastSqrHeightAboveTheGround));
   end;
 
 var
