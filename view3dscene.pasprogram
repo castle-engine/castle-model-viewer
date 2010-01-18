@@ -3578,7 +3578,7 @@ begin
       SceneAnimation.Optimization := Optimization;
       SceneAnimation.Attributes.UseLights := true;
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
-      SceneManager.Items.List.Add(SceneAnimation);
+      SceneManager.Items.Add(SceneAnimation);
 
       InitCameras(glw, SceneManager);
       InitColorModulator(SceneAnimation);
