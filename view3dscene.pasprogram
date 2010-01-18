@@ -206,7 +206,7 @@ type
     procedure RenderFromView3D; override;
     procedure ApplyProjection; override;
   public
-    procedure InitProperties(AScene: TVRMLGLScene);
+    procedure InitProperties;
     function ViewerToChanges: TVisibleSceneChanges; override;
     procedure BeforeDraw; override;
     procedure Draw(const Focused: boolean); override;
@@ -215,7 +215,7 @@ type
 var
   SceneManager: TV3DSceneManager;
 
-procedure TV3DSceneManager.InitProperties(AScene: TVRMLGLScene);
+procedure TV3DSceneManager.InitProperties;
 begin
   InitShadowsProperties;
 
@@ -273,7 +273,7 @@ end;
 { This calls SceneManager.PrepareRender
   (that causes SceneAnimation.PrepareRender).
   Additionally, if AllowProgess and some other conditions are met,
-  this show progress of operation.
+  this shows progress of operation.
 
   Remember that you can call this only when gl context is already active
   (SceneAnimation.PrepareRender requires this) }
@@ -517,11 +517,6 @@ begin
  finally strs.Free end;
 end;
 
-procedure BeforeDraw(Glwin: TGLWindow);
-begin
-  PrepareRender(false);
-end;
-
 procedure TV3DSceneManager.RenderHeadLight;
 begin
   { Set properties of headlight. Actual enabled state of headlight will be
@@ -646,14 +641,14 @@ end;
 procedure TV3DSceneManager.BeforeDraw;
 begin
   { Make sure to call InitProperties before inherited. }
-  InitProperties(SceneAnimation.CurrentScene);
+  InitProperties;
   inherited;
 end;
 
 procedure TV3DSceneManager.Draw(const Focused: boolean);
 begin
   { Make sure to call InitProperties before inherited. }
-  InitProperties(SceneAnimation.CurrentScene);
+  InitProperties;
   inherited;
 end;
 
@@ -1621,7 +1616,7 @@ begin
   OldProgressUserInterface := Progress.UserInterface;
   OldWorldTime := SceneAnimation.WorldTime;
   try
-    BeforeDraw(Glw);
+    SceneManager.BeforeDraw;
 
     { For TRangeScreenShot to display progress on console
       (it cannot display progress on GL window, since this would
@@ -1638,7 +1633,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetWorldTime(ScreenShotsList[I].UseTime(J));
-          Draw(Glw);
+          SceneManager.Draw(false);
           glFlush();
           SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
         end;
@@ -3647,12 +3642,10 @@ begin
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
 
-        { For the screenshot, leave BeforeDraw and Draw as @nil,
-          we'll want to call them manually later to have control
-          over them. }
+        { For MakingScreenShot = true, leave OnDraw as @nil
+          (it doesn't do anything anyway when MakingScreenShot = true). }
         if not MakingScreenShot then
         begin
-          Glw.OnBeforeDraw := @BeforeDraw;
           Glw.OnDraw := @Draw;
         end else
         begin
