@@ -2,8 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses GLWindow, VRMLGLScene, VectorMath, Frustum,
-  SceneManagerUnit;
+uses GLWindow, VRMLGLScene, VectorMath, SceneManagerUnit;
 
 type
   { TSceneManager descendant that takes care of setting

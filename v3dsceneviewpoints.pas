@@ -91,7 +91,7 @@ var
 
 implementation
 
-uses SysUtils, RaysWindow, KambiStringUtils, VRMLCameraUtils;
+uses SysUtils, KambiStringUtils;
 
 {$define read_implementation}
 {$I objectslist_1.inc}

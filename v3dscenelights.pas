@@ -52,7 +52,7 @@ procedure LightModelAmbientChanged;
 
 implementation
 
-uses GL, GLU, GLExt, KambiGLUtils, ParseParametersUnit, V3DSceneFillMode;
+uses GL, GLU, KambiGLUtils, ParseParametersUnit, V3DSceneFillMode;
 
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);

@@ -70,8 +70,8 @@ program view3dscene;
 
 uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  ParseParametersUnit, ProgressUnit, Cameras, RaysWindow,
-  KambiStringUtils, KambiFilesUtils, Math, KambiTimeUtils,
+  ParseParametersUnit, ProgressUnit, Cameras,
+  KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS,
   { OpenGL related units: }
@@ -79,9 +79,9 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
   GLWinMessages, ProgressGL, GLWindowRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap,
   { VRML (and possibly OpenGL) related units: }
-  VRMLFields, KambiOctree, VRMLTriangleOctree, VRMLShapeOctree,
+  VRMLFields, VRMLShapeOctree,
   VRMLNodes, Object3dAsVRML, VRMLGLScene, VRMLTriangle,
-  VRMLScene, VRMLRayTracer, BackgroundGL, VRMLNodesDetailOptions,
+  VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
   VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape, RenderStateUnit,
   { view3dscene-specific units: }

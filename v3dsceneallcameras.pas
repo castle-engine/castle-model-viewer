@@ -34,7 +34,7 @@ unit V3DSceneAllCameras;
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3d, VectorMath,
-  GL, GLU, GLExt, KambiGLUtils, SceneManagerUnit, Classes;
+  GL, GLU, KambiGLUtils, SceneManagerUnit, Classes;
 
 type
   TCameraMode = (cmExamine, cmWalk);

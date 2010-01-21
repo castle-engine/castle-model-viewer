@@ -27,7 +27,7 @@ unit RaytraceToWindow;
 
 interface
 
-uses GL, GLU, GLExt, GLWindow, VRMLTriangle, VectorMath, VRMLNodes,
+uses GL, GLU, GLExt, GLWindow, VectorMath, VRMLNodes,
   KambiFilesUtils, KambiStringUtils, VRMLScene, VRMLHeadLight;
 
 const
@@ -52,7 +52,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
 implementation
 
 uses VRMLRayTracer, GLWinModes, KambiGLUtils, Images, SysUtils, KambiUtils,
-  GLWinMessages, SpaceFillingCurves, GLImages, FileFilters;
+  GLWinMessages, GLImages;
 
 type
   { callbacks data. Callbacki TGLWindow moga osiagnac to Data przez
