@@ -717,27 +717,7 @@ begin
 end;
 
 class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
-
-  function SensorsCount: Cardinal;
-  begin
-    if SceneAnimation.Scenes[0].PointingDeviceSensors <> nil then
-      Result := SceneAnimation.Scenes[0].PointingDeviceSensors.EnabledCount else
-      Result := 0;
-    if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
-      Inc(Result);
-  end;
-
-var
-  NewSensorsCount: Cardinal;
 begin
-  NewSensorsCount := SensorsCount;
-
-  { I want to keep assertion that Glwin.CursorNonMouseLook = mcHand when
-    we're over or keeping active some pointing-device sensors. }
-  if NewSensorsCount <> 0 then
-    Glw.CursorNonMouseLook := mcHand else
-    Glw.CursorNonMouseLook := mcDefault;
-
   { Our status text displays current sensors (under the mouse,
     and currently active (if any)), so we have to redisplay. }
   Glw.PostRedisplay;
