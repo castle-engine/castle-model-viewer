@@ -461,7 +461,7 @@ begin
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[SceneAnimation.Attributes.UseLights];
+   s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
   strs.Append(Format('Use scene lights: %s', [s]));
 
   { Note: there's no sense in showing here Glw.Fps.RealTime,
@@ -2779,9 +2779,9 @@ begin
   90: with SceneAnimation do Attributes.UseHierarchicalOcclusionQuery := not Attributes.UseHierarchicalOcclusionQuery;
   891: with SceneAnimation do Attributes.DebugHierOcclusionQueryResults := not Attributes.DebugHierOcclusionQueryResults;
 
-  91: LightCalculate := not LightCalculate;
+  91: with SceneAnimation.Attributes do Lighting := not Lighting;
   92: HeadLight := not HeadLight;
-  93: with SceneAnimation do Attributes.UseLights := not Attributes.UseLights;
+  93: with SceneAnimation.Attributes do UseSceneLights := not UseSceneLights;
   94: with SceneAnimation do Attributes.EnableTextures := not Attributes.EnableTextures;
   95: ChangeLightModelAmbient;
   96: ShowFrustum := not ShowFrustum;
@@ -3165,12 +3165,12 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting Calculate (GL__LIGHTING enabled)',         91, CtrlL,
-     LightCalculate, true));
+     SceneAnimation.Attributes.Lighting, true));
    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
      Headlight, true);
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
-     SceneAnimation.Attributes.UseLights, true));
+     SceneAnimation.Attributes.UseSceneLights, true));
    M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
@@ -3442,7 +3442,6 @@ const
            '  --write-to-vrml       After loading (and changing) scene, write it' +NL+
            '                        as VRML 1.0 to the standard output' +NL+
            CamerasOptionsHelp +NL+
-           LightsOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
            RendererOptimizationOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
@@ -3524,7 +3523,6 @@ begin
   Glw.ParseParameters(StandardParseOptions);
   { our params }
   CamerasParseParameters;
-  LightsParseParameters;
   VRMLNodesDetailOptionsParse;
   RendererOptimizationOptionsParse(Optimization);
   ParseParameters(Options, @OptionProc, nil);
@@ -3574,9 +3572,7 @@ begin
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
-      { in view3dscene SceneAnimation.Attributes.UseLights default value is true }
       SceneAnimation.Optimization := Optimization;
-      SceneAnimation.Attributes.UseLights := true;
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
       SceneManager.Items.Add(SceneAnimation);
 

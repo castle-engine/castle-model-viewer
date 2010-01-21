@@ -33,27 +33,17 @@ interface
 uses VectorMath, SysUtils, VRMLGLAnimation, KambiUtils, VRMLNodes;
 
 var
-  LightCalculate: boolean = true;
   HeadLight: boolean = false;
 
   SceneLightsCount: Cardinal;
 
 { Inits SceneLightsCount.
-  Inits HeadLight (to NavigationNode.FdHeadlight or SceneLightsCount = 0).
-  Inits SceneAnimation.Attributes.FirstGLFreeLight (to 1). }
+  Inits HeadLight (to NavigationNode.FdHeadlight or SceneLightsCount = 0). }
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 
 procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
 procedure EndRenderSceneWithLights;
-
-{ Possibly sets value of LightCalculate based on @link(Parameters). }
-procedure LightsParseParameters;
-
-const
-  LightsOptionsHelp =
-  '  --light-calculate on|off' +nl+
-  '                        Should light calculations be performed ?';
 
 var
   LightModelAmbient: TVector3Single;
@@ -77,20 +67,18 @@ begin
   if NavigationNode <> nil then
     HeadLight := NavigationNode.FdHeadlight.Value else
     HeadLight := SceneLightsCount = 0;
-
-  SceneAnimation.Attributes.FirstGLFreeLight := 1;
 end;
 
 procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
 begin
   glPushAttrib(GL_LIGHTING_BIT);
-    SetGLEnabled(GL_LIGHTING, LightCalculate and
-      { PureGeometry tricks in V3DFillMode look best without the light }
-      (not (SceneAnimation.Attributes.PureGeometry)) and
-      { fmSilhouetteBorderEdges doesn't set PureGeometry, but still
-        it's no sense to render it with lighting. }
-      (FillMode <> fmSilhouetteBorderEdges)
-      );
+    { Note that GL_LIGHTING is controlled by Attributes.Lighting
+      (when @false, model will not be lit, as we do not enable OpenGL
+      lighting ourselves anywhere.)
+
+      Also Attributes.PureGeometry is correctly taken into account.
+      (when PureGeometry = true, it's like Lighting = always false.) }
+
     SetGLEnabled(GL_LIGHT0, HeadLight);
 
   if SceneAnimation.Attributes.PureGeometry then
@@ -100,27 +88,6 @@ end;
 procedure EndRenderSceneWithLights;
 begin
  glPopAttrib;
-end;
-
-  procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
-    const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
-  begin
-   Assert(OptionNum = 0);
-   case ArrayPosStr(Argument, ['off', 'on']) of
-    0: LightCalculate := false;
-    1: LightCalculate := true;
-    else raise EInvalidParams.CreateFmt('Invalid argument for option '+
-      '--light-calculate. Must be "on" or "off", but is "%s"',
-      [Argument]);
-   end;
-  end;
-
-procedure LightsParseParameters;
-const
-  Options: array[0..0]of TOption =
-  ((Short:#0; Long:'light-calculate'; Argument: oaRequired));
-begin
- ParseParameters(Options, @OptionProc, nil, true);
 end;
 
 procedure LightModelAmbientChanged;
