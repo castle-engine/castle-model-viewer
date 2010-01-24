@@ -34,7 +34,7 @@ unit V3DSceneAllCameras;
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3d, VectorMath,
-  GL, GLU, KambiGLUtils, SceneManagerUnit, Classes;
+  GL, GLU, KambiGLUtils, KambiSceneManager, Classes;
 
 type
   TCameraMode = (cmExamine, cmWalk);
@@ -45,7 +45,7 @@ type
   You CAN NOT directly modify Cameras' properties
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
-procedure InitCameras(SceneManager: TSceneManager);
+procedure InitCameras(SceneManager: TKamSceneManager);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -76,8 +76,8 @@ function CameraMode: TCameraMode;
   Camera.VisibleChange.
 
   @groupBegin }
-procedure SetCameraMode(SceneManager: TSceneManager; Kind: TCameraMode);
-procedure ChangeCameraMode(SceneManager: TSceneManager; change: integer);
+procedure SetCameraMode(SceneManager: TKamSceneManager; Kind: TCameraMode);
+procedure ChangeCameraMode(SceneManager: TKamSceneManager; change: integer);
 { @groupEnd }
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
@@ -112,7 +112,7 @@ var
   FCameraMode: TCameraMode = cmExamine;
   AllCameras: array [TCameraMode] of TCamera;
 
-procedure SetCameraModeInternal(SceneManager: TSceneManager; value: TCameraMode);
+procedure SetCameraModeInternal(SceneManager: TKamSceneManager; value: TCameraMode);
 { This is a private procedure in this module.
   Look at SetCameraMode for something that you can publicly use.
   This procedure does not do some things that SetCameraMode does
@@ -124,7 +124,7 @@ begin
     CameraRadios[FCameraMode].Checked := true;
 end;
 
-procedure InitCameras(SceneManager: TSceneManager);
+procedure InitCameras(SceneManager: TKamSceneManager);
 var nk: TCameraMode;
 begin
  { create cameras }
@@ -170,7 +170,7 @@ begin
     AllCameras[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
-procedure SetCameraMode(SceneManager: TSceneManager; Kind: TCameraMode);
+procedure SetCameraMode(SceneManager: TKamSceneManager; Kind: TCameraMode);
 begin
  SetCameraModeInternal(SceneManager, Kind);
  SceneManager.Camera.VisibleChange;
@@ -178,7 +178,7 @@ end;
 
 {$I macchangeenum.inc}
 
-procedure ChangeCameraMode(SceneManager: TSceneManager; Change: integer);
+procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer);
 var
   NewCameraMode: TCameraMode;
   { Pos, Dir, Up: TVector3Single; }

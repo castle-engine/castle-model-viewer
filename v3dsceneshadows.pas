@@ -2,14 +2,14 @@ unit V3DSceneShadows;
 
 interface
 
-uses GLWindow, VRMLGLScene, VectorMath, SceneManagerUnit;
+uses GLWindow, VRMLGLScene, VectorMath, KambiSceneManager;
 
 type
-  { TSceneManager descendant that takes care of setting
-    TSceneManager shadow volume properties, and modifies a little
+  { TKamSceneManager descendant that takes care of setting
+    TKamSceneManager shadow volume properties, and modifies a little
     shadow volume rendering to work nicely with all view3dscene
     configurations (bump mapping, fill modes etc.) }
-  TV3DShadowsSceneManager = class(TSceneManager)
+  TV3DShadowsSceneManager = class(TKamSceneManager)
   protected
     procedure InitShadowsProperties;
     procedure RenderScene(InShadow: boolean; TransparentGroup: TTransparentGroup); override;
