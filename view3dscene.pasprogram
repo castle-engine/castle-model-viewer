@@ -2285,7 +2285,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         '    depth %s' +nl+
         '  } }' +nl+
         nl+
-        '# Version for VRML 2.0' +nl+
+        '# Version for VRML 2.0 / X3D' +nl+
         'DEF BoundingBox Transform {' +nl+
         '  translation %1:s' +nl+
         '  children Shape {' +nl+
