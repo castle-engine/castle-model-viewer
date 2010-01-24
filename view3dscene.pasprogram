@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2009 Michalis Kamburelis.
+  Copyright 2002-2010 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -28,8 +28,9 @@
   to study. It's quite complex, using virtually every feature of our engine,
   making it all configurable from menu, and filled with a lot
   of user interface details.
-  Instead you should look at simple example program in
-  ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.pasprogram
+  Instead you should look at simple example programs in
+  ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.pasprogram,
+  ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.pasprogram
 
   Also ../kambi_vrml_game_engine/examples/vrml/many2vrml.pasprogram is
   an example how to write simple command-line converter from Collada, OBJ, 3DS
