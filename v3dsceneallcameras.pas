@@ -39,14 +39,13 @@ uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3d, VectorMath,
 type
   TCameraMode = (cmExamine, cmWalk);
 
-{ Call this ONCE on created glwin (glwin need not be after Init).
-  This will take care of always providing proper glwin.Camera for you.
+{ Call this ONCE on created SceneManager.
+  This will take care of always providing proper SceneManager.Camera for you.
 
   You CAN NOT directly modify Cameras' properties
   (settings like InitialCameraXxx, Rotation, but also general settings
   like OnMatrixchanged). You can do it only indirectly using this unit. }
-procedure InitCameras(glwin: TGLUIWindow;
-  SceneManager: TSceneManager);
+procedure InitCameras(SceneManager: TSceneManager);
 
 { Call this always when scene changes. Give new BoundingBox and
   InitialCameraXxx and GravityUp settings for this new scene.
@@ -76,15 +75,9 @@ function CameraMode: TCameraMode;
   Camera.Matrix, so we must do the same thing that would be done in
   Camera.VisibleChange.
 
-  Also glwin.EventResize is called, so that you can adjust
-  your projection settings (specifically, projection zNear/zFar)
-  to different values of CameraMode.
-
   @groupBegin }
-procedure SetCameraMode(glwin: TGLUIWindow;
-  SceneManager: TSceneManager; Kind: TCameraMode);
-procedure ChangeCameraMode(glwin: TGLUIWindow;
-  SceneManager: TSceneManager; change: integer);
+procedure SetCameraMode(SceneManager: TSceneManager; Kind: TCameraMode);
+procedure ChangeCameraMode(SceneManager: TSceneManager; change: integer);
 { @groupEnd }
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
@@ -119,24 +112,19 @@ var
   FCameraMode: TCameraMode = cmExamine;
   AllCameras: array [TCameraMode] of TCamera;
 
-procedure SetCameraModeInternal(glwin: TGLUIWindow;
-  SceneManager: TSceneManager; value: TCameraMode);
+procedure SetCameraModeInternal(SceneManager: TSceneManager; value: TCameraMode);
 { This is a private procedure in this module.
   Look at SetCameraMode for something that you can publicly use.
   This procedure does not do some things that SetCameraMode does
   because this is used from InitCameras. }
 begin
   FCameraMode := value;
-  Glwin.Camera := AllCameras[FCameraMode];
+  SceneManager.Camera := AllCameras[FCameraMode];
   if CameraRadios[FCameraMode] <> nil then
     CameraRadios[FCameraMode].Checked := true;
-
-  if SceneManager <> nil then
-    SceneManager.Camera := Glwin.Camera;
 end;
 
-procedure InitCameras(glwin: TGLUIWindow;
-  SceneManager: TSceneManager);
+procedure InitCameras(SceneManager: TSceneManager);
 var nk: TCameraMode;
 begin
  { create cameras }
@@ -151,8 +139,8 @@ begin
    Note: This is the default now. }
  TExamineCamera(AllCameras[cmExamine]).ExclusiveEvents := false;
 
- { init glwin.Camera }
- SetCameraModeInternal(glwin, SceneManager, FCameraMode);
+ { init SceneManager.Camera }
+ SetCameraModeInternal(SceneManager, FCameraMode);
 end;
 
 procedure SceneInitCameras(
@@ -182,22 +170,15 @@ begin
     AllCameras[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
-procedure SetCameraMode(glwin: TGLUIWindow;
-  SceneManager: TSceneManager; Kind: TCameraMode);
+procedure SetCameraMode(SceneManager: TSceneManager; Kind: TCameraMode);
 begin
- SetCameraModeInternal(glwin, SceneManager, Kind);
- Glwin.Camera.VisibleChange;
-
- { wywolaj EventResize zeby dostosowal zNear naszego projection do
-   aktualnego glw.Camera }
- if not Glwin.Closed then
-   Glwin.EventResize;
+ SetCameraModeInternal(SceneManager, Kind);
+ SceneManager.Camera.VisibleChange;
 end;
 
 {$I macchangeenum.inc}
 
-procedure ChangeCameraMode(glwin: TGLUIWindow;
-  SceneManager: TSceneManager; Change: integer);
+procedure ChangeCameraMode(SceneManager: TSceneManager; Change: integer);
 var
   NewCameraMode: TCameraMode;
   { Pos, Dir, Up: TVector3Single; }
@@ -222,7 +203,7 @@ begin
   end;
   *)
 
-  SetCameraMode(glwin, SceneManager, NewCameraMode);
+  SetCameraMode(SceneManager, NewCameraMode);
 end;
 
 {$I MacArrayPos.inc}
