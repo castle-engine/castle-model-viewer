@@ -586,13 +586,13 @@ begin
       if SceneAnimation.ScenesCount > 1 then
       begin
         glColorv(Red3Single);
-        if not IsEmptyBox3d(SceneAnimation.CurrentScene.BoundingBox) then
-          glDrawBox3dWire(SceneAnimation.CurrentScene.BoundingBox);
+        if not IsEmptyBox3D(SceneAnimation.CurrentScene.BoundingBox) then
+          glDrawBox3DWire(SceneAnimation.CurrentScene.BoundingBox);
       end;
 
       glColorv(Green3Single);
-      if not IsEmptyBox3d(SceneAnimation.BoundingBox) then
-        glDrawBox3dWire(SceneAnimation.BoundingBox);
+      if not IsEmptyBox3D(SceneAnimation.BoundingBox) then
+        glDrawBox3DWire(SceneAnimation.BoundingBox);
     end;
 
     { Note that there is no sense in showing viewing frustum in
@@ -774,7 +774,7 @@ begin
     { Since we don't have NavigationNode.speed, we just calculate some
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
-      Box3dAvgSize(SceneAnimation.BoundingBox). }
+      Box3DAvgSize(SceneAnimation.BoundingBox). }
     VectorAdjustToLengthTo1st(InitialDirection, WalkCamera.CameraRadius * 0.8);
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
@@ -1178,9 +1178,9 @@ begin
       if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
         CameraRadius := NavigationNode.FdAvatarSize.Items[0];
       if CameraRadius = 0.0 then
-        if IsEmptyBox3d(SceneAnimation.BoundingBox) then
+        if IsEmptyBox3D(SceneAnimation.BoundingBox) then
           CameraRadius := 1.0 { any non-zero dummy value } else
-          CameraRadius := Box3dAvgSize(SceneAnimation.BoundingBox) * 0.005;
+          CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox) * 0.005;
     end;
 
     { calculate CameraPreferredHeight }
@@ -1819,7 +1819,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
             NodeNiceName(SelectedGeometry),
-            Box3dToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
+            Box3DToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
 
       if (SelectedItem^.FaceCoordIndexBegin <> -1) and
          (SelectedItem^.FaceCoordIndexEnd <> -1) then
@@ -2265,9 +2265,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       WalkCamera.GravityUp));
   end;
 
-  procedure WriteBoundingBox(const Box: TBox3d);
+  procedure WriteBoundingBox(const Box: TBox3D);
   begin
-    if IsEmptyBox3d(Box) then
+    if IsEmptyBox3D(Box) then
       MessageOK(Glw, 'The bounding box is empty.', taLeft) else
     begin
       Writeln(Format(
@@ -2291,8 +2291,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         '    geometry Box {' +nl+
         '      size %2:s %3:s %4:s' +nl+
         '    } } }',
-        [ Box3dToNiceStr(Box),
-          VectorToRawStr(Box3dMiddle(Box)),
+        [ Box3DToNiceStr(Box),
+          VectorToRawStr(Box3DMiddle(Box)),
           FloatToRawStr(Box[1, 0] - Box[0, 0]),
           FloatToRawStr(Box[1, 1] - Box[0, 1]),
           FloatToRawStr(Box[1, 2] - Box[0, 2]) ]));
