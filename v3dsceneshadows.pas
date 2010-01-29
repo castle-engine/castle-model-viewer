@@ -12,7 +12,7 @@ type
   TV3DShadowsSceneManager = class(TKamSceneManager)
   protected
     procedure InitShadowsProperties;
-    procedure Render3D(InShadow: boolean; TransparentGroup: TTransparentGroup); override;
+    procedure Render3D(TransparentGroup: TTransparentGroup; InShadow: boolean); override;
   end;
 
 var
@@ -59,7 +59,7 @@ begin
 end;
 
 procedure TV3DShadowsSceneManager.Render3D(
-  InShadow: boolean; TransparentGroup: TTransparentGroup);
+  TransparentGroup: TTransparentGroup; InShadow: boolean);
 var
   OldColor: TVector4Single;
 begin
