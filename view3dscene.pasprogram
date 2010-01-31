@@ -155,13 +155,13 @@ var
 
   { Does user want to process VRML/X3D events? Set by menu item.
 
-    When false, this also makes WorldTime stopped (just like
+    When false, this also makes Time stopped (just like
     AnimationTimePlaying = @false. IOW, always
     SceneAnimation.TimePlaying := AnimationTimePlaying and ProcessEventsWanted.)
 
     This is simpler for user --- ProcessEventsWanted=false is something
     stricly "stronger" than AnimationTimePlaying=false. Actually, the engine
-    *could* do something otherwise, if we would allow WorldTime to pass
+    *could* do something otherwise, if we would allow Time to pass
     with ProcessEventsWanted=false: time-dependent  MovieTexture
     would still play, as this is not using events (also precalculated
     animation would play). }
@@ -482,10 +482,10 @@ begin
       LastRender_VisibleShapesCount,
       1 / Glw.Fps.DrawSpeed ]));
 
-  if SceneAnimation.WorldTimeAtLoad = 0.0 then
-    S := Format('World time: %f', [SceneAnimation.WorldTime]) else
+  if SceneAnimation.TimeAtLoad = 0.0 then
+    S := Format('World time: %f', [SceneAnimation.Time]) else
     S := Format('World time: load time + %f = %f',
-      [SceneAnimation.WorldTime - SceneAnimation.WorldTimeAtLoad, SceneAnimation.WorldTime]);
+      [SceneAnimation.Time - SceneAnimation.TimeAtLoad, SceneAnimation.Time]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   if not ProcessEventsWanted then
@@ -1168,7 +1168,7 @@ begin
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
 
-    SceneAnimation.ResetWorldTimeAtLoad;
+    SceneAnimation.ResetTimeAtLoad;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
@@ -1543,13 +1543,13 @@ procedure MakeAllScreenShots;
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
-  OldWorldTime: TKamTime;
+  OldTime: TKamTime;
 begin
   { Save global things that we change, to restore them later.
     This isn't needed for batch mode screenshots, but it doesn't hurt
     to be clean. }
   OldProgressUserInterface := Progress.UserInterface;
-  OldWorldTime := SceneAnimation.WorldTime;
+  OldTime := SceneAnimation.Time;
   try
     SceneManager.BeforeDraw;
 
@@ -1567,7 +1567,7 @@ begin
       try
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
-          SceneAnimation.ResetWorldTime(ScreenShotsList[I].UseTime(J));
+          SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
           SceneManager.Draw(false);
           glFlush();
           SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
@@ -1581,7 +1581,7 @@ begin
 
   finally
     Progress.UserInterface := OldProgressUserInterface;
-    SceneAnimation.ResetWorldTime(OldWorldTime);
+    SceneAnimation.ResetTime(OldTime);
   end;
 end;
 
@@ -2152,11 +2152,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdDiffuseColor.EventIn.Send(Color, SceneAnimation.FirstScene.WorldTime);
+        M2.FdDiffuseColor.EventIn.Send(Color, SceneAnimation.FirstScene.Time);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdDiffuseColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.WorldTime);
+        M1.FdDiffuseColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.Time);
       end;
     end;
   end;
@@ -2182,11 +2182,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdSpecularColor.EventIn.Send(Color, SceneAnimation.FirstScene.WorldTime);
+        M2.FdSpecularColor.EventIn.Send(Color, SceneAnimation.FirstScene.Time);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdSpecularColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.WorldTime);
+        M1.FdSpecularColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.Time);
       end;
     end;
   end;
@@ -2388,7 +2388,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     FileNamePattern: string;
     Range: TRangeScreenShot;
   begin
-    TimeBegin := SceneAnimation.WorldTime;
+    TimeBegin := SceneAnimation.Time;
     TimeStep := 0.04;
     FramesCount := 25;
     FileNamePattern := 'image%d.png';
@@ -2452,11 +2452,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
          'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime, taLeft) then
     begin
       { Note: there's an inherent problem here since RootNode starts
-        with state from current WorldTime. This includes
+        with state from current Time. This includes
         TimeDependentNodeHandler state like IsActive, etc., but also
         the rest of VRML graph (e.g. if some events change some geometry
         or materials). While LoadFromVRMLEvents takes care to call
-        SceneAnimation.ResetWorldTime, this only resets time-dependent nodes and routes
+        SceneAnimation.ResetTime, this only resets time-dependent nodes and routes
         and the like, but it cannot at the same time deactivate-and-then-activate
         time-dependent nodes in the same timestamp (so e.g. TimeSensor just
         remains active, if it was active currently and is determined to be
@@ -2888,7 +2888,7 @@ begin
          AnimationTimePlaying := not AnimationTimePlaying;
          SceneAnimation.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
        end;
-  221: SceneAnimation.ResetWorldTimeAtLoad(true);
+  221: SceneAnimation.ResetTimeAtLoad(true);
   222: ChangeAnimationTimeSpeed;
   223: ChangeAnimationTimeSpeedWhenLoading;
 
@@ -2907,7 +2907,7 @@ begin
         current viewpoint is not visible at all. }
       SetCameraMode(SceneManager, cmWalk);
       ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
-        Send(true, SceneAnimation.FirstScene.WorldTime);
+        Send(true, SceneAnimation.FirstScene.Time);
       { Sending set_bind = true works fine if it's not current viewpoint,
         otherwise nothing happens... So just call UpdateViewpointNode
         explicitly, to really reset on the given viewpoint. }
