@@ -406,15 +406,15 @@ var
     end;
   end;
 
-  function CurrentHeightAboveTheGround: string;
+  function CurrentAboveHeight: string;
   begin
     if SceneOctreeCollisions = nil then
       Result := 'no collisions' else
     if not WalkCamera.Gravity then
       Result := 'no gravity' else
-    if not WalkCamera.LastIsAboveTheGround then
+    if not WalkCamera.IsAbove then
       Result := 'no ground beneath' else
-      Result := FloatToNiceStr(Sqrt(WalkCamera.LastSqrHeightAboveTheGround));
+      Result := FloatToNiceStr(WalkCamera.AboveHeight);
   end;
 
 var
@@ -444,7 +444,7 @@ begin
          So it's enough to show just MoveHorizontalSpeed. }
        WalkCamera.MoveHorizontalSpeed,
        WalkCamera.CameraPreferredHeight,
-       CurrentHeightAboveTheGround ]));
+       CurrentAboveHeight ]));
   end else
   begin
    strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
