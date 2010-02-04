@@ -277,8 +277,10 @@ begin
    CallData.Image := glwin.SaveAlignedScreen(RealScreenWidth);
    try
     { set initial state }
-    TGLWindowState.SetStandardNoCloseState(glwin, @DrawRaytracing, @Resize2D,
-      false);
+    TGLWindowState.SetStandardState(glwin,
+      {$ifdef FPC_OBJFPC} @ {$endif} DrawRaytracing,
+      {$ifdef FPC_OBJFPC} @ {$endif} NoClose,
+      {$ifdef FPC_OBJFPC} @ {$endif} Resize2D, false);
 
     Glwin.UserData := @CallData;
     glwin.MainMenu := WhileRTMainMenu;
