@@ -279,8 +279,8 @@ begin
     { set initial state }
     TGLWindowState.SetStandardState(glwin,
       {$ifdef FPC_OBJFPC} @ {$endif} DrawRaytracing,
-      {$ifdef FPC_OBJFPC} @ {$endif} NoClose,
-      {$ifdef FPC_OBJFPC} @ {$endif} Resize2D, false);
+      {$ifdef FPC_OBJFPC} @ {$endif} Resize2D,
+      {$ifdef FPC_OBJFPC} @ {$endif} NoClose, false);
 
     Glwin.UserData := @CallData;
     glwin.MainMenu := WhileRTMainMenu;
