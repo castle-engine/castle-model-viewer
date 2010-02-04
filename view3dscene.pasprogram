@@ -1041,7 +1041,11 @@ procedure LoadClearScene; forward;
   (actually, making it possibly totally invalid pointer,
   pointing at some other place of memory). That's always the
   problem with passing pointers to global variables
-  (ASceneFileName is a pointer) as local vars. }
+  (ASceneFileName is a pointer) as local vars.
+
+  If UseInitialNavigationType then we will use and reset
+  InitialNavigationType. This should be @false if you're only loading
+  temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNodes: TVRMLNodesList;
   ATimes: TDynSingleArray;
@@ -1052,7 +1056,9 @@ procedure LoadSceneCore(
 
   ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  JumpToInitialViewpoint: boolean);
+  JumpToInitialViewpoint: boolean;
+
+  UseInitialNavigationType: boolean = true);
 
   procedure ScaleAll(A: TDynSingleArray; const Value: Single);
   var
@@ -1066,22 +1072,72 @@ procedure LoadSceneCore(
     NavigationNode.FdType }
   procedure SetNavigationType;
 
-    procedure SetExamineNavigationType;
+    { Set navigation type by SetCameraMode, also setting
+      WalkCamera.PreferGravityUpForRotations
+      WalkCamera.PreferGravityUpForMoving,
+      WalkCamera.Gravity,
+      WalkCamera.IgnoreAllInputs.
+
+      Returns @false and doesn't set anything (but does VRMLWarning)
+      if Name unknown. }
+    function DoSetNavigationType(Name: string): boolean;
     begin
-      SetCameraMode(SceneManager, cmExamine);
+      Name := UpperCase(Name); { ignore case when looking for name }
+      Result := true;
+      if Name = 'WALK' then
+      begin
+        SetCameraMode(SceneManager, cmWalk);
+        WalkCamera.PreferGravityUpForRotations := true;
+        WalkCamera.PreferGravityUpForMoving := true;
+        WalkCamera.Gravity := true;
+        WalkCamera.IgnoreAllInputs := false;
+      end else
+      if Name = 'FLY' then
+      begin
+        SetCameraMode(SceneManager, cmWalk);
+        WalkCamera.PreferGravityUpForRotations := true;
+        WalkCamera.PreferGravityUpForMoving := false;
+        WalkCamera.Gravity := false;
+        WalkCamera.IgnoreAllInputs := false;
+      end else
+      if Name = 'NONE' then
+      begin
+        SetCameraMode(SceneManager, cmWalk);
+        WalkCamera.PreferGravityUpForRotations := true;
+        WalkCamera.PreferGravityUpForMoving := true; { doesn't matter }
+        WalkCamera.Gravity := false;
+        WalkCamera.IgnoreAllInputs := true;
+      end else
+      if (Name = 'EXAMINE') or (Name = 'LOOKAT') then
+      begin
+        if Name = 'LOOKAT' then
+          VRMLWarning(vwIgnorable, 'TODO: Navigation type "LOOKAT" is not yet supported, treating like "EXAMINE"');
 
-      { Set also WalkCamera properties to something predictable
-        (*not* dependent on previous values, as this would be rather
-        confusing to user (new model should just start with new settings).
-        In particular, IgnoreAllInputs must be reset.)
+        SetCameraMode(SceneManager, cmExamine);
 
-        Values below are like for "FLY" mode, since this is relatively
-        safest default for WalkCamera (free navigation, no gravity). }
+        { Set also WalkCamera properties to something predictable
+          (*not* dependent on previous values, as this would be rather
+          confusing to user (new model should just start with new settings).
+          In particular, IgnoreAllInputs must be reset.)
 
-      WalkCamera.PreferGravityUpForRotations := true;
-      WalkCamera.PreferGravityUpForMoving := false;
-      WalkCamera.Gravity := false;
-      WalkCamera.IgnoreAllInputs := false;
+          Values below are like for "FLY" mode, since this is relatively
+          safest default for WalkCamera (free navigation, no gravity). }
+
+        WalkCamera.PreferGravityUpForRotations := true;
+        WalkCamera.PreferGravityUpForMoving := false;
+        WalkCamera.Gravity := false;
+        WalkCamera.IgnoreAllInputs := false;
+      end else
+      if Name = 'ANY' then
+      begin
+        { Just ignore (do not set camera), but accept as valid name
+          (no VRMLWarning). }
+        Result := false;
+      end else
+      begin
+        VRMLWarning(vwIgnorable, 'Invalid navigation type name "' + Name + '"');
+        Result := false;
+      end;
     end;
 
   var
@@ -1091,45 +1147,23 @@ procedure LoadSceneCore(
     FoundType := false;
     if NavigationNode <> nil then
       for I := 0 to NavigationNode.FdType.Count - 1 do
-        if NavigationNode.FdType.Items[I] = 'WALK' then
+        if DoSetNavigationType(NavigationNode.FdType.Items[I]) then
         begin
-          SetCameraMode(SceneManager, cmWalk);
-          WalkCamera.PreferGravityUpForRotations := true;
-          WalkCamera.PreferGravityUpForMoving := true;
-          WalkCamera.Gravity := true;
-          WalkCamera.IgnoreAllInputs := false;
-          FoundType := true;
-          Break;
-        end else
-        if NavigationNode.FdType.Items[I] = 'FLY' then
-        begin
-          SetCameraMode(SceneManager, cmWalk);
-          WalkCamera.PreferGravityUpForRotations := true;
-          WalkCamera.PreferGravityUpForMoving := false;
-          WalkCamera.Gravity := false;
-          WalkCamera.IgnoreAllInputs := false;
-          FoundType := true;
-          Break;
-        end else
-        if NavigationNode.FdType.Items[I] = 'NONE' then
-        begin
-          SetCameraMode(SceneManager, cmWalk);
-          WalkCamera.PreferGravityUpForRotations := true;
-          WalkCamera.PreferGravityUpForMoving := true; { doesn't matter }
-          WalkCamera.Gravity := false;
-          WalkCamera.IgnoreAllInputs := true;
-          FoundType := true;
-          Break;
-        end else
-        if NavigationNode.FdType.Items[I] = 'EXAMINE' then
-        begin
-          SetExamineNavigationType;
           FoundType := true;
           Break;
         end;
 
     if not FoundType then
-      SetExamineNavigationType;
+    begin
+      if UseInitialNavigationType and (InitialNavigationType <> '') then
+      begin
+        FoundType := DoSetNavigationType(InitialNavigationType);
+        InitialNavigationType := '';
+      end;
+
+      if not FoundType then
+        DoSetNavigationType('EXAMINE');
+    end;
 
     if MenuGravity <> nil then
       MenuGravity.Checked := WalkCamera.Gravity;
@@ -1328,7 +1362,7 @@ begin
       This causes a potential problem: if loading the scene will fail,
       we should restore the old warnings (if the old scene will be
       preserved) or clear them (if the clear scene will be loaded
-      --- LoadSceneClear will clear them). }
+      --- LoadClearScene will clear them). }
     SavedSceneWarnings := TSceneWarnings.Create;
     try
       SavedSceneWarnings.Assign(SceneWarnings);
@@ -1414,7 +1448,8 @@ end;
 { This should be used to load special "clear" and "welcome" scenes.
   This loads a scene directly from TVRMLNode, and assumes that
   LoadSceneCore will not fail. }
-procedure LoadSimpleScene(Node: TVRMLNode);
+procedure LoadSimpleScene(Node: TVRMLNode;
+  UseInitialNavigationType: boolean = true);
 var
   RootNodes: TVRMLNodesList;
   Times: TDynSingleArray;
@@ -1440,7 +1475,8 @@ begin
       { keep current Optimization } Optimization,
       EqualityEpsilon,
       TimeLoop, TimeBackwards,
-      '', [], 1.0, true);
+      '', [], 1.0, true,
+      UseInitialNavigationType);
   finally
     FreeAndNil(RootNodes);
     FreeAndNil(Times);
@@ -1469,7 +1505,7 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML and then auto-generate
     xxx_scene.inc file to load VRML scene from a simple string. }
-  LoadSimpleScene(ParseVRMLFileFromString({$I clear_scene.inc}, ''));
+  LoadSimpleScene(ParseVRMLFileFromString({$I clear_scene.inc}, ''), false);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.

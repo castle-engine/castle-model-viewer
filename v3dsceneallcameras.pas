@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2009 Michalis Kamburelis.
+  Copyright 2003-2010 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -28,8 +28,6 @@
   (this also causes ViewChangedSuddenly now, which is good).
   You can pass @nil if SceneManager is not initialized yet. }
 unit V3DSceneAllCameras;
-
-{$I openglmac.inc}
 
 interface
 
@@ -99,6 +97,11 @@ const
   CamerasOptionsHelp =
   '  --navigation Examine|Walk'+nl+
   '                        Set initial navigation style';
+
+var
+  { When loading scene, check InitialNavigationType, and if non-empty:
+    use it, and reset to empty. }
+  InitialNavigationType: string;
 
 implementation
 
@@ -176,17 +179,13 @@ begin
  SceneManager.Camera.VisibleChange;
 end;
 
-{$I macchangeenum.inc}
-
 procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer);
 var
   NewCameraMode: TCameraMode;
   { Pos, Dir, Up: TVector3Single; }
 begin
-  {$define CHANGE_ENUM_TYPE := TCameraMode}
-  {$define CHANGE_ENUM_NAME := CameraMode}
-  {$define CHANGE_ENUM_CHANGE := Change}
-  NewCameraMode := CHANGE_ENUM;
+  NewCameraMode := TCameraMode( ChangeIntCycle(Ord(CameraMode), Change,
+    Ord(High(TCameraMode))));
 
   (*
   Test TExamineCamera.GetCameraVectors: when switching from Examine
@@ -206,12 +205,6 @@ begin
   SetCameraMode(SceneManager, NewCameraMode);
 end;
 
-{$I MacArrayPos.inc}
-{$define ARRAY_POS_FUNCTION_NAME := StrToCameraMode}
-{$define ARRAY_POS_ARRAY_NAME := CameraNames}
-{$define ARRAY_POS_INDEX_TYPE := TCameraMode}
-IMPLEMENT_ARRAY_POS_CASE_CHECKED
-
 function WalkCamera: TWalkCamera;
 begin
   Result := TWalkCamera(AllCameras[cmWalk]);
@@ -226,7 +219,7 @@ end;
     const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
   begin
    Assert(OptionNum = 0);
-   FCameraMode := StrToCameraMode(Argument, true);
+   InitialNavigationType := Argument;
   end;
 
 procedure CamerasParseParameters;
