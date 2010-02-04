@@ -28,7 +28,7 @@ var
   ShadowsPossibleWanted: boolean = DefaultShadowsPossibleWanted;
 
   { Whether we managed to initialize OpenGL context with stencil buffer
-    (and set projection to infinity and initialized ShadowVolumes instance).
+    (and set projection to infinity and initialized ShadowVolumeRenderer instance).
     This can be true only if ShadowsPossibleWanted was initially true. }
   ShadowsPossibleCurrently: boolean = false;
 
