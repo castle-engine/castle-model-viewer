@@ -278,8 +278,9 @@ begin
    try
 
     { set initial state }
-    TGLWindowState.SetStandardNoCloseState(glwin, @DrawRaytracing, @Resize2D, @CallData, false,
-      false, true, K_None, false, nil);
+    TGLWindowState.SetStandardNoCloseState(glwin, @DrawRaytracing, @Resize2D,
+      false, true, K_None, false);
+    Glwin.UserData := @CallData;
     glwin.MainMenu := WhileRTMainMenu;
     glwin.OnMenuCommand := @MenuCommand;
     CallData.UserWantsToQuit := false;
