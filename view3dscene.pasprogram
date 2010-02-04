@@ -853,10 +853,10 @@ begin
     V.GetCameraVectors(Position, Direction, Up, GravityUp);
   end else
   begin
-    Position := StdVRMLCamPos[1];
-    Direction := StdVRMLCamDir;
-    Up := StdVRMLCamUp;
-    GravityUp := StdVRMLGravityUp;
+    Position := DefaultVRMLCameraPosition[1];
+    Direction := DefaultVRMLCameraDirection;
+    Up := DefaultVRMLCameraUp;
+    GravityUp := DefaultVRMLGravityUp;
   end;
 
   ViewpointsList.BoundViewpoint := V;
@@ -1237,7 +1237,10 @@ begin
     end;
 
     SceneInitCameras(SceneAnimation.BoundingBox,
-      StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp,
+      DefaultVRMLCameraPosition[1],
+      DefaultVRMLCameraDirection,
+      DefaultVRMLCameraUp,
+      DefaultVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
@@ -2767,11 +2770,17 @@ begin
     in cmExamine viewpoint result is not visible at all. }
   51: begin
         SetCameraMode(SceneManager, cmWalk);
-        SetViewpointCore(StdVRMLCamPos[1], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpointCore(DefaultVRMLCameraPosition[1],
+                         DefaultVRMLCameraDirection,
+                         DefaultVRMLCameraUp,
+                         DefaultVRMLGravityUp);
       end;
   52: begin
         SetCameraMode(SceneManager, cmWalk);
-        SetViewpointCore(StdVRMLCamPos[2], StdVRMLCamDir, StdVRMLCamUp, StdVRMLGravityUp);
+        SetViewpointCore(DefaultVRMLCameraPosition[2],
+                         DefaultVRMLCameraDirection,
+                         DefaultVRMLCameraUp,
+                         DefaultVRMLGravityUp);
       end;
   53: begin
         SetCameraMode(SceneManager, cmWalk);
