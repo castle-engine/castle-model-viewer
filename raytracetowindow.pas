@@ -23,8 +23,6 @@
 
 unit RaytraceToWindow;
 
-{$I openglmac.inc}
-
 interface
 
 uses GL, GLU, GLExt, GLWindow, VectorMath, VRMLNodes,

@@ -26,8 +26,6 @@
 
 unit V3DSceneLights;
 
-{$I openglmac.inc}
-
 interface
 
 uses VectorMath, SysUtils, VRMLGLAnimation, KambiUtils, VRMLNodes;

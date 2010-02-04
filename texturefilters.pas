@@ -26,8 +26,6 @@
 
 unit TextureFilters;
 
-{$I openglmac.inc}
-
 interface
 
 uses GL, GLU, GLExt, KambiUtils, VectorMath, VRMLNodes,

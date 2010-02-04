@@ -22,8 +22,6 @@
 
 unit BGColors;
 
-{$I openglmac.inc}
-
 interface
 
 uses GL, GLU, VectorMath;
