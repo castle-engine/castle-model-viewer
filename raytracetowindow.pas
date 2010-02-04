@@ -242,42 +242,42 @@ var SavedMode: TGLMode;
     AfterRTMainMenu, WhileRTMainMenu: TMenu;
     RayTracer: TRayTracer;
 begin
- { get input from user (BEFORE switching to our mode with ModeGLEnter) }
- case LoCase(MessageChar(glwin,
-    'Which ray tracer do you want to use  ?'+nl+
-    '[C] : Classic (Whitted-style) ray tracer'+nl+
-    '[P] : Path tracer' +nl+
-    '[Escape] : Cancel',
-    ['c','C', 'p', 'P', CharEscape], 'Press [C] or [P] or [Escape]', taLeft)) of
-  'c': RaytracerKind := rtkClassic;
-  'p': RaytracerKind := rtkPathTracer;
-  CharEscape: Exit;
- end;
- RaytraceDepth := MessageInputCardinal(glwin,
-   'Ray-tracer depth (maximum for classic, minimum for path tracer):',
-   taLeft, DEF_RAYTRACE_DEPTH);
- if RaytracerKind = rtkPathTracer then
- begin
-  PathtraceNonPrimarySamples := MessageInputCardinal(glwin,
-    'How many samples (non-primary) per pixel ?',
-    taLeft, DEF_NON_PRIMARY_SAMPLES_COUNT);
-  PathtraceRRoulContinue := 0.5; { TODO: ask user }
- end;
+  { get input from user (BEFORE switching to our mode with ModeGLEnter) }
+  case LoCase(MessageChar(glwin,
+     'Which ray tracer do you want to use  ?'+nl+
+     '[C] : Classic (Whitted-style) ray tracer'+nl+
+     '[P] : Path tracer' +nl+
+     '[Escape] : Cancel',
+     ['c','C', 'p', 'P', CharEscape], 'Press [C] or [P] or [Escape]', taLeft)) of
+   'c': RaytracerKind := rtkClassic;
+   'p': RaytracerKind := rtkPathTracer;
+   CharEscape: Exit;
+  end;
 
- AfterRTMainMenu := nil;
- WhileRTMainMenu := nil;
- RayTracer := nil;
- try
-  AfterRTMainMenu := CreateAfterRTMainMenu;
-  WhileRTMainMenu := CreateWhileRTMainMenu;
+  RaytraceDepth := MessageInputCardinal(glwin,
+    'Ray-tracer depth (maximum for classic, minimum for path tracer):',
+    taLeft, DEF_RAYTRACE_DEPTH);
+  if RaytracerKind = rtkPathTracer then
+  begin
+    PathtraceNonPrimarySamples := MessageInputCardinal(glwin,
+      'How many samples (non-primary) per pixel ?',
+      taLeft, DEF_NON_PRIMARY_SAMPLES_COUNT);
+    PathtraceRRoulContinue := 0.5; { TODO: ask user }
+  end;
 
-  { switch to our mode }
-  SavedMode := TGLMode.Create(glwin, GL_ENABLE_BIT, false);
+  AfterRTMainMenu := nil;
+  WhileRTMainMenu := nil;
+  RayTracer := nil;
+  CallData.Image := nil;
+  SavedMode := nil;
   try
-   CallData.Image := glwin.SaveAlignedScreen(RealScreenWidth);
-   try
-    { set initial state }
-    TGLWindowState.SetStandardState(glwin,
+    AfterRTMainMenu := CreateAfterRTMainMenu;
+    WhileRTMainMenu := CreateWhileRTMainMenu;
+
+    CallData.Image := glwin.SaveAlignedScreen(RealScreenWidth);
+
+    { switch to our mode }
+    SavedMode := TGLMode.CreateReset(glwin, GL_ENABLE_BIT, false,
       {$ifdef FPC_OBJFPC} @ {$endif} DrawRaytracing,
       {$ifdef FPC_OBJFPC} @ {$endif} Resize2D,
       {$ifdef FPC_OBJFPC} @ {$endif} NoClose, false);
@@ -293,77 +293,76 @@ begin
     glwin.EventResize; { init our projection }
 
     try
-     {mechanizm wyswietlania w RowMadeNotify wymaga single bufora,
-      dlatego przestawiamy sie tu na rysowanie zawsze w FRONT buffer}
-     glPushAttrib(GL_COLOR_BUFFER_BIT);
-     glDrawBuffer(GL_FRONT);
-     try
-      case RaytracerKind of
-        rtkClassic:
-          begin
-            RayTracer := TClassicRayTracer.Create;
-            TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
-            TClassicRayTracer(RayTracer).FogNode := FogNode;
-            TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
-            TClassicRayTracer(RayTracer).HeadLightExists := HeadLightExists;
-            if HeadLightExists then
-              TClassicRayTracer(RayTracer).HeadLight := HeadLight.ActiveLight(CamPosition, CamDir);
-          end;
-        rtkPathTracer:
-          begin
-            RayTracer := TPathTracer.Create;
-            TPathTracer(RayTracer).MinDepth := RaytraceDepth;
-            TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
-            TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
-            TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
-            TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
-         end;
-      end;
-
-      { For ray-tracing, we create and use OctreeVisibleTriangles.
-
-        Although OctreeDynamicCollisions (usually already prepared for Scene,
-        when CollisionChecking is active) has quite excellent performance,
-        and ray-tracer can work with it.
-        But OctreeCollidableTriangles has only *collidable* geometry ---
-        while we want only *visible* geometry for ray-tracer.
-        When using Collision node, these may be two different things. }
-      Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
+      {mechanizm wyswietlania w RowMadeNotify wymaga single bufora,
+       dlatego przestawiamy sie tu na rysowanie zawsze w FRONT buffer}
+      glPushAttrib(GL_COLOR_BUFFER_BIT);
+      glDrawBuffer(GL_FRONT);
       try
-        RayTracer.Image := CallData.Image;
-        RayTracer.Octree := Scene.OctreeVisibleTriangles;
-        RayTracer.CamPosition := CamPosition;
-        RayTracer.CamDirection := CamDir;
-        RayTracer.CamUp := CamUp;
-        RayTracer.ViewAngleDegX := ViewAngleDegX;
-        RayTracer.ViewAngleDegY := ViewAngleDegY;
-        RayTracer.SceneBGColor := SceneBGColor;
-        RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
-        RayTracer.PixelsMadeNotifierData := glwin;
+        case RaytracerKind of
+          rtkClassic:
+            begin
+              RayTracer := TClassicRayTracer.Create;
+              TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
+              TClassicRayTracer(RayTracer).FogNode := FogNode;
+              TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
+              TClassicRayTracer(RayTracer).HeadLightExists := HeadLightExists;
+              if HeadLightExists then
+                TClassicRayTracer(RayTracer).HeadLight := HeadLight.ActiveLight(CamPosition, CamDir);
+            end;
+          rtkPathTracer:
+            begin
+              RayTracer := TPathTracer.Create;
+              TPathTracer(RayTracer).MinDepth := RaytraceDepth;
+              TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
+              TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
+              TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
+              TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
+           end;
+        end;
 
-        RayTracer.Execute;
-      finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
+        { For ray-tracing, we create and use OctreeVisibleTriangles.
 
-     finally glPopAttrib end;
+          Although OctreeDynamicCollisions (usually already prepared for Scene,
+          when CollisionChecking is active) has quite excellent performance,
+          and ray-tracer can work with it.
+          But OctreeCollidableTriangles has only *collidable* geometry ---
+          while we want only *visible* geometry for ray-tracer.
+          When using Collision node, these may be two different things. }
+        Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
+        try
+          RayTracer.Image := CallData.Image;
+          RayTracer.Octree := Scene.OctreeVisibleTriangles;
+          RayTracer.CamPosition := CamPosition;
+          RayTracer.CamDirection := CamDir;
+          RayTracer.CamUp := CamUp;
+          RayTracer.ViewAngleDegX := ViewAngleDegX;
+          RayTracer.ViewAngleDegY := ViewAngleDegY;
+          RayTracer.SceneBGColor := SceneBGColor;
+          RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
+          RayTracer.PixelsMadeNotifierData := glwin;
 
-     { wyswietlaj w petli wyrenderowany obrazek, czekaj na Escape.
-       Potrzebny PostRedisplay bo na skutek ROWS_SHOW_COUNT koncowe
-       wiersze moga nie zostac namalowane przez RowDoneNotify. }
-     glwin.PostRedisplay;
-     glwin.Caption := CaptionBegin+ ' done';
-     glwin.OnDraw := @DrawRaytraced;
-     glwin.MainMenu := AfterRTMainMenu;
-     repeat Application.ProcessMessage(true) until CallData.UserWantsToQuit;
+          RayTracer.Execute;
+        finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
+
+      finally glPopAttrib end;
+
+      { wyswietlaj w petli wyrenderowany obrazek, czekaj na Escape.
+        Potrzebny PostRedisplay bo na skutek ROWS_SHOW_COUNT koncowe
+        wiersze moga nie zostac namalowane przez RowDoneNotify. }
+      glwin.PostRedisplay;
+      glwin.Caption := CaptionBegin+ ' done';
+      glwin.OnDraw := @DrawRaytraced;
+      glwin.MainMenu := AfterRTMainMenu;
+      repeat Application.ProcessMessage(true) until CallData.UserWantsToQuit;
 
     except on BreakRaytracing do ; end;
-   finally FreeAndNil(CallData.Image) end;
-  finally SavedMode.Free end;
-
- finally
-  WhileRTMainMenu.Free;
-  AfterRTMainMenu.Free;
-  FreeAndNil(RayTracer);
- end;
+  finally
+    FreeAndNil(SavedMode);
+    FreeAndNil(CallData.Image);
+    FreeAndNil(WhileRTMainMenu);
+    FreeAndNil(AfterRTMainMenu);
+    FreeAndNil(RayTracer);
+  end;
 end;
 
 end.
