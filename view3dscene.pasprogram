@@ -1213,9 +1213,8 @@ begin
       if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
         CameraRadius := NavigationNode.FdAvatarSize.Items[0];
       if CameraRadius = 0.0 then
-        if IsEmptyBox3D(SceneAnimation.BoundingBox) then
-          CameraRadius := 1.0 { any non-zero dummy value } else
-          CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox) * 0.005;
+        CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox,
+          1.0 { any non-zero dummy value }) * 0.005;
     end;
 
     { calculate CameraPreferredHeight }
