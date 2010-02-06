@@ -1630,37 +1630,6 @@ const
   DisplayProgramName = 'view3dscene';
 
 type
-  THelperSpecialCastleNodes = class
-    procedure Remove(ParentNode: TVRMLNode; var Node: TVRMLNode);
-  end;
-
-procedure THelperSpecialCastleNodes.Remove(
-  ParentNode: TVRMLNode; var Node: TVRMLNode);
-begin
-  if (Node.NodeName = 'LevelBox') or
-     (Node.NodeName = 'WaterBox') or
-     IsPrefix('Crea', Node.NodeName) or
-     IsPrefix('Item', Node.NodeName) or
-     IsPrefix('Waypoint', Node.NodeName) or
-     IsPrefix('Sector', Node.NodeName) or
-     { Actually below are special only on specific levels. Oh, well... there's
-       no way to solve it in view3dscene (and I obviously don't want to
-       make view3dscene depend on any "The Castle" units --- view3dscene
-       is completely independent). }
-     (Node.NodeName = 'LevelExitBox') or
-     IsPrefix('WerewolfAppear_', Node.NodeName) or
-     (Node.NodeName = 'GateExitBox') or
-     (Node.NodeName = 'Teleport1Box') or
-     (Node.NodeName = 'Teleport2Box') or
-     (Node.NodeName = 'SacrilegeBox') or
-     IsPrefix('SacrilegeGhost_', Node.NodeName) or
-     IsPrefix('SwordGhost_', Node.NodeName) or
-     (Node.NodeName = 'Elevator49DownBox') or
-     (Node.NodeName = 'Elev9a9bPickBox') then
-    Node := nil;
-end;
-
-type
   TShaderAdder = class
     ProgramNode: TNodeComposedShader;
     Added: boolean;
@@ -2274,27 +2243,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure RemoveSpecialCastleNodes;
-  var
-    RemovedNumber, RemovedNumberOther: Cardinal;
-    I: Integer;
-    HelperSpecialCastleNodes: THelperSpecialCastleNodes;
-  begin
-    RemovedNumber := SceneAnimation.Scenes[0].RootNode.
-      EnumerateReplaceChildren(@HelperSpecialCastleNodes.Remove);
-    for I := 1 to SceneAnimation.ScenesCount - 1 do
-    begin
-      RemovedNumberOther := SceneAnimation.Scenes[I].RootNode.
-        EnumerateReplaceChildren(@HelperSpecialCastleNodes.Remove);
-      Assert(RemovedNumberOther = RemovedNumber);
-    end;
-
-    if RemovedNumber <> 0 then
-      SceneAnimation.Scenes[0].ChangedAll;
-    MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
-      taLeft);
-  end;
-
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
   begin
     Writeln(MakeVRMLCameraStr(Version,
@@ -2757,7 +2705,6 @@ begin
   33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
-  35: RemoveSpecialCastleNodes;
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
@@ -3322,9 +3269,6 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create(
-     'Remove Special Nodes on "The Castle" Level', 35));
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
