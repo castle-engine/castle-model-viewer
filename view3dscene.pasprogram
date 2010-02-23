@@ -972,6 +972,10 @@ begin
   SceneOctreeFree;
 
   SceneAnimation.Close;
+  { SceneAnimation.Close must free all scenes, including FirstScene,
+    which should (through free notification) set to nil also
+    SceneManager.MainScene }
+  Assert(SceneManager.MainScene = nil);
 
   ViewpointsList.Recalculate(nil);
 
