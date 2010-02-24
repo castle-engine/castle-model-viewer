@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2005 Michalis Kamburelis.
+  Copyright 2002-2010 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -16,6 +16,8 @@
   You should have received a copy of the GNU General Public License
   along with "view3dscene"; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  ----------------------------------------------------------------------------
 }
 
 { Simple management of glClearColor OpenGL property. }
