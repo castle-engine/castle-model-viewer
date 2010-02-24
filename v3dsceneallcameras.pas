@@ -31,7 +31,7 @@ unit V3DSceneAllCameras;
 
 interface
 
-uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3d, VectorMath,
+uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
   GL, GLU, KambiGLUtils, KambiSceneManager, Classes;
 
 type
@@ -52,7 +52,7 @@ procedure InitCameras(SceneManager: TKamSceneManager);
 
   You must call InitCameras before using this. }
 procedure SceneInitCameras(
-  const ModelBox: TBox3d;
+  const ModelBox: TBox3D;
   const InitialPosition, InitialDirection, InitialUp,
     GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
@@ -147,7 +147,7 @@ begin
 end;
 
 procedure SceneInitCameras(
-  const ModelBox: TBox3d;
+  const ModelBox: TBox3D;
   const InitialPosition, InitialDirection, InitialUp,
     GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);

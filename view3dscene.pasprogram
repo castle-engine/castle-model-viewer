@@ -69,7 +69,7 @@ program view3dscene;
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
 
-uses KambiUtils, SysUtils, VectorMath, Boxes3d, Classes, KambiClassUtils,
+uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,

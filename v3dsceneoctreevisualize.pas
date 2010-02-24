@@ -125,7 +125,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
       if Depth = OctreeDisplayDepth then
       begin
         if not (IsLeaf and (ItemsCount = 0)) then
-          glDrawBox3dWire(Box);
+          glDrawBox3DWire(Box);
       end else
       if not IsLeaf then
       begin
@@ -173,7 +173,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
     with OctreeNode do
     begin
       if not (IsLeaf and (ItemsCount = 0)) then
-        glDrawBox3dWire(Box);
+        glDrawBox3DWire(Box);
 
       if not IsLeaf then
       begin
