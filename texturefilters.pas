@@ -126,63 +126,20 @@ begin
  SceneAnimation.Attributes.TextureModeRGB := TextureModeRGBToGL[Value];
 end;
 
-procedure MenuAppendTextureMinFilters(M: TMenu;
-  BaseIntData: Cardinal);
-var
-  TexMin: TTextureMinFilter;
-  Radio: TMenuItemRadio;
-  RadioGroup: TMenuItemRadioGroup;
+procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
 begin
-  RadioGroup := nil;
-  for TexMin := Low(TexMin) to High(TexMin) do
-  begin
-    Radio := TMenuItemRadio.Create(
-      SQuoteMenuEntryCaption(TextureMinFilterNames[TexMin]),
-      Cardinal(Ord(TexMin)) + BaseIntData, TexMin = TextureMinFilter, true);
-    if RadioGroup = nil then
-      RadioGroup := Radio.Group else
-      Radio.Group := RadioGroup;
-    M.Append(Radio);
-  end;
+  M.AppendRadioGroup(TextureMinFilterNames, BaseIntData, Ord(TextureMinFilter), true);
 end;
 
 procedure MenuAppendTextureMagFilters(M: TMenu;
   BaseIntData: Cardinal);
-var
-  TexMag: TTextureMagFilter;
-  Radio: TMenuItemRadio;
-  RadioGroup: TMenuItemRadioGroup;
 begin
-  RadioGroup := nil;
-  for TexMag := Low(TexMag) to High(TexMag) do
-  begin
-    Radio := TMenuItemRadio.Create(
-      SQuoteMenuEntryCaption(TextureMagFilterNames[TexMag]),
-      Cardinal(Ord(TexMag)) + BaseIntData, TexMag = TextureMagFilter, true);
-    if RadioGroup = nil then
-      RadioGroup := Radio.Group else
-      Radio.Group := RadioGroup;
-    M.Append(Radio);
-  end;
+  M.AppendRadioGroup(TextureMagFilterNames, BaseIntData, Ord(TextureMagFilter), true);
 end;
 
 procedure MenuAppendTextureModeRGB(M: TMenu; BaseIntData: Cardinal);
-var
-  TexMode: TTextureMode;
-  Radio: TMenuItemRadio;
-  RadioGroup: TMenuItemRadioGroup;
 begin
-  RadioGroup := nil;
-  for TexMode := Low(TexMode) to High(TexMode) do
-  begin
-    Radio := TMenuItemRadio.Create(
-      SQuoteMenuEntryCaption(TextureModeRGBNames[TexMode]),
-      Cardinal(Ord(TexMode)) + BaseIntData, TexMode = TextureModeRGB, true);
-    if RadioGroup = nil then
-      RadioGroup := Radio.Group else
-      Radio.Group := RadioGroup;
-    M.Append(Radio);
-  end;
+  M.AppendRadioGroup(TextureModeRGBNames, BaseIntData, Ord(TextureModeRGB), true);
 end;
 
 end.
