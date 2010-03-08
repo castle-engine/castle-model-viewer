@@ -42,22 +42,18 @@ type
     ctStrippedToRed,  ctStrippedToGreen,  ctStrippedToBlue,
     ctConvertedToRed, ctConvertedToGreen, ctConvertedToBlue );
 
-  TColorModulatorInfo = record
-    Name: string;
-  end;
-
 const
-  ColorModulatorInfos: array[TColorModulatorType]of TColorModulatorInfo =
-  ( (Name:'Off'),
-    (Name:'Negative'),
-    (Name:'Grayscale'),
-    (Name:'Grayscale negative'),
-    (Name:'Strip to red channel'),
-    (Name:'Strip to green channel'),
-    (Name:'Strip to blue channel'),
-    (Name:'Convert to red'),
-    (Name:'Convert to green'),
-    (Name:'Convert to blue')
+  ColorModulatorNames: array [TColorModulatorType] of string =
+  ( 'Off',
+    'Negative',
+    'Grayscale',
+    'Grayscale negative',
+    'Strip to red channel',
+    'Strip to green channel',
+    'Strip to blue channel',
+    'Convert to red',
+    'Convert to green',
+    'Convert to blue'
   );
 
 procedure InitColorModulator(SceneAnimation: TVRMLGLAnimation);

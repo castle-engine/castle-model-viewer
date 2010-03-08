@@ -2976,42 +2976,18 @@ end;
 function CreateMainMenu: TMenu;
 
   procedure AppendColorModulators(M: TMenu);
-  var
-    Cmt: TColorModulatorType;
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
   begin
-    RadioGroup := nil;
-    for Cmt := Low(Cmt) to High(Cmt) do
-    begin
-      Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(ColorModulatorInfos[Cmt].Name),
-        Ord(Cmt) + 1000, ColorModulatorType = Cmt, true);
-      if RadioGroup = nil then
-        RadioGroup := Radio.Group else
-        Radio.Group := RadioGroup;
-      M.Append(Radio);
-    end;
+    M.AppendRadioGroup(ColorModulatorNames, 1000, Ord(ColorModulatorType), true);
   end;
 
   procedure AppendNavigationTypes(M: TMenu);
   var
     Mode: TCameraMode;
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
+    Group: TMenuItemRadioGroup;
   begin
-    RadioGroup := nil;
+    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(CameraMode), true);
     for Mode := Low(Mode) to High(Mode) do
-    begin
-      Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(CameraNames[Mode]),
-        Ord(Mode) + 1300, Mode = CameraMode, true);
-      if RadioGroup = nil then
-        RadioGroup := Radio.Group else
-        Radio.Group := RadioGroup;
-      M.Append(Radio);
-      CameraRadios[Mode] := Radio;
-    end;
+      CameraRadios[Mode] := Group.Items[Ord(Mode)];
   end;
 
   procedure AppendBlendingFactors(M: TMenu; Source: boolean;
