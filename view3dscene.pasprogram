@@ -74,7 +74,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   ParseParametersUnit, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS,
+  Images, CubeMap, DDS, Base3D,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentFiles, GLImages,
@@ -201,7 +201,7 @@ type
     procedure ApplyProjection; override;
   public
     procedure InitProperties;
-    function ViewerToChanges: TVisibleSceneChanges; override;
+    function ViewerToChanges: TVisibleChanges; override;
     procedure BeforeDraw; override;
     procedure Draw(const Focused: boolean); override;
   end;
@@ -517,10 +517,10 @@ begin
       SceneManager.Camera);
 end;
 
-function TV3DSceneManager.ViewerToChanges: TVisibleSceneChanges;
+function TV3DSceneManager.ViewerToChanges: TVisibleChanges;
 begin
   if HeadLight then
-    Result := [prVisibleSceneNonGeometry] else
+    Result := [vcVisibleNonGeometry] else
     Result := [];
 end;
 
@@ -1307,7 +1307,7 @@ begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
       Glw.EventResize;
-      SceneAnimation.Scenes[0].VisibleSceneChange([]);
+      SceneAnimation.Scenes[0].VisibleChangeHere([]);
     end;
 
     if MenuReopen <> nil then
@@ -2969,8 +2969,8 @@ begin
  { This may be called when headlight on / off state changes,
    so prVisibleSceneNonGeometry is possible.
    For safety, pass also prVisibleSceneGeometry now. }
- SceneAnimation.CurrentScene.VisibleSceneChange(
-   [prVisibleSceneGeometry, prVisibleSceneNonGeometry]);
+ SceneAnimation.CurrentScene.VisibleChangeHere(
+   [vcVisibleGeometry, vcVisibleNonGeometry]);
 end;
 
 function CreateMainMenu: TMenu;
