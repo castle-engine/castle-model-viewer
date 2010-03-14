@@ -1206,6 +1206,11 @@ begin
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
 
+    { assign SceneManager.MainScene relatively early, because our
+      rendering assumes that SceneManager.MainScene is usable,
+      and rendering may be called during progress bars even from this function. }
+    SceneManager.MainScene := SceneAnimation.FirstScene;
+
     SceneAnimation.ResetTimeAtLoad;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
@@ -1281,8 +1286,6 @@ begin
     SetNavigationType;
 
     SceneOctreeCreate;
-
-    SceneManager.MainScene := SceneAnimation.FirstScene;
 
     for I := 0 to SceneAnimation.ScenesCount - 1 do
     begin
