@@ -203,7 +203,7 @@ type
     procedure InitProperties;
     function ViewerToChanges: TVisibleChanges; override;
     procedure BeforeDraw; override;
-    procedure Draw(const Focused: boolean); override;
+    procedure Draw; override;
   end;
 
 var
@@ -636,7 +636,7 @@ begin
   inherited;
 end;
 
-procedure TV3DSceneManager.Draw(const Focused: boolean);
+procedure TV3DSceneManager.Draw;
 begin
   { Make sure to call InitProperties before inherited. }
   InitProperties;
@@ -1613,7 +1613,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
-          SceneManager.Draw(false);
+          SceneManager.Draw;
           glFlush();
           SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
         end;
