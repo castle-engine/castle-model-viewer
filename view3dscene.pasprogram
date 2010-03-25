@@ -1979,6 +1979,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
+      SceneAnimation.Scenes[0].BeforeNodesFree;
       SelectedItem^.Geometry.FreeRemovingFromAllParents;
       SceneAnimation.Scenes[0].ChangedAll;
     end;
@@ -2233,6 +2234,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       'case sensitive (like all VRML).',
       Wildcard, taLeft) then
     begin
+      SceneAnimation.BeforeNodesFree;
       RemovedNumber := SceneAnimation.Scenes[0].RootNode.
         RemoveChildrenWithMatchingName(Wildcard, false);
       for I := 1 to SceneAnimation.ScenesCount - 1 do
@@ -2336,6 +2338,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         try
           ShaderAdder.ProgramNode := ProgramNode;
           ShaderAdder.Added := false;
+
+          SceneAnimation.BeforeNodesFree; { AddShader may remove old shader nodes }
 
           for I := 0 to SceneAnimation.ScenesCount - 1 do
           begin

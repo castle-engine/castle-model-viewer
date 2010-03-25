@@ -332,6 +332,7 @@ procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TVRMLScene);
 var
   sc: TSceneChange;
 begin
+  Scene.BeforeNodesFree;
   for sc := Low(sc) to High(sc) do
     if sc in SceneChanges then
       DoIt(SC, Scene);
@@ -352,6 +353,7 @@ procedure ChangeSceneAnimation(SceneChanges: TSceneChanges;
 var
   sc: TSceneChange;
 begin
+  Scene.BeforeNodesFree;
   for sc := Low(sc) to High(sc) do
     if sc in SceneChanges then
       DoIt(SC, Scene);
