@@ -2235,6 +2235,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Wildcard, taLeft) then
     begin
       SceneAnimation.BeforeNodesFree;
+
       RemovedNumber := SceneAnimation.Scenes[0].RootNode.
         RemoveChildrenWithMatchingName(Wildcard, false);
       for I := 1 to SceneAnimation.ScenesCount - 1 do
@@ -2244,8 +2245,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         Assert(RemovedNumberOther = RemovedNumber);
       end;
 
-      if RemovedNumber <> 0 then
-        SceneAnimation.Scenes[0].ChangedAll;
+      SceneAnimation.ChangedAll;
 
       MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
@@ -2347,11 +2347,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
               @ShaderAdder.AddShader, false);
           end;
 
-          if ShaderAdder.Added then
-          begin
-            for I := 0 to SceneAnimation.ScenesCount - 1 do
-              SceneAnimation.Scenes[I].ChangedAll;
-          end else
+          SceneAnimation.ChangedAll;
+
+          if not ShaderAdder.Added then
           begin
             FreeAndNil(ProgramNode);
             MessageOK(Glw, 'No shaders added.' +NL+
