@@ -3091,19 +3091,6 @@ begin
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85,
      SceneAnimation.Attributes.UseFog, true));
-   M.Append(TMenuItemChecked.Create('Blending',                86,
-     SceneAnimation.Attributes.Blending, true));
-   M2 := TMenu.Create('Blending Source Factor');
-     AppendBlendingFactors(M2, true, 400);
-     M.Append(M2);
-   M2 := TMenu.Create('Blending Destination Factor');
-     AppendBlendingFactors(M2, false, 420);
-     M.Append(M2);
-   M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
-     SceneAnimation.Attributes.BlendingSort, true));
-   M2 := TMenu.Create('Change Scene Colors');
-     AppendColorModulators(M2);
-     M.Append(M2);
    M.Append(TMenuItemChecked.Create('_GLSL shaders',          87,
      SceneAnimation.Attributes.GLSLShaders, true));
    M2 := TMenu.Create('Bump mapping');
@@ -3116,9 +3103,12 @@ begin
      MenuShadowsMenu.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
        DrawShadowVolumes, true));
      M.Append(MenuShadowsMenu);
+   M2 := TMenu.Create('Change Scene Colors');
+     AppendColorModulators(M2);
+     M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
-     '_Lighting Calculate (GL__LIGHTING enabled)',         91, CtrlL,
+     '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
      SceneAnimation.Attributes.Lighting, true));
    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
      Headlight, true);
@@ -3138,6 +3128,17 @@ begin
    M2 := TMenu.Create('RGB Textures Color Mode');
      MenuAppendTextureModeRGB(M2, 1600);
      M.Append(M2);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItemChecked.Create('Blending',                86,
+     SceneAnimation.Attributes.Blending, true));
+   M2 := TMenu.Create('Blending Source Factor');
+     AppendBlendingFactors(M2, true, 400);
+     M.Append(M2);
+   M2 := TMenu.Create('Blending Destination Factor');
+     AppendBlendingFactors(M2, false, 420);
+     M.Append(M2);
+   M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
+     SceneAnimation.Attributes.BlendingSort, true));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
      SceneAnimation.Attributes.UseOcclusionQuery, true));
