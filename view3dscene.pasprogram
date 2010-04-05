@@ -1205,13 +1205,16 @@ begin
       ScenesPerTime, EqualityEpsilon);
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
+    { do it before even assigning MainScene, as assigning MainScene may
+      (through VisibleChange notification) already want to refer
+      to current animation scene, so better make it sensible. }
+    SceneAnimation.ResetTimeAtLoad;
 
     { assign SceneManager.MainScene relatively early, because our
       rendering assumes that SceneManager.MainScene is usable,
       and rendering may be called during progress bars even from this function. }
     SceneManager.MainScene := SceneAnimation.FirstScene;
 
-    SceneAnimation.ResetTimeAtLoad;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
