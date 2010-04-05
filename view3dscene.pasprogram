@@ -2877,7 +2877,7 @@ begin
 
   171: SelectedShowInformation;
   172: SelectedShowLightsInformation;
-  173: ShowAndWrite(GLCapsString);
+  173: ShowAndWrite(GLInformationString);
 
   182: ChangePointSize;
 
