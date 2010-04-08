@@ -10,7 +10,7 @@ set -eu
 # - view3dscene binary compiled (either in current dir,
 #   or on the $PATH, see run_test_once.sh script setting VIEW3DSCENE variable)
 # - stringoper binary compiled and available on $PATH
-#   (stringoper comes from ../kambi_vrml_game_engine/base/tools/stringoper.pasprogram)
+#   (stringoper comes from ../kambi_vrml_game_engine/base/tools/stringoper.lpr)
 #
 # For details what is tested, see run_test_once.sh script.
 # By default tests are fully automatic, although you can uncomment some

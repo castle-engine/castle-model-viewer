@@ -29,10 +29,10 @@
   making it all configurable from menu, and filled with a lot
   of user interface details.
   Instead you should look at simple example programs in
-  ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.pasprogram,
-  ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.pasprogram
+  ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.lpr,
+  ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.lpr
 
-  Also ../kambi_vrml_game_engine/examples/vrml/many2vrml.pasprogram is
+  Also ../kambi_vrml_game_engine/examples/vrml/many2vrml.lpr is
   an example how to write simple command-line converter from Collada, OBJ, 3DS
   (and all other model formats we can read) to VRML.
 

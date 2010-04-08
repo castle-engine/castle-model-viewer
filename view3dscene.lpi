@@ -40,7 +40,7 @@
     </RequiredPackages>
     <Units Count="39">
       <Unit0>
-        <Filename Value="view3dscene.pasprogram"/>
+        <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="55" Y="3136"/>
         <TopLine Value="3129"/>
@@ -293,7 +293,7 @@
     </Units>
     <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="view3dscene.pasprogram"/>
+        <Filename Value="view3dscene.lpr"/>
         <Caret Line="3173" Column="26" TopLine="3165"/>
       </Position1>
     </JumpHistory>
