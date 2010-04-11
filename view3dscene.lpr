@@ -38,7 +38,7 @@
 
   This is a VRML/X3D browser, also able to load many other 3D model formats.
   Basic components are :
-  - use LoadAsVRMLSequence to load any format to VRML scene.
+  - use LoadVRMLSequence to load any format to VRML scene.
     This converts any known (to our engine) 3D model format to VRML.
     This convertion doesn't lose anything because VRML is able to
     express everything that is implemented in other 3D formats readers.
@@ -1324,7 +1324,7 @@ begin
   end;
 end;
 
-{ This loads the scene from file (using LoadAsVRMLSequence) and
+{ This loads the scene from file (using LoadVRMLSequence) and
   then inits our scene variables by LoadSceneCore.
 
   If it fails, it tries to preserve current scene
@@ -1383,7 +1383,7 @@ begin
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif CATCH_EXCEPTIONS}
-        LoadAsVRMLSequence(ASceneFileName, true,
+        LoadVRMLSequence(ASceneFileName, true,
           RootNodes, Times,
           ScenesPerTime, NewOptimization, EqualityEpsilon,
           TimeLoop, TimeBackwards);
@@ -1517,14 +1517,14 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML and then auto-generate
     xxx_scene.inc file to load VRML scene from a simple string. }
-  LoadSimpleScene(ParseVRMLFileFromString({$I clear_scene.inc}, ''), false);
+  LoadSimpleScene(LoadVRMLClassicFromString({$I clear_scene.inc}, ''), false);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(ParseVRMLFileFromString({$I welcome_scene.inc}, ''));
+  LoadSimpleScene(LoadVRMLClassicFromString({$I welcome_scene.inc}, ''));
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -1544,7 +1544,7 @@ begin
  try
   Scene.Load(ASceneFileName, true);
   ChangeScene(SceneChanges, Scene);
-  SaveToVRMLFile(Scene.RootNode, StdOutStream,
+  SaveVRMLClassic(Scene.RootNode, StdOutStream,
     SavedVRMLPrecedingComment(ASceneFileName));
  finally Scene.Free end;
 end;
@@ -2672,7 +2672,7 @@ begin
   10: begin
        s := ExtractFilePath(SceneFilename);
        if glwin.FileDialog('Open file', s, true,
-         LoadAsVRMLSequence_FileFilters) then
+         LoadVRMLSequence_FileFilters) then
          LoadScene(s, [], 0.0, true);
       end;
 
@@ -2697,9 +2697,9 @@ begin
           s := AppendToFileName(SceneFilename, '_2') else
           s := ChangeFileExt(SceneFilename, '.wrl');
         if glwin.FileDialog('Save as VRML file', s, false,
-          SaveToVRMLFile_FileFilters) then
+          SaveVRMLClassic_FileFilters) then
         try
-          SaveToVRMLFile(SceneAnimation.FirstScene.RootNode, s,
+          SaveVRMLClassic(SceneAnimation.FirstScene.RootNode, s,
             SavedVRMLPrecedingComment(SceneFileName));
         except
           on E: Exception do
