@@ -1982,9 +1982,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SceneAnimation.Scenes[0].BeforeNodesFree;
-      SelectedItem^.Geometry.FreeRemovingFromAllParents;
-      SceneAnimation.Scenes[0].ChangedAll;
+      SceneAnimation.Scenes[0].NodeFreeRemovingFromAllParents(SelectedItem^.Geometry);
     end;
   end;
 
