@@ -1636,7 +1636,7 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  Version = '3.5.1';
+  Version = '3.5.2';
   DisplayProgramName = 'view3dscene';
 
 type
