@@ -2650,6 +2650,37 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure ScreenShotDepthToImage;
+
+    procedure DoSave(const FileName: string);
+    var
+      PackData: TPackNotAlignedData;
+      Image: TGrayscaleImage;
+    begin
+      Image := TGrayscaleImage.Create(Glwin.Width, Glwin.Height);
+      try
+        BeforePackImage(PackData, Image);
+        try
+          glReadPixels(0, 0, Glwin.Width, Glwin.Height, GL_DEPTH_COMPONENT,
+            ImageGLType(Image), Image.RawPixels);
+        finally AfterPackImage(PackData, Image) end;
+
+        SaveImage(Image, FileNameAutoInc(FileName));
+      finally FreeAndNil(Image) end;
+    end;
+
+  var
+    FileName: string;
+  begin
+    if SceneFileName <> '' then
+      FileName := ExtractOnlyFileName(SceneFileName) + '_depth_%d.png' else
+      FileName := 'view3dscene_depth_%d.png';
+
+    if Glwin.FileDialog('Save depth to a file', FileName, false,
+      SaveImage_FileFilters) then
+      DoSave(FileName);
+  end;
+
   procedure Raytrace;
   var
     Pos, Dir, Up: TVector3Single;
@@ -2836,7 +2867,7 @@ begin
          if SceneFileName <> '' then
            ProposedScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
            ProposedScreenShotName := 'view3dscene_screen_%d.png';
-         Glwin.SaveScreenDialog(FNameAutoInc(ProposedScreenShotName));
+         Glwin.SaveScreenDialog(FileNameAutoInc(ProposedScreenShotName));
        end;
   128: begin
          WalkCamera.MouseLook := not WalkCamera.MouseLook;
@@ -2936,6 +2967,7 @@ begin
   540: ScreenShotToVideo;
   550: ScreenShotToCubeMap;
   555: ScreenShotToCubeMapDDS;
+  560: ScreenShotDepthToImage;
 
   600..649: AntiAliasing := MenuItem.IntData - 600;
 
@@ -3279,6 +3311,7 @@ begin
    M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
    M.Append(TMenuItem.Create('Screenshot to _cube map (environment around Walk position) ...',  550));
    M.Append(TMenuItem.Create('Screenshot to cube map DDS (environment around Walk position) ...',  555));
+   M.Append(TMenuItem.Create('Screenshot depth to grayscale image ...', 560));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
