@@ -2665,7 +2665,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             ImageGLType(Image), Image.RawPixels);
         finally AfterPackImage(PackData, Image) end;
 
-        SaveImage(Image, FileNameAutoInc(FileName));
+        SaveImage(Image, FileName);
       finally FreeAndNil(Image) end;
     end;
 
