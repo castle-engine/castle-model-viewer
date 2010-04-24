@@ -2657,6 +2657,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       PackData: TPackNotAlignedData;
       Image: TGrayscaleImage;
     begin
+      { Just like TGLWindow.SaveScreen, we have to force redisplay now
+        (otherwise we could be left here with random buffer contents from
+        other window obscuring us, or we could have depth buffer from
+        other drawing routine (like "frozen screen" drawn under FileDialog). }
+      Glwin.EventBeforeDraw;
+      Glwin.EventDraw;
+
       Image := TGrayscaleImage.Create(Glwin.Width, Glwin.Height);
       try
         BeforePackImage(PackData, Image);
@@ -2675,6 +2682,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if SceneFileName <> '' then
       FileName := ExtractOnlyFileName(SceneFileName) + '_depth_%d.png' else
       FileName := 'view3dscene_depth_%d.png';
+    FileName := FileNameAutoInc(FileName);
 
     if Glwin.FileDialog('Save depth to a file', FileName, false,
       SaveImage_FileFilters) then
