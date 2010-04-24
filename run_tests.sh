@@ -48,7 +48,7 @@ test_dir()
 }
 
 test_dir ../kambi_vrml_test_suite/
-test_dir ../vrml_engine_doc/examples/
+test_dir ../vrml_engine_doc/
 test_dir ../castle/data/
 test_dir ../rift/data/
 
