@@ -85,6 +85,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
   VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape, RenderStateUnit,
+  VRMLShadowMaps,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
   V3DSceneAllCameras, SceneChangesUnit, BGColors, V3DSceneViewpoints,
@@ -2081,6 +2082,20 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     SceneAnimation.FirstScene.ChangedFields(Geometry, nil);
   end;
 
+  procedure DoProcessShadowMapsReceivers;
+  begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      MessageOK(Glwin, 'This function is not available when you deal with ' +
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+      Exit;
+    end;
+
+    ProcessShadowMapsReceivers(SceneAnimation.FirstScene.RootNode, 256, false);
+
+    SceneAnimation.FirstScene.ChangedAll;
+  end;
+
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
     if success. Produces message to user and returns @false on failure.
 
@@ -2754,7 +2769,7 @@ begin
   33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
-
+  35: DoProcessShadowMapsReceivers;
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
 
@@ -3277,14 +3292,13 @@ begin
    MenuRemoveSelectedFace :=
      TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
    M.Append(MenuRemoveSelectedFace);
+   M.Append(TMenuItem.Create(
+     'Remove VRML/X3D Nodes with Name Matching ...', 34));
    M.Append(TMenuSeparator.Create);
    MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
      MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
      MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
    M.Append(MenuEditMaterial);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create(
-     'Remove VRML/X3D Nodes with Name Matching ...', 34));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Remove Normals Info from Scene (forces normals to be calculated)',
@@ -3293,6 +3307,8 @@ begin
      'non-solid (disables any backface culling)', 32));
    M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Handle receiveShadows by shadow maps', 35));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
