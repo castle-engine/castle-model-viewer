@@ -1216,7 +1216,6 @@ begin
       and rendering may be called during progress bars even from this function. }
     SceneManager.MainScene := SceneAnimation.FirstScene;
 
-
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
     { calculate CameraRadius }
@@ -1238,6 +1237,18 @@ begin
         in view3dscene). Remember that CorrectCameraPreferredHeight
         adds a limit to CameraPreferredHeight, around CameraRadius * 2. }
       CameraPreferredHeight := CameraRadius * 4;
+
+    { calculate HeadBobbing* }
+    if (NavigationNode <> nil) and
+       (NavigationNode is TNodeKambiNavigationInfo) then
+    begin
+      WalkCamera.HeadBobbing := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbing.Value;
+      WalkCamera.HeadBobbingDistance := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingDistance.Value;
+    end else
+    begin
+      WalkCamera.HeadBobbing := DefaultHeadBobbing;
+      WalkCamera.HeadBobbingDistance := DefaultHeadBobbingDistance;
+    end;
 
     if not JumpToInitialViewpoint then
     begin
