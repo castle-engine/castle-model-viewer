@@ -2194,11 +2194,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdDiffuseColor.EventIn.Send(Color, SceneAnimation.FirstScene.Time);
+        M2.FdDiffuseColor.Send(Color);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdDiffuseColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.Time);
+        M1.FdDiffuseColor.Send([Color]);
       end;
     end;
   end;
@@ -2224,11 +2224,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdSpecularColor.EventIn.Send(Color, SceneAnimation.FirstScene.Time);
+        M2.FdSpecularColor.Send(Color);
       end else
       begin
         Assert(M1 <> nil);
-        M1.FdSpecularColor.EventIn.SendArray([Color], SceneAnimation.FirstScene.Time);
+        M1.FdSpecularColor.Send([Color]);
       end;
     end;
   end;
