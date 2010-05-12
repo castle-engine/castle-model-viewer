@@ -1312,6 +1312,10 @@ begin
       SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
+
+      { regardless of ProcessEvents, we may change the vrml graph,
+        e.g. by Edit->Material->... }
+      SceneAnimation.Scenes[I].Static := SceneAnimation.ScenesCount <> 1;
     end;
 
     UpdateProcessEvents;
