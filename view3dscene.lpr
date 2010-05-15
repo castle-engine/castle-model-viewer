@@ -151,6 +151,7 @@ var
   MenuRemoveSelectedGeometry: TMenuItem;
   MenuRemoveSelectedFace: TMenuItem;
   MenuEditMaterial: TMenu;
+  MenuMergeCloseVertexes: TMenuItem;
 
   SceneWarnings: TSceneWarnings;
 
@@ -242,6 +243,8 @@ begin
     MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
   if MenuEditMaterial <> nil then
     MenuEditMaterial.Enabled := SelectedItem <> nil;
+  if MenuMergeCloseVertexes <> nil then
+    MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
 end;
 
 function SceneOctreeCollisions: TVRMLBaseTrianglesOctree;
@@ -2732,6 +2735,51 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       SceneAnimation.FirstScene.FogDistanceScaling);
   end;
 
+  procedure MergeCloseVertexes;
+  var
+    Coord: TMFVec3f;
+    MergeDistance: Single;
+    MergedCount: Cardinal;
+  begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      { We can't do this for animations, because we use
+        SelectedItem^.Geometry, so this is only for the frame where
+        octree is available. }
+      MessageOK(Glwin, 'This function is not available when you deal with ' +
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+      Exit;
+    end;
+
+    if SelectedItem = nil then
+    begin
+      MessageOk(Glwin, 'Nothing selected.', taLeft);
+      Exit;
+    end;
+
+    if not SelectedItem^.Geometry.Coord(SelectedItem^.State, Coord) then
+    begin
+      MessageOK(Glwin, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
+      Exit;
+    end;
+
+    if Coord = nil then
+    begin
+      MessageOK(Glwin, 'Selected geometry node''s has an empty coordinate field. Nothing to merge.', taLeft);
+      Exit;
+    end;
+
+    MergeDistance := 0.01;
+    if MessageInputQuery(Glwin, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
+      MergeDistance, taLeft) then
+    begin
+      MergedCount := Coord.Items.MergeCloseVertexes(MergeDistance);
+      if MergedCount <> 0 then
+        Coord.Changed;
+      MessageOK(Glwin, Format('Merged %d vertexes.', [MergedCount]), taLeft);
+    end;
+  end;
+
 var
   S, ProposedScreenShotName: string;
 begin
@@ -3011,6 +3059,7 @@ begin
 
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
+  730: MergeCloseVertexes;
 
   740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
   750: ShadowsOn := not ShadowsOn;
@@ -3309,6 +3358,10 @@ begin
    M.Append(MenuRemoveSelectedFace);
    M.Append(TMenuItem.Create(
      'Remove VRML/X3D Nodes with Name Matching ...', 34));
+   M.Append(TMenuSeparator.Create);
+   MenuMergeCloseVertexes := TMenuItem.Create(
+     'Merge Close Vertexes (of node with selected triangle) ...', 730);
+   M.Append(MenuMergeCloseVertexes);
    M.Append(TMenuSeparator.Create);
    MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
      MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
