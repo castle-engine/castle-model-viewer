@@ -2771,7 +2771,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
     MergeDistance := 0.01;
     if MessageInputQuery(Glwin, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
-      MergeDistance, taLeft) then
+      MergeDistance, taLeft, '0.01') then
     begin
       MergedCount := Coord.Items.MergeCloseVertexes(MergeDistance);
       if MergedCount <> 0 then
