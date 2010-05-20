@@ -688,7 +688,8 @@ begin
     end;
 
     SceneManager.Camera.MouseRay(
-      SceneManager.AngleOfViewX, SceneManager.AngleOfViewY, Ray0, RayVector);
+      SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
+      SceneManager.OrthoViewDimensions, Ray0, RayVector);
 
     SelectedItem := SceneOctreeCollisions.RayCollision(
       SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
@@ -2730,7 +2731,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     RaytraceToWin(Glwin, SceneAnimation.FirstScene,
       HeadLight, SceneHeadLight,
       Pos, Dir, Up,
-      SceneManager.AngleOfViewX, SceneManager.AngleOfViewY, BGColor,
+      SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
+      SceneManager.OrthoViewDimensions, BGColor,
       SceneAnimation.FirstScene.FogNode,
       SceneAnimation.FirstScene.FogDistanceScaling);
   end;
@@ -2904,22 +2906,24 @@ begin
          MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
   102: SceneAnimation.WritelnInfoNodes;
 
-  105: Writeln(Format(
-         'Call rayhunter like this to render this view :' +nl+
-         'rayhunter classic %d %d %d "%s" "%s" \' +nl+
-         '  --camera-pos %s \' +nl+
-         '  --camera-dir %s \' +nl+
-         '  --camera-up %s \' +nl+
-         '  --view-angle-x %s --scene-bg-color %f %f %f',
-         [ DEF_RAYTRACE_DEPTH,
-           Glw.Width, Glw.Height,
-           SceneFilename,
-           ExtractOnlyFileName(SceneFilename) + '-rt.png',
-           VectorToRawStr(WalkCamera.Position),
-           VectorToRawStr(WalkCamera.Direction),
-           VectorToRawStr(WalkCamera.Up),
-           FloatToStr(SceneManager.AngleOfViewX),
-           BGColor[0], BGColor[1], BGColor[2] ]));
+  105: if SceneManager.PerspectiveView then
+         Writeln(Format(
+           'Call rayhunter like this to render this view :' +nl+
+           'rayhunter classic %d %d %d "%s" "%s" \' +nl+
+           '  --camera-pos %s \' +nl+
+           '  --camera-dir %s \' +nl+
+           '  --camera-up %s \' +nl+
+           '  --view-angle-x %s --scene-bg-color %f %f %f',
+           [ DEF_RAYTRACE_DEPTH,
+             Glw.Width, Glw.Height,
+             SceneFilename,
+             ExtractOnlyFileName(SceneFilename) + '-rt.png',
+             VectorToRawStr(WalkCamera.Position),
+             VectorToRawStr(WalkCamera.Direction),
+             VectorToRawStr(WalkCamera.Up),
+             FloatToStr(SceneManager.PerspectiveViewAngles[0]),
+             BGColor[0], BGColor[1], BGColor[2] ])) else
+         Writeln('TODO: not implemented for orthographic');
 
   106: WritelnCameraSettings(1);
   107: WritelnCameraSettings(2);
