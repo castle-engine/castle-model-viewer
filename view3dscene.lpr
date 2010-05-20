@@ -2287,6 +2287,35 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure PrintRayhunterCommand;
+  var
+    S: string;
+  begin
+    S := Format(
+       'Call rayhunter like this to render this view :' +nl+
+       '  rayhunter classic %d %d %d "%s" "%s" \' +nl+
+       '    --camera-pos %s \' +nl+
+       '    --camera-dir %s \' +nl+
+       '    --camera-up %s \' +nl+
+       '    --scene-bg-color %f %f %f \' +nl,
+       [ DEF_RAYTRACE_DEPTH,
+         Glw.Width, Glw.Height,
+         SceneFilename,
+         ExtractOnlyFileName(SceneFilename) + '-rt.png',
+         VectorToRawStr(WalkCamera.Position),
+         VectorToRawStr(WalkCamera.Direction),
+         VectorToRawStr(WalkCamera.Up),
+         BGColor[0], BGColor[1], BGColor[2] ]);
+    if SceneManager.PerspectiveView then
+      S += Format('    --view-angle-x %f', [SceneManager.PerspectiveViewAngles[0]]) else
+      S += Format('    --ortho %f %f %f %f', [
+        SceneManager.OrthoViewDimensions[0],
+        SceneManager.OrthoViewDimensions[1],
+        SceneManager.OrthoViewDimensions[2],
+        SceneManager.OrthoViewDimensions[3] ]);
+    Writeln(S);
+  end;
+
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
   begin
     Writeln(MakeVRMLCameraStr(Version,
@@ -2906,24 +2935,7 @@ begin
          MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
   102: SceneAnimation.WritelnInfoNodes;
 
-  105: if SceneManager.PerspectiveView then
-         Writeln(Format(
-           'Call rayhunter like this to render this view :' +nl+
-           'rayhunter classic %d %d %d "%s" "%s" \' +nl+
-           '  --camera-pos %s \' +nl+
-           '  --camera-dir %s \' +nl+
-           '  --camera-up %s \' +nl+
-           '  --view-angle-x %s --scene-bg-color %f %f %f',
-           [ DEF_RAYTRACE_DEPTH,
-             Glw.Width, Glw.Height,
-             SceneFilename,
-             ExtractOnlyFileName(SceneFilename) + '-rt.png',
-             VectorToRawStr(WalkCamera.Position),
-             VectorToRawStr(WalkCamera.Direction),
-             VectorToRawStr(WalkCamera.Up),
-             FloatToStr(SceneManager.PerspectiveViewAngles[0]),
-             BGColor[0], BGColor[1], BGColor[2] ])) else
-         Writeln('TODO: not implemented for orthographic');
+  105: PrintRayhunterCommand;
 
   106: WritelnCameraSettings(1);
   107: WritelnCameraSettings(2);
