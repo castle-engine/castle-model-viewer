@@ -2896,20 +2896,20 @@ begin
       end;
 
   82: ShowBBox := not ShowBBox;
-  83: with SceneAnimation do Attributes.SmoothShading := not Attributes.SmoothShading;
+  83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;
   84: if glwin.ColorDialog(BGColor) then BGColorChanged;
-  85: with SceneAnimation do Attributes.UseFog := not Attributes.UseFog;
-  86: with SceneAnimation do Attributes.Blending := not Attributes.Blending;
-  87: with SceneAnimation do Attributes.GLSLShaders := not Attributes.GLSLShaders;
-  88: with SceneAnimation do Attributes.UseOcclusionQuery := not Attributes.UseOcclusionQuery;
-  89: with SceneAnimation do Attributes.BlendingSort := not Attributes.BlendingSort;
-  90: with SceneAnimation do Attributes.UseHierarchicalOcclusionQuery := not Attributes.UseHierarchicalOcclusionQuery;
-  891: with SceneAnimation do Attributes.DebugHierOcclusionQueryResults := not Attributes.DebugHierOcclusionQueryResults;
+  85: with SceneAnimation.Attributes do UseFog := not UseFog;
+  86: with SceneAnimation.Attributes do Blending := not Blending;
+  87: with SceneAnimation.Attributes do GLSLShaders := not GLSLShaders;
+  88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
+  89: with SceneAnimation.Attributes do BlendingSort := not BlendingSort;
+  90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
+  891: with SceneAnimation.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
   91: with SceneAnimation.Attributes do Lighting := not Lighting;
   92: HeadLight := not HeadLight;
   93: with SceneAnimation.Attributes do UseSceneLights := not UseSceneLights;
-  94: with SceneAnimation do Attributes.EnableTextures := not Attributes.EnableTextures;
+  94: with SceneAnimation.Attributes do EnableTextures := not EnableTextures;
   95: ChangeLightModelAmbient;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
