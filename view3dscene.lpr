@@ -3080,6 +3080,7 @@ begin
   740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
   750: ShadowsOn := not ShadowsOn;
   760: DrawShadowVolumes := not DrawShadowVolumes;
+  765: with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
 
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
@@ -3232,13 +3233,15 @@ begin
    M2 := TMenu.Create('Bump mapping');
      AppendBumpMappingMethods(M2);
      M.Append(M2);
-   MenuShadowsMenu := TMenu.Create('Shadows');
+   MenuShadowsMenu := TMenu.Create('Shadow Volumes');
      MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
-     MenuShadowsMenu.Append(TMenuItemChecked.Create('Use shadows (requires light with kambiShadowsMain)', 750,
+     MenuShadowsMenu.Append(TMenuItemChecked.Create('Use shadow volumes (requires light with kambiShadowsMain)', 750,
        ShadowsOn, true));
      MenuShadowsMenu.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
        DrawShadowVolumes, true));
      M.Append(MenuShadowsMenu);
+   M.Append(TMenuItemChecked.Create('Variance Shadow Maps (nicer)', 765,
+     SceneAnimation.Attributes.VarianceShadowMaps, true));
    M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
