@@ -2101,7 +2101,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     SceneAnimation.FirstScene.ChangedFields(Geometry, nil);
   end;
 
-  procedure DoProcessShadowMapsReceivers;
+  procedure DoProcessShadowMapsReceivers(PCF: TPercentageCloserFiltering);
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
@@ -2110,7 +2110,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    ProcessShadowMapsReceivers(SceneAnimation.FirstScene.RootNode, 256, false);
+    ProcessShadowMapsReceivers(SceneAnimation.FirstScene.RootNode, 256, false, PCF);
 
     SceneAnimation.FirstScene.ChangedAll;
   end;
@@ -2863,7 +2863,10 @@ begin
   33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
-  35: DoProcessShadowMapsReceivers;
+  3500: DoProcessShadowMapsReceivers(pcfNone);
+  3501: DoProcessShadowMapsReceivers(pcf4);
+  3502: DoProcessShadowMapsReceivers(pcf4Bilinear);
+  3503: DoProcessShadowMapsReceivers(pcf16);
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
 
@@ -3395,7 +3398,12 @@ begin
    M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Handle receiveShadows by shadow maps', 35));
+   M2 := TMenu.Create('Handle receiveShadows by shadow maps');
+     M2.Append(TMenuItem.Create('No PCF', 3500));
+     M2.Append(TMenuItem.Create('PCF 4', 3501));
+     M2.Append(TMenuItem.Create('PCF 4 Bilinear', 3502));
+     M2.Append(TMenuItem.Create('PCF 16', 3503));
+     M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
