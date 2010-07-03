@@ -2101,20 +2101,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     SceneAnimation.FirstScene.ChangedFields(Geometry, nil);
   end;
 
-  procedure DoProcessShadowMapsReceivers(PCF: TPercentageCloserFiltering);
-  begin
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      MessageOK(Glwin, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
-      Exit;
-    end;
-
-    ProcessShadowMapsReceivers(SceneAnimation.FirstScene.RootNode, 256, false, PCF);
-
-    SceneAnimation.FirstScene.ChangedAll;
-  end;
-
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
     if success. Produces message to user and returns @false on failure.
 
@@ -2813,6 +2799,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
 var
   S, ProposedScreenShotName: string;
+  C: Cardinal;
 begin
  case MenuItem.IntData of
   10: begin
@@ -2863,10 +2850,20 @@ begin
   33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
-  3500: DoProcessShadowMapsReceivers(pcfNone);
-  3501: DoProcessShadowMapsReceivers(pcf4);
-  3502: DoProcessShadowMapsReceivers(pcf4Bilinear);
-  3503: DoProcessShadowMapsReceivers(pcf16);
+
+  3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
+  3510..3519: SceneAnimation.ShadowMapsPCF := TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
+  3520: with SceneAnimation do ShadowMapsVisualizeDepth := not ShadowMapsVisualizeDepth;
+  3530:
+    begin
+      C := SceneAnimation.ShadowMapsDefaultSize;
+      if MessageInputQueryCardinal(Glwin, 'Input default shadow map size :' + NL + '(should be a power of 2)', C, taLeft) then
+      begin
+        SceneAnimation.ShadowMapsDefaultSize := C;
+      end;
+    end;
+  3540:  with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
+
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
 
@@ -3083,7 +3080,6 @@ begin
   740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
   750: ShadowsOn := not ShadowsOn;
   760: DrawShadowVolumes := not DrawShadowVolumes;
-  765: with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
 
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
@@ -3243,8 +3239,17 @@ begin
      MenuShadowsMenu.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
        DrawShadowVolumes, true));
      M.Append(MenuShadowsMenu);
-   M.Append(TMenuItemChecked.Create('Variance Shadow Maps (nicer)', 765,
-     SceneAnimation.Attributes.VarianceShadowMaps, true));
+   M2 := TMenu.Create('Shadow Maps');
+     M2.Append(TMenuItemChecked.Create('Enable (handles "receiveShadows", reload scene to apply)', 3500, SceneAnimation.ShadowMaps, true));
+     M2.Append(TMenuSeparator.Create);
+     M2.AppendRadioGroup(PCFNames, 3510, Ord(SceneAnimation.ShadowMapsPCF), true);
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.ShadowMapsVisualizeDepth, true));
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItemChecked.Create('Variance Shadow Maps (Experimental)', 3540, SceneAnimation.Attributes.VarianceShadowMaps, true));
+     M.Append(M2);
    M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
@@ -3397,13 +3402,6 @@ begin
      'non-solid (disables any backface culling)', 32));
    M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
-   M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('Handle receiveShadows by shadow maps');
-     M2.Append(TMenuItem.Create('No PCF', 3500));
-     M2.Append(TMenuItem.Create('PCF 4', 3501));
-     M2.Append(TMenuItem.Create('PCF 4 Bilinear', 3502));
-     M2.Append(TMenuItem.Create('PCF 16', 3503));
-     M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
