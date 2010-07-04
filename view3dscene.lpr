@@ -3240,7 +3240,7 @@ begin
        DrawShadowVolumes, true));
      M.Append(MenuShadowsMenu);
    M2 := TMenu.Create('Shadow Maps');
-     M2.Append(TMenuItemChecked.Create('Enable (handles "receiveShadows", reload scene to apply)', 3500, SceneAnimation.ShadowMaps, true));
+     M2.Append(TMenuItemChecked.Create('Enable (Handle "receiveShadows" field)', 3500, SceneAnimation.ShadowMaps, true));
      M2.Append(TMenuSeparator.Create);
      M2.AppendRadioGroup(PCFNames, 3510, Ord(SceneAnimation.ShadowMapsPCF), true);
      M2.Append(TMenuSeparator.Create);
