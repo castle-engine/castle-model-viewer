@@ -1673,8 +1673,8 @@ begin
   ShadersField := (Node as TNodeAppearance).FdShaders;
   if not ((ShadersField.Count = 1) and (ShadersField.Items[0] = ProgramNode)) then
   begin
-    ShadersField.ClearItems;
-    ShadersField.AddItem(ProgramNode);
+    ShadersField.Clear;
+    ShadersField.Add(ProgramNode);
     Added := true;
   end;
 end;
@@ -2375,12 +2375,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         ProgramNode.FdLanguage.Value := 'GLSL';
 
         ShaderPart := TNodeShaderPart.Create('', '');
-        ProgramNode.FdParts.AddItem(ShaderPart);
+        ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'VERTEX';
         ShaderPart.FdUrl.Items.Add(VertexShaderUrl);
 
         ShaderPart := TNodeShaderPart.Create('', '');
-        ProgramNode.FdParts.AddItem(ShaderPart);
+        ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'FRAGMENT';
         ShaderPart.FdUrl.Items.Add(FragmentShaderUrl);
 
