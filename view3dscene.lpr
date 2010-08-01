@@ -1902,10 +1902,10 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       S += Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
 
       S += nl+ nl;
-      if SelectedItem^.State.ParentShape <> nil then
+      if SelectedItem^.State.ShapeNode <> nil then
       begin
         { This is VRML 2.0 node }
-        M2 := SelectedItem^.State.ParentShape.Material;
+        M2 := SelectedItem^.State.ShapeNode.Material;
         if M2 <> nil then
         begin
           S += Format(
@@ -2131,7 +2131,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
     M1 := nil;
     M2 := nil;
-    Shape := SelectedItem^.State.ParentShape;
+    Shape := SelectedItem^.State.ShapeNode;
     if Shape <> nil then
     begin
       M2 := Shape.Material;
