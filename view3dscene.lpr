@@ -2004,7 +2004,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SceneAnimation.Scenes[0].NodeFreeRemovingFromAllParents(TVRMLShape(SelectedItem^.Shape).Geometry);
+      SceneAnimation.Scenes[0].RemoveShapeGeometry(TVRMLShape(SelectedItem^.Shape));
     end;
   end;
 
