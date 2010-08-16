@@ -1839,6 +1839,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M1: TNodeMaterial_1;
     M2: TNodeMaterial_2;
+    SelectedShape: TVRMLShape;
     SelectedGeometry: TVRMLGeometryNode;
     Tex: TNodeX3DTextureNode;
   begin
@@ -1847,7 +1848,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       s := 'Nothing selected.';
     end else
     begin
-      SelectedGeometry := SelectedItem^.Geometry;
+      SelectedShape := TVRMLShape(SelectedItem^.Shape);
+      SelectedGeometry := SelectedShape.Geometry;
       s := Format(
            'Selected point %s from triangle %s (triangle id: %s).' +nl+
            nl+
@@ -1857,7 +1859,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
             NodeNiceName(SelectedGeometry),
-            Box3DToNiceStr(SelectedGeometry.BoundingBox(SelectedItem^.State))]);
+            Box3DToNiceStr(SelectedShape.BoundingBox)]);
 
       if (SelectedItem^.FaceCoordIndexBegin <> -1) and
          (SelectedItem^.FaceCoordIndexEnd <> -1) then
@@ -1868,10 +1870,10 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             SelectedItem^.FaceCoordIndexEnd ]);
       end;
 
-      VCNotOver := SelectedGeometry.VerticesCount(SelectedItem^.State, false);
-      TCNotOver := SelectedGeometry.TrianglesCount(SelectedItem^.State, false);
-      VCOver := SelectedGeometry.VerticesCount(SelectedItem^.State, true);
-      TCOver := SelectedGeometry.TrianglesCount(SelectedItem^.State, true);
+      VCNotOver := SelectedShape.VerticesCount(false);
+      TCNotOver := SelectedShape.TrianglesCount(false);
+      VCOver := SelectedShape.VerticesCount(true);
+      TCOver := SelectedShape.TrianglesCount(true);
 
       if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
       begin
@@ -1976,7 +1978,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
        begin
         s += Format('but no, this light is blocked by triangle %s from node %s.',
           [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
-            NodeNiceName(ShadowingItem^.Geometry) ])
+            NodeNiceName(TVRMLShape(ShadowingItem^.Shape).Geometry) ])
        end else
         s += 'hmm, yes ! No object blocks this light here.';
       end;
@@ -2002,7 +2004,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SceneAnimation.Scenes[0].NodeFreeRemovingFromAllParents(SelectedItem^.Geometry);
+      SceneAnimation.Scenes[0].NodeFreeRemovingFromAllParents(TVRMLShape(SelectedItem^.Shape).Geometry);
     end;
   end;
 
@@ -2046,7 +2048,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    Geometry := SelectedItem^.Geometry;
+    Geometry := TVRMLShape(SelectedItem^.Shape).Geometry;
 
     if Geometry is TNodeIndexedFaceSet_1 then
     begin
@@ -2545,7 +2547,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure SelectedShapeOctreeStat;
   var
-    SI: TVRMLShapeTreeIterator;
     Shape: TVRMLShape;
   begin
     if SelectedItem = nil then
@@ -2553,25 +2554,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       MessageOk(Glwin, 'Nothing selected.', taLeft);
     end else
     begin
-      Shape := nil;
-      { TODO: 1. this will be wrong when the same geometry node and state
-        will be within one TVRMLShape 2. TVRMLTriangle should just
-        have a link to Shape. }
-
-      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, false);
-      try
-        while SI.GetNext do
-        begin
-          Shape := SI.Current;
-          if (Shape.Geometry = SelectedItem^.Geometry) and
-             (Shape.State = SelectedItem^.State) then
-            Break else
-            Shape := nil;
-        end;
-      finally FreeAndNil(SI) end;
-
-      if Shape = nil then
-        MessageOk(Glwin, 'Shape not found --- hmmm, this should not happen, report a bug.', taLeft) else
+      Shape := TVRMLShape(SelectedItem^.Shape);
       if Shape.OctreeTriangles = nil then
         MessageOk(Glwin, 'No collision octree was initialized for this shape.', taLeft) else
       begin
@@ -2761,7 +2744,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.Geometry, so this is only for the frame where
+        SelectedItem^.Shape.Geometry, so this is only for the frame where
         octree is available. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
@@ -2774,7 +2757,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    if not SelectedItem^.Geometry.Coord(SelectedItem^.State, Coord) then
+    if not TVRMLShape(SelectedItem^.Shape).Geometry.Coord(
+      SelectedItem^.State, Coord) then
     begin
       MessageOK(Glwin, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
       Exit;
