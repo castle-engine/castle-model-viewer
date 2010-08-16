@@ -1854,11 +1854,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
            'Selected point %s from triangle %s (triangle id: %s).' +nl+
            nl+
            'This triangle is part of the '+
-           'node named %s. Node''s bounding box is %s. ',
+           'node named "%s" (original type %s, rendered through type %s). Node''s bounding box is %s. ',
            [VectorToNiceStr(SelectedPointWorld),
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
-            NodeNiceName(SelectedGeometry),
+            SelectedGeometry.NodeName,
+            SelectedShape.OriginalGeometry.NodeTypeName,
+            SelectedGeometry.NodeTypeName,
             Box3DToNiceStr(SelectedShape.BoundingBox)]);
 
       if (SelectedItem^.FaceCoordIndexBegin <> -1) and
