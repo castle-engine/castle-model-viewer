@@ -553,6 +553,12 @@ procedure TV3DSceneManager.RenderFromView3D;
   end;
 
 begin
+  { Although TKamSceneManager is ready for MainScene = nil case,
+    RenderFromView3D below is not. Doesn't seem needed,
+    but better to secure for this case, since any TKamSceneManager
+    should always work with MainScene = nil. }
+  if MainScene = nil then Exit;
+
   { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
     may be costly operation. So don't do this. }
   if MainScene.BumpMappingMethod in bmGLSLAll then
@@ -2536,6 +2542,17 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       SceneAnimation.LoadFromVRMLEvents(RootNode, true,
         TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
         'Precalculating animation');
+
+      { Otherwise, current time is huge and it doesn't work reliably
+        with division inside TVRMLGLAnimation.SceneFromTime.
+        Do it *before* setting MainScene, as even setting MainScene
+        may cause TVRMLGLAnimation.VisibleChangeNotification, which
+        already requires TVRMLGLAnimation.SceneFromTime. }
+      SceneAnimation.ResetTimeAtLoad;
+
+      { Closing the scene freed SceneManager.MainScene (it's set to nil
+        automagically by free notification). Set it correctly now. }
+      SceneManager.MainScene := SceneAnimation.FirstScene;
 
       { Since we just destroyed RootNode, and replaced it with completely
         different scene, we have to recalculate many things.
