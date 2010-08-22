@@ -2032,10 +2032,15 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Geometry: TVRMLGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
   begin
+    { TODO: for now, we work with OriginalGeometry.
+      So it doesn't work on Cone, Cylinder etc. that are converted
+      to IndexedFaceSet in Proxy. Reason: well, after changing the node
+      the proxy is recreated, so any changes to it are lost. }
+
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.Geometry, so this is only for the frame where
+        SelectedItem^.OriginalGeometry, so this is only for the frame where
         octree is available. Moreover, we call
         SceneAnimation.FirstScene.ChangedFields. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
@@ -2056,7 +2061,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    Geometry := TVRMLShape(SelectedItem^.Shape).Geometry;
+    Geometry := TVRMLShape(SelectedItem^.Shape).OriginalGeometry;
 
     if Geometry is TNodeIndexedFaceSet_1 then
     begin
@@ -2756,14 +2761,21 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure MergeCloseVertexes;
   var
+    Shape: TVRMLShape;
     Coord: TMFVec3f;
     MergeDistance: Single;
     MergedCount: Cardinal;
   begin
+    { TODO: for now, we work with OriginalGeometry and OriginalState.
+      So it doesn't work on Cone, Cylinder etc. that are converted
+      to IndexedFaceSet in Proxy. Reason: well, Coord.Changed
+      makes TVRMLScene.ChangedShapeFields which releases the very Coordinate
+      node and fields that were changed... }
+
     if SceneAnimation.ScenesCount > 1 then
     begin
       { We can't do this for animations, because we use
-        SelectedItem^.Shape.Geometry, so this is only for the frame where
+        SelectedItem^.Shape.GeometryOriginal, so this is only for the frame where
         octree is available. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
@@ -2776,8 +2788,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    if not TVRMLShape(SelectedItem^.Shape).Geometry.Coord(
-      SelectedItem^.State, Coord) then
+    Shape := TVRMLShape(SelectedItem^.Shape);
+
+    if not Shape.OriginalGeometry.Coord(Shape.OriginalState, Coord) then
     begin
       MessageOK(Glwin, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
       Exit;
