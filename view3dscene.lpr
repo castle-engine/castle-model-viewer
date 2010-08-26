@@ -2031,6 +2031,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     Geometry: TVRMLGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
+    CoordsField, TexCoordsField: TMFLong;
   begin
     { TODO: for now, we work with OriginalGeometry.
       So it doesn't work on Cone, Cylinder etc. that are converted
@@ -2042,7 +2043,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem^.OriginalGeometry, so this is only for the frame where
         octree is available. Moreover, we call
-        SceneAnimation.FirstScene.ChangedFields. }
+        SceneAnimation.FirstScene.ChangedField. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
@@ -2066,26 +2067,32 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if Geometry is TNodeIndexedFaceSet_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedFaceSet_1(Geometry).FdCoordIndex.Items;
+      CoordsField := TNodeIndexedFaceSet_1(Geometry).FdCoordIndex;
+      Coords := CoordsField.Items;
       Materials := TNodeIndexedFaceSet_1(Geometry).FdMaterialIndex.Items;
       Normals := TNodeIndexedFaceSet_1(Geometry).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_1(Geometry).FdTextureCoordIndex.Items;
+      TexCoordsField := TNodeIndexedFaceSet_1(Geometry).FdTextureCoordIndex;
+      TexCoords := TexCoordsField.Items;
     end else
     if Geometry is TNodeIndexedFaceSet_2 then
     begin
       Colors := TNodeIndexedFaceSet_2(Geometry).FdColorIndex.Items;
-      Coords := TNodeIndexedFaceSet_2(Geometry).FdCoordIndex.Items;
+      CoordsField := TNodeIndexedFaceSet_2(Geometry).FdCoordIndex;
+      Coords := CoordsField.Items;
       Materials := nil;
       Normals := TNodeIndexedFaceSet_2(Geometry).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedFaceSet_2(Geometry).FdTexCoordIndex.Items;
+      TexCoordsField := TNodeIndexedFaceSet_2(Geometry).FdTexCoordIndex;
+      TexCoords := TexCoordsField.Items;
     end else
     if Geometry is TNodeIndexedTriangleMesh_1 then
     begin
       Colors := nil;
-      Coords := TNodeIndexedTriangleMesh_1(Geometry).FdCoordIndex.Items;
+      CoordsField := TNodeIndexedTriangleMesh_1(Geometry).FdCoordIndex;
+      Coords := CoordsField.Items;
       Materials := TNodeIndexedTriangleMesh_1(Geometry).FdMaterialIndex.Items;
       Normals := TNodeIndexedTriangleMesh_1(Geometry).FdNormalIndex.Items;
-      TexCoords := TNodeIndexedTriangleMesh_1(Geometry).FdTextureCoordIndex.Items;
+      TexCoordsField := TNodeIndexedTriangleMesh_1(Geometry).FdTextureCoordIndex;
+      TexCoords := TexCoordsField.Items;
     end else
     begin
       ShowAndWrite('Internal error: cannot get the coordIndex field.');
@@ -2102,6 +2109,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Coords.Delete(SelectedItem^.FaceCoordIndexBegin,
       SelectedItem^.FaceCoordIndexEnd -
       SelectedItem^.FaceCoordIndexBegin + 1);
+    SceneAnimation.FirstScene.ChangedField(CoordsField);
 
     { Texture coordinates, if not empty, have always (both in VRML 1.0
       and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
@@ -2109,11 +2117,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       So we can remove equivalent texture coords in the same manner
       as we removed coords. }
     if TexCoords <> nil then
+    begin
       TexCoords.Delete(SelectedItem^.FaceCoordIndexBegin,
         SelectedItem^.FaceCoordIndexEnd -
         SelectedItem^.FaceCoordIndexBegin + 1);
-
-    SceneAnimation.FirstScene.ChangedFields(Geometry, nil);
+      SceneAnimation.FirstScene.ChangedField(TexCoordsField);
+    end;
   end;
 
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
@@ -2132,7 +2141,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem.State, so this is only for the frame where
         octree is available. Moreover, we call
-        SceneAnimation.FirstScene.ChangedFields. }
+        SceneAnimation.FirstScene.ChangedField. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit(false);
