@@ -2032,6 +2032,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Geometry: TVRMLGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
     CoordsField, TexCoordsField: TMFLong;
+    IndexBegin, IndexCount: Integer;
   begin
     { TODO: for now, we work with OriginalGeometry.
       So it doesn't work on Cone, Cylinder etc. that are converted
@@ -2106,9 +2107,13 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    Coords.Delete(SelectedItem^.FaceCoordIndexBegin,
-      SelectedItem^.FaceCoordIndexEnd -
-      SelectedItem^.FaceCoordIndexBegin + 1);
+    { calculate IndexBegin and IndexCount. Remember that after
+      1st call, SelectedItem pointer may become invalid. }
+    IndexBegin := SelectedItem^.FaceCoordIndexBegin;
+    IndexCount := SelectedItem^.FaceCoordIndexEnd -
+                  SelectedItem^.FaceCoordIndexBegin + 1;
+
+    Coords.Delete(IndexBegin, IndexCount);
     SceneAnimation.FirstScene.ChangedField(CoordsField);
 
     { Texture coordinates, if not empty, have always (both in VRML 1.0
@@ -2118,9 +2123,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       as we removed coords. }
     if TexCoords <> nil then
     begin
-      TexCoords.Delete(SelectedItem^.FaceCoordIndexBegin,
-        SelectedItem^.FaceCoordIndexEnd -
-        SelectedItem^.FaceCoordIndexBegin + 1);
+      TexCoords.Delete(IndexBegin, IndexCount);
       SceneAnimation.FirstScene.ChangedField(TexCoordsField);
     end;
   end;
