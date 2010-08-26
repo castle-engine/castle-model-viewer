@@ -1905,9 +1905,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { calculate TextureDescription }
       if Tex = nil then
         TextureDescription := 'none' else
-      if Tex is TVRMLTextureNode then
-        TextureDescription := TVRMLTextureNode(Tex).TextureDescription else
-        TextureDescription := Tex.NodeTypeName;
+        TextureDescription := Tex.TextureDescription;
 
       S += Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
 
