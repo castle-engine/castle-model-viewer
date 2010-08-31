@@ -21,10 +21,7 @@ procedure MenuAppendOptimization(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
-uses V3DSceneConfig;
-
-const
-  DefaultOptimization = roSeparateShapes;
+uses V3DSceneConfig, VRMLGLScene;
 
 procedure MenuAppendOptimization(M: TMenu; BaseIntData: Cardinal);
 var
