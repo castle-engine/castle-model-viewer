@@ -265,18 +265,18 @@ begin
     Result := nil;
 end;
 
-{ This calls SceneManager.PrepareRender
-  (that causes SceneAnimation.PrepareRender).
+{ This calls SceneManager.PrepareResources
+  (that causes SceneAnimation.PrepareResources).
   Additionally, if AllowProgess and some other conditions are met,
   this shows progress of operation.
 
   Remember that you can call this only when gl context is already active
-  (SceneAnimation.PrepareRender requires this) }
-procedure PrepareRender(AllowProgress: boolean);
+  (SceneAnimation.PrepareResources requires this) }
+procedure PrepareResources(AllowProgress: boolean);
 begin
   if AllowProgress and (SceneAnimation.ScenesCount > 1) then
-    SceneManager.PrepareRender('Preparing animation') else
-    SceneManager.PrepareRender;
+    SceneManager.PrepareResources('Preparing animation') else
+    SceneManager.PrepareResources;
 end;
 
 procedure SceneOctreeCreate; forward;
@@ -1465,11 +1465,11 @@ begin
     if not MakingScreenShot then
       RecentMenu.Add(ASceneFileName);
 
-    { We call PrepareRender to make SceneAnimation.PrepareRender to gather
+    { We call PrepareResources to make SceneAnimation.PrepareResources to gather
       VRML warnings (because some warnings, e.g. invalid texture filename,
-      are reported only from SceneAnimation.PrepareRender).
-      Also, this allows us to show first PrepareRender with progress bar. }
-    PrepareRender(true);
+      are reported only from SceneAnimation.PrepareResources).
+      Also, this allows us to show first PrepareResources with progress bar. }
+    PrepareResources(true);
     if (SceneWarnings.Count <> 0) and
        { For MakingScreenShot, work non-interactively.
          Warnings are displayed at stderr anyway, so user will see them there. }
