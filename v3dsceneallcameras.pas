@@ -154,7 +154,7 @@ procedure SceneInitCameras(
 begin
  { Init all cameras }
  TExamineCamera(AllCameras[cmExamine]).Init(ModelBox, CameraRadius);
- TWalkCamera   (AllCameras[cmWalk  ]).Init(
+ TWalkCamera   (AllCameras[cmWalk   ]).Init(
    InitialPosition, InitialDirection, InitialUp, GravityUp,
    CameraPreferredHeight, CameraRadius);
 end;
