@@ -1235,7 +1235,7 @@ begin
       if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
         CameraRadius := NavigationNode.FdAvatarSize.Items[0];
       if CameraRadius = 0.0 then
-        CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox,
+        CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox, false,
           1.0 { any non-zero dummy value }) * 0.005;
     end;
 
