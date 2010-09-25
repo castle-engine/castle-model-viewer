@@ -53,9 +53,8 @@ procedure InitCameras(SceneManager: TKamSceneManager);
   You must call InitCameras before using this. }
 procedure SceneInitCameras(
   const ModelBox: TBox3D;
-  const InitialPosition, InitialDirection, InitialUp,
-    GravityUp: TVector3Single;
-  const CameraPreferredHeight, CameraRadius: Single);
+  const InitialPosition, InitialDirection, InitialUp, GravityUp: TVector3Single;
+  const NoveSpeed, CameraPreferredHeight, CameraRadius: Single);
 
 const
   CameraNames: array[TCameraMode]of string =
@@ -148,15 +147,14 @@ end;
 
 procedure SceneInitCameras(
   const ModelBox: TBox3D;
-  const InitialPosition, InitialDirection, InitialUp,
-    GravityUp: TVector3Single;
-  const CameraPreferredHeight, CameraRadius: Single);
+  const InitialPosition, InitialDirection, InitialUp, GravityUp: TVector3Single;
+  const NoveSpeed, CameraPreferredHeight, CameraRadius: Single);
 begin
  { Init all cameras }
  TExamineCamera(AllCameras[cmExamine]).Init(ModelBox, CameraRadius);
  TWalkCamera   (AllCameras[cmWalk   ]).Init(
    InitialPosition, InitialDirection, InitialUp, GravityUp,
-   CameraPreferredHeight, CameraRadius);
+   NoveSpeed, CameraPreferredHeight, CameraRadius);
 end;
 
 function CameraMode: TCameraMode;

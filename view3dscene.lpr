@@ -769,7 +769,7 @@ end;
   NavigationInfo node.
 
   Besides initializing camera by WalkCamera.Init, it also
-  takes care to initialize MoveHorizontal/VerticalSpeed.
+  takes care to initialize MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -777,9 +777,11 @@ procedure SetViewpointCore(
   InitialDirection: TVector3Single;
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
+var
+  NewMoveSpeed: Single;
 begin
   { Change InitialDirection length, to adjust speed.
-    Also set MoveHorizontal/VerticalSpeed. }
+    Also set MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed. }
 
   if NavigationNode = nil then
   begin
@@ -787,7 +789,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
-    VectorAdjustToLengthTo1st(InitialDirection, WalkCamera.CameraRadius * 0.8);
+    NewMoveSpeed := WalkCamera.CameraRadius * 0.8;
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
   end else
@@ -795,15 +797,13 @@ begin
   begin
     { Then user is not allowed to move at all.
 
-      InitialDirection must be non-zero (we normalize it just to satisfy
-      requirement that "length of InitialDirection doesn't matter" here,
-      in case user will later increase move speed by menu anyway.
-
-      So we do this is by setting MoveHorizontal/VerticalSpeed to zero.
+      We do this is by setting MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed to zero
+      (although actually only MoveSpeed or only MoveHorizontal + VerticalSpeed
+      would be enough).
       This is also the reason why other SetViewpointCore must change
       MoveHorizontal/VerticalSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    NormalizeTo1st(InitialDirection);
+    NewMoveSpeed := 0;
     WalkCamera.MoveHorizontalSpeed := 0;
     WalkCamera.MoveVerticalSpeed := 0;
   end else
@@ -819,14 +819,13 @@ begin
     Writeln('Fix NavigationInfo.speed to ',
       FloatToRawStr(CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50));
     }
-
-    VectorAdjustToLengthTo1st(InitialDirection, NavigationNode.FdSpeed.Value / 50.0);
+    NewMoveSpeed := NavigationNode.FdSpeed.Value / 50.0;
     WalkCamera.MoveHorizontalSpeed := 1;
     WalkCamera.MoveVerticalSpeed := 1;
   end;
 
-  WalkCamera.Init(InitialPosition, InitialDirection, InitialUp,
-    GravityUp, WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
+  WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
+    NewMoveSpeed, WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
 
   if not Glw.Closed then
   begin
@@ -1196,6 +1195,7 @@ var
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedPosition, SavedDirection, SavedUp, SavedGravityUp: TVector3Single;
+  SavedMoveSpeed: Single;
 begin
   FreeScene;
 
@@ -1267,6 +1267,7 @@ begin
       SavedDirection := WalkCamera.Direction;
       SavedUp := WalkCamera.Up;
       SavedGravityUp := WalkCamera.GravityUp;
+      SavedMoveSpeed := WalkCamera.MoveSpeed;
     end;
 
     SceneInitCameras(SceneAnimation.BoundingBox,
@@ -1274,7 +1275,7 @@ begin
       DefaultVRMLCameraDirection,
       DefaultVRMLCameraUp,
       DefaultVRMLGravityUp,
-      CameraPreferredHeight, CameraRadius);
+      1, CameraPreferredHeight, CameraRadius);
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
@@ -1287,6 +1288,7 @@ begin
       WalkCamera.Direction := SavedDirection;
       WalkCamera.Up := SavedUp;
       WalkCamera.GravityUp := SavedGravityUp;
+      WalkCamera.MoveSpeed := SavedMoveSpeed;
     end;
 
     SceneInitLights(SceneAnimation, NavigationNode);
