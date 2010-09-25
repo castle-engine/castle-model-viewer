@@ -1231,11 +1231,11 @@ begin
        (NavigationNode is TNodeKambiNavigationInfo) then
     begin
       WalkCamera.HeadBobbing := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbing.Value;
-      WalkCamera.HeadBobbingDistance := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingDistance.Value;
+      WalkCamera.HeadBobbingTime := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingTime.Value;
     end else
     begin
       WalkCamera.HeadBobbing := DefaultHeadBobbing;
-      WalkCamera.HeadBobbingDistance := DefaultHeadBobbingDistance;
+      WalkCamera.HeadBobbingTime := DefaultHeadBobbingTime;
     end;
 
     if not JumpToInitialViewpoint then
