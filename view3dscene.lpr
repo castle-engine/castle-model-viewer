@@ -775,7 +775,7 @@ procedure SetViewpointCore(
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
 var
-  NewMoveSpeed: Single;
+  NewMoveSpeedSecs: Single;
 begin
   { Change also MoveSpeed. }
 
@@ -785,7 +785,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
-    NewMoveSpeed := WalkCamera.CameraRadius * 0.8;
+    NewMoveSpeedSecs := WalkCamera.CameraRadius * 40;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
@@ -795,25 +795,14 @@ begin
       This is also the reason why other SetViewpointCore branches must always
       change NewMoveSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    NewMoveSpeed := 0;
+    NewMoveSpeedSecs := 0;
   end else
   begin
-    { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
-      They set InitialDirection length to
-        CameraRadius * 0.4 * NavigationNode.FdSpeed.Value
-      Effectively, speed per second was
-        CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50 / second
-      If your VRML models were adjusted to this view3dscene broken handling,
-      you should fix NavigationInfo.speed to value below to get the same speed
-      in newer view3dscene versions :
-    Writeln('Fix NavigationInfo.speed to ',
-      FloatToRawStr(CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50));
-    }
-    NewMoveSpeed := NavigationNode.FdSpeed.Value / 50.0;
+    NewMoveSpeedSecs := NavigationNode.FdSpeed.Value;
   end;
 
   WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
-    NewMoveSpeed, WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
+    NewMoveSpeedSecs, WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
 
   if not Glw.Closed then
   begin
