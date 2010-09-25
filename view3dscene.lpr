@@ -443,7 +443,7 @@ begin
        VectorToNiceStr(WalkCamera.Direction),
        VectorToNiceStr(WalkCamera.Up) ]));
    strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
-     [ WalkCamera.MoveSpeedSecs,
+     [ WalkCamera.MoveSpeed,
        WalkCamera.CameraPreferredHeight,
        CurrentAboveHeight ]));
   end else
@@ -766,7 +766,7 @@ end;
   NavigationInfo node.
 
   Besides initializing camera by WalkCamera.Init, it also
-  takes care to initialize MoveSpeedSecs.
+  takes care to initialize MoveSpeed.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -775,9 +775,9 @@ procedure SetViewpointCore(
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
 var
-  NewMoveSpeedSecs: Single;
+  NewMoveSpeed: Single;
 begin
-  { Change also MoveSpeedSecs. }
+  { Change also MoveSpeed. }
 
   if NavigationNode = nil then
   begin
@@ -785,25 +785,25 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
-    NewMoveSpeedSecs := WalkCamera.CameraRadius * 40;
+    NewMoveSpeed := WalkCamera.CameraRadius * 40;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
     { Then user is not allowed to move at all.
 
-      We do this is by setting MoveSpeedSecs to zero.
+      We do this is by setting MoveSpeed to zero.
       This is also the reason why other SetViewpointCore branches must always
-      change NewMoveSpeedSecs to something different than zero
+      change NewMoveSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    NewMoveSpeedSecs := 0;
+    NewMoveSpeed := 0;
   end else
   begin
-    NewMoveSpeedSecs := NavigationNode.FdSpeed.Value;
+    NewMoveSpeed := NavigationNode.FdSpeed.Value;
   end;
 
   WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
     WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
-  WalkCamera.MoveSpeedSecs := NewMoveSpeedSecs;
+  WalkCamera.MoveSpeed := NewMoveSpeed;
 
   if not Glw.Closed then
   begin
@@ -1173,7 +1173,7 @@ var
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedPosition, SavedDirection, SavedUp, SavedGravityUp: TVector3Single;
-  SavedMoveSpeedSecs: Single;
+  SavedMoveSpeed: Single;
 begin
   FreeScene;
 
@@ -1245,7 +1245,7 @@ begin
       SavedDirection := WalkCamera.Direction;
       SavedUp := WalkCamera.Up;
       SavedGravityUp := WalkCamera.GravityUp;
-      SavedMoveSpeedSecs := WalkCamera.MoveSpeedSecs;
+      SavedMoveSpeed := WalkCamera.MoveSpeed;
     end;
 
     SceneInitCameras(SceneAnimation.BoundingBox,
@@ -1254,7 +1254,7 @@ begin
       DefaultVRMLCameraUp,
       DefaultVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
-    WalkCamera.MoveSpeedSecs := 1; { just to assign a default value, for safety }
+    WalkCamera.MoveSpeed := 1; { just to assign a default value, for safety }
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
@@ -1267,7 +1267,7 @@ begin
       WalkCamera.Direction := SavedDirection;
       WalkCamera.Up := SavedUp;
       WalkCamera.GravityUp := SavedGravityUp;
-      WalkCamera.MoveSpeedSecs := SavedMoveSpeedSecs;
+      WalkCamera.MoveSpeed := SavedMoveSpeed;
     end;
 
     SceneInitLights(SceneAnimation, NavigationNode);
@@ -1699,16 +1699,16 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     MessageOK(Glwin, SOnlyInWalker);
   end;
 
-  procedure ChangeMoveSpeedSecs;
+  procedure ChangeMoveSpeed;
   var
-    MoveSpeedSecs: Single;
+    MoveSpeed: Single;
   begin
     if SceneManager.Camera is TWalkCamera then
     begin
-      MoveSpeedSecs := WalkCamera.MoveSpeedSecs;
-      if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeedSecs, taLeft) then
+      MoveSpeed := WalkCamera.MoveSpeed;
+      if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeed, taLeft) then
       begin
-        WalkCamera.MoveSpeedSecs := MoveSpeedSecs;
+        WalkCamera.MoveSpeed := MoveSpeed;
         Glw.PostRedisplay;
       end;
     end else
@@ -3018,7 +3018,7 @@ begin
   201: WalkCamera.Gravity := not WalkCamera.Gravity;
   202: WalkCamera.PreferGravityUpForRotations := not WalkCamera.PreferGravityUpForRotations;
   203: WalkCamera.PreferGravityUpForMoving := not WalkCamera.PreferGravityUpForMoving;
-  205: ChangeMoveSpeedSecs;
+  205: ChangeMoveSpeed;
   210: WalkCamera.IgnoreAllInputs := not WalkCamera.IgnoreAllInputs;
 
   220: begin
