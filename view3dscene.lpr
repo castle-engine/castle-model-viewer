@@ -442,11 +442,8 @@ begin
      [ VectorToNiceStr(WalkCamera.Position),
        VectorToNiceStr(WalkCamera.Direction),
        VectorToNiceStr(WalkCamera.Up) ]));
-   strs.Append(Format('Move speed : %f, Avatar height: %f (last height above the ground: %s)',
-     [ { In view3dscene, MoveHorizontalSpeed is always equal to
-         MoveVerticalSpeed (as they change when user uses Input_MoveSpeedInc/Dec).
-         So it's enough to show just MoveHorizontalSpeed. }
-       WalkCamera.MoveHorizontalSpeed,
+   strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
+     [ WalkCamera.MoveSpeedSecs,
        WalkCamera.CameraPreferredHeight,
        CurrentAboveHeight ]));
   end else
@@ -769,7 +766,7 @@ end;
   NavigationInfo node.
 
   Besides initializing camera by WalkCamera.Init, it also
-  takes care to initialize MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed.
+  takes care to initialize MoveSpeed.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -780,8 +777,7 @@ procedure SetViewpointCore(
 var
   NewMoveSpeed: Single;
 begin
-  { Change InitialDirection length, to adjust speed.
-    Also set MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed. }
+  { Change also MoveSpeed. }
 
   if NavigationNode = nil then
   begin
@@ -790,22 +786,16 @@ begin
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
     NewMoveSpeed := WalkCamera.CameraRadius * 0.8;
-    WalkCamera.MoveHorizontalSpeed := 1;
-    WalkCamera.MoveVerticalSpeed := 1;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
     { Then user is not allowed to move at all.
 
-      We do this is by setting MoveSpeed / MoveHorizontalSpeed / MoveVerticalSpeed to zero
-      (although actually only MoveSpeed or only MoveHorizontal + VerticalSpeed
-      would be enough).
-      This is also the reason why other SetViewpointCore must change
-      MoveHorizontal/VerticalSpeed to something different than zero
+      We do this is by setting MoveSpeedto zero.
+      This is also the reason why other SetViewpointCore branches must always
+      change NewMoveSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
     NewMoveSpeed := 0;
-    WalkCamera.MoveHorizontalSpeed := 0;
-    WalkCamera.MoveVerticalSpeed := 0;
   end else
   begin
     { view3dscene versions (<= 2.2.1) handled NavigationInfo.speed badly.
@@ -820,8 +810,6 @@ begin
       FloatToRawStr(CameraRadius * 0.4 * NavigationNode.FdSpeed.Value * 50));
     }
     NewMoveSpeed := NavigationNode.FdSpeed.Value / 50.0;
-    WalkCamera.MoveHorizontalSpeed := 1;
-    WalkCamera.MoveVerticalSpeed := 1;
   end;
 
   WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
@@ -1722,18 +1710,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeMoveSpeed;
   var
-    MoveSpeed: Single;
+    MoveSpeedSecs: Single;
   begin
     if SceneManager.Camera is TWalkCamera then
     begin
-      { in view3dscene, MoveHorizontalSpeed is always equal
-        MoveVerticalSpeed }
-
-      MoveSpeed := WalkCamera.MoveHorizontalSpeed;
-      if MessageInputQuery(Glwin, 'New move speed:', MoveSpeed, taLeft) then
+      MoveSpeedSecs := WalkCamera.MoveSpeedSecs;
+      if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeedSecs, taLeft) then
       begin
-        WalkCamera.MoveHorizontalSpeed := MoveSpeed;
-        WalkCamera.MoveVerticalSpeed := MoveSpeed;
+        WalkCamera.MoveSpeedSecs := MoveSpeedSecs;
         Glw.PostRedisplay;
       end;
     end else
