@@ -2234,12 +2234,15 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
-  procedure SetViewpointForWholeScene(const WantedUp: Integer);
+  procedure SetViewpointForWholeScene(
+    const WantedDirection, WantedUp: Integer;
+    const WantedDirectionPositive, WantedUpPositive: boolean);
   var
     Position, Direction, Up, GravityUp: TVector3Single;
   begin
     CameraViewpointForWholeScene(SceneAnimation.BoundingBox,
-      WantedUp,
+      WantedDirection, WantedUp,
+      WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
     SetViewpointCore(Position, Direction, Up, GravityUp);
   end;
@@ -2889,14 +2892,16 @@ begin
                          DefaultVRMLCameraUp,
                          DefaultVRMLGravityUp);
       end;
-  53: begin
-        SetCameraMode(SceneManager, cmWalk);
-        SetViewpointForWholeScene(1);
-      end;
-  54: begin
-        SetCameraMode(SceneManager, cmWalk);
-        SetViewpointForWholeScene(2);
-      end;
+
+  53: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(2, 1, true , true); end;
+  54: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(2, 1, false, true); end;
+  55: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 1, true , true); end;
+  56: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 1, false, true); end;
+
+  57: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 2, true , true); end;
+  58: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 2, false, true); end;
+  59: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(1, 2, true , true); end;
+  60: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(1, 2, false, true); end;
 
   82: ShowBBox := not ShowBBox;
   83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;
