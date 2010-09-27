@@ -25,7 +25,8 @@ unit V3DSceneViewpoints;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, KambiUtils, KambiClassUtils, VRMLScene;
+uses VectorMath, VRMLNodes, GLWindow, KambiUtils, Classes, KambiClassUtils,
+  VRMLScene;
 
 {$define read_interface}
 
