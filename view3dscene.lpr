@@ -2901,15 +2901,15 @@ begin
                        DefaultVRMLCameraUp,
                        DefaultVRMLGravityUp);
 
-  53: SetViewpointForWholeScene(2, 1, true , true);
-  54: SetViewpointForWholeScene(2, 1, false, true);
-  55: SetViewpointForWholeScene(0, 1, true , true);
-  56: SetViewpointForWholeScene(0, 1, false, true);
+  53: SetViewpointForWholeScene(2, 1, false, true);
+  54: SetViewpointForWholeScene(2, 1, true , true);
+  55: SetViewpointForWholeScene(0, 1, false, true);
+  56: SetViewpointForWholeScene(0, 1, true , true);
 
-  57: SetViewpointForWholeScene(0, 2, true , true);
-  58: SetViewpointForWholeScene(0, 2, false, true);
-  59: SetViewpointForWholeScene(1, 2, true , true);
-  60: SetViewpointForWholeScene(1, 2, false, true);
+  57: SetViewpointForWholeScene(0, 2, false, true);
+  58: SetViewpointForWholeScene(0, 2, true , true);
+  59: SetViewpointForWholeScene(1, 2, false, true);
+  60: SetViewpointForWholeScene(1, 2, true , true);
 
   82: ShowBBox := not ShowBBox;
   83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;

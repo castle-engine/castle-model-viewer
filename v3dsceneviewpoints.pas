@@ -180,15 +180,15 @@ begin
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 2.0 (and X3D) viewpoint', 52));
   MenuJumpToViewpoint.Append(TMenuSeparator.Create);
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +Z dir)', 53));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -Z dir)', 54));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +X dir)', 55));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -X dir)', 56));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -Z dir)', 53));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +Z dir)', 54));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -X dir)', 55));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +X dir)', 56));
   MenuJumpToViewpoint.Append(TMenuSeparator.Create);
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 57));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -X dir)', 58));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 59));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 60));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -X dir)', 57));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 58));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 59));
+  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 60));
 end;
 
 initialization
