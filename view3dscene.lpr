@@ -1071,7 +1071,7 @@ procedure LoadSceneCore(
       WalkCamera.PreferGravityUpForRotations
       WalkCamera.PreferGravityUpForMoving,
       WalkCamera.Gravity,
-      WalkCamera.IgnoreAllInputs.
+      CameraIgnoreAllInputs.
 
       Returns @false and doesn't set anything (but does VRMLWarning)
       if Name unknown. }
@@ -1085,7 +1085,7 @@ procedure LoadSceneCore(
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := true;
         WalkCamera.Gravity := true;
-        WalkCamera.IgnoreAllInputs := false;
+        CameraIgnoreAllInputs := false;
       end else
       if Name = 'FLY' then
       begin
@@ -1093,7 +1093,7 @@ procedure LoadSceneCore(
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := false;
         WalkCamera.Gravity := false;
-        WalkCamera.IgnoreAllInputs := false;
+        CameraIgnoreAllInputs := false;
       end else
       if Name = 'NONE' then
       begin
@@ -1101,7 +1101,7 @@ procedure LoadSceneCore(
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := true; { doesn't matter }
         WalkCamera.Gravity := false;
-        WalkCamera.IgnoreAllInputs := true;
+        CameraIgnoreAllInputs := true;
       end else
       if (Name = 'EXAMINE') or (Name = 'LOOKAT') then
       begin
@@ -1113,7 +1113,7 @@ procedure LoadSceneCore(
         { Set also WalkCamera properties to something predictable
           (*not* dependent on previous values, as this would be rather
           confusing to user (new model should just start with new settings).
-          In particular, IgnoreAllInputs must be reset.)
+          In particular, CameraIgnoreAllInputs must be reset.)
 
           Values below are like for "FLY" mode, since this is relatively
           safest default for WalkCamera (free navigation, no gravity). }
@@ -1121,7 +1121,7 @@ procedure LoadSceneCore(
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := false;
         WalkCamera.Gravity := false;
-        WalkCamera.IgnoreAllInputs := false;
+        CameraIgnoreAllInputs := false;
       end else
       if Name = 'ANY' then
       begin
@@ -1163,7 +1163,7 @@ procedure LoadSceneCore(
     if MenuGravity <> nil then
       MenuGravity.Checked := WalkCamera.Gravity;
     if MenuIgnoreAllInputs <> nil then
-      MenuIgnoreAllInputs.Checked := WalkCamera.IgnoreAllInputs;
+      MenuIgnoreAllInputs.Checked := CameraIgnoreAllInputs;
     if MenuPreferGravityUpForRotations <> nil then
       MenuPreferGravityUpForRotations.Checked := WalkCamera.PreferGravityUpForRotations;
     if MenuPreferGravityUpForMoving <> nil then
@@ -3024,7 +3024,7 @@ begin
   202: WalkCamera.PreferGravityUpForRotations := not WalkCamera.PreferGravityUpForRotations;
   203: WalkCamera.PreferGravityUpForMoving := not WalkCamera.PreferGravityUpForMoving;
   205: ChangeMoveSpeed;
-  210: WalkCamera.IgnoreAllInputs := not WalkCamera.IgnoreAllInputs;
+  210: CameraIgnoreAllInputs := not CameraIgnoreAllInputs;
 
   220: begin
          AnimationTimePlaying := not AnimationTimePlaying;
@@ -3357,15 +3357,15 @@ begin
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(TMenuSeparator.Create);
-     MenuIgnoreAllInputs := TMenuItemChecked.Create(
-       'Disable normal navigation (VRML/X3D "NONE" navigation)',  210,
-       WalkCamera.IgnoreAllInputs, true);
-     M2.Append(MenuIgnoreAllInputs);
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
      '_Collision Detection',                   123, CtrlC,
        SceneAnimation.Collides, true);
    M.Append(MenuCollisionCheck);
+   MenuIgnoreAllInputs := TMenuItemChecked.Create(
+     'Disable normal navigation (VRML/X3D "NONE" navigation)',  210,
+     CameraIgnoreAllInputs, true);
+   M.Append(MenuIgnoreAllInputs);
    Result.Append(M);
  M := TMenu.Create('_Animation');
    MenuAnimationTimePlaying := TMenuItemChecked.Create(

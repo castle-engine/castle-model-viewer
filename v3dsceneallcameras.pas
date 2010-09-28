@@ -106,6 +106,15 @@ var
     use it, and reset to empty. }
   InitialNavigationType: string;
 
+function GetCameraIgnoreAllInputs: boolean;
+procedure SetCameraIgnoreAllInputs(const Value: boolean);
+
+{ For view3dscene, ExamineCamera and WalkCamera have always
+  identical TCamera.IgnoreAllInputs values.
+  So this property gets and sets both of them. }
+property CameraIgnoreAllInputs: boolean
+  read GetCameraIgnoreAllInputs write SetCameraIgnoreAllInputs;
+
 implementation
 
 uses ParseParametersUnit;
@@ -225,6 +234,18 @@ const
   ((Short:#0; Long:'navigation'; Argument: oaRequired));
 begin
  ParseParameters(Options, @OptionProc, nil, true);
+end;
+
+function GetCameraIgnoreAllInputs: boolean;
+begin
+  Result := WalkCamera.IgnoreAllInputs;
+  Assert(Result = ExamineCamera.IgnoreAllInputs);
+end;
+
+procedure SetCameraIgnoreAllInputs(const Value: boolean);
+begin
+  WalkCamera.IgnoreAllInputs := Value;
+  ExamineCamera.IgnoreAllInputs := Value;
 end;
 
 { unit init/fini ------------------------------------------------------------ }
