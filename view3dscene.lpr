@@ -2619,7 +2619,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, WalkCamera.Position,
+          GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
             SceneManager.WalkProjectionNear, SceneManager.WalkProjectionFar,
             true, 0, 0);
@@ -2686,7 +2686,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
       begin
-        DDS := GLCaptureCubeMapDDS(Size, WalkCamera.Position,
+        DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
           SceneManager.WalkProjectionNear, SceneManager.WalkProjectionFar,
           true, 0, 0);
@@ -3429,8 +3429,8 @@ begin
  M := TMenu.Create('_Display');
    M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
    M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
-   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around Walk position) ...',  550));
-   M.Append(TMenuItem.Create('Screenshot to cube map DDS (environment around Walk position) ...',  555));
+   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around camera position) ...',  550));
+   M.Append(TMenuItem.Create('Screenshot to cube map DDS (environment around camera position) ...',  555));
    M.Append(TMenuItem.Create('Screenshot depth to grayscale image ...', 560));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
