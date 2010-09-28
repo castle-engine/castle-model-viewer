@@ -2942,15 +2942,21 @@ begin
   106: WritelnCameraSettings(1);
   107: WritelnCameraSettings(2);
 
-  108: Writeln(
-         'Current Walk navigation frustum planes :' +nl+
-         '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-         '  Left   : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpLeft]) +nl+
-         '  Right  : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpRight]) +nl+
-         '  Bottom : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpBottom]) +nl+
-         '  Top    : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpTop]) +nl+
-         '  Near   : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpNear]) +nl+
-         '  Far    : ' + VectorToRawStr(WalkCamera.Frustum.Planes[fpFar]));
+  108: begin
+         Writeln(
+           'Current camera frustum planes :' +nl+
+           '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
+           '  Left   : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpLeft]) +nl+
+           '  Right  : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpRight]) +nl+
+           '  Bottom : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpBottom]) +nl+
+           '  Top    : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpTop]) +nl+
+           '  Near   : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpNear]));
+         if SceneManager.Camera.Frustum.ZFarInfinity then
+           Writeln(
+           '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
+           Writeln(
+           '  Far    : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpFar]));
+       end;
 
   109: WriteBoundingBox(SceneAnimation.BoundingBox);
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
@@ -3414,7 +3420,7 @@ begin
    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
    M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Current Walk _Frustum', 108));
+   M.Append(TMenuItem.Create('Print Current Camera _Frustum', 108));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
    MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
