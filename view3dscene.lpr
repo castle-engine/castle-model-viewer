@@ -2621,7 +2621,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
-            SceneManager.WalkProjectionNear, SceneManager.WalkProjectionFar,
+            SceneManager.ProjectionNear, SceneManager.ProjectionFar,
             true, 0, 0);
           glViewport(0, 0, Glwin.Width, Glwin.Height);
 
@@ -2688,7 +2688,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
-          SceneManager.WalkProjectionNear, SceneManager.WalkProjectionFar,
+          SceneManager.ProjectionNear, SceneManager.ProjectionFar,
           true, 0, 0);
         try
           glViewport(0, 0, Glwin.Width, Glwin.Height);
