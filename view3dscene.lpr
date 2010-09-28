@@ -775,10 +775,8 @@ procedure SetViewpointCore(
   InitialDirection: TVector3Single;
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
-var
-  NewMoveSpeed: Single;
 begin
-  { Change also MoveSpeed. }
+  { Change WalkCamera.MoveSpeed. }
 
   if NavigationNode = nil then
   begin
@@ -786,7 +784,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
-    NewMoveSpeed := WalkCamera.CameraRadius * 40;
+    WalkCamera.MoveSpeed := WalkCamera.CameraRadius * 40;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
@@ -796,16 +794,23 @@ begin
       This is also the reason why other SetViewpointCore branches must always
       change NewMoveSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    NewMoveSpeed := 0;
+    WalkCamera.MoveSpeed := 0;
   end else
   begin
-    NewMoveSpeed := NavigationNode.FdSpeed.Value;
+    WalkCamera.MoveSpeed := NavigationNode.FdSpeed.Value;
   end;
 
-  WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
-    WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
-  WalkCamera.MoveSpeed := NewMoveSpeed;
+  WalkCamera.GravityUp := GravityUp;
 
+  { Now for both WalkCamera and ExamineCamera: update their Initial* vectors
+    and go to them. }
+
+  WalkCamera.SetInitialCameraVectors(
+    InitialPosition, InitialDirection, InitialUp, false);
+  WalkCamera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
+
+  ExamineCamera.SetInitialCameraVectors(
+    InitialPosition, InitialDirection, InitialUp, false);
   ExamineCamera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
 
   if not Glw.Closed then
