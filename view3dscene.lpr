@@ -818,7 +818,8 @@ end;
 { Call this when ViewpointNode (currently bound viewpoint node)
   changed (possibly to/from nil) and we have to go to this viewpoint.
 
-  When it's nil, we'll go to some default position.
+  When it's nil, we'll go to some position suitable to see the scene
+  (based on scene bounding box).
 
   This does update the ViewpointsList menu.
 
@@ -844,10 +845,8 @@ begin
     V.GetCameraVectors(Position, Direction, Up, GravityUp);
   end else
   begin
-    Position := DefaultVRMLCameraPosition[1];
-    Direction := DefaultVRMLCameraDirection;
-    Up := DefaultVRMLCameraUp;
-    GravityUp := DefaultVRMLGravityUp;
+    CameraViewpointForWholeScene(SceneAnimation.BoundingBox, 2, 1, false, true,
+      Position, Direction, Up, GravityUp);
   end;
 
   ViewpointsList.BoundViewpoint := V;
