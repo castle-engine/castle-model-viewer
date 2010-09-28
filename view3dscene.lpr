@@ -829,7 +829,7 @@ end;
   to given viewpoint, and this will indirectly call this procedure.
 
   Uses WalkCamera.CameraRadius, NavigationNode, so make sure these are already
-  set as needed }
+  set as needed. }
 procedure UpdateViewpointNode;
 var
   Position: TVector3Single;
@@ -2311,12 +2311,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   end;
 
   procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
+  var
+    Pos, Dir, Up, GravityUp: TVector3Single;
   begin
-    Writeln(MakeVRMLCameraStr(Version,
-      WalkCamera.Position,
-      WalkCamera.Direction,
-      WalkCamera.Up,
-      WalkCamera.GravityUp));
+    SceneManager.Camera.GetCameraVectors(Pos, Dir, Up, GravityUp);
+    Writeln(MakeVRMLCameraStr(Version, Pos, Dir, Up, GravityUp));
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
