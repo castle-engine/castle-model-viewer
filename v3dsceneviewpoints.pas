@@ -45,30 +45,23 @@ type
       Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
       ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
   private
-    FBoundViewpoint: TVRMLViewpointNode;
-    procedure SetBoundViewpoint(const Value: TVRMLViewpointNode);
+    FBoundViewpoint: Integer;
+    procedure SetBoundViewpoint(const Value: Integer);
   private
     ViewpointsRadioGroup: TMenuItemRadioGroup;
   public
     MenuJumpToViewpoint: TMenu;
 
-    { Currently bound viewpoint, used here only to make appropriate
-      menu item "checked". @nil if none is currently bound.
+    { Currently bound viewpoint (index on the list, or -1),
+      used here only to make appropriate menu item "checked".
 
-      Fore safety, you should not assume that passed here BoundViewpoint
-      reference is always valid. While it's guaranteed that we get
-      TVRMLScene.OnViewpointsChanged when some viewpoints will be destroyed,
-      but we also may get TVRMLScene.ViewpointStack.OnBoundChanged before
-      we will know that old viewpoints were destroyed (for example,
-      ChangedAll may first do some set_bind for first found viewpoint,
-      that is not yet in our ViewpointsList,
-      and later let us know that actually all viewpoints changed).
-
-      So we may get BoundViewpoint that we don't know about, and at this
-      time previous BoundViewpoint may be invalid, actually all our viewpoints
-      may be invalid.
-    }
-    property BoundViewpoint: TVRMLViewpointNode
+      Note: we cannot make this of TVRMLViewpointNode (which would seem
+      cleaner) because the same viewpoint node may be USEd many times
+      within a single scene.
+      Besides, using TVRMLViewpointNode was risky anyway,
+      as we could get TVRMLScene.ViewpointStack.OnBoundChanged when
+      some viewpoint nodes are already freed. }
+    property BoundViewpoint: Integer
       read FBoundViewpoint write SetBoundViewpoint;
 
     { Recalculate our list of viewpoints, also recalculating
@@ -127,9 +120,7 @@ const
   { We don't add more menu item entries for viewpoints. }
   MaxMenuItems = 20;
 
-procedure TViewpointsList.SetBoundViewpoint(const Value: TVRMLViewpointNode);
-var
-  Index: Integer;
+procedure TViewpointsList.SetBoundViewpoint(const Value: Integer);
 begin
   if FBoundViewpoint <> Value then
   begin
@@ -139,11 +130,9 @@ begin
     begin
       Assert(MenuJumpToViewpoint <> nil);
 
-      Index := IndexOf(Value);
-      if Index = -1 then
-        ViewpointsRadioGroup.Selected := nil else
-      if Index < MaxMenuItems then
-        (MenuJumpToViewpoint.Entries[Index] as TMenuItemRadio).Checked := true;
+      if Between(Value, 0, MaxMenuItems -1) then
+        (MenuJumpToViewpoint.Entries[Value] as TMenuItemRadio).Checked := true else
+        ViewpointsRadioGroup.Selected := nil;
     end;
   end;
 end;
@@ -179,7 +168,7 @@ begin
         S += ' "' + SQuoteMenuEntryCaption(Node.NodeName) + '"';
     end;
 
-    MenuItem := TMenuItemRadio.Create(S, 300 + I, Node = BoundViewpoint, false);
+    MenuItem := TMenuItemRadio.Create(S, 300 + I, I = BoundViewpoint, false);
 
     if I = 0 then
       ViewpointsRadioGroup := MenuItem.Group else

@@ -827,6 +827,9 @@ end;
   (based on scene bounding box).
 
   This does update the ViewpointsList menu.
+  If BoundViewpointIndexKnown then we will
+  use it for ViewpointsList.BoundViewpoint, otherwise we will search
+  viewpoint by node.
 
   This doesn't call set_bind event for this viewpoint --- the idea
   is that viewpoint changed for example because something already
@@ -836,7 +839,9 @@ end;
 
   Uses WalkCamera.CameraRadius, NavigationNode, so make sure these are already
   set as needed. }
-procedure UpdateViewpointNode;
+procedure UpdateViewpointNode(
+  const BoundViewpointIndexKnown: boolean;
+  BoundViewpointIndex: Integer);
 var
   Position: TVector3Single;
   Direction: TVector3Single;
@@ -854,7 +859,9 @@ begin
       Position, Direction, Up, GravityUp);
   end;
 
-  ViewpointsList.BoundViewpoint := V;
+  if not BoundViewpointIndexKnown then
+    BoundViewpointIndex := ViewpointsList.IndexOf(V);
+  ViewpointsList.BoundViewpoint := BoundViewpointIndex;
 
   SetViewpointCore(Position, Direction, Up, GravityUp);
 end;
@@ -865,9 +872,13 @@ begin
 end;
 
 class procedure THelper.BoundViewpointChanged(Sender: TObject);
+var
+  V: TVRMLViewpointNode;
+  BoundViewpointIndex: Integer;
 begin
-  ViewpointsList.BoundViewpoint := SceneManager.MainScene.ViewpointStack.Top
-    as TVRMLViewpointNode;
+  V := SceneManager.MainScene.ViewpointStack.Top as TVRMLViewpointNode;
+  BoundViewpointIndex := ViewpointsList.IndexOf(V);
+  ViewpointsList.BoundViewpoint := BoundViewpointIndex;
 end;
 
 { Scene operations ---------------------------------------------------------- }
@@ -1266,7 +1277,7 @@ begin
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
     ViewpointsList.Recalculate(SceneAnimation.FirstScene);
-    UpdateViewpointNode;
+    UpdateViewpointNode(false, -1);
 
     if not JumpToInitialViewpoint then
     begin
@@ -3052,7 +3063,7 @@ begin
       { Sending set_bind = true works fine if it's not current viewpoint,
         otherwise nothing happens... So just call UpdateViewpointNode
         explicitly, to really reset on the given viewpoint. }
-      UpdateViewpointNode;
+      UpdateViewpointNode(true, MenuItem.IntData - 300);
     end;
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
