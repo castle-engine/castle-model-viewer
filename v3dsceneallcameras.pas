@@ -67,14 +67,18 @@ function CameraMode: TCameraMode;
 
 { Change current CameraMode.
 
+  If KeepView, than we keep the current camera view the same.
+
   Set/ChangeCameraMode call VisibleChange on new camera.
   That's because changing Camera in fact changed
   Camera.Matrix, so we must do the same thing that would be done in
   Camera.VisibleChange.
 
   @groupBegin }
-procedure SetCameraMode(SceneManager: TKamSceneManager; Kind: TCameraMode);
-procedure ChangeCameraMode(SceneManager: TKamSceneManager; change: integer);
+procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraMode;
+  KeepView: boolean);
+procedure ChangeCameraMode(SceneManager: TKamSceneManager; change: integer;
+  KeepView: boolean);
 { @groupEnd }
 
 procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
@@ -171,36 +175,31 @@ begin
     AllCameras[nk].ProjectionMatrix := AProjectionMatrix;
 end;
 
-procedure SetCameraMode(SceneManager: TKamSceneManager; Kind: TCameraMode);
+procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraMode;
+  KeepView: boolean);
+var
+  Position, Direction, Up: TVector3Single;
 begin
- SetCameraModeInternal(SceneManager, Kind);
- SceneManager.Camera.VisibleChange;
+  KeepView := KeepView and (NewCameraMode <> FCameraMode);
+  if KeepView then
+    AllCameras[FCameraMode].GetCameraVectors(Position, Direction, Up);
+
+  SetCameraModeInternal(SceneManager, NewCameraMode);
+
+  if KeepView then
+    AllCameras[FCameraMode].SetCameraVectors(Position, Direction, Up);
+
+  SceneManager.Camera.VisibleChange;
 end;
 
-procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer);
+procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer;
+  KeepView: boolean);
 var
   NewCameraMode: TCameraMode;
-  { Pos, Dir, Up: TVector3Single; }
 begin
   NewCameraMode := TCameraMode( ChangeIntCycle(Ord(CameraMode), Change,
     Ord(High(TCameraMode))));
-
-  (*
-  Test TExamineCamera.GetCameraVectors: when switching from Examine
-  to Walk, set Walk camera view to match Examine.
-
-  if (CameraMode = cmExamine) and
-     (NewCameraMode = cmWalk) then
-  begin
-    AllCameras[cmExamine].GetCameraVectors(Pos, Dir, Up);
-
-    WalkCamera.Position  := Pos;
-    WalkCamera.Direction := Dir;
-    WalkCamera.Up        := Up ;
-  end;
-  *)
-
-  SetCameraMode(SceneManager, NewCameraMode);
+  SetCameraMode(SceneManager, NewCameraMode, KeepView);
 end;
 
 function WalkCamera: TWalkCamera;

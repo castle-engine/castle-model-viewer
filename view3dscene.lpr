@@ -765,8 +765,9 @@ end;
   This takes into account NavigationNode, that is currently bound
   NavigationInfo node.
 
-  Besides initializing camera by WalkCamera.Init, it also
-  takes care to initialize MoveSpeed.
+  Initializes walk camera by WalkCamera.Init, and also
+  takes care to adjust MoveSpeed.
+  Initializes examine camera by ExamineCamera.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -804,6 +805,8 @@ begin
   WalkCamera.Init(InitialPosition, InitialDirection, InitialUp, GravityUp,
     WalkCamera.CameraPreferredHeight, WalkCamera.CameraRadius);
   WalkCamera.MoveSpeed := NewMoveSpeed;
+
+  ExamineCamera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
 
   if not Glw.Closed then
   begin
@@ -1078,7 +1081,7 @@ procedure LoadSceneCore(
       Result := true;
       if Name = 'WALK' then
       begin
-        SetCameraMode(SceneManager, cmWalk);
+        SetCameraMode(SceneManager, cmWalk, false);
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := true;
         WalkCamera.Gravity := true;
@@ -1086,7 +1089,7 @@ procedure LoadSceneCore(
       end else
       if Name = 'FLY' then
       begin
-        SetCameraMode(SceneManager, cmWalk);
+        SetCameraMode(SceneManager, cmWalk, false);
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := false;
         WalkCamera.Gravity := false;
@@ -1094,7 +1097,7 @@ procedure LoadSceneCore(
       end else
       if Name = 'NONE' then
       begin
-        SetCameraMode(SceneManager, cmWalk);
+        SetCameraMode(SceneManager, cmWalk, false);
         WalkCamera.PreferGravityUpForRotations := true;
         WalkCamera.PreferGravityUpForMoving := true; { doesn't matter }
         WalkCamera.Gravity := false;
@@ -1105,7 +1108,7 @@ procedure LoadSceneCore(
         if Name = 'LOOKAT' then
           VRMLWarning(vwIgnorable, 'TODO: Navigation type "LOOKAT" is not yet supported, treating like "EXAMINE"');
 
-        SetCameraMode(SceneManager, cmExamine);
+        SetCameraMode(SceneManager, cmExamine, false);
 
         { Set also WalkCamera properties to something predictable
           (*not* dependent on previous values, as this would be rather
@@ -2875,33 +2878,24 @@ begin
 
   41: AssignGLSLShader;
 
-  { Before all calls to SetViewpointCore below, we don't really have to
-    swith to cmWalk. But user usually wants to switch to cmWalk ---
-    in cmExamine viewpoint result is not visible at all. }
-  51: begin
-        SetCameraMode(SceneManager, cmWalk);
-        SetViewpointCore(DefaultVRMLCameraPosition[1],
-                         DefaultVRMLCameraDirection,
-                         DefaultVRMLCameraUp,
-                         DefaultVRMLGravityUp);
-      end;
-  52: begin
-        SetCameraMode(SceneManager, cmWalk);
-        SetViewpointCore(DefaultVRMLCameraPosition[2],
-                         DefaultVRMLCameraDirection,
-                         DefaultVRMLCameraUp,
-                         DefaultVRMLGravityUp);
-      end;
+  51: SetViewpointCore(DefaultVRMLCameraPosition[1],
+                       DefaultVRMLCameraDirection,
+                       DefaultVRMLCameraUp,
+                       DefaultVRMLGravityUp);
+  52: SetViewpointCore(DefaultVRMLCameraPosition[2],
+                       DefaultVRMLCameraDirection,
+                       DefaultVRMLCameraUp,
+                       DefaultVRMLGravityUp);
 
-  53: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(2, 1, true , true); end;
-  54: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(2, 1, false, true); end;
-  55: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 1, true , true); end;
-  56: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 1, false, true); end;
+  53: SetViewpointForWholeScene(2, 1, true , true);
+  54: SetViewpointForWholeScene(2, 1, false, true);
+  55: SetViewpointForWholeScene(0, 1, true , true);
+  56: SetViewpointForWholeScene(0, 1, false, true);
 
-  57: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 2, true , true); end;
-  58: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(0, 2, false, true); end;
-  59: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(1, 2, true , true); end;
-  60: begin SetCameraMode(SceneManager, cmWalk); SetViewpointForWholeScene(1, 2, false, true); end;
+  57: SetViewpointForWholeScene(0, 2, true , true);
+  58: SetViewpointForWholeScene(0, 2, false, true);
+  59: SetViewpointForWholeScene(1, 2, true , true);
+  60: SetViewpointForWholeScene(1, 2, false, true);
 
   82: ShowBBox := not ShowBBox;
   83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;
@@ -2961,7 +2955,7 @@ begin
   109: WriteBoundingBox(SceneAnimation.BoundingBox);
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
 
-  111: ChangeCameraMode(SceneManager, +1);
+  111: ChangeCameraMode(SceneManager, +1, true);
 
   121: begin
          ShowAndWrite(
@@ -3044,10 +3038,6 @@ begin
 
   300..399:
     begin
-      { We could just bind given viewpoint, without swithing to cmWalk.
-        But user usually wants to switch to cmWalk --- in cmExamine
-        current viewpoint is not visible at all. }
-      SetCameraMode(SceneManager, cmWalk);
       ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
         Send(true, SceneAnimation.FirstScene.Time);
       { Sending set_bind = true works fine if it's not current viewpoint,
@@ -3099,7 +3089,7 @@ begin
   1200..1299: SetTextureMagFilter(
     TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399: SetCameraMode(SceneManager,
-    TCameraMode(     MenuItem.IntData-1300));
+    TCameraMode(     MenuItem.IntData-1300), true);
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
   1500..1599:
