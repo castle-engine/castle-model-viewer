@@ -1997,7 +1997,8 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Camera.SetView(Position, Direction, Up, GravityUp);
+    SceneAnimation.FirstScene.CameraTransition(Camera,
+      Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2627,14 +2628,16 @@ begin
 
   41: AssignGLSLShader;
 
-  51: Camera.SetView(DefaultVRMLCameraPosition[1],
-                     DefaultVRMLCameraDirection,
-                     DefaultVRMLCameraUp,
-                     DefaultVRMLGravityUp);
-  52: Camera.SetView(DefaultVRMLCameraPosition[2],
-                     DefaultVRMLCameraDirection,
-                     DefaultVRMLCameraUp,
-                     DefaultVRMLGravityUp);
+  51: SceneAnimation.FirstScene.CameraTransition(Camera,
+        DefaultVRMLCameraPosition[1],
+        DefaultVRMLCameraDirection,
+        DefaultVRMLCameraUp,
+        DefaultVRMLGravityUp);
+  52: SceneAnimation.FirstScene.CameraTransition(Camera,
+        DefaultVRMLCameraPosition[2],
+        DefaultVRMLCameraDirection,
+        DefaultVRMLCameraUp,
+        DefaultVRMLGravityUp);
 
   53: SetViewpointForWholeScene(2, 1, false, true);
   54: SetViewpointForWholeScene(2, 1, true , true);
