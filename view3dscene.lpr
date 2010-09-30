@@ -671,7 +671,7 @@ begin
        right mouse button. Mouse clicks start dragging, so don't do
        anything here (not even a warning about SOnlyInWalker,
        since it would only interfere with navigation). }
-     (SceneManager.Camera is TWalkCamera) then
+     (Camera.NavigationType <> ntExamine) then
   begin
     if SceneOctreeCollisions = nil then
     begin
@@ -1675,7 +1675,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var Answer: string;
       NewUp: TVector3Single;
   begin
-   if SceneManager.Camera is TWalkCamera then
+   if Camera.NavigationType = ntWalk then
    begin
     Answer := '';
     if MessageInputQuery(Glwin,
@@ -1706,7 +1706,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     MoveSpeed: Single;
   begin
-    if SceneManager.Camera is TWalkCamera then
+    if Camera.NavigationType = ntWalk then
     begin
       MoveSpeed := Camera.Walk.MoveSpeed;
       if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeed, taLeft) then
