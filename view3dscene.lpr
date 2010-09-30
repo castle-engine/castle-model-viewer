@@ -1077,7 +1077,6 @@ procedure LoadSceneCore(
 
 var
   NewCaption: string;
-  WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   ForceNavigationType: string;
 begin
@@ -1139,12 +1138,10 @@ begin
     if MenuHeadlight <> nil then
       MenuHeadlight.Checked := HeadLight;
 
-    WorldInfoNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
-      TNodeWorldInfo, true) as TNodeWorldInfo;
-    if (WorldInfoNode <> nil) and (WorldInfoNode.FdTitle.Value <> '') then
-      NewCaption := SForCaption(WorldInfoNode.FdTitle.Value) else
+    NewCaption := SceneAnimation.FirstScene.Caption;
+    if NewCaption = '' then
       NewCaption := ExtractFileName(SceneFilename);
-    NewCaption += ' - view3dscene';
+    NewCaption := SForCaption(NewCaption) + ' - view3dscene';
     if Glw.Closed then
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
