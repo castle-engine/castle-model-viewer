@@ -1051,7 +1051,7 @@ procedure LoadSceneCore(
 
   ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  JumpToInitialViewpoint: boolean;
+  InitializeCamera: boolean;
 
   UseInitialNavigationType: boolean = true);
 
@@ -1079,8 +1079,6 @@ var
   NewCaption: string;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
-  SavedPosition, SavedDirection, SavedUp, SavedGravityUp: TVector3Single;
-  SavedMoveSpeed: Single;
   ForceNavigationType: string;
 begin
   FreeScene;
@@ -1114,16 +1112,6 @@ begin
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
-    if not JumpToInitialViewpoint then
-    begin
-      { TODO: this should preserve previously bound viewpoint. }
-      SavedPosition := Camera.Walk.Position;
-      SavedDirection := Camera.Walk.Direction;
-      SavedUp := Camera.Walk.Up;
-      SavedGravityUp := Camera.Walk.GravityUp;
-      SavedMoveSpeed := Camera.Walk.MoveSpeed;
-    end;
-
     if UseInitialNavigationType then
     begin
       ForceNavigationType := InitialNavigationType;
@@ -1131,22 +1119,17 @@ begin
     end else
       ForceNavigationType := '';
 
-    SceneManager.MainScene.CameraBindToNavigationAndViewpoint(Camera,
-      SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
+    if InitializeCamera then
+      SceneManager.MainScene.CameraBindToNavigationAndViewpoint(Camera,
+        SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
-      and jump to 1st viewpoint (or to the default cam settings). }
+      and jump to 1st viewpoint (or to some suitable camera settings for scene). }
+    ViewpointsList.BoundViewpoint := -1;
     ViewpointsList.Recalculate(SceneAnimation.FirstScene);
-    UpdateViewpointNode(false, -1);
 
-    if not JumpToInitialViewpoint then
-    begin
-      Camera.Walk.Position := SavedPosition;
-      Camera.Walk.Direction := SavedDirection;
-      Camera.Walk.Up := SavedUp;
-      Camera.Walk.GravityUp := SavedGravityUp;
-      Camera.Walk.MoveSpeed := SavedMoveSpeed;
-    end;
+    if InitializeCamera then
+      UpdateViewpointNode(false, -1);
 
     SceneInitLights(SceneAnimation, NavigationNode);
     SceneHeadlight := SceneAnimation.FirstScene.CreateHeadLight;
@@ -1157,8 +1140,7 @@ begin
       MenuHeadlight.Checked := HeadLight;
 
     WorldInfoNode := SceneAnimation.FirstScene.RootNode.TryFindNode(
-      TNodeWorldInfo, true)
-      as TNodeWorldInfo;
+      TNodeWorldInfo, true) as TNodeWorldInfo;
     if (WorldInfoNode <> nil) and (WorldInfoNode.FdTitle.Value <> '') then
       NewCaption := SForCaption(WorldInfoNode.FdTitle.Value) else
       NewCaption := ExtractFileName(SceneFilename);
@@ -1226,7 +1208,7 @@ end;
   I experienced it). }
 procedure LoadScene(ASceneFileName: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  JumpToInitialViewpoint: boolean);
+  InitializeCamera: boolean);
 
 { It's useful to undefine it only for debug purposes:
   FPC dumps then backtrace of where exception happened,
@@ -1293,7 +1275,7 @@ begin
         RootNodes, Times,
         ScenesPerTime, NewOptimization, EqualityEpsilon,
         TimeLoop, TimeBackwards,
-        ASceneFileName, SceneChanges, ACameraRadius, JumpToInitialViewpoint);
+        ASceneFileName, SceneChanges, ACameraRadius, InitializeCamera);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
@@ -2695,8 +2677,8 @@ begin
   12: Glw.Close;
 
   15: begin
-        { When reopening, then JumpToInitialViewpoint parameter is false.
-          In fact, this was the purpose of this JumpToInitialViewpoint
+        { When reopening, then InitializeCamera parameter is false.
+          In fact, this was the purpose of this InitializeCamera
           parameter: to set it to false when reopening, as this makes
           reopening more useful. }
         LoadScene(SceneFileName, [], 0.0, false);

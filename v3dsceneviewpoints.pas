@@ -52,6 +52,8 @@ type
   public
     MenuJumpToViewpoint: TMenu;
 
+    constructor Create;
+
     { Currently bound viewpoint (index on the list, or -1),
       used here only to make appropriate menu item "checked".
 
@@ -62,7 +64,7 @@ type
       as we could get TVRMLScene.ViewpointStack.OnBoundChanged when
       some viewpoint nodes are already freed. }
     property BoundViewpoint: Integer
-      read FBoundViewpoint write SetBoundViewpoint;
+      read FBoundViewpoint write SetBoundViewpoint default -1;
 
     { Recalculate our list of viewpoints, also recalculating
       MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
@@ -95,6 +97,12 @@ begin
   Result := SCompressWhiteSpace(S);
   if Length(Result) > 50 then
     Result := Copy(Result, 1, 50) + '...';
+end;
+
+constructor TViewpointsList.Create;
+begin
+  inherited;
+  FBoundViewpoint := -1;
 end;
 
 procedure TViewpointsList.AddViewpoint(
