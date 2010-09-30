@@ -2568,6 +2568,21 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure JumpToViewpoint(Viewpoint: TVRMLViewpointNode);
+  var
+    Pos, Dir, Up, GravityUp: TVector3Single;
+  begin
+    if Viewpoint = Scene.ViewpointStack.Top then
+    begin
+      { Sending set_bind = true works fine if it's not current viewpoint,
+        otherwise nothing happens... So just explicitly go to viewpoint
+        position. }
+      Viewpoint.GetView(Pos, Dir, Up, GravityUp);
+      Scene.CameraTransition(Camera, Pos, Dir, Up, GravityUp);
+    end else
+      Viewpoint.EventSet_Bind.Send(true, Scene.Time);
+  end;
+
 var
   S, ProposedScreenShotName: string;
   C: Cardinal;
@@ -2810,14 +2825,7 @@ begin
 
   225: PrecalculateAnimationFromVRMLEvents;
 
-  300..399:
-    begin
-      ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.Send(true, Scene.Time);
-      { Sending set_bind = true works fine if it's not current viewpoint,
-        otherwise nothing happens... So just call GoToInitial
-        explicitly, to really reset on the given viewpoint. }
-      Camera.GoToInitial;
-    end;
+  300..399: JumpToViewpoint(ViewpointsList[MenuItem.IntData - 300] as TVRMLViewpointNode);
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
     BlendingFactors[MenuItem.IntData - 400].Value;
