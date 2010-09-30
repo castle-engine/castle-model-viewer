@@ -416,9 +416,9 @@ var
           if Sensors.Enabled(I) then
             Strs.Append('Over enabled sensor: ' + DescribeSensor(Sensors[I]));
       end;
-      if Scene.PointingDeviceActiveSensor <> nil then
+      for I := 0 to Scene.PointingDeviceActiveSensors.Count - 1 do
         Strs.Append('Active sensor: ' +
-          DescribeSensor(Scene.PointingDeviceActiveSensor));
+          DescribeSensor(Scene.PointingDeviceActiveSensors[I]));
     end;
 
     if Strs.Count <> 0 then
