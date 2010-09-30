@@ -749,10 +749,7 @@ end;
 { This directly sets camera properties, without looking at
   current ViewpointNode state. It may be used to initialize
   camera to some state that doesn't correspond to any existing
-  viewpoint, or as a basis for UpdateViewpointNode.
-
-  This takes into account NavigationNode, that is currently bound
-  NavigationInfo node.
+  viewpoint.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -775,52 +772,6 @@ begin
     Glw.EventResize;
     Glw.PostRedisplay;
   end;
-end;
-
-{ Call this when ViewpointNode (currently bound viewpoint node)
-  changed (possibly to/from nil) and we have to go to this viewpoint.
-
-  When it's nil, we'll go to some position suitable to see the scene
-  (based on scene bounding box).
-
-  This does update the ViewpointsList menu.
-  If BoundViewpointIndexKnown then we will
-  use it for ViewpointsList.BoundViewpoint, otherwise we will search
-  viewpoint by node.
-
-  This doesn't call set_bind event for this viewpoint --- the idea
-  is that viewpoint changed for example because something already
-  did set_bind. If you want to just bind the viewpoint, then
-  don't use this procedure --- instead send set_bind = true event
-  to given viewpoint, and this will indirectly call this procedure.
-
-  Uses Camera.CameraRadius, NavigationNode, so make sure these are already
-  set as needed. }
-procedure UpdateViewpointNode(
-  const BoundViewpointIndexKnown: boolean;
-  BoundViewpointIndex: Integer);
-var
-  Position: TVector3Single;
-  Direction: TVector3Single;
-  Up: TVector3Single;
-  GravityUp: TVector3Single;
-  V: TVRMLViewpointNode;
-begin
-  V := ViewpointNode;
-  if V <> nil then
-  begin
-    V.GetCameraVectors(Position, Direction, Up, GravityUp);
-  end else
-  begin
-    CameraViewpointForWholeScene(SceneAnimation.BoundingBox, 2, 1, false, true,
-      Position, Direction, Up, GravityUp);
-  end;
-
-  if not BoundViewpointIndexKnown then
-    BoundViewpointIndex := ViewpointsList.IndexOf(V);
-  ViewpointsList.BoundViewpoint := BoundViewpointIndex;
-
-  SetViewpointCore(Position, Direction, Up, GravityUp);
 end;
 
 class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
@@ -1083,6 +1034,9 @@ begin
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
+    { calculate ViewpointsList, including MenuJumpToViewpoint. }
+    ViewpointsList.Recalculate(SceneAnimation.FirstScene);
+
     if UseInitialNavigationType then
     begin
       ForceNavigationType := InitialNavigationType;
@@ -1095,15 +1049,10 @@ begin
       SceneManager.MainScene.CameraFromNavigationInfo(Camera,
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
       SceneManager.MainScene.CameraFromViewpoint(Camera, false);
-    end;
-
-    { calculate ViewpointsList, including MenuJumpToViewpoint,
-      and jump to 1st viewpoint (or to some suitable camera settings for scene). }
-    ViewpointsList.BoundViewpoint := -1;
-    ViewpointsList.Recalculate(SceneAnimation.FirstScene);
-
-    if InitializeCamera then
-      UpdateViewpointNode(false, -1);
+      ViewpointsList.BoundViewpoint := ViewpointsList.IndexOf(ViewpointNode);
+    end else
+      { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
+      ViewpointsList.BoundViewpoint := -1;
 
     SceneInitLights(SceneAnimation, NavigationNode);
     SceneHeadlight := SceneAnimation.FirstScene.CreateHeadLight;
@@ -2880,9 +2829,9 @@ begin
       ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
         Send(true, SceneAnimation.FirstScene.Time);
       { Sending set_bind = true works fine if it's not current viewpoint,
-        otherwise nothing happens... So just call UpdateViewpointNode
+        otherwise nothing happens... So just call GoToInitial
         explicitly, to really reset on the given viewpoint. }
-      UpdateViewpointNode(true, MenuItem.IntData - 300);
+      Camera.GoToInitial;
     end;
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
