@@ -2814,7 +2814,12 @@ begin
   109: WriteBoundingBox(SceneAnimation.BoundingBox);
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
 
-  111: ChangeCameraMode(SceneManager, +1, true);
+  111: begin
+         if Camera.NavigationType = High(TCameraNavigationType) then
+           Camera.NavigationType := Low(TCameraNavigationType) else
+           Camera.NavigationType := Succ(Camera.NavigationType);
+         UpdateCameraNavigationTypeMenu;
+       end;
 
   121: begin
          ShowAndWrite(
@@ -2947,8 +2952,11 @@ begin
     TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
     TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
-  1300..1399: SetCameraMode(SceneManager,
-    TCameraNavigationType(     MenuItem.IntData-1300), true);
+  1300..1399: 
+    begin
+      Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
+      UpdateCameraNavigationTypeMenu;
+    end;
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
   1500..1599:

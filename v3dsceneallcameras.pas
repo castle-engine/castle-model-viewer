@@ -49,21 +49,7 @@ const
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
 
-{ Change current CameraMode.
-
-  If KeepView, than we keep the current camera view the same.
-
-  Set/ChangeCameraMode call VisibleChange on new camera.
-  That's because changing Camera in fact changed
-  Camera.Matrix, so we must do the same thing that would be done in
-  Camera.VisibleChange.
-
-  @groupBegin }
-procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
-  KeepView: boolean);
-procedure ChangeCameraMode(SceneManager: TKamSceneManager; change: integer;
-  KeepView: boolean);
-{ @groupEnd }
+procedure UpdateCameraNavigationTypeMenu;
 
 { Interpret and remove from ParStr(1) ... ParStr(ParCount)
   some params specific for this unit.
@@ -92,13 +78,8 @@ uses ParseParametersUnit;
 
 { global stuff --------------------------------------------------------------- }
 
-procedure SetCameraModeInternal(SceneManager: TKamSceneManager; value: TCameraNavigationType);
-{ This is a private procedure in this module.
-  Look at SetCameraMode for something that you can publicly use.
-  This procedure does not do some things that SetCameraMode does
-  because this is used from InitCameras. }
+procedure UpdateCameraNavigationTypeMenu;
 begin
-  Camera.NavigationType := Value;
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
 end;
@@ -107,36 +88,7 @@ procedure InitCameras(SceneManager: TKamSceneManager);
 begin
   { init SceneManager.Camera }
   SceneManager.Camera := Camera;
-  if CameraRadios[Camera.NavigationType] <> nil then
-    CameraRadios[Camera.NavigationType].Checked := true;
-end;
-
-procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
-  KeepView: boolean);
-var
-  Position, Direction, Up: TVector3Single;
-begin
-  KeepView := KeepView and (NewCameraMode <> Camera.NavigationType);
-  if KeepView then
-    Camera.Current.GetCameraVectors(Position, Direction, Up);
-
-  SetCameraModeInternal(SceneManager, NewCameraMode);
-
-  if KeepView then
-    Camera.Current.SetCameraVectors(Position, Direction, Up);
-
-  SceneManager.Camera.VisibleChange;
-end;
-
-procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer;
-  KeepView: boolean);
-var
-  NewCameraMode: TCameraNavigationType;
-begin
-  NewCameraMode := TCameraNavigationType(
-    ChangeIntCycle(Ord(Camera.NavigationType), Change,
-      Ord(High(TCameraNavigationType))));
-  SetCameraMode(SceneManager, NewCameraMode, KeepView);
+  UpdateCameraNavigationTypeMenu;
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
