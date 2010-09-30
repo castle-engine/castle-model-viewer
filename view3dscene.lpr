@@ -754,10 +754,6 @@ end;
   This takes into account NavigationNode, that is currently bound
   NavigationInfo node.
 
-  Initializes walk camera by Camera.Walk.Init, and also
-  takes care to adjust MoveSpeed.
-  Initializes examine camera by Camera.Examine.
-
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
   const InitialPosition: TVector3Single;
@@ -765,30 +761,6 @@ procedure SetViewpointCore(
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
 begin
-  { Change Camera.Walk.MoveSpeed. }
-
-  if NavigationNode = nil then
-  begin
-    { Since we don't have NavigationNode.speed, we just calculate some
-      speed that should "feel sensible". We base it on CameraRadius.
-      CameraRadius in turn was calculated based on
-      Box3DAvgSize(SceneAnimation.BoundingBox). }
-    Camera.Walk.MoveSpeed := Camera.CameraRadius * 40;
-  end else
-  if NavigationNode.FdSpeed.Value = 0 then
-  begin
-    { Then user is not allowed to move at all.
-
-      We do this is by setting MoveSpeed to zero.
-      This is also the reason why other SetViewpointCore branches must always
-      change NewMoveSpeed to something different than zero
-      (otherwise, user would be stuck with speed = 0). }
-    Camera.Walk.MoveSpeed := 0;
-  end else
-  begin
-    Camera.Walk.MoveSpeed := NavigationNode.FdSpeed.Value;
-  end;
-
   Camera.Walk.GravityUp := GravityUp;
 
   { Now for both Camera.Walk and Camera.Examine: update their Initial* vectors
@@ -1119,8 +1091,11 @@ begin
       ForceNavigationType := '';
 
     if InitializeCamera then
-      SceneManager.MainScene.CameraBindToNavigationAndViewpoint(Camera,
+    begin
+      SceneManager.MainScene.CameraFromNavigationInfo(Camera,
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
+      SceneManager.MainScene.CameraFromViewpoint(Camera, false);
+    end;
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to some suitable camera settings for scene). }
@@ -2952,7 +2927,7 @@ begin
     TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
     TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
-  1300..1399: 
+  1300..1399:
     begin
       Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
       UpdateCameraNavigationTypeMenu;
