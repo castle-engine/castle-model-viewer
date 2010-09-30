@@ -1063,103 +1063,8 @@ procedure LoadSceneCore(
       A.Items[I] *= Value;
   end;
 
-  { Set UCamera.NavigationType and related camera properties, based on
-    NavigationNode.FdType }
-  procedure SetNavigationType;
-
-    { Set navigation type by SetCameraMode, also setting
-      UCamera.Walk.PreferGravityUpForRotations
-      UCamera.Walk.PreferGravityUpForMoving,
-      UCamera.Walk.Gravity,
-      CameraIgnoreAllInputs.
-
-      Returns @false and doesn't set anything (but does VRMLWarning)
-      if Name unknown. }
-    function DoSetNavigationType(Name: string): boolean;
-    begin
-      Name := UpperCase(Name); { ignore case when looking for name }
-      Result := true;
-      if Name = 'WALK' then
-      begin
-        SetCameraMode(SceneManager, ntWalk, false);
-        Camera.Walk.PreferGravityUpForRotations := true;
-        Camera.Walk.PreferGravityUpForMoving := true;
-        Camera.Walk.Gravity := true;
-        Camera.IgnoreAllInputs := false;
-      end else
-      if Name = 'FLY' then
-      begin
-        SetCameraMode(SceneManager, ntWalk, false);
-        Camera.Walk.PreferGravityUpForRotations := true;
-        Camera.Walk.PreferGravityUpForMoving := false;
-        Camera.Walk.Gravity := false;
-        Camera.IgnoreAllInputs := false;
-      end else
-      if Name = 'NONE' then
-      begin
-        SetCameraMode(SceneManager, ntWalk, false);
-        Camera.Walk.PreferGravityUpForRotations := true;
-        Camera.Walk.PreferGravityUpForMoving := true; { doesn't matter }
-        Camera.Walk.Gravity := false;
-        Camera.IgnoreAllInputs := true;
-      end else
-      if (Name = 'EXAMINE') or (Name = 'LOOKAT') then
-      begin
-        if Name = 'LOOKAT' then
-          VRMLWarning(vwIgnorable, 'TODO: Navigation type "LOOKAT" is not yet supported, treating like "EXAMINE"');
-
-        SetCameraMode(SceneManager, ntExamine, false);
-
-        { Set also Camera.Walk properties to something predictable
-          (*not* dependent on previous values, as this would be rather
-          confusing to user (new model should just start with new settings).
-          In particular, Camera.IgnoreAllInputs must be reset.)
-
-          Values below are like for "FLY" mode, since this is relatively
-          safest default for Camera.Walk (free navigation, no gravity). }
-
-        Camera.Walk.PreferGravityUpForRotations := true;
-        Camera.Walk.PreferGravityUpForMoving := false;
-        Camera.Walk.Gravity := false;
-        Camera.IgnoreAllInputs := false;
-      end else
-      if Name = 'ANY' then
-      begin
-        { Just ignore (do not set camera), but accept as valid name
-          (no VRMLWarning). }
-        Result := false;
-      end else
-      begin
-        VRMLWarning(vwIgnorable, 'Invalid navigation type name "' + Name + '"');
-        Result := false;
-      end;
-    end;
-
-  var
-    FoundType: boolean;
-    I: Integer;
+  procedure UpdateCameraMenus;
   begin
-    FoundType := false;
-    if NavigationNode <> nil then
-      for I := 0 to NavigationNode.FdType.Count - 1 do
-        if DoSetNavigationType(NavigationNode.FdType.Items[I]) then
-        begin
-          FoundType := true;
-          Break;
-        end;
-
-    if not FoundType then
-    begin
-      if UseInitialNavigationType and (InitialNavigationType <> '') then
-      begin
-        FoundType := DoSetNavigationType(InitialNavigationType);
-        InitialNavigationType := '';
-      end;
-
-      if not FoundType then
-        DoSetNavigationType('EXAMINE');
-    end;
-
     if MenuGravity <> nil then
       MenuGravity.Checked := Camera.Walk.Gravity;
     if MenuIgnoreAllInputs <> nil then
@@ -1172,11 +1077,11 @@ procedure LoadSceneCore(
 
 var
   NewCaption: string;
-  CameraPreferredHeight, CameraRadius: Single;
   WorldInfoNode: TNodeWorldInfo;
   I: Integer;
   SavedPosition, SavedDirection, SavedUp, SavedGravityUp: TVector3Single;
   SavedMoveSpeed: Single;
+  ForceNavigationType: string;
 begin
   FreeScene;
 
@@ -1209,38 +1114,6 @@ begin
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
-    { calculate CameraRadius }
-    CameraRadius := ACameraRadius;
-    if CameraRadius = 0.0 then
-    begin
-      if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 1) then
-        CameraRadius := NavigationNode.FdAvatarSize.Items[0];
-      if CameraRadius = 0.0 then
-        CameraRadius := Box3DAvgSize(SceneAnimation.BoundingBox, false,
-          1.0 { any non-zero dummy value }) * 0.005;
-    end;
-
-    { calculate CameraPreferredHeight }
-    if (NavigationNode <> nil) and (NavigationNode.FdAvatarSize.Count >= 2) then
-      CameraPreferredHeight := NavigationNode.FdAvatarSize.Items[1] else
-      { Make it something >> CameraRadius * 2, to allow some
-        space to decrease (e.g. by Input_DecreaseCameraPreferredHeight
-        in view3dscene). Remember that CorrectCameraPreferredHeight
-        adds a limit to CameraPreferredHeight, around CameraRadius * 2. }
-      CameraPreferredHeight := CameraRadius * 4;
-
-    { calculate HeadBobbing* }
-    if (NavigationNode <> nil) and
-       (NavigationNode is TNodeKambiNavigationInfo) then
-    begin
-      Camera.Walk.HeadBobbing := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbing.Value;
-      Camera.Walk.HeadBobbingTime := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingTime.Value;
-    end else
-    begin
-      Camera.Walk.HeadBobbing := DefaultHeadBobbing;
-      Camera.Walk.HeadBobbingTime := DefaultHeadBobbingTime;
-    end;
-
     if not JumpToInitialViewpoint then
     begin
       { TODO: this should preserve previously bound viewpoint. }
@@ -1251,13 +1124,15 @@ begin
       SavedMoveSpeed := Camera.Walk.MoveSpeed;
     end;
 
-    SceneInitCameras(SceneAnimation.BoundingBox,
-      DefaultVRMLCameraPosition[1],
-      DefaultVRMLCameraDirection,
-      DefaultVRMLCameraUp,
-      DefaultVRMLGravityUp,
-      CameraPreferredHeight, CameraRadius);
-    Camera.Walk.MoveSpeed := 1; { just to assign a default value, for safety }
+    if UseInitialNavigationType then
+    begin
+      ForceNavigationType := InitialNavigationType;
+      InitialNavigationType := '';
+    end else
+      ForceNavigationType := '';
+
+    SceneManager.MainScene.CameraBindToNavigationAndViewpoint(Camera,
+      SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
@@ -1292,7 +1167,7 @@ begin
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
 
-    SetNavigationType;
+    UpdateCameraMenus;
 
     SceneOctreeCreate;
 

@@ -42,17 +42,6 @@ uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
   like OnMatrixchanged). You can do it only indirectly using this unit. }
 procedure InitCameras(SceneManager: TKamSceneManager);
 
-{ Call this always when scene changes. Give new BoundingBox and
-  InitialCameraXxx and GravityUp settings for this new scene.
-  This will call Init() functions for all cameras (that are ready
-  for various values of CameraMode).
-
-  You must call InitCameras before using this. }
-procedure SceneInitCameras(
-  const ModelBox: TBox3D;
-  const InitialPosition, InitialDirection, InitialUp, GravityUp: TVector3Single;
-  const CameraPreferredHeight, CameraRadius: Single);
-
 const
   CameraNames: array[TCameraNavigationType]of string =
    ('Examine', 'Walk');
@@ -120,19 +109,6 @@ begin
   SceneManager.Camera := Camera;
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
-end;
-
-procedure SceneInitCameras(
-  const ModelBox: TBox3D;
-  const InitialPosition, InitialDirection, InitialUp, GravityUp: TVector3Single;
-  const CameraPreferredHeight, CameraRadius: Single);
-begin
-  { Init all cameras }
-  Camera.Examine.Init(ModelBox, CameraRadius);
-  Camera.Walk.Init(
-    InitialPosition, InitialDirection, InitialUp, GravityUp,
-    CameraPreferredHeight, CameraRadius);
-  Camera.CameraRadius := CameraRadius;
 end;
 
 procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
