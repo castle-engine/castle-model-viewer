@@ -1997,7 +1997,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Camera.SetCameraVectors(Position, Direction, Up, GravityUp);
+    Camera.SetView(Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2064,7 +2064,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     Pos, Dir, Up, GravityUp: TVector3Single;
   begin
-    SceneManager.Camera.GetCameraVectors(Pos, Dir, Up, GravityUp);
+    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
     Writeln(MakeVRMLCameraStr(Version, Pos, Dir, Up, GravityUp));
   end;
 
@@ -2491,7 +2491,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var
     Pos, Dir, Up: TVector3Single;
   begin
-    SceneManager.Camera.GetCameraVectors(Pos, Dir, Up);
+    SceneManager.Camera.GetView(Pos, Dir, Up);
     RaytraceToWin(Glwin, SceneAnimation.FirstScene,
       HeadLight, SceneHeadLight,
       Pos, Dir, Up,
@@ -2627,14 +2627,14 @@ begin
 
   41: AssignGLSLShader;
 
-  51: Camera.SetCameraVectors(DefaultVRMLCameraPosition[1],
-                              DefaultVRMLCameraDirection,
-                              DefaultVRMLCameraUp,
-                              DefaultVRMLGravityUp);
-  52: Camera.SetCameraVectors(DefaultVRMLCameraPosition[2],
-                              DefaultVRMLCameraDirection,
-                              DefaultVRMLCameraUp,
-                              DefaultVRMLGravityUp);
+  51: Camera.SetView(DefaultVRMLCameraPosition[1],
+                     DefaultVRMLCameraDirection,
+                     DefaultVRMLCameraUp,
+                     DefaultVRMLGravityUp);
+  52: Camera.SetView(DefaultVRMLCameraPosition[2],
+                     DefaultVRMLCameraDirection,
+                     DefaultVRMLCameraUp,
+                     DefaultVRMLGravityUp);
 
   53: SetViewpointForWholeScene(2, 1, false, true);
   54: SetViewpointForWholeScene(2, 1, true , true);
