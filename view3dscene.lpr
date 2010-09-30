@@ -2620,7 +2620,7 @@ begin
         SceneAnimation.ShadowMapsDefaultSize := C;
       end;
     end;
-  3540:  with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
+  3540: with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
