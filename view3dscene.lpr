@@ -746,34 +746,6 @@ begin
     Result := ptPerspective;
 end;
 
-{ This directly sets camera properties, without looking at
-  current ViewpointNode state. It may be used to initialize
-  camera to some state that doesn't correspond to any existing
-  viewpoint.
-
-  Note that the length of InitialDirection doesn't matter. }
-procedure SetViewpointCore(
-  const InitialPosition: TVector3Single;
-  InitialDirection: TVector3Single;
-  const InitialUp: TVector3Single;
-  const GravityUp: TVector3Single);
-begin
-  Camera.Walk.GravityUp := GravityUp;
-
-  { Now for both Camera.Walk and Camera.Examine: update their Initial* vectors
-    and go to them. }
-
-  Camera.SetInitialCameraVectors(
-    InitialPosition, InitialDirection, InitialUp, false);
-  Camera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
-
-  if not Glw.Closed then
-  begin
-    Glw.EventResize;
-    Glw.PostRedisplay;
-  end;
-end;
-
 class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
 begin
   ViewpointsList.Recalculate(Scene);
@@ -2025,7 +1997,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    SetViewpointCore(Position, Direction, Up, GravityUp);
+    Camera.SetCameraVectors(Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2655,14 +2627,14 @@ begin
 
   41: AssignGLSLShader;
 
-  51: SetViewpointCore(DefaultVRMLCameraPosition[1],
-                       DefaultVRMLCameraDirection,
-                       DefaultVRMLCameraUp,
-                       DefaultVRMLGravityUp);
-  52: SetViewpointCore(DefaultVRMLCameraPosition[2],
-                       DefaultVRMLCameraDirection,
-                       DefaultVRMLCameraUp,
-                       DefaultVRMLGravityUp);
+  51: Camera.SetCameraVectors(DefaultVRMLCameraPosition[1],
+                              DefaultVRMLCameraDirection,
+                              DefaultVRMLCameraUp,
+                              DefaultVRMLGravityUp);
+  52: Camera.SetCameraVectors(DefaultVRMLCameraPosition[2],
+                              DefaultVRMLCameraDirection,
+                              DefaultVRMLCameraUp,
+                              DefaultVRMLGravityUp);
 
   53: SetViewpointForWholeScene(2, 1, false, true);
   54: SetViewpointForWholeScene(2, 1, true , true);
