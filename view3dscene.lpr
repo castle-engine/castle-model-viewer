@@ -224,7 +224,8 @@ begin
   { inherited already called appropriate TVRMLGLScene.GLProjection,
     that updated Camera.ProjectionMatrix. But we have other cameras too,
     and we want to update their ProjectionMatrix too. }
-  SetProjectionMatrix(Camera.ProjectionMatrix);
+  { TODO: to be removed once UCamera will be just SceneManager.Camera }
+  UCamera.ProjectionMatrix := Camera.ProjectionMatrix;
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -414,11 +415,11 @@ var
   begin
     if SceneOctreeCollisions = nil then
       Result := 'no collisions' else
-    if not WalkCamera.Gravity then
+    if not UCamera.Walk.Gravity then
       Result := 'no gravity' else
-    if not WalkCamera.IsAbove then
+    if not UCamera.Walk.IsAbove then
       Result := 'no ground beneath' else
-      Result := FloatToNiceStr(WalkCamera.AboveHeight);
+      Result := FloatToNiceStr(UCamera.Walk.AboveHeight);
   end;
 
 var
@@ -436,22 +437,22 @@ begin
     S += ' (octree resources released)';
   strs.Append(S);
 
-  if SceneManager.Camera is TWalkCamera then
+  if UCamera.Current is TWalkCamera then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
-     [ VectorToNiceStr(WalkCamera.Position),
-       VectorToNiceStr(WalkCamera.Direction),
-       VectorToNiceStr(WalkCamera.Up) ]));
+     [ VectorToNiceStr(UCamera.Walk.Position),
+       VectorToNiceStr(UCamera.Walk.Direction),
+       VectorToNiceStr(UCamera.Walk.Up) ]));
    strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
-     [ WalkCamera.MoveSpeed,
-       WalkCamera.CameraPreferredHeight,
+     [ UCamera.Walk.MoveSpeed,
+       UCamera.Walk.CameraPreferredHeight,
        CurrentAboveHeight ]));
   end else
   begin
    strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
-     [ VectorToNiceStr(ExamineCamera.Rotations.Vector4),
-       VectorToNiceStr(ExamineCamera.MoveAmount),
-       ExamineCamera.ScaleFactor ]));
+     [ VectorToNiceStr(UCamera.Examine.Rotations.Vector4),
+       VectorToNiceStr(UCamera.Examine.MoveAmount),
+       UCamera.Examine.ScaleFactor ]));
   end;
 
   strs.Append(
@@ -537,7 +538,7 @@ procedure TV3DSceneManager.RenderFromView3D;
       glDisable(GL_DEPTH_TEST);
     end;
     try
-      WalkCamera.Frustum.CalculatePoints(FrustumPoints);
+      UCamera.Walk.Frustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_DOUBLE, 0, @FrustumPoints);
@@ -564,7 +565,7 @@ begin
   BeginRenderSceneWithLights(SceneAnimation);
 
     if FillMode = fmSilhouetteBorderEdges then
-      RenderSilhouetteBorderEdges(Vector4Single(WalkCamera.Position, 1), MainScene) else
+      RenderSilhouetteBorderEdges(Vector4Single(UCamera.Walk.Position, 1), MainScene) else
     begin
       { Scene.RenderFrustum (inside inherited)
         will automatically use octree, if available.
@@ -604,11 +605,11 @@ begin
     end;
 
     { Note that there is no sense in showing viewing frustum in
-      CameraMode <> cmExamine, since viewing frustum should
+      CameraMode <> ntExamine, since viewing frustum should
       be never visible then (or should be just at the exact borders
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
-    if ShowFrustum and (CameraMode = cmExamine) then
+    if ShowFrustum and (CameraMode = ntExamine) then
      DrawFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -765,9 +766,9 @@ end;
   This takes into account NavigationNode, that is currently bound
   NavigationInfo node.
 
-  Initializes walk camera by WalkCamera.Init, and also
+  Initializes walk camera by UCamera.Walk.Init, and also
   takes care to adjust MoveSpeed.
-  Initializes examine camera by ExamineCamera.
+  Initializes examine camera by UCamera.Examine.
 
   Note that the length of InitialDirection doesn't matter. }
 procedure SetViewpointCore(
@@ -776,7 +777,7 @@ procedure SetViewpointCore(
   const InitialUp: TVector3Single;
   const GravityUp: TVector3Single);
 begin
-  { Change WalkCamera.MoveSpeed. }
+  { Change UCamera.Walk.MoveSpeed. }
 
   if NavigationNode = nil then
   begin
@@ -784,7 +785,7 @@ begin
       speed that should "feel sensible". We base it on CameraRadius.
       CameraRadius in turn was calculated based on
       Box3DAvgSize(SceneAnimation.BoundingBox). }
-    WalkCamera.MoveSpeed := WalkCamera.CameraRadius * 40;
+    UCamera.Walk.MoveSpeed := UCamera.Walk.CameraRadius * 40;
   end else
   if NavigationNode.FdSpeed.Value = 0 then
   begin
@@ -794,24 +795,24 @@ begin
       This is also the reason why other SetViewpointCore branches must always
       change NewMoveSpeed to something different than zero
       (otherwise, user would be stuck with speed = 0). }
-    WalkCamera.MoveSpeed := 0;
+    UCamera.Walk.MoveSpeed := 0;
   end else
   begin
-    WalkCamera.MoveSpeed := NavigationNode.FdSpeed.Value;
+    UCamera.Walk.MoveSpeed := NavigationNode.FdSpeed.Value;
   end;
 
-  WalkCamera.GravityUp := GravityUp;
+  UCamera.Walk.GravityUp := GravityUp;
 
-  { Now for both WalkCamera and ExamineCamera: update their Initial* vectors
+  { Now for both UCamera.Walk and UCamera.Examine: update their Initial* vectors
     and go to them. }
 
-  WalkCamera.SetInitialCameraVectors(
+  UCamera.Walk.SetInitialCameraVectors(
     InitialPosition, InitialDirection, InitialUp, false);
-  WalkCamera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
+  UCamera.Walk.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
 
-  ExamineCamera.SetInitialCameraVectors(
+  UCamera.Examine.SetInitialCameraVectors(
     InitialPosition, InitialDirection, InitialUp, false);
-  ExamineCamera.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
+  UCamera.Examine.SetCameraVectors(InitialPosition, InitialDirection, InitialUp);
 
   if not Glw.Closed then
   begin
@@ -837,7 +838,7 @@ end;
   don't use this procedure --- instead send set_bind = true event
   to given viewpoint, and this will indirectly call this procedure.
 
-  Uses WalkCamera.CameraRadius, NavigationNode, so make sure these are already
+  Uses UCamera.Walk.CameraRadius, NavigationNode, so make sure these are already
   set as needed. }
 procedure UpdateViewpointNode(
   const BoundViewpointIndexKnown: boolean;
@@ -1083,9 +1084,9 @@ procedure LoadSceneCore(
   procedure SetNavigationType;
 
     { Set navigation type by SetCameraMode, also setting
-      WalkCamera.PreferGravityUpForRotations
-      WalkCamera.PreferGravityUpForMoving,
-      WalkCamera.Gravity,
+      UCamera.Walk.PreferGravityUpForRotations
+      UCamera.Walk.PreferGravityUpForMoving,
+      UCamera.Walk.Gravity,
       CameraIgnoreAllInputs.
 
       Returns @false and doesn't set anything (but does VRMLWarning)
@@ -1096,47 +1097,47 @@ procedure LoadSceneCore(
       Result := true;
       if Name = 'WALK' then
       begin
-        SetCameraMode(SceneManager, cmWalk, false);
-        WalkCamera.PreferGravityUpForRotations := true;
-        WalkCamera.PreferGravityUpForMoving := true;
-        WalkCamera.Gravity := true;
-        CameraIgnoreAllInputs := false;
+        SetCameraMode(SceneManager, ntWalk, false);
+        UCamera.Walk.PreferGravityUpForRotations := true;
+        UCamera.Walk.PreferGravityUpForMoving := true;
+        UCamera.Walk.Gravity := true;
+        UCamera.IgnoreAllInputs := false;
       end else
       if Name = 'FLY' then
       begin
-        SetCameraMode(SceneManager, cmWalk, false);
-        WalkCamera.PreferGravityUpForRotations := true;
-        WalkCamera.PreferGravityUpForMoving := false;
-        WalkCamera.Gravity := false;
-        CameraIgnoreAllInputs := false;
+        SetCameraMode(SceneManager, ntWalk, false);
+        UCamera.Walk.PreferGravityUpForRotations := true;
+        UCamera.Walk.PreferGravityUpForMoving := false;
+        UCamera.Walk.Gravity := false;
+        UCamera.IgnoreAllInputs := false;
       end else
       if Name = 'NONE' then
       begin
-        SetCameraMode(SceneManager, cmWalk, false);
-        WalkCamera.PreferGravityUpForRotations := true;
-        WalkCamera.PreferGravityUpForMoving := true; { doesn't matter }
-        WalkCamera.Gravity := false;
-        CameraIgnoreAllInputs := true;
+        SetCameraMode(SceneManager, ntWalk, false);
+        UCamera.Walk.PreferGravityUpForRotations := true;
+        UCamera.Walk.PreferGravityUpForMoving := true; { doesn't matter }
+        UCamera.Walk.Gravity := false;
+        UCamera.IgnoreAllInputs := true;
       end else
       if (Name = 'EXAMINE') or (Name = 'LOOKAT') then
       begin
         if Name = 'LOOKAT' then
           VRMLWarning(vwIgnorable, 'TODO: Navigation type "LOOKAT" is not yet supported, treating like "EXAMINE"');
 
-        SetCameraMode(SceneManager, cmExamine, false);
+        SetCameraMode(SceneManager, ntExamine, false);
 
-        { Set also WalkCamera properties to something predictable
+        { Set also UCamera.Walk properties to something predictable
           (*not* dependent on previous values, as this would be rather
           confusing to user (new model should just start with new settings).
-          In particular, CameraIgnoreAllInputs must be reset.)
+          In particular, UCamera.IgnoreAllInputs must be reset.)
 
           Values below are like for "FLY" mode, since this is relatively
-          safest default for WalkCamera (free navigation, no gravity). }
+          safest default for UCamera.Walk (free navigation, no gravity). }
 
-        WalkCamera.PreferGravityUpForRotations := true;
-        WalkCamera.PreferGravityUpForMoving := false;
-        WalkCamera.Gravity := false;
-        CameraIgnoreAllInputs := false;
+        UCamera.Walk.PreferGravityUpForRotations := true;
+        UCamera.Walk.PreferGravityUpForMoving := false;
+        UCamera.Walk.Gravity := false;
+        UCamera.IgnoreAllInputs := false;
       end else
       if Name = 'ANY' then
       begin
@@ -1176,13 +1177,13 @@ procedure LoadSceneCore(
     end;
 
     if MenuGravity <> nil then
-      MenuGravity.Checked := WalkCamera.Gravity;
+      MenuGravity.Checked := UCamera.Walk.Gravity;
     if MenuIgnoreAllInputs <> nil then
-      MenuIgnoreAllInputs.Checked := CameraIgnoreAllInputs;
+      MenuIgnoreAllInputs.Checked := UCamera.IgnoreAllInputs;
     if MenuPreferGravityUpForRotations <> nil then
-      MenuPreferGravityUpForRotations.Checked := WalkCamera.PreferGravityUpForRotations;
+      MenuPreferGravityUpForRotations.Checked := UCamera.Walk.PreferGravityUpForRotations;
     if MenuPreferGravityUpForMoving <> nil then
-      MenuPreferGravityUpForMoving.Checked := WalkCamera.PreferGravityUpForMoving;
+      MenuPreferGravityUpForMoving.Checked := UCamera.Walk.PreferGravityUpForMoving;
   end;
 
 var
@@ -1248,22 +1249,22 @@ begin
     if (NavigationNode <> nil) and
        (NavigationNode is TNodeKambiNavigationInfo) then
     begin
-      WalkCamera.HeadBobbing := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbing.Value;
-      WalkCamera.HeadBobbingTime := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingTime.Value;
+      UCamera.Walk.HeadBobbing := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbing.Value;
+      UCamera.Walk.HeadBobbingTime := TNodeKambiNavigationInfo(NavigationNode).FdHeadBobbingTime.Value;
     end else
     begin
-      WalkCamera.HeadBobbing := DefaultHeadBobbing;
-      WalkCamera.HeadBobbingTime := DefaultHeadBobbingTime;
+      UCamera.Walk.HeadBobbing := DefaultHeadBobbing;
+      UCamera.Walk.HeadBobbingTime := DefaultHeadBobbingTime;
     end;
 
     if not JumpToInitialViewpoint then
     begin
       { TODO: this should preserve previously bound viewpoint. }
-      SavedPosition := WalkCamera.Position;
-      SavedDirection := WalkCamera.Direction;
-      SavedUp := WalkCamera.Up;
-      SavedGravityUp := WalkCamera.GravityUp;
-      SavedMoveSpeed := WalkCamera.MoveSpeed;
+      SavedPosition := UCamera.Walk.Position;
+      SavedDirection := UCamera.Walk.Direction;
+      SavedUp := UCamera.Walk.Up;
+      SavedGravityUp := UCamera.Walk.GravityUp;
+      SavedMoveSpeed := UCamera.Walk.MoveSpeed;
     end;
 
     SceneInitCameras(SceneAnimation.BoundingBox,
@@ -1272,7 +1273,7 @@ begin
       DefaultVRMLCameraUp,
       DefaultVRMLGravityUp,
       CameraPreferredHeight, CameraRadius);
-    WalkCamera.MoveSpeed := 1; { just to assign a default value, for safety }
+    UCamera.Walk.MoveSpeed := 1; { just to assign a default value, for safety }
 
     { calculate ViewpointsList, including MenuJumpToViewpoint,
       and jump to 1st viewpoint (or to the default cam settings). }
@@ -1281,11 +1282,11 @@ begin
 
     if not JumpToInitialViewpoint then
     begin
-      WalkCamera.Position := SavedPosition;
-      WalkCamera.Direction := SavedDirection;
-      WalkCamera.Up := SavedUp;
-      WalkCamera.GravityUp := SavedGravityUp;
-      WalkCamera.MoveSpeed := SavedMoveSpeed;
+      UCamera.Walk.Position := SavedPosition;
+      UCamera.Walk.Direction := SavedDirection;
+      UCamera.Walk.Up := SavedUp;
+      UCamera.Walk.GravityUp := SavedGravityUp;
+      UCamera.Walk.MoveSpeed := SavedMoveSpeed;
     end;
 
     SceneInitLights(SceneAnimation, NavigationNode);
@@ -1710,7 +1711,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       end;
      end;
 
-     WalkCamera.GravityUp := NewUp;
+     UCamera.Walk.GravityUp := NewUp;
      Glw.PostRedisplay;
     end;
    end else
@@ -1723,10 +1724,10 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     if SceneManager.Camera is TWalkCamera then
     begin
-      MoveSpeed := WalkCamera.MoveSpeed;
+      MoveSpeed := UCamera.Walk.MoveSpeed;
       if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeed, taLeft) then
       begin
-        WalkCamera.MoveSpeed := MoveSpeed;
+        UCamera.Walk.MoveSpeed := MoveSpeed;
         Glw.PostRedisplay;
       end;
     end else
@@ -2311,9 +2312,9 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
          Glw.Width, Glw.Height,
          SceneFilename,
          ExtractOnlyFileName(SceneFilename) + '-rt.png',
-         VectorToRawStr(WalkCamera.Position),
-         VectorToRawStr(WalkCamera.Direction),
-         VectorToRawStr(WalkCamera.Up),
+         VectorToRawStr(UCamera.Walk.Position),
+         VectorToRawStr(UCamera.Walk.Direction),
+         VectorToRawStr(UCamera.Walk.Up),
          BGColor[0], BGColor[1], BGColor[2] ]);
     if SceneManager.PerspectiveView then
       S += Format('    --view-angle-x %f', [SceneManager.PerspectiveViewAngles[0]]) else
@@ -2994,20 +2995,20 @@ begin
          Glwin.SaveScreenDialog(FileNameAutoInc(ProposedScreenShotName));
        end;
   128: begin
-         WalkCamera.MouseLook := not WalkCamera.MouseLook;
+         UCamera.Walk.MouseLook := not UCamera.Walk.MouseLook;
 
-         if WalkCamera.MouseLook then
+         if UCamera.Walk.MouseLook then
          begin
-           WalkCamera.Input_LeftStrafe.AssignFromDefault(WalkCamera.Input_LeftRot);
-           WalkCamera.Input_RightStrafe.AssignFromDefault(WalkCamera.Input_RightRot);
-           WalkCamera.Input_LeftRot.AssignFromDefault(WalkCamera.Input_LeftStrafe);
-           WalkCamera.Input_RightRot.AssignFromDefault(WalkCamera.Input_RightStrafe);
+           UCamera.Walk.Input_LeftStrafe.AssignFromDefault(UCamera.Walk.Input_LeftRot);
+           UCamera.Walk.Input_RightStrafe.AssignFromDefault(UCamera.Walk.Input_RightRot);
+           UCamera.Walk.Input_LeftRot.AssignFromDefault(UCamera.Walk.Input_LeftStrafe);
+           UCamera.Walk.Input_RightRot.AssignFromDefault(UCamera.Walk.Input_RightStrafe);
          end else
          begin
-           WalkCamera.Input_LeftStrafe.MakeDefault;
-           WalkCamera.Input_RightStrafe.MakeDefault;
-           WalkCamera.Input_LeftRot.MakeDefault;
-           WalkCamera.Input_RightRot.MakeDefault;
+           UCamera.Walk.Input_LeftStrafe.MakeDefault;
+           UCamera.Walk.Input_RightStrafe.MakeDefault;
+           UCamera.Walk.Input_LeftRot.MakeDefault;
+           UCamera.Walk.Input_RightRot.MakeDefault;
          end;
        end;
 
@@ -3034,11 +3035,11 @@ begin
 
   182: ChangePointSize;
 
-  201: WalkCamera.Gravity := not WalkCamera.Gravity;
-  202: WalkCamera.PreferGravityUpForRotations := not WalkCamera.PreferGravityUpForRotations;
-  203: WalkCamera.PreferGravityUpForMoving := not WalkCamera.PreferGravityUpForMoving;
+  201: UCamera.Walk.Gravity := not UCamera.Walk.Gravity;
+  202: UCamera.Walk.PreferGravityUpForRotations := not UCamera.Walk.PreferGravityUpForRotations;
+  203: UCamera.Walk.PreferGravityUpForMoving := not UCamera.Walk.PreferGravityUpForMoving;
   205: ChangeMoveSpeed;
-  210: CameraIgnoreAllInputs := not CameraIgnoreAllInputs;
+  210: UCamera.IgnoreAllInputs := not UCamera.IgnoreAllInputs;
 
   220: begin
          AnimationTimePlaying := not AnimationTimePlaying;
@@ -3109,7 +3110,7 @@ begin
   1200..1299: SetTextureMagFilter(
     TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399: SetCameraMode(SceneManager,
-    TCameraMode(     MenuItem.IntData-1300), true);
+    TCameraNavigationType(     MenuItem.IntData-1300), true);
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
   1500..1599:
@@ -3141,7 +3142,7 @@ function CreateMainMenu: TMenu;
 
   procedure AppendNavigationTypes(M: TMenu);
   var
-    Mode: TCameraMode;
+    Mode: TCameraNavigationType;
     Group: TMenuItemRadioGroup;
   begin
     Group := M.AppendRadioGroup(CameraNames, 1300, Ord(CameraMode), true);
@@ -3355,18 +3356,18 @@ begin
    M2 := TMenu.Create('Walk mode Settings');
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, CtrlM,
-         WalkCamera.MouseLook, true));
+         UCamera.Walk.MouseLook, true));
      MenuGravity := TMenuItemChecked.Create(
        '_Gravity',                              201, CtrlG,
-       WalkCamera.Gravity, true);
+       UCamera.Walk.Gravity, true);
      M2.Append(MenuGravity);
      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
        'Rotate with Respect to Stable (Gravity) Camera Up',      202,
-       WalkCamera.PreferGravityUpForRotations, true);
+       UCamera.Walk.PreferGravityUpForRotations, true);
      M2.Append(MenuPreferGravityUpForRotations);
      MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
        'Move with Respect to Stable (Gravity) Camera Up',          203,
-       WalkCamera.PreferGravityUpForMoving, true);
+       UCamera.Walk.PreferGravityUpForMoving, true);
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
@@ -3378,7 +3379,7 @@ begin
    M.Append(MenuCollisionCheck);
    MenuIgnoreAllInputs := TMenuItemChecked.Create(
      'Disable normal navigation (VRML/X3D "NONE" navigation)',  210,
-     CameraIgnoreAllInputs, true);
+     UCamera.IgnoreAllInputs, true);
    M.Append(MenuIgnoreAllInputs);
    Result.Append(M);
  M := TMenu.Create('_Animation');

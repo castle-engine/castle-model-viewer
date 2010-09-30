@@ -35,7 +35,52 @@ uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
   GL, GLU, KambiGLUtils, KambiSceneManager, Classes;
 
 type
-  TCameraMode = (cmExamine, cmWalk);
+  TCameraNavigationType = (ntExamine, ntWalk);
+
+  { Camera that allows any kind of navigation (Examine, Walk).
+    You can switch between navigation types, while preserving the camera view.
+
+    This simply keeps an TExamineCamera and TWalkCamera instances inside,
+    and passes events (key, mouse presses, idle) to the current one.
+    Properties (like camera position, direction, up vectors) are simply
+    set on both instances simultaneously.
+
+    For some uses you can even directly access the internal camera instances
+    inside @link(Examine) and @link(Walk) properties. However, do not
+    change them directly @italic(when you can use instead a property of
+    this class). For example, it is Ok to directly change input key
+    by @noAutoLink(@code(Walk.Input_Forward)) (see TWalkCamera.Input_Forward).
+    However, do not directly call @noAutoLink(@code(Walk.SetInitialCameraVectors))
+    (see TWalkCamera.SetInitialCameraVectors), instead use a method of this class:
+    TUniversalCamera.SetInitialCameraVectors. This way both @link(Examine)
+    and @link(Walk) will be kept in synch. }
+  TUniversalCamera = class(TCamera)
+  private
+    FExamine: TExamineCamera;
+    FWalk: TWalkCamera;
+    FNavigationType: TCameraNavigationType;
+  protected
+    procedure SetIgnoreAllInputs(const Value: boolean); override;
+    procedure SetProjectionMatrix(const Value: TMatrix4Single); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    property Examine: TExamineCamera read FExamine;
+    property Walk: TWalkCamera read FWalk;
+    { Current (determined by NavigationType) internal camera,
+      that is either @link(Examine) or @link(Walk). }
+    function Current: TCamera;
+
+    function Matrix: TMatrix4Single; override;
+    function RotationMatrix: TMatrix4Single; override;
+    procedure GetCameraVectors(out APos, ADir, AUp: TVector3Single); override;
+    procedure GetCameraVectors(out APos, ADir, AUp, AGravityUp: TVector3Single); override;
+    function GetPosition: TVector3Single; override;
+    procedure SetCameraVectors(const APos, ADir, AUp: TVector3Single); override;
+  published
+    property NavigationType: TCameraNavigationType read FNavigationType write FNavigationType;
+  end;
 
 { Call this ONCE on created SceneManager.
   This will take care of always providing proper SceneManager.Camera for you.
@@ -57,13 +102,13 @@ procedure SceneInitCameras(
   const CameraPreferredHeight, CameraRadius: Single);
 
 const
-  CameraNames: array[TCameraMode]of string =
+  CameraNames: array[TCameraNavigationType]of string =
    ('Examine', 'Walk');
 
 var
-  CameraRadios: array [TCameraMode] of TMenuItemRadio;
+  CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
 
-function CameraMode: TCameraMode;
+function CameraMode: TCameraNavigationType;
 
 { Change current CameraMode.
 
@@ -75,19 +120,11 @@ function CameraMode: TCameraMode;
   Camera.VisibleChange.
 
   @groupBegin }
-procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraMode;
+procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
   KeepView: boolean);
 procedure ChangeCameraMode(SceneManager: TKamSceneManager; change: integer;
   KeepView: boolean);
 { @groupEnd }
-
-procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
-
-{ The TWalkCamera used when CameraMode = cmWalk. }
-function WalkCamera: TWalkCamera;
-
-{ The TExamineCamera used when CameraMode = cmExamine. }
-function ExamineCamera: TExamineCamera;
 
 { Interpret and remove from ParStr(1) ... ParStr(ParCount)
   some params specific for this unit.
@@ -106,56 +143,103 @@ var
     use it, and reset to empty. }
   InitialNavigationType: string;
 
-function GetCameraIgnoreAllInputs: boolean;
-procedure SetCameraIgnoreAllInputs(const Value: boolean);
-
-{ For view3dscene, ExamineCamera and WalkCamera have always
-  identical TCamera.IgnoreAllInputs values.
-  So this property gets and sets both of them. }
-property CameraIgnoreAllInputs: boolean
-  read GetCameraIgnoreAllInputs write SetCameraIgnoreAllInputs;
+var
+  UCamera: TUniversalCamera;
 
 implementation
 
 uses ParseParametersUnit;
 
-const
-  CameraClasses: array[TCameraMode]of TCameraClass =
-  (TExamineCamera, TWalkCamera);
+{ TUniversalCamera ----------------------------------------------------------- }
 
-var
-  FCameraMode: TCameraMode = cmExamine;
-  AllCameras: array [TCameraMode] of TCamera;
+constructor TUniversalCamera.Create(AOwner: TComponent);
+begin
+  inherited;
+  FExamine := TExamineCamera.Create(nil);
+  FWalk := TWalkCamera.Create(nil);
+end;
 
-procedure SetCameraModeInternal(SceneManager: TKamSceneManager; value: TCameraMode);
+destructor TUniversalCamera.Destroy;
+begin
+  FreeAndNil(FExamine);
+  FreeAndNil(FWalk);
+  inherited;
+end;
+
+function TUniversalCamera.Current: TCamera;
+begin
+  if FNavigationType = ntExamine then
+    Result := FExamine else
+    Result := FWalk;
+end;
+
+function TUniversalCamera.Matrix: TMatrix4Single;
+begin
+  Result := Current.Matrix;
+end;
+
+function TUniversalCamera.RotationMatrix: TMatrix4Single;
+begin
+  Result := Current.RotationMatrix;
+end;
+
+procedure TUniversalCamera.GetCameraVectors(out APos, ADir, AUp: TVector3Single);
+begin
+  Current.GetCameraVectors(APos, ADir, AUp);
+end;
+
+procedure TUniversalCamera.GetCameraVectors(out APos, ADir, AUp, AGravityUp: TVector3Single);
+begin
+  Current.GetCameraVectors(APos, ADir, AUp, AGravityUp);
+end;
+
+function TUniversalCamera.GetPosition: TVector3Single;
+begin
+  Result := Current.GetPosition;
+end;
+
+procedure TUniversalCamera.SetCameraVectors(const APos, ADir, AUp: TVector3Single);
+begin
+  FExamine.SetCameraVectors(APos, ADir, AUp);
+  FWalk.SetCameraVectors(APos, ADir, AUp);
+end;
+
+procedure TUniversalCamera.SetIgnoreAllInputs(const Value: boolean);
+begin
+  inherited;
+  FExamine.IgnoreAllInputs := Value;
+  FWalk.IgnoreAllInputs := Value;
+end;
+
+procedure TUniversalCamera.SetProjectionMatrix(const Value: TMatrix4Single);
+begin
+  { This calls RecalculateFrustum on all 3 cameras, while only once
+    is needed... But speed should not be a problem here, this is seldom used. }
+  inherited;
+  FExamine.ProjectionMatrix := Value;
+  FWalk.ProjectionMatrix := Value;
+end;
+
+{ global stuff --------------------------------------------------------------- }
+
+procedure SetCameraModeInternal(SceneManager: TKamSceneManager; value: TCameraNavigationType);
 { This is a private procedure in this module.
   Look at SetCameraMode for something that you can publicly use.
   This procedure does not do some things that SetCameraMode does
   because this is used from InitCameras. }
 begin
-  FCameraMode := value;
-  SceneManager.Camera := AllCameras[FCameraMode];
-  if CameraRadios[FCameraMode] <> nil then
-    CameraRadios[FCameraMode].Checked := true;
+  UCamera.NavigationType := Value;
+  SceneManager.Camera := UCamera.Current;
+  if CameraRadios[UCamera.NavigationType] <> nil then
+    CameraRadios[UCamera.NavigationType].Checked := true;
 end;
 
 procedure InitCameras(SceneManager: TKamSceneManager);
-var nk: TCameraMode;
 begin
- { create cameras }
- for nk := Low(nk) to High(nk) do
- begin
-   AllCameras[nk] := CameraClasses[nk].Create(nil);
- end;
-
- { Useful and works sensibly with our view3dscene events that pass
-   mouse / keys to VRML/X3D scene. This way in Examine mode you can
-   activate pointing device sensors.
-   Note: This is the default now. }
- TExamineCamera(AllCameras[cmExamine]).ExclusiveEvents := false;
-
- { init SceneManager.Camera }
- SetCameraModeInternal(SceneManager, FCameraMode);
+  { init SceneManager.Camera }
+  SceneManager.Camera := UCamera.Current;
+  if CameraRadios[UCamera.NavigationType] <> nil then
+    CameraRadios[UCamera.NavigationType].Checked := true;
 end;
 
 procedure SceneInitCameras(
@@ -163,40 +247,31 @@ procedure SceneInitCameras(
   const InitialPosition, InitialDirection, InitialUp, GravityUp: TVector3Single;
   const CameraPreferredHeight, CameraRadius: Single);
 begin
- { Init all cameras }
- TExamineCamera(AllCameras[cmExamine]).Init(ModelBox, CameraRadius);
- TWalkCamera   (AllCameras[cmWalk   ]).Init(
-   InitialPosition, InitialDirection, InitialUp, GravityUp,
-   CameraPreferredHeight, CameraRadius);
+  { Init all cameras }
+  UCamera.Examine.Init(ModelBox, CameraRadius);
+  UCamera.Walk.Init(
+    InitialPosition, InitialDirection, InitialUp, GravityUp,
+    CameraPreferredHeight, CameraRadius);
 end;
 
-function CameraMode: TCameraMode;
+function CameraMode: TCameraNavigationType;
 begin
- Result := FCameraMode;
+ Result := UCamera.NavigationType;
 end;
 
-procedure SetProjectionMatrix(const AProjectionMatrix: TMatrix4Single);
-var
-  nk: TCameraMode;
-begin
-  { create cameras }
-  for nk := Low(nk) to High(nk) do
-    AllCameras[nk].ProjectionMatrix := AProjectionMatrix;
-end;
-
-procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraMode;
+procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
   KeepView: boolean);
 var
   Position, Direction, Up: TVector3Single;
 begin
-  KeepView := KeepView and (NewCameraMode <> FCameraMode);
+  KeepView := KeepView and (NewCameraMode <> UCamera.NavigationType);
   if KeepView then
-    AllCameras[FCameraMode].GetCameraVectors(Position, Direction, Up);
+    UCamera.Current.GetCameraVectors(Position, Direction, Up);
 
   SetCameraModeInternal(SceneManager, NewCameraMode);
 
   if KeepView then
-    AllCameras[FCameraMode].SetCameraVectors(Position, Direction, Up);
+    UCamera.Current.SetCameraVectors(Position, Direction, Up);
 
   SceneManager.Camera.VisibleChange;
 end;
@@ -204,28 +279,28 @@ end;
 procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer;
   KeepView: boolean);
 var
-  NewCameraMode: TCameraMode;
+  NewCameraMode: TCameraNavigationType;
 begin
-  NewCameraMode := TCameraMode( ChangeIntCycle(Ord(CameraMode), Change,
-    Ord(High(TCameraMode))));
+  NewCameraMode := TCameraNavigationType( ChangeIntCycle(Ord(CameraMode), Change,
+    Ord(High(TCameraNavigationType))));
   SetCameraMode(SceneManager, NewCameraMode, KeepView);
 end;
 
 function WalkCamera: TWalkCamera;
 begin
-  Result := TWalkCamera(AllCameras[cmWalk]);
+  Result := UCamera.Walk;
 end;
 
 function ExamineCamera: TExamineCamera;
 begin
-  Result := TExamineCamera(AllCameras[cmExamine]);
+  Result := UCamera.Examine;
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
     const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
   begin
-   Assert(OptionNum = 0);
-   InitialNavigationType := Argument;
+    Assert(OptionNum = 0);
+    InitialNavigationType := Argument;
   end;
 
 procedure CamerasParseParameters;
@@ -233,30 +308,17 @@ const
   Options: array[0..0]of TOption =
   ((Short:#0; Long:'navigation'; Argument: oaRequired));
 begin
- ParseParameters(Options, @OptionProc, nil, true);
+  ParseParameters(Options, @OptionProc, nil, true);
 end;
 
-function GetCameraIgnoreAllInputs: boolean;
-begin
-  Result := WalkCamera.IgnoreAllInputs;
-  Assert(Result = ExamineCamera.IgnoreAllInputs);
-end;
+initialization
+  UCamera := TUniversalCamera.Create(nil);
 
-procedure SetCameraIgnoreAllInputs(const Value: boolean);
-begin
-  WalkCamera.IgnoreAllInputs := Value;
-  ExamineCamera.IgnoreAllInputs := Value;
-end;
-
-{ unit init/fini ------------------------------------------------------------ }
-
-procedure Fini;
-var nk: TCameraMode;
-begin
- for nk := Low(nk) to High(nk) do
-   FreeAndNil(AllCameras[nk]);
-end;
-
+  { Useful and works sensibly with our view3dscene events that pass
+    mouse / keys to VRML/X3D scene. This way in Examine mode you can
+    activate pointing device sensors.
+    Note: This is the default now. }
+  UCamera.Examine.ExclusiveEvents := false;
 finalization
- Fini;
+  FreeAndNil(UCamera);
 end.
