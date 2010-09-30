@@ -225,6 +225,17 @@ end;
 
 { Helper functions ----------------------------------------------------------- }
 
+{ First animation scene. Always present when loaded,
+  nil if not (although our SceneAnimation tries to always stay loaded).
+  We use it for VRML/X3D events, and all other stuff where
+  a single scene is needed. }
+function Scene: TVRMLGLScene;
+begin
+  if SceneAnimation.Loaded then
+    Result := SceneAnimation.Scenes[0] else
+    Result := nil;
+end;
+
 procedure UpdateSelectedEnabled;
 begin
   if MenuSelectedInfo <> nil then
@@ -260,18 +271,18 @@ end;
 function SceneOctreeCollisions: TVRMLBaseTrianglesOctree;
 begin
   if (SceneAnimation <> nil) and
-     (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.OctreeCollisions <> nil) then
-    Result := SceneAnimation.FirstScene.OctreeCollisions else
+     (Scene <> nil) and
+     (Scene.OctreeCollisions <> nil) then
+    Result := Scene.OctreeCollisions else
     Result := nil;
 end;
 
 function SceneOctreeRendering: TVRMLShapeOctree;
 begin
   if (SceneAnimation <> nil) and
-     (SceneAnimation.ScenesCount <> 0) and
-     (SceneAnimation.FirstScene.OctreeRendering <> nil) then
-    Result := SceneAnimation.FirstScene.OctreeRendering else
+     (Scene <> nil) and
+     (Scene.OctreeRendering <> nil) then
+    Result := Scene.OctreeRendering else
     Result := nil;
 end;
 
@@ -398,16 +409,16 @@ var
 
     if SceneAnimation.ScenesCount = 1 then
     begin
-      if SceneAnimation.Scenes[0].PointingDeviceOverItem <> nil then
+      if Scene.PointingDeviceOverItem <> nil then
       begin
-        Sensors := SceneAnimation.Scenes[0].PointingDeviceSensors;
+        Sensors := Scene.PointingDeviceSensors;
         for I := 0 to Sensors.Count - 1 do
           if Sensors.Enabled(I) then
             Strs.Append('Over enabled sensor: ' + DescribeSensor(Sensors[I]));
       end;
-      if SceneAnimation.Scenes[0].PointingDeviceActiveSensor <> nil then
+      if Scene.PointingDeviceActiveSensor <> nil then
         Strs.Append('Active sensor: ' +
-          DescribeSensor(SceneAnimation.Scenes[0].PointingDeviceActiveSensor));
+          DescribeSensor(Scene.PointingDeviceActiveSensor));
     end;
 
     if Strs.Count <> 0 then
@@ -743,17 +754,15 @@ end;
 
 function NavigationNode: TNodeNavigationInfo;
 begin
-  if SceneAnimation.Loaded then
-    Result := SceneAnimation.Scenes[0].NavigationInfoStack.Top as
-      TNodeNavigationInfo else
+  if Scene <> nil then
+    Result := Scene.NavigationInfoStack.Top as TNodeNavigationInfo else
     Result := nil;
 end;
 
 function ViewpointNode: TVRMLViewpointNode;
 begin
-  if SceneAnimation.Loaded then
-    Result := SceneAnimation.Scenes[0].ViewpointStack.Top as
-      TVRMLViewpointNode else
+  if Scene <> nil then
+    Result := Scene.ViewpointStack.Top as TVRMLViewpointNode else
     Result := nil;
 end;
 
@@ -829,9 +838,9 @@ begin
     try
       { For now we construct and store octrees only for the 1st animation frame. }
 
-      SceneAnimation.FirstScene.TriangleOctreeProgressTitle := 'Building triangle octree';
-      SceneAnimation.FirstScene.ShapeOctreeProgressTitle := 'Building Shape octree';
-      SceneAnimation.FirstScene.Spatial := [ssRendering, ssDynamicCollisions];
+      Scene.TriangleOctreeProgressTitle := 'Building triangle octree';
+      Scene.ShapeOctreeProgressTitle := 'Building Shape octree';
+      Scene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
       Glw.OnDraw := OldDraw;
       Glw.OnBeforeDraw := OldBeforeDraw;
@@ -841,16 +850,16 @@ end;
 
 procedure SceneOctreeFree;
 begin
-  if SceneAnimation.ScenesCount <> 0 then
+  if Scene <> nil then
   begin
-    { Since we destroy our PVRMLTriangles, make sure SceneAnimation.FirstScene
+    { Since we destroy our PVRMLTriangles, make sure Scene
       doesn't hold a reference to it.
 
       Note: PointingDeviceClear will automatically update current cursor
       (by calling OnPointingDeviceSensorsChange that leads to our method). }
-    SceneAnimation.FirstScene.PointingDeviceClear;
+    Scene.PointingDeviceClear;
 
-    SceneAnimation.FirstScene.Spatial := [];
+    Scene.Spatial := [];
   end;
 end;
 
@@ -1007,12 +1016,12 @@ begin
     { assign SceneManager.MainScene relatively early, because our
       rendering assumes that SceneManager.MainScene is usable,
       and rendering may be called during progress bars even from this function. }
-    SceneManager.MainScene := SceneAnimation.FirstScene;
+    SceneManager.MainScene := Scene;
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
     { calculate ViewpointsList, including MenuJumpToViewpoint. }
-    ViewpointsList.Recalculate(SceneAnimation.FirstScene);
+    ViewpointsList.Recalculate(Scene);
 
     if UseInitialNavigationType then
     begin
@@ -1032,14 +1041,14 @@ begin
       ViewpointsList.BoundViewpoint := -1;
 
     SceneInitLights(SceneAnimation, NavigationNode);
-    SceneHeadlight := SceneAnimation.FirstScene.CreateHeadLight;
+    SceneHeadlight := Scene.CreateHeadLight;
 
     { SceneInitLights could change HeadLight value.
       So update MenuHeadlight.Checked now. }
     if MenuHeadlight <> nil then
       MenuHeadlight.Checked := HeadLight;
 
-    NewCaption := SceneAnimation.FirstScene.Caption;
+    NewCaption := Scene.Caption;
     if NewCaption = '' then
       NewCaption := ExtractFileName(SceneFilename);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
@@ -1071,14 +1080,14 @@ begin
 
     { Make initial ViewerChanged to make initial events to
       ProximitySensor, if user is within. }
-    SceneAnimation.Scenes[0].ViewerChanged(SceneManager.Camera, SceneManager.ViewerToChanges);
+    Scene.ViewerChanged(SceneManager.Camera, SceneManager.ViewerToChanges);
 
     if not Glw.Closed then
     begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
       Glw.EventResize;
-      SceneAnimation.Scenes[0].VisibleChangeHere([]);
+      Scene.VisibleChangeHere([]);
     end;
 
     if MenuReopen <> nil then
@@ -1745,7 +1754,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      SceneAnimation.Scenes[0].RemoveShapeGeometry(TVRMLShape(SelectedItem^.Shape));
+      Scene.RemoveShapeGeometry(TVRMLShape(SelectedItem^.Shape));
     end;
   end;
 
@@ -1777,7 +1786,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem^.OriginalGeometry, so this is only for the frame where
         octree is available. Moreover, we call
-        SceneAnimation.FirstScene.ChangedField. }
+        Scene.ChangedField. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
@@ -1847,7 +1856,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
                   SelectedItem^.FaceCoordIndexBegin + 1;
 
     Coords.Delete(IndexBegin, IndexCount);
-    SceneAnimation.FirstScene.ChangedField(CoordsField);
+    Scene.ChangedField(CoordsField);
 
     { Texture coordinates, if not empty, have always (both in VRML 1.0
       and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
@@ -1857,7 +1866,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if TexCoords <> nil then
     begin
       TexCoords.Delete(IndexBegin, IndexCount);
-      SceneAnimation.FirstScene.ChangedField(TexCoordsField);
+      Scene.ChangedField(TexCoordsField);
     end;
   end;
 
@@ -1877,7 +1886,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem.State, so this is only for the frame where
         octree is available. Moreover, we call
-        SceneAnimation.FirstScene.ChangedField. }
+        Scene.ChangedField. }
       MessageOK(Glwin, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit(false);
@@ -1915,7 +1924,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
           M2 := TNodeMaterial_2.Create('', '');
           Shape.Appearance.FdMaterial.Value := M2;
-          SceneAnimation.Scenes[0].ChangedAll;
+          Scene.ChangedAll;
         end else
           Exit(false);
       end;
@@ -2002,8 +2011,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    SceneAnimation.FirstScene.CameraTransition(Camera,
-      Position, Direction, Up, GravityUp);
+    Scene.CameraTransition(Camera, Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2021,7 +2029,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       SceneAnimation.BeforeNodesFree;
 
-      RemovedNumber := SceneAnimation.Scenes[0].RootNode.
+      RemovedNumber := Scene.RootNode.
         RemoveChildrenWithMatchingName(Wildcard, false);
       for I := 1 to SceneAnimation.ScenesCount - 1 do
       begin
@@ -2284,11 +2292,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         freeing it when current animation is closed (which is done implicitly
         at the beginning of LoadFromVRMLEvents). }
       SceneAnimation.OwnsFirstRootNode := false;
-      RootNode := SceneAnimation.Scenes[0].RootNode;
+      RootNode := Scene.RootNode;
 
       { Using LoadFromVRMLEvents will also Close the previous scene.
         Before doing this, we must always free our octrees
-        (as SceneAnimation.FirstScene keeps references to our octrees). }
+        (as Scene keeps references to our octrees). }
       SceneOctreeFree;
 
       { Root node will be owned by LoadFromVRMLEvents, so it will be freed }
@@ -2305,7 +2313,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       { Closing the scene freed SceneManager.MainScene (it's set to nil
         automagically by free notification). Set it correctly now. }
-      SceneManager.MainScene := SceneAnimation.FirstScene;
+      SceneManager.MainScene := Scene;
 
       { Since we just destroyed RootNode, and replaced it with completely
         different scene, we have to recalculate many things.
@@ -2313,7 +2321,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         GeometryChanged takes care of invalidating SelectedItem and such. }
       SceneOctreeCreate;
       THelper.GeometryChanged(nil, true);
-      THelper.ViewpointsChanged(SceneAnimation.FirstScene);
+      THelper.ViewpointsChanged(Scene);
     end;
   end;
 
@@ -2498,13 +2506,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Pos, Dir, Up: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(Glwin, SceneAnimation.FirstScene,
+    RaytraceToWin(Glwin, Scene,
       HeadLight, SceneHeadLight,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor,
-      SceneAnimation.FirstScene.FogNode,
-      SceneAnimation.FirstScene.FogDistanceScaling);
+      Scene.FogNode, Scene.FogDistanceScaling);
   end;
 
   procedure MergeCloseVertexes;
@@ -2596,8 +2603,7 @@ begin
         if glwin.FileDialog('Save as VRML file', s, false,
           SaveVRMLClassic_FileFilters) then
         try
-          SaveVRMLClassic(SceneAnimation.FirstScene.RootNode, s,
-            SavedVRMLPrecedingComment(SceneFileName));
+          SaveVRMLClassic(Scene.RootNode, s, SavedVRMLPrecedingComment(SceneFileName));
         except
           on E: Exception do
           begin
@@ -2633,12 +2639,12 @@ begin
 
   41: AssignGLSLShader;
 
-  51: SceneAnimation.FirstScene.CameraTransition(Camera,
+  51: Scene.CameraTransition(Camera,
         DefaultVRMLCameraPosition[1],
         DefaultVRMLCameraDirection,
         DefaultVRMLCameraUp,
         DefaultVRMLGravityUp);
-  52: SceneAnimation.FirstScene.CameraTransition(Camera,
+  52: Scene.CameraTransition(Camera,
         DefaultVRMLCameraPosition[2],
         DefaultVRMLCameraDirection,
         DefaultVRMLCameraUp,
@@ -2806,8 +2812,7 @@ begin
 
   300..399:
     begin
-      ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.
-        Send(true, SceneAnimation.FirstScene.Time);
+      ViewpointsList[MenuItem.IntData - 300].EventSet_Bind.Send(true, Scene.Time);
       { Sending set_bind = true works fine if it's not current viewpoint,
         otherwise nothing happens... So just call GoToInitial
         explicitly, to really reset on the given viewpoint. }
