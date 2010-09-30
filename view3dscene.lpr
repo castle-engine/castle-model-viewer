@@ -822,7 +822,7 @@ end;
   don't use this procedure --- instead send set_bind = true event
   to given viewpoint, and this will indirectly call this procedure.
 
-  Uses UCamera.CameraRadius, NavigationNode, so make sure these are already
+  Uses Camera.CameraRadius, NavigationNode, so make sure these are already
   set as needed. }
 procedure UpdateViewpointNode(
   const BoundViewpointIndexKnown: boolean;
