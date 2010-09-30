@@ -1020,7 +1020,7 @@ begin
     begin
       SceneManager.MainScene.CameraFromNavigationInfo(Camera,
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
-      SceneManager.MainScene.CameraFromViewpoint(Camera, false);
+      SceneManager.MainScene.CameraFromViewpoint(Camera, false, false);
       ViewpointsList.BoundViewpoint := ViewpointsList.IndexOf(ViewpointNode);
     end else
       { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
