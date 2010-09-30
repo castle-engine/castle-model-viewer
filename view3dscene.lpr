@@ -145,6 +145,8 @@ var
     World is in world coords,
     local in local shape (SelectedItem^.State.Transform) coords. }
   SelectedPointWorld, SelectedPointLocal: TVector3Single;
+
+  { Set to non-nil by CreateMainMenu. }
   MenuSelectedOctreeStat: TMenuItem;
   MenuSelectedInfo: TMenuItem;
   MenuSelectedLightsInfo: TMenuItem;
@@ -152,6 +154,10 @@ var
   MenuRemoveSelectedFace: TMenuItem;
   MenuEditMaterial: TMenu;
   MenuMergeCloseVertexes: TMenuItem;
+  MenuHeadlight, MenuGravity, MenuIgnoreAllInputs: TMenuItemChecked;
+  MenuPreferGravityUpForRotations: TMenuItemChecked;
+  MenuPreferGravityUpForMoving: TMenuItemChecked;
+  MenuReopen: TMenuItem;
 
   SceneWarnings: TSceneWarnings;
 
@@ -190,6 +196,7 @@ type
       const SomeLocalGeometryChanged: boolean);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointChanged(Sender: TObject);
+    class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
   end;
 
@@ -234,6 +241,20 @@ begin
     MenuEditMaterial.Enabled := SelectedItem <> nil;
   if MenuMergeCloseVertexes <> nil then
     MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
+end;
+
+{ Update menu items that reflect Camera properties }
+procedure UpdateCameraMenus;
+begin
+  UpdateCameraNavigationTypeMenu;
+  if MenuGravity <> nil then
+    MenuGravity.Checked := Camera.Walk.Gravity;
+  if MenuIgnoreAllInputs <> nil then
+    MenuIgnoreAllInputs.Checked := Camera.IgnoreAllInputs;
+  if MenuPreferGravityUpForRotations <> nil then
+    MenuPreferGravityUpForRotations.Checked := Camera.Walk.PreferGravityUpForRotations;
+  if MenuPreferGravityUpForMoving <> nil then
+    MenuPreferGravityUpForMoving.Checked := Camera.Walk.PreferGravityUpForMoving;
 end;
 
 function SceneOctreeCollisions: TVRMLBaseTrianglesOctree;
@@ -761,18 +782,14 @@ begin
   ViewpointsList.BoundViewpoint := BoundViewpointIndex;
 end;
 
+class procedure THelper.BoundNavigationInfoChanged(Sender: TObject);
+begin
+  UpdateCameraMenus;
+end;
+
 { Scene operations ---------------------------------------------------------- }
 
 var
-  { This is set to non-nil by CreateMainMenu.
-    It is used there and it is also used from LoadSceneCore, since
-    loading a scene may change some values (like HeadLight, Gravity etc.)
-    so we have to update MenuHeadlight.Checked (and other menu's) state. }
-  MenuHeadlight, MenuGravity, MenuIgnoreAllInputs: TMenuItemChecked;
-  MenuPreferGravityUpForRotations: TMenuItemChecked;
-  MenuPreferGravityUpForMoving: TMenuItemChecked;
-  MenuReopen: TMenuItem;
-
   DebugLogVRMLChanges: boolean = false;
 
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
@@ -956,18 +973,6 @@ procedure LoadSceneCore(
   begin
     for I := 0 to A.High do
       A.Items[I] *= Value;
-  end;
-
-  procedure UpdateCameraMenus;
-  begin
-    if MenuGravity <> nil then
-      MenuGravity.Checked := Camera.Walk.Gravity;
-    if MenuIgnoreAllInputs <> nil then
-      MenuIgnoreAllInputs.Checked := Camera.IgnoreAllInputs;
-    if MenuPreferGravityUpForRotations <> nil then
-      MenuPreferGravityUpForRotations.Checked := Camera.Walk.PreferGravityUpForRotations;
-    if MenuPreferGravityUpForMoving <> nil then
-      MenuPreferGravityUpForMoving.Checked := Camera.Walk.PreferGravityUpForMoving;
   end;
 
 var
@@ -3414,6 +3419,7 @@ begin
   SceneManager := TV3DSceneManager.Create(nil);
   Glw.Controls.Add(SceneManager);
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
+  SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
   SceneWarnings := TSceneWarnings.Create;
   try
