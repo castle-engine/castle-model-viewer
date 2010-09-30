@@ -430,7 +430,7 @@ begin
 
  strs := TStringList.Create;
  try
-  strs.Append(Format('Navigation mode: %s', [CameraNames[CameraMode]]));
+  strs.Append(Format('Navigation mode: %s', [CameraNames[UCamera.NavigationType]]));
 
   S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
   if SceneOctreeCollisions = nil then
@@ -605,11 +605,11 @@ begin
     end;
 
     { Note that there is no sense in showing viewing frustum in
-      CameraMode <> ntExamine, since viewing frustum should
+      UCamera.NavigationType <> ntExamine, since viewing frustum should
       be never visible then (or should be just at the exact borders
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
-    if ShowFrustum and (CameraMode = ntExamine) then
+    if ShowFrustum and (UCamera.NavigationType = ntExamine) then
      DrawFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -1079,7 +1079,7 @@ procedure LoadSceneCore(
       A.Items[I] *= Value;
   end;
 
-  { Set CameraMode and related camera properties, based on
+  { Set UCamera.NavigationType and related camera properties, based on
     NavigationNode.FdType }
   procedure SetNavigationType;
 
@@ -3145,7 +3145,7 @@ function CreateMainMenu: TMenu;
     Mode: TCameraNavigationType;
     Group: TMenuItemRadioGroup;
   begin
-    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(CameraMode), true);
+    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(UCamera.NavigationType), true);
     for Mode := Low(Mode) to High(Mode) do
       CameraRadios[Mode] := Group.Items[Ord(Mode)];
   end;

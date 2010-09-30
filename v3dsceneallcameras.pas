@@ -108,8 +108,6 @@ const
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
 
-function CameraMode: TCameraNavigationType;
-
 { Change current CameraMode.
 
   If KeepView, than we keep the current camera view the same.
@@ -254,11 +252,6 @@ begin
     CameraPreferredHeight, CameraRadius);
 end;
 
-function CameraMode: TCameraNavigationType;
-begin
- Result := UCamera.NavigationType;
-end;
-
 procedure SetCameraMode(SceneManager: TKamSceneManager; NewCameraMode: TCameraNavigationType;
   KeepView: boolean);
 var
@@ -281,19 +274,10 @@ procedure ChangeCameraMode(SceneManager: TKamSceneManager; Change: integer;
 var
   NewCameraMode: TCameraNavigationType;
 begin
-  NewCameraMode := TCameraNavigationType( ChangeIntCycle(Ord(CameraMode), Change,
-    Ord(High(TCameraNavigationType))));
+  NewCameraMode := TCameraNavigationType(
+    ChangeIntCycle(Ord(UCamera.NavigationType), Change,
+      Ord(High(TCameraNavigationType))));
   SetCameraMode(SceneManager, NewCameraMode, KeepView);
-end;
-
-function WalkCamera: TWalkCamera;
-begin
-  Result := UCamera.Walk;
-end;
-
-function ExamineCamera: TExamineCamera;
-begin
-  Result := UCamera.Examine;
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
