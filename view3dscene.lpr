@@ -91,7 +91,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneAllCameras, SceneChangesUnit, BGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig;
+  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig,
+  ImageWarning_icon;
 
 var
   Glw: TGLUIWindow;
@@ -1385,7 +1386,7 @@ begin
     S.Append('');
     S.AddStrings(SceneWarnings.Items);
     S.Append('');
-    S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');    
+    S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');
     MessageOK(Glw, S, taLeft);
     WarningsButtonEnabled := false;
     UpdateWarningsButton;
@@ -3459,6 +3460,7 @@ begin
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsView;
+  WarningsButton.Image := Warning_icon;
   Glw.Controls.Add(WarningsButton);
 
   SceneWarnings := TSceneWarnings.Create;
