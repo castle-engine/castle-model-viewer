@@ -3461,7 +3461,7 @@ begin
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsView;
   WarningsButton.Image := Warning_icon;
-  Glw.Controls.Add(WarningsButton);
+  Glw.Controls.Insert(0, WarningsButton);
 
   SceneWarnings := TSceneWarnings.Create;
   try
