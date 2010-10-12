@@ -78,7 +78,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, ProgressGL, GLWindowRecentFiles, GLImages,
-  GLAntiAliasing, GLVersionUnit, GLCubeMap,
+  GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
@@ -175,6 +175,11 @@ var
     animation would play). }
   ProcessEventsWanted: boolean = true;
 
+  { If WarningsButton.Exists is allowed. If false, then WarningsButton.Exists
+    should be false, regardless of warnings count. }
+  WarningsButtonEnabled: boolean = true;
+  WarningsButton: TKamGLButton;
+
 var
   AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
@@ -198,6 +203,7 @@ type
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
+    class procedure WarningsView(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -801,12 +807,23 @@ end;
 var
   DebugLogVRMLChanges: boolean = false;
 
+{ Call when WarningsButtonEnabled or SceneWarnings.Count changes
+  or when window sizes change. }
+procedure UpdateWarningsButton;
+begin
+  WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
+  WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
+  WarningsButton.Left := Glw.Width - WarningsButton.Width - 5;
+  WarningsButton.Bottom := 5;
+end;
+
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
 begin
   { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
     we write to output VRML contents. }
   Writeln(ErrOutput, ProgramName + ': VRML Warning: ' + S);
   SceneWarnings.Add(S);
+  UpdateWarningsButton;
 end;
 
 procedure DoDataWarning(const s: string);
@@ -815,6 +832,7 @@ begin
     we write to output VRML contents. }
   Writeln(ErrOutput, ProgramName + ': Data Warning: ' + S);
   SceneWarnings.Add(S);
+  UpdateWarningsButton;
 end;
 
 procedure SceneOctreeCreate;
@@ -1218,13 +1236,8 @@ begin
       are reported only from SceneAnimation.PrepareResources).
       Also, this allows us to show first PrepareResources with progress bar. }
     PrepareResources(true);
-    if (SceneWarnings.Count <> 0) and
-       { For MakingScreenShot, work non-interactively.
-         Warnings are displayed at stderr anyway, so user will see them there. }
-       (not MakingScreenShot) then
-      MessageOK(Glw, Format('Note that there were %d warnings while loading ' +
-        'this scene. See the console or use File->"View warnings" ' +
-        'menu command to view them all.', [SceneWarnings.Count]), taLeft);
+    WarningsButtonEnabled := true;
+    UpdateWarningsButton;
   finally
     FreeAndNil(RootNodes);
     FreeAndNil(Times);
@@ -1354,6 +1367,29 @@ begin
     end;
 
   end;
+end;
+
+procedure Resize(Glwin: TGLWindow);
+begin
+  UpdateWarningsButton;
+end;
+
+class procedure THelper.WarningsView(Sender: TObject);
+var
+  S: TStringList;
+begin
+  S := TStringList.Create;
+  try
+    S.Append(Format('Total %d warnings about current scene "%s":',
+      [ SceneWarnings.Count, SceneFileName ]));
+    S.Append('');
+    S.AddStrings(SceneWarnings.Items);
+    S.Append('');
+    S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');    
+    MessageOK(Glw, S, taLeft);
+    WarningsButtonEnabled := false;
+    UpdateWarningsButton;
+  finally FreeAndNil(S) end;
 end;
 
 { make screen shots ---------------------------------------------------------- }
@@ -1487,20 +1523,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     Writeln(S);
     MessageOK(Glw, S, taLeft);
-  end;
-
-  procedure ViewSceneWarnings;
-  var
-    S: TStringList;
-  begin
-    S := TStringList.Create;
-    try
-      S.Append(Format('Total %d warnings about current scene "%s":',
-        [ SceneWarnings.Count, SceneFileName ]));
-      S.Append('');
-      S.AddStrings(SceneWarnings.Items);
-      MessageOK(Glw, S, taLeft);
-    finally FreeAndNil(S) end;
   end;
 
   procedure ChangePointSize;
@@ -2628,7 +2650,7 @@ begin
         end;
       end;
 
-  21: ViewSceneWarnings;
+  21: WarningsButton.DoClick;
 
   31: ChangeSceneAnimation([scNoNormals], SceneAnimation);
   32: ChangeSceneAnimation([scNoSolidObjects], SceneAnimation);
@@ -3434,6 +3456,11 @@ begin
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
+  WarningsButton := TKamGLButton.Create(Application);
+  WarningsButton.Caption := 'Warnings';
+  WarningsButton.OnClick := @THelper(nil).WarningsView;
+  Glw.Controls.Add(WarningsButton);
+
   SceneWarnings := TSceneWarnings.Create;
   try
     VRMLWarning := @DoVRMLWarning;
@@ -3481,6 +3508,7 @@ begin
         Glw.OnInit := @Init;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
+        Glw.OnResize := @Resize;
 
         { For MakingScreenShot = true, leave OnDraw as @nil
           (it doesn't do anything anyway when MakingScreenShot = true). }
