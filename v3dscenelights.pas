@@ -22,9 +22,7 @@
 
 { Simple management of OpenGL lights and lights in VRML scene.
   You can freely set properties of any OpenGL lights (their properties
-  and enabled state), this will not break anything in this unit,
-  with the following exception : properties (but not enabled state)
-  of OpenGL light no 0 will determine HeadLight light. }
+  and enabled state), this will not break anything in this unit. }
 
 unit V3DSceneLights;
 
@@ -33,12 +31,9 @@ interface
 uses VectorMath, SysUtils, VRMLGLAnimation, KambiUtils, VRMLNodes;
 
 var
-  HeadLight: boolean = false;
-
   SceneLightsCount: Cardinal;
 
-{ Inits SceneLightsCount.
-  Inits HeadLight (to NavigationNode.FdHeadlight or SceneLightsCount = 0). }
+{ Inits SceneLightsCount. }
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 
@@ -63,10 +58,6 @@ begin
       (that's because loaded animation always has at least one RootNode) }
     SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
       NodesCount(TVRMLLightNode, true);
-
-  if NavigationNode <> nil then
-    HeadLight := NavigationNode.FdHeadlight.Value else
-    HeadLight := SceneLightsCount = 0;
 end;
 
 procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
@@ -78,9 +69,6 @@ begin
 
       Also Attributes.PureGeometry is correctly taken into account.
       (when PureGeometry = true, it's like Lighting = always false.) }
-
-    SetGLEnabled(GL_LIGHT0, HeadLight);
-
   if SceneAnimation.Attributes.PureGeometry then
     glColorv(PureGeometryColor);
 end;

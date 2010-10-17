@@ -35,15 +35,9 @@ const
   DEF_PRIMARY_SAMPLES_COUNT = 1;
   DEF_NON_PRIMARY_SAMPLES_COUNT = 4;
 
-{ Ray-tracer.
-
-  We take HeadLightExists, HeadLight instead of using Scene.HeadLight.
-  Reason: we want to honor current view3dscene headlight setting,
-  this allows user to turn headlight on (by menu item) to add headlight
-  to both OpenGL and ray-tracer. }
+{ Ray-tracer. }
 procedure RaytraceToWin(glwin: TGLWindow;
   Scene: TVRMLScene;
-  HeadLightExists: boolean; HeadLight: TVRMLHeadLight;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
@@ -228,7 +222,6 @@ end;
 
 procedure RaytraceToWin(glwin: TGLWindow;
   Scene: TVRMLScene;
-  HeadLightExists: boolean; HeadLight: TVRMLHeadLight;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
@@ -309,9 +302,9 @@ begin
               TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
               TClassicRayTracer(RayTracer).FogNode := FogNode;
               TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
-              TClassicRayTracer(RayTracer).HeadLightExists := HeadLightExists;
-              if HeadLightExists then
-                TClassicRayTracer(RayTracer).HeadLight := HeadLight.ActiveLight(CamPosition, CamDir);
+              TClassicRayTracer(RayTracer).HeadLightExists := Scene.HeadLightOn;
+              if Scene.HeadLightOn then
+                TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight.ActiveLight(CamPosition, CamDir);
             end;
           rtkPathTracer:
             begin

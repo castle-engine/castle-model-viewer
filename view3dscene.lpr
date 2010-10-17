@@ -83,7 +83,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLFields, VRMLShapeOctree,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLErrors, VRMLGLHeadLight, VRMLGLAnimation,
+  VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
   VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape, RenderStateUnit,
   VRMLShadowMaps,
   { view3dscene-specific units: }
@@ -138,7 +138,6 @@ var
     from "Open" menu item. }
   SceneAnimation: TVRMLGLAnimation;
   SceneFilename: string;
-  SceneHeadlight: TVRMLGLHeadlight;
 
   SelectedItem: PVRMLTriangle;
   { SelectedPoint* always lies on SelectedItem item,
@@ -204,6 +203,7 @@ type
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
+    class procedure HeadlightOnChanged(Sender: TObject);
     class procedure WarningsView(Sender: TObject);
   end;
 
@@ -212,11 +212,9 @@ type
 type
   TV3DSceneManager = class(TV3DShadowsSceneManager)
   protected
-    procedure RenderHeadLight; override;
     procedure RenderFromView3D; override;
   public
     procedure InitProperties;
-    function ViewerToChanges: TVisibleChanges; override;
     procedure BeforeDraw; override;
     procedure Draw; override;
   end;
@@ -537,22 +535,6 @@ begin
  finally strs.Free end;
 end;
 
-procedure TV3DSceneManager.RenderHeadLight;
-begin
-  { Set properties of headlight. Actual enabled state of headlight will be
-    set later by BeginRenderSceneWithLights inside RenderFromView3D. }
-  if (SceneHeadlight <> nil) then
-    SceneHeadlight.Render(0, false, RenderState.Target = rtScreen,
-      SceneManager.Camera);
-end;
-
-function TV3DSceneManager.ViewerToChanges: TVisibleChanges;
-begin
-  if HeadLight then
-    Result := [vcVisibleNonGeometry] else
-    Result := [];
-end;
-
 procedure TV3DSceneManager.RenderFromView3D;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
@@ -803,6 +785,12 @@ begin
   UpdateCameraMenus;
 end;
 
+class procedure THelper.HeadlightOnChanged(Sender: TObject);
+begin
+  if MenuHeadlight <> nil then
+    MenuHeadlight.Checked := Scene.HeadLightOn;
+end;
+
 { Scene operations ---------------------------------------------------------- }
 
 var
@@ -916,8 +904,6 @@ begin
     MenuReopen.Enabled := false;
 
   Unselect;
-
-  FreeAndNil(SceneHeadlight);
 end;
 
 { Update state of ProcessEvents for all SceneAnimation.Scenes[].
@@ -1023,8 +1009,7 @@ begin
       OptimizationMenu[Optimization].Checked := true;
     SceneAnimation.Optimization := Optimization;
 
-    SceneAnimation.Load(RootNodes, true, ATimes,
-      ScenesPerTime, EqualityEpsilon);
+    SceneAnimation.Load(RootNodes, true, ATimes, ScenesPerTime, EqualityEpsilon);
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
     { do it before even assigning MainScene, as assigning MainScene may
@@ -1060,12 +1045,10 @@ begin
       ViewpointsList.BoundViewpoint := -1;
 
     SceneInitLights(SceneAnimation, NavigationNode);
-    SceneHeadlight := Scene.CreateHeadLight;
 
-    { SceneInitLights could change HeadLight value.
-      So update MenuHeadlight.Checked now. }
-    if MenuHeadlight <> nil then
-      MenuHeadlight.Checked := HeadLight;
+    { update MenuHeadlight.Checked now, and make it always updated. }
+    THelper.HeadlightOnChanged(Scene);
+    Scene.OnHeadlightOnChanged := @THelper(nil).HeadlightOnChanged;
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
@@ -2530,7 +2513,6 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
     RaytraceToWin(Glwin, Scene,
-      HeadLight, SceneHeadLight,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor,
@@ -2710,7 +2692,7 @@ begin
   891: with SceneAnimation.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
   91: with SceneAnimation.Attributes do Lighting := not Lighting;
-  92: HeadLight := not HeadLight;
+  92: with Scene do HeadLightOn := not HeadLightOn;
   93: with SceneAnimation.Attributes do UseSceneLights := not UseSceneLights;
   94: with SceneAnimation.Attributes do EnableTextures := not EnableTextures;
   95: ChangeLightModelAmbient;
@@ -3063,7 +3045,7 @@ begin
      '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
      SceneAnimation.Attributes.Lighting, true));
    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
-     Headlight, true);
+     (Scene <> nil) and Scene.HeadlightOn, true);
    M.Append(MenuHeadlight);
    M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
      SceneAnimation.Attributes.UseSceneLights, true));
