@@ -462,7 +462,7 @@ begin
     S += ' (octree resources released)';
   strs.Append(S);
 
-  if Camera.NavigationType = ntWalk then
+  if Camera.NavigationClass = ncWalk then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
      [ VectorToNiceStr(Camera.Walk.Position),
@@ -614,11 +614,11 @@ begin
     end;
 
     { Note that there is no sense in showing viewing frustum in
-      Camera.NavigationType <> ntExamine, since viewing frustum should
+      Camera.NavigationClass <> ncExamine, since viewing frustum should
       be never visible then (or should be just at the exact borders
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
-    if ShowFrustum and ((Camera as TUniversalCamera).NavigationType = ntExamine) then
+    if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
      DrawFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -675,8 +675,8 @@ begin
 end;
 
 const
-  SOnlyInWalker = 'You must be in ''Walk'' navigation mode '+
-    'to use this function.';
+  SNavigationClassWalkNeeded =
+    'You must be in "Walk", "Fly" or "None" navigation modes to use this function.';
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
@@ -690,9 +690,9 @@ begin
        In Examine mode, it would collide with zooming in / out,
        making  user select item on each zoom in / out by dragging
        right mouse button. Mouse clicks start dragging, so don't do
-       anything here (not even a warning about SOnlyInWalker,
+       anything here (not even a warning about SNavigationClassWalkNeeded,
        since it would only interfere with navigation). }
-     (Camera.NavigationType <> ntExamine) then
+     (Camera.NavigationClass <> ncExamine) then
   begin
     if SceneOctreeCollisions = nil then
     begin
@@ -1459,7 +1459,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   var Answer: string;
       NewUp: TVector3Single;
   begin
-   if Camera.NavigationType = ntWalk then
+   if Camera.NavigationClass = ncWalk then
    begin
     Answer := '';
     if MessageInputQuery(Glwin,
@@ -1483,14 +1483,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
      Glw.PostRedisplay;
     end;
    end else
-    MessageOK(Glwin, SOnlyInWalker);
+    MessageOK(Glwin, SNavigationClassWalkNeeded);
   end;
 
   procedure ChangeMoveSpeed;
   var
     MoveSpeed: Single;
   begin
-    if Camera.NavigationType = ntWalk then
+    if Camera.NavigationClass = ncWalk then
     begin
       MoveSpeed := Camera.Walk.MoveSpeed;
       if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeed, taLeft) then
@@ -1499,7 +1499,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         Glw.PostRedisplay;
       end;
     end else
-      MessageOK(Glwin, SOnlyInWalker);
+      MessageOK(Glwin, SNavigationClassWalkNeeded);
   end;
 
 
@@ -2748,7 +2748,7 @@ begin
          if Camera.NavigationType = High(TCameraNavigationType) then
            Camera.NavigationType := Low(TCameraNavigationType) else
            Camera.NavigationType := Succ(Camera.NavigationType);
-         UpdateCameraNavigationTypeMenu;
+         UpdateCameraMenus;
        end;
 
   121: begin
@@ -2808,11 +2808,23 @@ begin
 
   182: ChangePointSize;
 
-  201: Camera.Walk.Gravity := not Camera.Walk.Gravity;
-  202: Camera.Walk.PreferGravityUpForRotations := not Camera.Walk.PreferGravityUpForRotations;
-  203: Camera.Walk.PreferGravityUpForMoving := not Camera.Walk.PreferGravityUpForMoving;
+  201: begin
+         Camera.Walk.Gravity := not Camera.Walk.Gravity;
+         UpdateCameraNavigationTypeMenu;
+       end;
+  202: begin
+         Camera.Walk.PreferGravityUpForRotations := not Camera.Walk.PreferGravityUpForRotations;
+         UpdateCameraNavigationTypeMenu;
+       end;
+  203: begin
+         Camera.Walk.PreferGravityUpForMoving := not Camera.Walk.PreferGravityUpForMoving;
+         UpdateCameraNavigationTypeMenu;
+       end;
   205: ChangeMoveSpeed;
-  210: Camera.IgnoreAllInputs := not Camera.IgnoreAllInputs;
+  210: begin
+         Camera.IgnoreAllInputs := not Camera.IgnoreAllInputs;
+         UpdateCameraNavigationTypeMenu;
+       end;
 
   220: begin
          AnimationTimePlaying := not AnimationTimePlaying;
@@ -2877,7 +2889,7 @@ begin
   1300..1399:
     begin
       Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
-      UpdateCameraNavigationTypeMenu;
+      UpdateCameraMenus;
     end;
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
@@ -3121,7 +3133,7 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Switch to Next', 111, CtrlN));
      M.Append(M2);
-   M2 := TMenu.Create('Walk mode Settings');
+   M2 := TMenu.Create('Walk / Fly mode Settings');
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, CtrlM,
          Camera.Walk.MouseLook, true));
@@ -3130,11 +3142,11 @@ begin
        Camera.Walk.Gravity, true);
      M2.Append(MenuGravity);
      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
-       'Rotate with Respect to Stable (Gravity) Camera Up',      202,
+       'Rotate with Respect to Gravity Vector',      202,
        Camera.Walk.PreferGravityUpForRotations, true);
      M2.Append(MenuPreferGravityUpForRotations);
      MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
-       'Move with Respect to Stable (Gravity) Camera Up',          203,
+       'Move with Respect to Gravity Vector',          203,
        Camera.Walk.PreferGravityUpForMoving, true);
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));

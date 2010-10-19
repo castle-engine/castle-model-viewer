@@ -20,13 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ Keeping all camera types (two for now: Examine and Walk),
-  making them switchable at runtime.
-
-  SceneManager parameter for some procedures here
-  is used only to set SceneManager.Camera to current Camera
-  (this also causes ViewChangedSuddenly now, which is good).
-  You can pass @nil if SceneManager is not initialized yet. }
+{ Manage camera navigation types. }
 unit V3DSceneAllCameras;
 
 interface
@@ -34,17 +28,13 @@ interface
 uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
   GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls, KambiTimeUtils;
 
-{ Call this ONCE on created SceneManager.
-  This will take care of always providing proper SceneManager.Camera for you.
-
-  You CAN NOT directly modify Cameras' properties
-  (settings like InitialCameraXxx, Rotation, but also general settings
-  like OnMatrixchanged). You can do it only indirectly using this unit. }
+{ Call this once on created SceneManager.
+  This will take care of using proper SceneManager.Camera. }
 procedure InitCameras(SceneManager: TKamSceneManager);
 
 const
-  CameraNames: array[TCameraNavigationType]of string =
-   ('Examine', 'Walk');
+  CameraNames: array [TCameraNavigationType] of string =
+  ('Examine', 'Walk', 'Fly', 'None');
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
@@ -55,7 +45,7 @@ procedure UpdateCameraNavigationTypeMenu;
   some params specific for this unit.
   Those params are documented in CamerasOptionsHelp.
 
-  Call this BEFORE InitCameras. }
+  Call this @italic(before) InitCameras. }
 procedure CamerasParseParameters;
 
 const
