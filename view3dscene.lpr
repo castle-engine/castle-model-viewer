@@ -205,8 +205,9 @@ type
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
     class procedure HeadlightOnChanged(Sender: TObject);
-    class procedure WarningsView(Sender: TObject);
+    class procedure WarningsButtonClick(Sender: TObject);
     class procedure NavigationTypeButtonClick(Sender: TObject);
+    class procedure OpenButtonClick(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -1354,7 +1355,7 @@ begin
   end;
 end;
 
-class procedure THelper.WarningsView(Sender: TObject);
+class procedure THelper.WarningsButtonClick(Sender: TObject);
 var
   S: TStringList;
 begin
@@ -2589,12 +2590,7 @@ var
   C: Cardinal;
 begin
  case MenuItem.IntData of
-  10: begin
-       s := ExtractFilePath(SceneFilename);
-       if glwin.FileDialog('Open file', s, true,
-         LoadVRMLSequence_FileFilters) then
-         LoadScene(s, [], 0.0, true);
-      end;
+  10: THelper.OpenButtonClick(nil);
 
   12: Glw.Close;
 
@@ -3251,6 +3247,9 @@ end;
 
 { toolbar -------------------------------------------------------------------- }
 
+var
+  OpenButton: TKamGLButton;
+
 procedure CreateToolbar;
 var
   NT: TCameraNavigationType;
@@ -3261,9 +3260,17 @@ begin
   ToolbarPanel.Opacity := Opacity;
   Glw.Controls.Insert(0, ToolbarPanel);
 
+  OpenButton := TKamGLButton.Create(Application);
+  OpenButton.Caption := 'Open';
+  OpenButton.Opacity := Opacity;
+  OpenButton.OnClick := @THelper(nil).OpenButtonClick;
+  //OpenButton.Image :=
+  Glw.Controls.Insert(0, OpenButton);
+
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
-  WarningsButton.OnClick := @THelper(nil).WarningsView;
+  WarningsButton.Opacity := Opacity;
+  WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
   Glw.Controls.Insert(0, WarningsButton);
 
@@ -3275,9 +3282,9 @@ begin
   begin
     CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
     CameraButtons[NT].Caption := CameraNames[NT];
+    CameraButtons[NT].Opacity := Opacity;
     CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
     CameraButtons[NT].Toggle := true;
-    CameraButtons[NT].Opacity := Opacity;
     // CameraButtons[NT].Image :=
     Glw.Controls.Insert(0, CameraButtons[NT]);
   end;
@@ -3302,6 +3309,13 @@ begin
 
   NextLeft := ToolbarMargin;
   ButtonsBottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
+
+  { Now place buttons, in left-to-right order }
+
+  OpenButton.Left := NextLeft;
+  OpenButton.Bottom := ButtonsBottom;
+  NextLeft += OpenButton.Width + ButtonsMargin;
+
   for NT := Low(NT) to High(NT) do
   begin
     CameraButtons[NT].Left := NextLeft;
@@ -3312,6 +3326,16 @@ begin
   WarningsButton.Left := Max(NextLeft,
     Glw.Width - WarningsButton.Width - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
+end;
+
+class procedure THelper.OpenButtonClick(Sender: TObject);
+var
+  S: string;
+begin
+  S := ExtractFilePath(SceneFilename);
+  if Glw.FileDialog('Open file', s, true,
+    LoadVRMLSequence_FileFilters) then
+    LoadScene(s, [], 0.0, true);
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
