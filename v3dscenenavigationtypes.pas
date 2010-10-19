@@ -85,7 +85,9 @@ begin
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
   for NT := Low(NT) to High(NT) do
-    CameraButtons[NT].Pressed := NT = Camera.NavigationType;
+    { check with <> nil, since for ntNone we don't show button now }
+    if CameraButtons[NT] <> nil then
+      CameraButtons[NT].Pressed := NT = Camera.NavigationType;
 end;
 
 procedure InitCameras(SceneManager: TKamSceneManager);

@@ -3245,15 +3245,18 @@ begin
     WarningsButton.Exists := false; { at least initialize Exists }
 
   for NT := Low(NT) to High(NT) do
-  begin
-    CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
-    CameraButtons[NT].Caption := CameraNames[NT];
-    CameraButtons[NT].Opacity := Opacity;
-    CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
-    CameraButtons[NT].Toggle := true;
-    CameraButtons[NT].MinImageHeight := MinImageHeight;
-    Glw.Controls.Insert(0, CameraButtons[NT]);
-  end;
+    { Don't show button for ntNone navigation type, it's confusing for new user.
+      The "none" navigation type is visible in menu. }
+    if NT <> ntNone then
+    begin
+      CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
+      CameraButtons[NT].Caption := CameraNames[NT];
+      CameraButtons[NT].Opacity := Opacity;
+      CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
+      CameraButtons[NT].Toggle := true;
+      CameraButtons[NT].MinImageHeight := MinImageHeight;
+      Glw.Controls.Insert(0, CameraButtons[NT]);
+    end;
 
   CameraButtons[ntExamine].Image := ImageExamine.Examine;
   CameraButtons[ntWalk].Image := ImageWalk.Walk;
@@ -3288,11 +3291,13 @@ begin
   NextLeft += OpenButton.Width + ButtonsMargin + ButtonsGroupMargin;
 
   for NT := Low(NT) to High(NT) do
-  begin
-    CameraButtons[NT].Left := NextLeft;
-    CameraButtons[NT].Bottom := ButtonsBottom;
-    NextLeft += CameraButtons[NT].Width + ButtonsMargin;
-  end;
+    { check with <> nil, since for ntNone we don't show button now }
+    if CameraButtons[NT] <> nil then
+    begin
+      CameraButtons[NT].Left := NextLeft;
+      CameraButtons[NT].Bottom := ButtonsBottom;
+      NextLeft += CameraButtons[NT].Width + ButtonsMargin;
+    end;
   NextLeft += ButtonsGroupMargin;
 
   WarningsButton.Left := Max(NextLeft,
