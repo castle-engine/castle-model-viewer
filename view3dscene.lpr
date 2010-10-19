@@ -3257,6 +3257,7 @@ var
   NT: TCameraNavigationType;
 begin
   ToolbarPanel := TKamPanel.Create(Application);
+  ToolbarPanel.Opacity := 0.8;
   Glw.Controls.Insert(0, ToolbarPanel);
 
   WarningsButton := TKamGLButton.Create(Application);
@@ -3271,6 +3272,7 @@ begin
     CameraButtons[NT].Caption := CameraNames[NT];
     CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
     CameraButtons[NT].Toggle := true;
+    CameraButtons[NT].Opacity := 0.8;
     // CameraButtons[NT].Image :=
     Glw.Controls.Insert(0, CameraButtons[NT]);
   end;
