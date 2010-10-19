@@ -155,7 +155,7 @@ var
   MenuRemoveSelectedFace: TMenuItem;
   MenuEditMaterial: TMenu;
   MenuMergeCloseVertexes: TMenuItem;
-  MenuHeadlight, MenuGravity, MenuIgnoreAllInputs: TMenuItemChecked;
+  MenuHeadlight, MenuGravity: TMenuItemChecked;
   MenuPreferGravityUpForRotations: TMenuItemChecked;
   MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
@@ -269,8 +269,6 @@ begin
   UpdateCameraNavigationTypeUI;
   if MenuGravity <> nil then
     MenuGravity.Checked := Camera.Walk.Gravity;
-  if MenuIgnoreAllInputs <> nil then
-    MenuIgnoreAllInputs.Checked := Camera.IgnoreAllInputs;
   if MenuPreferGravityUpForRotations <> nil then
     MenuPreferGravityUpForRotations.Checked := Camera.Walk.PreferGravityUpForRotations;
   if MenuPreferGravityUpForMoving <> nil then
@@ -3130,10 +3128,6 @@ begin
      '_Collision Detection',                   123, CtrlC,
        SceneAnimation.Collides, true);
    M.Append(MenuCollisionCheck);
-   MenuIgnoreAllInputs := TMenuItemChecked.Create(
-     'Disable normal navigation (VRML/X3D "NONE" navigation)',  210,
-     Camera.IgnoreAllInputs, true);
-   M.Append(MenuIgnoreAllInputs);
    Result.Append(M);
  M := TMenu.Create('_Animation');
    MenuAnimationTimePlaying := TMenuItemChecked.Create(
