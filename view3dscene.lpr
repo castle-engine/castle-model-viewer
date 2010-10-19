@@ -1418,6 +1418,8 @@ begin
   end;
 end;
 
+procedure UpdateToolbarVisible; forward;
+
 procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
@@ -2716,7 +2718,10 @@ begin
            'Scene "' + SceneFilename + '" information:' + NL + NL +
            SceneAnimation.Info(true, true, false));
        end;
-  122: ShowStatus := not ShowStatus;
+  122: begin
+         ShowStatus := not ShowStatus;
+         UpdateToolbarVisible;
+       end;
   123: SetCollisionCheck(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
@@ -2963,7 +2968,7 @@ begin
        740, ShadowsPossibleWanted, true));
      M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
        InitialShowBBox, true));
-     M2.Append(TMenuItemChecked.Create('Show Status Text at Start', 771,
+     M2.Append(TMenuItemChecked.Create('Show Status and Toolbar at Start', 771,
        InitialShowStatus, true));
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
@@ -3189,7 +3194,7 @@ begin
      Glw.FullScreen, true));
    Result.Append(M);
  M := TMenu.Create('_Help');
-   M.Append(TMenuItemChecked.Create('Show Status _Text',           122, K_F1,
+   M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
       ShowStatus, true));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Scene Information',                  121));
@@ -3212,6 +3217,25 @@ end;
 
 var
   OpenButton: TKamGLButton;
+
+{ call when ShowStatus or MakingScreenShot changed }
+procedure UpdateToolbarVisible;
+var
+  NT: TCameraNavigationType;
+begin
+  if ToolbarPanel <> nil then // check was CreateToolbar called already?
+  begin
+    ToolbarPanel.Exists := ShowStatus and not MakingScreenShot;
+    OpenButton.Exists := ToolbarPanel.Exists;
+
+    { Note that WarningsButton ignores the ToolbarPanel.Exists.
+      This is by design --- always signal warnings. }
+
+    for NT := Low(NT) to High(NT) do
+      if CameraButtons[NT] <> nil then
+        CameraButtons[NT].Exists := ToolbarPanel.Exists;
+  end;
+end;
 
 procedure CreateToolbar;
 var
@@ -3261,6 +3285,8 @@ begin
   CameraButtons[ntExamine].Image := ImageExamine.Examine;
   CameraButtons[ntWalk].Image := ImageWalk.Walk;
   CameraButtons[ntFly].Image := ImageFly.Fly;
+
+  UpdateToolbarVisible;
 end;
 
 procedure Resize(Glwin: TGLWindow);
@@ -3400,7 +3426,7 @@ const
            HelpOptionHelp +NL+
            VersionOptionHelp +NL+
            '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
-           '                        or bounding box) when program starts.' +NL+
+           '                        or toolbar or bounding box) when program starts.' +NL+
            '                        Show only the 3D world.' +NL+
            '  --camera-radius RADIUS' +NL+
            '                        Set camera sphere radius used for collisions' +NL+
@@ -3480,6 +3506,7 @@ const
     12: begin
           ShowBBox := false;
           ShowStatus := false;
+          UpdateToolbarVisible;
         end;
     else raise EInternalError.Create('OptionProc');
    end;
