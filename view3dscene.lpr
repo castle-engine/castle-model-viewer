@@ -804,8 +804,7 @@ procedure UpdateWarningsButton;
 begin
   WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
   WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
-  WarningsButton.Left := Glw.Width - WarningsButton.Width - 5;
-  WarningsButton.Bottom := 5;
+  Glw.EventResize; { update WarningsButton.Left }
 end;
 
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
@@ -3268,6 +3267,10 @@ begin
   WarningsButton.Image := Warning_icon;
   Glw.Controls.Insert(0, WarningsButton);
 
+  if SceneWarnings <> nil then
+    UpdateWarningsButton else
+    WarningsButton.Exists := false; { at least initialize Exists }
+
   for NT := Low(NT) to High(NT) do
   begin
     CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
@@ -3286,24 +3289,29 @@ const
   ButtonsMargin = 10; {< between buttons }
 var
   NT: TCameraNavigationType;
-  NextLeft, ButtonsHeight: Integer;
+  NextLeft, ButtonsHeight, ButtonsBottom: Integer;
 begin
-  ButtonsHeight := CameraButtons[ntExamine { any button }].Height;
+  ButtonsHeight := Max(
+    CameraButtons[ntExamine { any button }].Height,
+    WarningsButton.Height);
 
   ToolbarPanel.Left := 0;
   ToolbarPanel.Width := Glwin.Width;
   ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
   ToolbarPanel.Bottom := Glwin.Height - ToolbarPanel.Height;
 
-  UpdateWarningsButton;
-
   NextLeft := ToolbarMargin;
+  ButtonsBottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
   for NT := Low(NT) to High(NT) do
   begin
     CameraButtons[NT].Left := NextLeft;
-    CameraButtons[NT].Bottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
+    CameraButtons[NT].Bottom := ButtonsBottom;
     NextLeft += CameraButtons[NT].Width + ButtonsMargin;
   end;
+
+  WarningsButton.Left := Max(NextLeft,
+    Glw.Width - WarningsButton.Width - ToolbarMargin);
+  WarningsButton.Bottom := ButtonsBottom;
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
