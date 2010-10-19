@@ -661,7 +661,7 @@ end;
 
 const
   SNavigationClassWalkNeeded =
-    'You must be in "Walk", "Fly" or "None" navigation modes to use this function.';
+    'You must be in "Walk", "Fly" or "None" navigation types to use this function.';
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
@@ -3100,13 +3100,13 @@ begin
    Result.Append(M);
  M := TMenu.Create('_Navigation');
    ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to Viewpoint');
-     ViewpointsList.MakeMenuJumpToViewpoint;
-     M.Append(ViewpointsList.MenuJumpToViewpoint);
-   M2 := TMenu.Create('Navigation Mode');
-     AppendNavigationTypes(M2);
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Switch to Next', 111, CtrlN));
-     M.Append(M2);
+   ViewpointsList.MakeMenuJumpToViewpoint;
+   M.Append(ViewpointsList.MenuJumpToViewpoint);
+   M.Append(TMenuSeparator.Create);
+   AppendNavigationTypes(M);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Next Navigation Type', 111, CtrlN));
+   M.Append(TMenuSeparator.Create);
    M2 := TMenu.Create('Walk / Fly mode Settings');
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, CtrlM,
@@ -3125,7 +3125,6 @@ begin
      M2.Append(MenuPreferGravityUpForMoving);
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
-     M.Append(TMenuSeparator.Create);
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
      '_Collision Detection',                   123, CtrlC,
