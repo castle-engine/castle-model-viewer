@@ -361,7 +361,6 @@ end;
 
 procedure DrawStatus(data: Pointer);
 const
-  BoolToStrOO: array[boolean] of string = ('OFF','ON');
   StatusInsideCol: TVector4f = (0, 0, 0, 0.7);
   StatusBorderCol: TVector4f = (0, 1, 0, 1);
   StatusTextCol  : TVector4f = (1, 1, 0, 1);
@@ -451,6 +450,11 @@ begin
  try
   DescribeSensors;
 
+  { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
+  if SceneOctreeCollisions = nil then
+    S += ' (octree resources released)';
+  strs.Append(S); }
+
   if Camera.NavigationClass = ncWalk then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
@@ -463,11 +467,10 @@ begin
        CurrentAboveHeight ]));
   end;
 
-  if SceneLightsCount = 0 then
+  { if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
    s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
-  strs.Append(Format('Use scene lights: %s', [s]) +
-    OctreeDisplayStatus);
+  strs.Append(Format('Use scene lights: %s', [s])); }
 
   { Note: there's no sense in showing here Glw.Fps.RealTime,
     since it would force me to constantly render new frames just
@@ -487,7 +490,7 @@ begin
     [ LastRender_RenderedShapesCount,
       S,
       LastRender_VisibleShapesCount,
-      1 / Glw.Fps.DrawSpeed ]));
+      1 / Glw.Fps.DrawSpeed ]) + OctreeDisplayStatus);
 
   if SceneAnimation.TimeAtLoad = 0.0 then
     S := Format('World time: %f', [SceneAnimation.Time]) else
