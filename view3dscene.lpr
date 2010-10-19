@@ -180,7 +180,8 @@ var
   WarningsButtonEnabled: boolean = true;
   WarningsButton: TKamGLButton;
 
-var
+  ToolbarPanel: TKamPanel;
+
   AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
@@ -433,7 +434,7 @@ var
       glTranslatef(5, 0, 0);
       statusFont.PrintStringsBorderedRectTop(strs, 0,
         StatusInsideCol, StatusBorderCol, StatusTextCol,
-        nil, 5, 1, 1, Glw.Height, 5);
+        nil, 5, 1, 1, Glw.Height - ToolbarPanel.Height, 5);
     end;
   end;
 
@@ -3251,27 +3252,13 @@ end;
 
 { toolbar -------------------------------------------------------------------- }
 
-procedure Resize(Glwin: TGLWindow);
-var
-  NT: TCameraNavigationType;
-  NextLeft, Bottom: Integer;
-begin
-  UpdateWarningsButton;
-
-  NextLeft := 5;
-  Bottom := Glwin.Height - CameraButtons[ntExamine { any}].Height - 5;
-  for NT := Low(NT) to High(NT) do
-  begin
-    CameraButtons[NT].Left := NextLeft;
-    CameraButtons[NT].Bottom := Bottom;
-    NextLeft += CameraButtons[NT].Width + 5;
-  end;
-end;
-
 procedure CreateToolbar;
 var
   NT: TCameraNavigationType;
 begin
+  ToolbarPanel := TKamPanel.Create(Application);
+  Glw.Controls.Insert(0, ToolbarPanel);
+
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsView;
@@ -3285,7 +3272,33 @@ begin
     CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
     CameraButtons[NT].Toggle := true;
     // CameraButtons[NT].Image :=
-    // TODO: for now, don't use: Glw.Controls.Insert(0, CameraButtons[NT]);
+    Glw.Controls.Insert(0, CameraButtons[NT]);
+  end;
+end;
+
+procedure Resize(Glwin: TGLWindow);
+const
+  ToolbarMargin = 5;  {< between buttons and toolbar panel }
+  ButtonsMargin = 10; {< between buttons }
+var
+  NT: TCameraNavigationType;
+  NextLeft, ButtonsHeight: Integer;
+begin
+  ButtonsHeight := CameraButtons[ntExamine { any button }].Height;
+
+  ToolbarPanel.Left := 0;
+  ToolbarPanel.Width := Glwin.Width;
+  ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
+  ToolbarPanel.Bottom := Glwin.Height - ToolbarPanel.Height;
+
+  UpdateWarningsButton;
+
+  NextLeft := ToolbarMargin;
+  for NT := Low(NT) to High(NT) do
+  begin
+    CameraButtons[NT].Left := NextLeft;
+    CameraButtons[NT].Bottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
+    NextLeft += CameraButtons[NT].Width + ButtonsMargin;
   end;
 end;
 
