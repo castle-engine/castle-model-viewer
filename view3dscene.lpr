@@ -486,16 +486,16 @@ begin
      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
     S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
     S := '';
-  strs.Append(Format('Rendered Shapes : %d%s of %d. FPS : %f',
+  strs.Append(Format('Rendered Shapes : %d%s of %d ',
     [ LastRender_RenderedShapesCount,
       S,
-      LastRender_VisibleShapesCount,
-      1 / Glw.Fps.DrawSpeed ]) + OctreeDisplayStatus);
+      LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
 
   if SceneAnimation.TimeAtLoad = 0.0 then
-    S := Format('World time: %f', [SceneAnimation.Time]) else
-    S := Format('World time: load time + %f = %f',
-      [SceneAnimation.Time - SceneAnimation.TimeAtLoad, SceneAnimation.Time]);
+    S := Format('World time: %d', [SceneAnimation.Time]) else
+    S := Format('World time: load time + %d = %d',
+      [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
+       Trunc(SceneAnimation.Time)]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   if not ProcessEventsWanted then
