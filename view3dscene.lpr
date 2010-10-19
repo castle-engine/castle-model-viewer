@@ -474,18 +474,13 @@ begin
      [ Camera.Walk.MoveSpeed,
        Camera.Walk.CameraPreferredHeight,
        CurrentAboveHeight ]));
-  end else
-  begin
-   strs.Append(Format('Rotation quat : %s, Move : %s, Scale : %f',
-     [ VectorToNiceStr(Camera.Examine.Rotations.Vector4),
-       VectorToNiceStr(Camera.Examine.MoveAmount),
-       Camera.Examine.ScaleFactor ]));
   end;
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
    s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
-  strs.Append(Format('Use scene lights: %s', [s]));
+  strs.Append(Format('Use scene lights: %s', [s]) +
+    OctreeDisplayStatus);
 
   { Note: there's no sense in showing here Glw.Fps.RealTime,
     since it would force me to constantly render new frames just
