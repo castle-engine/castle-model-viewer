@@ -92,7 +92,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig,
-  ImageWarning_icon;
+  { view3dscene embedded images }
+  ImageWarning_icon, ImageExamine, ImageWalk, ImageFly, ImageOpen;
 
 var
   Glw: TGLUIWindow;
@@ -3264,7 +3265,7 @@ begin
   OpenButton.Caption := 'Open';
   OpenButton.Opacity := Opacity;
   OpenButton.OnClick := @THelper(nil).OpenButtonClick;
-  //OpenButton.Image :=
+  OpenButton.Image := ImageOpen.Open;
   Glw.Controls.Insert(0, OpenButton);
 
   WarningsButton := TKamGLButton.Create(Application);
@@ -3285,15 +3286,19 @@ begin
     CameraButtons[NT].Opacity := Opacity;
     CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
     CameraButtons[NT].Toggle := true;
-    // CameraButtons[NT].Image :=
     Glw.Controls.Insert(0, CameraButtons[NT]);
   end;
+
+  CameraButtons[ntExamine].Image := ImageExamine.Examine;
+  CameraButtons[ntWalk].Image := ImageWalk.Walk;
+  CameraButtons[ntFly].Image := ImageFly.Fly;
 end;
 
 procedure Resize(Glwin: TGLWindow);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
-  ButtonsMargin = 10; {< between buttons }
+  ButtonsMargin = 8; {< between buttons }
+  ButtonsGroupMargin = 8; {< added to ButtonsMargin for groups }
 var
   NT: TCameraNavigationType;
   NextLeft, ButtonsHeight, ButtonsBottom: Integer;
@@ -3314,7 +3319,7 @@ begin
 
   OpenButton.Left := NextLeft;
   OpenButton.Bottom := ButtonsBottom;
-  NextLeft += OpenButton.Width + ButtonsMargin;
+  NextLeft += OpenButton.Width + ButtonsMargin + ButtonsGroupMargin;
 
   for NT := Low(NT) to High(NT) do
   begin
@@ -3322,6 +3327,7 @@ begin
     CameraButtons[NT].Bottom := ButtonsBottom;
     NextLeft += CameraButtons[NT].Width + ButtonsMargin;
   end;
+  NextLeft += ButtonsGroupMargin;
 
   WarningsButton.Left := Max(NextLeft,
     Glw.Width - WarningsButton.Width - ToolbarMargin);

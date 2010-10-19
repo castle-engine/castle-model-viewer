@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="400"
+   height="360"
+   id="svg2440"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="examine.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/michalis/sources/vrmlengine/trunk/view3dscene/images/examine.png"
+   inkscape:export-xdpi="7.9299998"
+   inkscape:export-ydpi="7.9299998">
+  <metadata
+     id="metadata2453">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2451">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 180 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="400 : 180 : 1"
+       inkscape:persp3d-origin="200 : 120 : 1"
+       id="perspective2455" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-height="782"
+     inkscape:window-width="1440"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     showgrid="false"
+     inkscape:zoom="0.48515382"
+     inkscape:cx="-98.01841"
+     inkscape:cy="141.05832"
+     inkscape:window-x="0"
+     inkscape:window-y="49"
+     inkscape:current-layer="g2442" />
+  <g
+     id="g2442"
+     stroke-width="3"
+     stroke="#000"
+     fill="none">
+    <rect
+       width="240"
+       height="240"
+       x="20"
+       y="90"
+       id="rect2444" />
+    <path
+       d="M 380,270 L 140,270 L 140,30"
+       id="path3756"
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:3,6;stroke-dashoffset:0" />
+    <path
+       style=""
+       d="M 140,30 L 380,30 L 380,270"
+       id="rect2446" />
+    <path
+       d="M 20,90 L 140,30"
+       id="path2463" />
+    <path
+       d="M 260,90 L 380,30"
+       id="path2461" />
+    <path
+       d="M 20,330 L 140,270"
+       id="path2459"
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:3,6;stroke-dashoffset:0" />
+    <path
+       d="M 260,330 L 380,270"
+       id="path2448" />
+  </g>
+</svg>
