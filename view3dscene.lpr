@@ -451,11 +451,6 @@ begin
  try
   DescribeSensors;
 
-  S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
-  if SceneOctreeCollisions = nil then
-    S += ' (octree resources released)';
-  strs.Append(S);
-
   if Camera.NavigationClass = ncWalk then
   begin
    strs.Append(Format('Camera: pos %s, dir %s, up %s',
@@ -3125,7 +3120,7 @@ begin
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(M2);
    MenuCollisionCheck := TMenuItemChecked.Create(
-     '_Collision Detection',                   123, CtrlC,
+     '_Collision Detection and Picking',                123, CtrlC,
        SceneAnimation.Collides, true);
    M.Append(MenuCollisionCheck);
    Result.Append(M);
