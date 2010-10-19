@@ -414,8 +414,6 @@ var
     Sensors: TPointingDeviceSensorsList;
     I: Integer;
   begin
-    Strs.Clear;
-
     if SceneAnimation.ScenesCount = 1 then
     begin
       if Scene.PointingDeviceOverItem <> nil then
@@ -431,13 +429,7 @@ var
     end;
 
     if Strs.Count <> 0 then
-    begin
-      glLoadIdentity;
-      glTranslatef(5, 0, 0);
-      statusFont.PrintStringsBorderedRectTop(strs, 0,
-        StatusInsideCol, StatusBorderCol, StatusTextCol,
-        nil, 5, 1, 1, Glw.Height - ToolbarPanel.Height, 5);
-    end;
+      Strs.Append(''); { a blank line, separating from the rest of status }
   end;
 
   function CurrentAboveHeight: string;
@@ -459,6 +451,8 @@ begin
 
  strs := TStringList.Create;
  try
+  DescribeSensors;
+
   S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
   if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
@@ -521,8 +515,6 @@ begin
     statusFont.printStringsBorderedRect(strs, 0,
       StatusInsideCol, StatusBorderCol, StatusTextCol,
       nil, 5, 1, 1);
-
-    DescribeSensors;
 
   glDisable(GL_BLEND);
  finally strs.Free end;
