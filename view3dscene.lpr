@@ -88,7 +88,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLShadowMaps,
   { view3dscene-specific units: }
   TextureFilters, ColorModulators, V3DSceneLights, RaytraceToWindow,
-  V3DSceneAllCameras, SceneChangesUnit, BGColors, V3DSceneViewpoints,
+  V3DSceneNavigationTypes, SceneChangesUnit, BGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig,
@@ -205,6 +205,7 @@ type
     class procedure PointingDeviceSensorsChange(Sender: TObject);
     class procedure HeadlightOnChanged(Sender: TObject);
     class procedure WarningsView(Sender: TObject);
+    class procedure NavigationTypeButtonClick(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -259,10 +260,10 @@ begin
     MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
 end;
 
-{ Update menu items that reflect Camera properties }
-procedure UpdateCameraMenus;
+{ Update menu items and buttons that reflect Camera properties }
+procedure UpdateCameraUI;
 begin
-  UpdateCameraNavigationTypeMenu;
+  UpdateCameraNavigationTypeUI;
   if MenuGravity <> nil then
     MenuGravity.Checked := Camera.Walk.Gravity;
   if MenuIgnoreAllInputs <> nil then
@@ -782,7 +783,7 @@ end;
 
 class procedure THelper.BoundNavigationInfoChanged(Sender: TObject);
 begin
-  UpdateCameraMenus;
+  UpdateCameraUI;
 end;
 
 class procedure THelper.HeadlightOnChanged(Sender: TObject);
@@ -1058,7 +1059,7 @@ begin
       Glw.Caption := NewCaption else
       Glw.FPSBaseCaption := NewCaption;
 
-    UpdateCameraMenus;
+    UpdateCameraUI;
 
     SceneOctreeCreate;
 
@@ -1351,11 +1352,6 @@ begin
     end;
 
   end;
-end;
-
-procedure Resize(Glwin: TGLWindow);
-begin
-  UpdateWarningsButton;
 end;
 
 class procedure THelper.WarningsView(Sender: TObject);
@@ -2748,7 +2744,7 @@ begin
          if Camera.NavigationType = High(TCameraNavigationType) then
            Camera.NavigationType := Low(TCameraNavigationType) else
            Camera.NavigationType := Succ(Camera.NavigationType);
-         UpdateCameraMenus;
+         UpdateCameraUI;
        end;
 
   121: begin
@@ -2810,20 +2806,20 @@ begin
 
   201: begin
          Camera.Walk.Gravity := not Camera.Walk.Gravity;
-         UpdateCameraNavigationTypeMenu;
+         UpdateCameraNavigationTypeUI;
        end;
   202: begin
          Camera.Walk.PreferGravityUpForRotations := not Camera.Walk.PreferGravityUpForRotations;
-         UpdateCameraNavigationTypeMenu;
+         UpdateCameraNavigationTypeUI;
        end;
   203: begin
          Camera.Walk.PreferGravityUpForMoving := not Camera.Walk.PreferGravityUpForMoving;
-         UpdateCameraNavigationTypeMenu;
+         UpdateCameraNavigationTypeUI;
        end;
   205: ChangeMoveSpeed;
   210: begin
          Camera.IgnoreAllInputs := not Camera.IgnoreAllInputs;
-         UpdateCameraNavigationTypeMenu;
+         UpdateCameraNavigationTypeUI;
        end;
 
   220: begin
@@ -2889,7 +2885,7 @@ begin
   1300..1399:
     begin
       Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
-      UpdateCameraMenus;
+      UpdateCameraUI;
     end;
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
@@ -3253,6 +3249,52 @@ begin
    Result.Append(M);
 end;
 
+{ toolbar -------------------------------------------------------------------- }
+
+procedure Resize(Glwin: TGLWindow);
+var
+  NT: TCameraNavigationType;
+  NextLeft, Bottom: Integer;
+begin
+  UpdateWarningsButton;
+
+  NextLeft := 5;
+  Bottom := Glwin.Height - CameraButtons[ntExamine { any}].Height - 5;
+  for NT := Low(NT) to High(NT) do
+  begin
+    CameraButtons[NT].Left := NextLeft;
+    CameraButtons[NT].Bottom := Bottom;
+    NextLeft += CameraButtons[NT].Width + 5;
+  end;
+end;
+
+procedure CreateToolbar;
+var
+  NT: TCameraNavigationType;
+begin
+  WarningsButton := TKamGLButton.Create(Application);
+  WarningsButton.Caption := 'Warnings';
+  WarningsButton.OnClick := @THelper(nil).WarningsView;
+  WarningsButton.Image := Warning_icon;
+  Glw.Controls.Insert(0, WarningsButton);
+
+  for NT := Low(NT) to High(NT) do
+  begin
+    CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
+    CameraButtons[NT].Caption := CameraNames[NT];
+    CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
+    CameraButtons[NT].Toggle := true;
+    // WarningsButton.Image := Warning_icon;
+    // TODO: for now, don't use: Glw.Controls.Insert(0, CameraButtons[NT]);
+  end;
+end;
+
+class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
+begin
+  Camera.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
+  UpdateCameraUI;
+end;
+
 { initializing GL context --------------------------------------------------- }
 
 procedure MultiSamplingOff(Glwin: TGLWindow; const FailureMessage: string);
@@ -3451,11 +3493,7 @@ begin
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
-  WarningsButton := TKamGLButton.Create(Application);
-  WarningsButton.Caption := 'Warnings';
-  WarningsButton.OnClick := @THelper(nil).WarningsView;
-  WarningsButton.Image := Warning_icon;
-  Glw.Controls.Insert(0, WarningsButton);
+  CreateToolbar;
 
   SceneWarnings := TSceneWarnings.Create;
   try

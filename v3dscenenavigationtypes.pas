@@ -21,12 +21,13 @@
 }
 
 { Manage camera navigation types. }
-unit V3DSceneAllCameras;
+unit V3DSceneNavigationTypes;
 
 interface
 
 uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
-  GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls, KambiTimeUtils;
+  GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls, KambiTimeUtils,
+  GLControls;
 
 { Call this once on created SceneManager.
   This will take care of using proper SceneManager.Camera. }
@@ -38,8 +39,9 @@ const
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
+  CameraButtons: array [TCameraNavigationType] of TKamGLButton;
 
-procedure UpdateCameraNavigationTypeMenu;
+procedure UpdateCameraNavigationTypeUI;
 
 { Interpret and remove from ParStr(1) ... ParStr(ParCount)
   some params specific for this unit.
@@ -62,23 +64,35 @@ var
   { Same as your SceneManager.Camera after InitCameras. }
   Camera: TUniversalCamera;
 
+type
+  TNavigationTypeButton = class(TKamGLButton)
+  public
+    NavigationType: TCameraNavigationType;
+    constructor Create(AOwner: TComponent;
+      const ANavigationType: TCameraNavigationType); reintroduce;
+  end;
+
 implementation
 
 uses ParseParametersUnit;
 
 { global stuff --------------------------------------------------------------- }
 
-procedure UpdateCameraNavigationTypeMenu;
+procedure UpdateCameraNavigationTypeUI;
+var
+  NT: TCameraNavigationType;
 begin
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
+  for NT := Low(NT) to High(NT) do
+    CameraButtons[NT].Pressed := NT = Camera.NavigationType;
 end;
 
 procedure InitCameras(SceneManager: TKamSceneManager);
 begin
   { init SceneManager.Camera }
   SceneManager.Camera := Camera;
-  UpdateCameraNavigationTypeMenu;
+  UpdateCameraNavigationTypeUI;
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -94,6 +108,13 @@ const
   ((Short:#0; Long:'navigation'; Argument: oaRequired));
 begin
   ParseParameters(Options, @OptionProc, nil, true);
+end;
+
+constructor TNavigationTypeButton.Create(AOwner: TComponent;
+  const ANavigationType: TCameraNavigationType);
+begin
+  inherited Create(AOwner);
+  NavigationType := ANavigationType;
 end;
 
 initialization
