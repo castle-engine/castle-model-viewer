@@ -3267,7 +3267,7 @@ procedure Resize(Glwin: TGLWindow);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
   ButtonsMargin = 8; {< between buttons }
-  ButtonsGroupMargin = 8; {< added to ButtonsMargin for groups }
+  ButtonsGroupMargin = 16; {< added to ButtonsMargin for groups }
 var
   NT: TCameraNavigationType;
   NextLeft, ButtonsHeight, ButtonsBottom: Integer;
