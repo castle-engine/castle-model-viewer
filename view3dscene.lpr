@@ -472,16 +472,6 @@ begin
    s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
   strs.Append(Format('Use scene lights: %s', [s])); }
 
-  { Note: there's no sense in showing here Glw.Fps.RealTime,
-    since it would force me to constantly render new frames just
-    to show constantly changing Glw.Fps.RealTime ...
-    this makes no sense, of course.
-
-    I also decided to show below FPS from last frame (1 / Glw.Fps.DrawSpeed),
-    instead of averaged FPS (Glw.Fps.FrameTime).
-
-    Glw.Fps.FrameTime and Glw.Fps.RealTime are visible anyway
-    on window's Caption. }
   if SceneAnimation.Attributes.UseOcclusionQuery or
      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
     S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
