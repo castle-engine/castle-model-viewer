@@ -3284,7 +3284,7 @@ begin
     CameraButtons[NT].Caption := CameraNames[NT];
     CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
     CameraButtons[NT].Toggle := true;
-    // WarningsButton.Image := Warning_icon;
+    // CameraButtons[NT].Image :=
     // TODO: for now, don't use: Glw.Controls.Insert(0, CameraButtons[NT]);
   end;
 end;
