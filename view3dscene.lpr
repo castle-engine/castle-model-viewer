@@ -459,8 +459,6 @@ begin
 
  strs := TStringList.Create;
  try
-  strs.Append(Format('Navigation mode: %s', [CameraNames[Camera.NavigationType]]));
-
   S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
   if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
@@ -483,10 +481,6 @@ begin
        VectorToNiceStr(Camera.Examine.MoveAmount),
        Camera.Examine.ScaleFactor ]));
   end;
-
-  strs.Append(
-    Format('Projection type : %s', [ProjectionTypeToStr[ProjectionType]]) +
-    OctreeDisplayStatus);
 
   if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
