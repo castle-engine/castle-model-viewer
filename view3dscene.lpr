@@ -3241,16 +3241,14 @@ procedure CreateToolbar;
 var
   NT: TCameraNavigationType;
 const
-  Opacity = 0.8;
   MinImageHeight = 32;
 begin
   ToolbarPanel := TKamPanel.Create(Application);
-  ToolbarPanel.Opacity := Opacity;
+  ToolbarPanel.Opacity := 0.8;
   Glw.Controls.Insert(0, ToolbarPanel);
 
   OpenButton := TKamGLButton.Create(Application);
   OpenButton.Caption := 'Open';
-  OpenButton.Opacity := Opacity;
   OpenButton.OnClick := @THelper(nil).OpenButtonClick;
   OpenButton.Image := ImageOpen.Open;
   OpenButton.MinImageHeight := MinImageHeight;
@@ -3258,7 +3256,6 @@ begin
 
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
-  WarningsButton.Opacity := Opacity;
   WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
   WarningsButton.MinImageHeight := MinImageHeight;
@@ -3275,7 +3272,6 @@ begin
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       CameraButtons[NT].Caption := CameraNames[NT];
-      CameraButtons[NT].Opacity := Opacity;
       CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
