@@ -112,7 +112,7 @@ var
     to SceneAnimation.Collides = true next), but it will be destroyed on next
     rebuild of octree (when we will just destroy old and not recreate new).
   }
-  MenuCollisionCheck: TMenuItemChecked;
+  MenuCollisions: TMenuItemChecked;
 
   { ustalane w Init, finalizowane w Close }
   StatusFont: TGLBitmapFont;
@@ -182,6 +182,7 @@ var
   WarningsButton: TKamGLButton;
 
   ToolbarPanel: TKamPanel;
+  CollisionsButton: TKamGLButton;
 
   AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
@@ -209,6 +210,7 @@ type
     class procedure WarningsButtonClick(Sender: TObject);
     class procedure NavigationTypeButtonClick(Sender: TObject);
     class procedure OpenButtonClick(Sender: TObject);
+    class procedure CollisionsButtonClick(Sender: TObject);
   end;
 
 { SceneManager --------------------------------------------------------------- }
@@ -309,14 +311,15 @@ end;
 
 procedure SceneOctreeCreate; forward;
 
-procedure SetCollisionCheck(const Value: boolean;
+procedure SetCollisions(const Value: boolean;
   const NeedMenuUpdate: boolean = true);
 begin
   if SceneAnimation.Collides <> Value then
   begin
     SceneAnimation.Collides := Value;
+    CollisionsButton.Pressed := Value;
     if NeedMenuUpdate then
-      MenuCollisionCheck.Checked := Value;
+      MenuCollisions.Checked := Value;
     if SceneAnimation.Collides and
       (SceneAnimation.FirstScene.OctreeCollisions = nil) then
       SceneOctreeCreate;
@@ -2722,7 +2725,7 @@ begin
          ShowStatus := not ShowStatus;
          UpdateToolbarVisible;
        end;
-  123: SetCollisionCheck(not SceneAnimation.Collides, false);
+  123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
   126: Glw.SwapFullScreen;
@@ -3117,10 +3120,10 @@ begin
      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
      M.Append(M2);
-   MenuCollisionCheck := TMenuItemChecked.Create(
+   MenuCollisions := TMenuItemChecked.Create(
      '_Collision Detection and Picking',                123, CtrlC,
        SceneAnimation.Collides, true);
-   M.Append(MenuCollisionCheck);
+   M.Append(MenuCollisions);
    Result.Append(M);
  M := TMenu.Create('_Animation');
    MenuAnimationTimePlaying := TMenuItemChecked.Create(
@@ -3227,6 +3230,7 @@ begin
   begin
     ToolbarPanel.Exists := ShowStatus and not MakingScreenShot;
     OpenButton.Exists := ToolbarPanel.Exists;
+    CollisionsButton.Exists := ToolbarPanel.Exists;
 
     { Note that WarningsButton ignores the ToolbarPanel.Exists.
       This is by design --- always signal warnings. }
@@ -3253,6 +3257,16 @@ begin
   OpenButton.Image := ImageOpen.Open;
   OpenButton.MinImageHeight := MinImageHeight;
   Glw.Controls.Insert(0, OpenButton);
+
+  CollisionsButton := TKamGLButton.Create(Application);
+  CollisionsButton.Caption := 'Collisions';
+  CollisionsButton.OnClick := @THelper(nil).CollisionsButtonClick;
+  CollisionsButton.MinImageHeight := MinImageHeight;
+  CollisionsButton.Toggle := true;
+  if SceneAnimation <> nil then
+    CollisionsButton.Pressed := SceneAnimation.Collides else
+    CollisionsButton.Pressed := true { default value };
+  Glw.Controls.Insert(0, CollisionsButton);
 
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
@@ -3322,6 +3336,10 @@ begin
     end;
   NextLeft += ButtonsGroupMargin;
 
+  CollisionsButton.Left := NextLeft;
+  CollisionsButton.Bottom := ButtonsBottom;
+  NextLeft += CollisionsButton.Width + ButtonsMargin + ButtonsGroupMargin;
+
   WarningsButton.Left := Max(NextLeft,
     Glw.Width - WarningsButton.Width - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
@@ -3341,6 +3359,11 @@ class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
 begin
   Camera.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
   UpdateCameraUI;
+end;
+
+class procedure THelper.CollisionsButtonClick(Sender: TObject);
+begin
+  SetCollisions(not SceneAnimation.Collides, true);
 end;
 
 { initializing GL context --------------------------------------------------- }
