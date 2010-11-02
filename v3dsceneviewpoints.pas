@@ -153,6 +153,8 @@ var
   Viewpoint: TNodeX3DViewpointNode;
   MenuItem: TMenuItemRadio;
 begin
+  MenuJumpToViewpoint.MenuUpdateBegin;
+
   MenuJumpToViewpoint.EntriesDeleteAll;
 
   ViewpointsRadioGroup := nil;
@@ -197,6 +199,8 @@ begin
   MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 58));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 59));
   MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 60));
+
+  MenuJumpToViewpoint.MenuUpdateEnd;
 end;
 
 initialization
