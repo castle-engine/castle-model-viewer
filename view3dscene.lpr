@@ -3238,6 +3238,10 @@ begin
     for NT := Low(NT) to High(NT) do
       if CameraButtons[NT] <> nil then
         CameraButtons[NT].Exists := ToolbarPanel.Exists;
+
+    { Call Resize after changing ToolbarPanel.Exists, as warnings button
+      position is calculated differently based on it }
+    if not Glw.Closed then Glw.EventResize;
   end;
 end;
 
@@ -3311,42 +3315,45 @@ begin
   ButtonsHeight := Max(
     CameraButtons[ntExamine { any button }].Height,
     WarningsButton.Height);
-
-  ToolbarPanel.VerticalSeparators.Clear;
-
-  ToolbarPanel.Left := 0;
-  ToolbarPanel.Width := Glwin.Width;
-  ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
-  ToolbarPanel.Bottom := Glwin.Height - ToolbarPanel.Height;
-
-  NextLeft := ToolbarMargin;
   ButtonsBottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
 
-  { Now place buttons, in left-to-right order }
+  NextLeft := ToolbarMargin;
 
-  OpenButton.Left := NextLeft;
-  OpenButton.Bottom := ButtonsBottom;
-  NextLeft += OpenButton.Width + ButtonsSeparatorsMargin;
+  if ToolbarPanel.Exists then
+  begin
+    ToolbarPanel.VerticalSeparators.Clear;
 
-  ToolbarPanel.VerticalSeparators.Add(NextLeft);
-  NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+    ToolbarPanel.Left := 0;
+    ToolbarPanel.Width := Glwin.Width;
+    ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
+    ToolbarPanel.Bottom := Glwin.Height - ToolbarPanel.Height;
 
-  for NT := Low(NT) to High(NT) do
-    { check with <> nil, since for ntNone we don't show button now }
-    if CameraButtons[NT] <> nil then
-    begin
-      CameraButtons[NT].Left := NextLeft;
-      CameraButtons[NT].Bottom := ButtonsBottom;
-      NextLeft += CameraButtons[NT].Width + ButtonsMargin;
-    end;
-  NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
+    { Now place buttons, in left-to-right order }
 
-  ToolbarPanel.VerticalSeparators.Add(NextLeft);
-  NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+    OpenButton.Left := NextLeft;
+    OpenButton.Bottom := ButtonsBottom;
+    NextLeft += OpenButton.Width + ButtonsSeparatorsMargin;
 
-  CollisionsButton.Left := NextLeft;
-  CollisionsButton.Bottom := ButtonsBottom;
-  NextLeft += CollisionsButton.Width + ButtonsMargin;
+    ToolbarPanel.VerticalSeparators.Add(NextLeft);
+    NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+
+    for NT := Low(NT) to High(NT) do
+      { check with <> nil, since for ntNone we don't show button now }
+      if CameraButtons[NT] <> nil then
+      begin
+        CameraButtons[NT].Left := NextLeft;
+        CameraButtons[NT].Bottom := ButtonsBottom;
+        NextLeft += CameraButtons[NT].Width + ButtonsMargin;
+      end;
+    NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
+
+    ToolbarPanel.VerticalSeparators.Add(NextLeft);
+    NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+
+    CollisionsButton.Left := NextLeft;
+    CollisionsButton.Bottom := ButtonsBottom;
+    NextLeft += CollisionsButton.Width + ButtonsMargin;
+  end;
 
   WarningsButton.Left := Max(NextLeft,
     Glw.Width - WarningsButton.Width - ToolbarMargin);
