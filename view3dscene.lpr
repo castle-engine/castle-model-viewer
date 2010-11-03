@@ -3253,6 +3253,7 @@ const
 begin
   ToolbarPanel := TKamPanel.Create(Application);
   ToolbarPanel.Opacity := 0.8;
+  ToolbarPanel.VerticalSeparators.Count := 2;
   Glw.Controls.Insert(0, ToolbarPanel);
 
   OpenButton := TKamGLButton.Create(Application);
@@ -3321,8 +3322,6 @@ begin
 
   if ToolbarPanel.Exists then
   begin
-    ToolbarPanel.VerticalSeparators.Clear;
-
     ToolbarPanel.Left := 0;
     ToolbarPanel.Width := Glwin.Width;
     ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
@@ -3334,7 +3333,7 @@ begin
     OpenButton.Bottom := ButtonsBottom;
     NextLeft += OpenButton.Width + ButtonsSeparatorsMargin;
 
-    ToolbarPanel.VerticalSeparators.Add(NextLeft);
+    ToolbarPanel.VerticalSeparators[0] := NextLeft;
     NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     for NT := Low(NT) to High(NT) do
@@ -3347,7 +3346,7 @@ begin
       end;
     NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
 
-    ToolbarPanel.VerticalSeparators.Add(NextLeft);
+    ToolbarPanel.VerticalSeparators[1] := NextLeft;
     NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     CollisionsButton.Left := NextLeft;
