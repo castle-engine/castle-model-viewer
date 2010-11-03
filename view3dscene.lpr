@@ -3303,7 +3303,7 @@ procedure Resize(Glwin: TGLWindow);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
   ButtonsMargin = 8; {< between buttons }
-  ButtonsGroupMargin = 16; {< added to ButtonsMargin for groups }
+  ButtonsSeparatorsMargin = 8; {< between buttons and separators }
 var
   NT: TCameraNavigationType;
   NextLeft, ButtonsHeight, ButtonsBottom: Integer;
@@ -3311,6 +3311,8 @@ begin
   ButtonsHeight := Max(
     CameraButtons[ntExamine { any button }].Height,
     WarningsButton.Height);
+
+  ToolbarPanel.VerticalSeparators.Clear;
 
   ToolbarPanel.Left := 0;
   ToolbarPanel.Width := Glwin.Width;
@@ -3324,7 +3326,10 @@ begin
 
   OpenButton.Left := NextLeft;
   OpenButton.Bottom := ButtonsBottom;
-  NextLeft += OpenButton.Width + ButtonsMargin + ButtonsGroupMargin;
+  NextLeft += OpenButton.Width + ButtonsSeparatorsMargin;
+
+  ToolbarPanel.VerticalSeparators.Add(NextLeft);
+  NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
   for NT := Low(NT) to High(NT) do
     { check with <> nil, since for ntNone we don't show button now }
@@ -3334,11 +3339,14 @@ begin
       CameraButtons[NT].Bottom := ButtonsBottom;
       NextLeft += CameraButtons[NT].Width + ButtonsMargin;
     end;
-  NextLeft += ButtonsGroupMargin;
+  NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
+
+  ToolbarPanel.VerticalSeparators.Add(NextLeft);
+  NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
   CollisionsButton.Left := NextLeft;
   CollisionsButton.Bottom := ButtonsBottom;
-  NextLeft += CollisionsButton.Width + ButtonsMargin + ButtonsGroupMargin;
+  NextLeft += CollisionsButton.Width + ButtonsMargin;
 
   WarningsButton.Left := Max(NextLeft,
     Glw.Width - WarningsButton.Width - ToolbarMargin);
