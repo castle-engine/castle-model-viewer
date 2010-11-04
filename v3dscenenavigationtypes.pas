@@ -70,6 +70,8 @@ type
     NavigationType: TCameraNavigationType;
     constructor Create(AOwner: TComponent;
       const ANavigationType: TCameraNavigationType); reintroduce;
+    function TooltipStyle: TUIControlDrawStyle; override;
+    procedure DrawTooltip; override;
   end;
 
 implementation
@@ -117,6 +119,26 @@ constructor TNavigationTypeButton.Create(AOwner: TComponent;
 begin
   inherited Create(AOwner);
   NavigationType := ANavigationType;
+end;
+
+function TNavigationTypeButton.TooltipStyle: TUIControlDrawStyle;
+begin
+  Result := ds2D;
+end;
+
+procedure TNavigationTypeButton.DrawTooltip;
+const
+  InsideCol: TVector4f = (1, 1, 0, 0.8); { TODO: desaturated yellow }
+  BorderCol: TVector4f = (0.5, 0.5, 0, 1); { TODO: brown }
+  TextCol  : TVector4f = (0, 0, 0, 1);
+begin
+  glTranslatef(Left, Bottom - 10 - Font.RowHeight, 0);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  Font.PrintStringsBorderedRect(
+    ['TODO: Tooltip about this navigation mode'],
+    0, InsideCol, BorderCol, TextCol, nil, 5, 1, 1);
+  glDisable(GL_BLEND);
 end;
 
 initialization
