@@ -76,7 +76,7 @@ type
 
 implementation
 
-uses ParseParametersUnit;
+uses ParseParametersUnit, KambiClassUtils;
 
 { global stuff --------------------------------------------------------------- }
 
@@ -123,22 +123,89 @@ end;
 
 function TNavigationTypeButton.TooltipStyle: TUIControlDrawStyle;
 begin
-  Result := ds2D;
+  if NavigationType in [ntExamine, ntWalk, ntFly] then
+    Result := ds2D else
+    Result := dsNone;
 end;
 
 procedure TNavigationTypeButton.DrawTooltip;
+
+  procedure DoDraw(const Strings: array of string);
+  const
+    InsideCol: TVector4f = (      1, 234/255, 169/255, 0.9);
+    BorderCol: TVector4f = (157/255, 133/255, 105/255,   1);
+    TextCol  : TVector4f = (0, 0, 0, 1);
+  var
+    StringList: TStringList;
+  begin
+    StringList := TStringList.Create;
+    try
+      AddStrArrayToStrings(Strings, StringList);
+
+      glTranslatef(Left, 0, 0);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+      Font.PrintStringsBorderedRectTop(StringList,
+        0, InsideCol, BorderCol, TextCol, nil, 5, 1, 1,
+        ContainerHeight, Height + 10);
+      glDisable(GL_BLEND);
+    finally FreeAndNil(StringList) end;
+  end;
+
 const
-  InsideCol: TVector4f = (1, 1, 0, 0.8); { TODO: desaturated yellow }
-  BorderCol: TVector4f = (0.5, 0.5, 0, 1); { TODO: brown }
-  TextCol  : TVector4f = (0, 0, 0, 1);
+  ExamineToolTip: array [0..14] of string = (
+    'Examine navigation controls:',
+    '',
+    'Mouse:',
+    '',
+    'Rotate         Left mouse dragging',
+    'Move           Middle mouse dragging (or Left mouse + Shift)',
+    'Zoom           Right mouse dragging (or Left mouse + Ctrl)',
+    '',
+    'Keys:',
+    '',
+    'Rotate                           Arrows / PageUp / PageDown',
+    'Stop rotating                    Space',
+    'Move                             Ctrl + Arrows / PageUp / PageDown',
+    'Scale                            + / -',
+    'Restore default transformation   Home'
+  );
+
+  WalkFlyTooltip: array [0..27] of string = (
+    'Walk / Fly navigation controls:',
+    '',
+    'Basic:',
+    '',
+    'Forward / backward                        Up / Down',
+    'Rotate                                    Left / Right',
+    'Raise / bow your head                     PageUp / PageDown',
+    'Restore head raise to initial position    Home',
+    '  (neutralize any effect of PageUp / PageDown)',
+    'Fly up / down                             Insert / Delete',
+    'Move left / right                         Comma / Period',
+    'Jump / crouch                             A / Z',
+    '  (only when Gravity works, in Walk mode)',
+    '',
+    'Turn "Mouse Look" "On" to comfortably look around by moving the mouse. Then the keys for strafe and rotations swap their meaning:',
+    '    * Left / Right keys move left / right',
+    '    * Comma / Period rotate',
+    '',
+    'Additional controls:',
+    '',
+    'Increase / decrease moving speed               + / -',
+    '  (has effect on keys Up / Down, Insert / Delete, Comma / Period)',
+    'Increase / decrease avatar height              Ctrl + Insert/Delete',
+    '  (preferred camera height above the ground)',
+    'Rotate slower                                  Ctrl + Left / Right',
+    '  (useful when you want to set up camera very precisely, e.g. to use this camera setting to render a scene image using ray-tracer)',
+    'Raise / bow your head slower                   Ctrl + PageUp / PageDown',
+    'Pick a point, selecting triangle and object    Right mouse click'
+  );
+
 begin
-  glTranslatef(Left, Bottom - 10 - Font.RowHeight, 0);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
-  Font.PrintStringsBorderedRect(
-    ['TODO: Tooltip about this navigation mode'],
-    0, InsideCol, BorderCol, TextCol, nil, 5, 1, 1);
-  glDisable(GL_BLEND);
+  if NavigationType = ntExamine then
+    DoDraw(ExamineToolTip) else
+    DoDraw(WalkFlyTooltip);
 end;
 
 initialization
