@@ -480,8 +480,7 @@ begin
     S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
     S := '';
   strs.Append(Format('Rendered Shapes : %d%s of %d ',
-    [ LastRender_RenderedShapesCount,
-      S,
+    [ LastRender_RenderedShapesCount, S,
       LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
 
   if SceneAnimation.TimeAtLoad = 0.0 then
