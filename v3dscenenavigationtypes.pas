@@ -76,7 +76,8 @@ type
 
 implementation
 
-uses ParseParametersUnit, KambiClassUtils;
+uses ParseParametersUnit, KambiClassUtils, Images, GLImages,
+  ImageExamine_Tooltip, ImageWalk_Fly_Tooltip;
 
 { global stuff --------------------------------------------------------------- }
 
@@ -128,13 +129,92 @@ begin
     Result := dsNone;
 end;
 
+{ By using image instead of drawing the text we avoid some lacks
+  of our text output:
+  - it would be unhandy to print both normal and bold fonts
+  - it would be unhandy to use non-monospace fonts and still
+    make columns (key names) matching
+  - GIMP makes fonts antialiased, our bitmap fonts are not antialiased.
+    Besides making things look better, this allows us to use smaller fonts,
+    which is important (we have a lot of text that we have to fit within
+    window).
+
+  Of course, it also causes some problems. Things are no longer configurable
+  at runtime:
+  - fonts
+  - text contents (e.g. we cannot allow view3dscene keys config,
+    although this wasn't planned anyway, as it would make problems
+    with KeySensor, StringSensor)
+  - we cannot wrap text to window width. We just have to assume
+    we'll fit inside.
+}
+{$define IMAGE_TOOLTIPS}
+
+const
+  TooltipInsideCol: TVector4f = (      1, 234/255, 169/255, 0.9);
+  TooltipBorderCol: TVector4f = (157/255, 133/255, 105/255,   1);
+
+{$ifdef IMAGE_TOOLTIPS}
+
+procedure TNavigationTypeButton.DrawTooltip;
+
+  procedure DoDraw(Image: TImage);
+  const
+    WindowBorderMargin = 8;
+    ButtonBottomMargin = 16;
+    ImageMargin = 8;
+    ArrowSize = ButtonBottomMargin + 8;
+  var
+    X1, Y1, X2, Y2, ArrowMiddleX: Integer;
+    Arrow: array [0..2] of TVector2Integer;
+  begin
+    X1 := WindowBorderMargin;
+    X2 := X1 + 2 * ImageMargin + Image.Width;
+    Y2 := Bottom - ButtonBottomMargin;
+    Y1 := Y2 - 2 * ImageMargin - Image.Height;
+
+    DrawGLBorderedRectangle(X1, Y1, X2, Y2, TooltipInsideCol, TooltipBorderCol);
+
+    SetWindowPos(X1 + ImageMargin, Y1 + ImageMargin);
+    { TODO: draw img by disp list }
+    ImageDraw(Image);
+
+    ArrowMiddleX := Left + Width div 2;
+    Arrow[0][0] := ArrowMiddleX - ArrowSize;
+    Arrow[0][1] := Y2;
+    Arrow[1][0] := ArrowMiddleX + ArrowSize;
+    Arrow[1][1] := Y2;
+    Arrow[2][0] := ArrowMiddleX;
+    Arrow[2][1] := Y2 + ArrowSize;
+
+    glColorv(TooltipInsideCol);
+    glBegin(GL_TRIANGLES);
+      glVertexv(Arrow[0]);
+      glVertexv(Arrow[1]);
+      glVertexv(Arrow[2]);
+    glEnd;
+
+    glColorv(TooltipBorderCol);
+    glBegin(GL_LINE_STRIP);
+      glVertexv(Arrow[0]);
+      glVertexv(Arrow[2]);
+      glVertexv(Arrow[1]);
+    glEnd;
+  end;
+
+begin
+  if NavigationType = ntExamine then
+    DoDraw(Examine_ToolTip) else
+    DoDraw(Walk_Fly_Tooltip);
+end;
+
+{$else}
+
 procedure TNavigationTypeButton.DrawTooltip;
 
   procedure DoDraw(const Strings: array of string);
   const
-    InsideCol: TVector4f = (      1, 234/255, 169/255, 0.9);
-    BorderCol: TVector4f = (157/255, 133/255, 105/255,   1);
-    TextCol  : TVector4f = (0, 0, 0, 1);
+    TooltipTextCol  : TVector4f = (0, 0, 0, 1);
   var
     StringList: TStringList;
   begin
@@ -146,7 +226,7 @@ procedure TNavigationTypeButton.DrawTooltip;
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_BLEND);
       Font.PrintStringsBorderedRectTop(StringList,
-        0, InsideCol, BorderCol, TextCol, nil, 5, 1, 1,
+        0, TooltipInsideCol, TooltipBorderCol, TooltipTextCol, nil, 5, 1, 1,
         ContainerHeight, Height + 10);
       glDisable(GL_BLEND);
     finally FreeAndNil(StringList) end;
@@ -171,7 +251,7 @@ const
     'Restore default transformation   Home'
   );
 
-  WalkFlyTooltip: array [0..27] of string = (
+  WalkFlyTooltip: array [0..25] of string = (
     'Walk / Fly navigation controls:',
     '',
     'Basic:',
@@ -186,18 +266,16 @@ const
     'Jump / crouch                             A / Z',
     '  (only when Gravity works, in Walk mode)',
     '',
-    'Turn "Mouse Look" "On" to comfortably look around by moving the mouse. Then the keys for strafe and rotations swap their meaning:',
-    '    * Left / Right keys move left / right',
-    '    * Comma / Period rotate',
+    'Turn "Mouse Look" "On" to comfortably look around by moving the mouse.',
+    'Then the keys for strafe and rotations swap their meaning:',
+    '  * Left / Right keys move left / right',
+    '  * Comma / Period rotate',
     '',
     'Additional controls:',
     '',
     'Increase / decrease moving speed               + / -',
-    '  (has effect on keys Up / Down, Insert / Delete, Comma / Period)',
     'Increase / decrease avatar height              Ctrl + Insert/Delete',
-    '  (preferred camera height above the ground)',
     'Rotate slower                                  Ctrl + Left / Right',
-    '  (useful when you want to set up camera very precisely, e.g. to use this camera setting to render a scene image using ray-tracer)',
     'Raise / bow your head slower                   Ctrl + PageUp / PageDown',
     'Pick a point, selecting triangle and object    Right mouse click'
   );
@@ -207,6 +285,8 @@ begin
     DoDraw(ExamineToolTip) else
     DoDraw(WalkFlyTooltip);
 end;
+
+{$endif}
 
 initialization
   Camera := TUniversalCamera.Create(nil);
