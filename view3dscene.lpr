@@ -1679,6 +1679,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     ShadowingItem: PVRMLTriangle;
     S: string;
     ActiveLights: TDynActiveLightArray;
+    C: Integer;
   begin
     if SelectedItem = nil then
     begin
@@ -1687,26 +1688,30 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     begin
       ActiveLights := SelectedItem^.State.CurrentActiveLights;
 
-      S := Format('Total %d lights active for selected object.',
-        [ActiveLights.Count]);
+      if ActiveLights <> nil then
+        C := ActiveLights.Count else
+        C := 0;
 
-      for i := 0 to ActiveLights.Count - 1 do
-      begin
-       s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
-         [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
+      S := Format('Total %d lights active for selected object.', [C]);
 
-       ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-         SelectedPointWorld, ActiveLights.Items[i].TransfLocation,
-           false, SelectedItem, true, nil);
+      if ActiveLights <> nil then
+        for i := 0 to ActiveLights.Count - 1 do
+        begin
+         s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
+           [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
 
-       if ShadowingItem <> nil then
-       begin
-        s += Format('but no, this light is blocked by triangle %s from node %s.',
-          [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
-            NodeNiceName(TVRMLShape(ShadowingItem^.Shape).Geometry) ])
-       end else
-        s += 'hmm, yes ! No object blocks this light here.';
-      end;
+         ShadowingItem := SceneOctreeCollisions.SegmentCollision(
+           SelectedPointWorld, ActiveLights.Items[i].TransfLocation,
+             false, SelectedItem, true, nil);
+
+         if ShadowingItem <> nil then
+         begin
+          s += Format('but no, this light is blocked by triangle %s from node %s.',
+            [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
+              NodeNiceName(TVRMLShape(ShadowingItem^.Shape).Geometry) ])
+         end else
+          s += 'hmm, yes ! No object blocks this light here.';
+        end;
     end;
 
     ShowAndWrite(S);
