@@ -72,6 +72,8 @@ type
       const ANavigationType: TCameraNavigationType); reintroduce;
     function TooltipStyle: TUIControlDrawStyle; override;
     procedure DrawTooltip; override;
+    procedure GLContextInit; override;
+    procedure GLContextClose; override;
   end;
 
 implementation
@@ -79,7 +81,9 @@ implementation
 uses ParseParametersUnit, KambiClassUtils, Images, GLImages,
   ImageExamine_Tooltip, ImageWalk_Fly_Tooltip;
 
-{ global stuff --------------------------------------------------------------- }
+var
+  ImageExamine_TooltipDL: TGLuint;
+  ImageWalk_Fly_TooltipDL: TGLuint;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -114,6 +118,8 @@ const
 begin
   ParseParameters(Options, @OptionProc, nil, true);
 end;
+
+{ TNavigationTypeButton ------------------------------------------------------ }
 
 constructor TNavigationTypeButton.Create(AOwner: TComponent;
   const ANavigationType: TCameraNavigationType);
@@ -154,7 +160,7 @@ end;
 
 procedure TNavigationTypeButton.DrawTooltip;
 
-  procedure DoDraw(Image: TImage);
+  procedure DoDraw(Image: TImage; ImageDrawDisplayList: TGLuint);
   const
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;
@@ -169,13 +175,12 @@ procedure TNavigationTypeButton.DrawTooltip;
     Y2 := Bottom - ButtonBottomMargin;
     Y1 := Y2 - 2 * ImageMargin - Image.Height;
 
-    DrawGLBorderedRectangle(X1, Y1, X2, Y2, 
+    DrawGLBorderedRectangle(X1, Y1, X2, Y2,
       Vector4Single(TooltipInsideColor, 255),
       Vector4Single(TooltipBorderColor, 255));
 
     SetWindowPos(X1 + ImageMargin, Y1 + ImageMargin);
-    { TODO: draw img by disp list }
-    ImageDraw(Image);
+    glCallList(ImageDrawDisplayList);
 
     ArrowMiddleX := Left + Width div 2;
     Arrow[0][0] := ArrowMiddleX - ArrowSize;
@@ -202,8 +207,8 @@ procedure TNavigationTypeButton.DrawTooltip;
 
 begin
   if NavigationType = ntExamine then
-    DoDraw(Examine_ToolTip) else
-    DoDraw(Walk_Fly_Tooltip);
+    DoDraw(Examine_Tooltip, ImageExamine_TooltipDL) else
+    DoDraw(Walk_Fly_Tooltip, ImageWalk_Fly_TooltipDL);
 end;
 
 {$else}
@@ -226,7 +231,7 @@ procedure TNavigationTypeButton.DrawTooltip;
   end;
 
 const
-  ExamineToolTip: array [0..14] of string = (
+  ExamineTooltip: array [0..14] of string = (
     'Examine navigation controls:',
     '',
     'Mouse:',
@@ -275,11 +280,36 @@ const
 
 begin
   if NavigationType = ntExamine then
-    DoDraw(ExamineToolTip) else
+    DoDraw(ExamineTooltip) else
     DoDraw(WalkFlyTooltip);
 end;
 
 {$endif}
+
+procedure TNavigationTypeButton.GLContextInit;
+begin
+  inherited;
+
+  { Just use GLContextInit/Close for ntExamine to initialize global unit
+    variables . }
+  if NavigationType = ntExamine then
+  begin
+    if ImageExamine_TooltipDL = 0 then
+      ImageExamine_TooltipDL := ImageDrawToDisplayList(Examine_Tooltip);
+    if ImageWalk_Fly_TooltipDL = 0 then
+      ImageWalk_Fly_TooltipDL := ImageDrawToDisplayList(Walk_Fly_Tooltip);
+  end;
+end;
+
+procedure TNavigationTypeButton.GLContextClose;
+begin
+  if NavigationType = ntExamine then
+  begin
+    glFreeDisplayList(ImageExamine_TooltipDL);
+    glFreeDisplayList(ImageWalk_Fly_TooltipDL);
+  end;
+  inherited;
+end;
 
 initialization
   Camera := TUniversalCamera.Create(nil);
