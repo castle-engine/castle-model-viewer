@@ -484,7 +484,7 @@ begin
       LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
 
   if SceneAnimation.TimeAtLoad = 0.0 then
-    S := Format('World time: %d', [SceneAnimation.Time]) else
+    S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
     S := Format('World time: load time + %d = %d',
       [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
        Trunc(SceneAnimation.Time)]);
