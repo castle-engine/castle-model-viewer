@@ -150,11 +150,6 @@ end;
     we'll fit inside.
 }
 {$define IMAGE_TOOLTIPS}
-
-const
-  TooltipInsideCol: TVector4f = (      1, 234/255, 169/255, 0.9);
-  TooltipBorderCol: TVector4f = (157/255, 133/255, 105/255,   1);
-
 {$ifdef IMAGE_TOOLTIPS}
 
 procedure TNavigationTypeButton.DrawTooltip;
@@ -174,7 +169,9 @@ procedure TNavigationTypeButton.DrawTooltip;
     Y2 := Bottom - ButtonBottomMargin;
     Y1 := Y2 - 2 * ImageMargin - Image.Height;
 
-    DrawGLBorderedRectangle(X1, Y1, X2, Y2, TooltipInsideCol, TooltipBorderCol);
+    DrawGLBorderedRectangle(X1, Y1, X2, Y2, 
+      Vector4Single(TooltipInsideColor, 255),
+      Vector4Single(TooltipBorderColor, 255));
 
     SetWindowPos(X1 + ImageMargin, Y1 + ImageMargin);
     { TODO: draw img by disp list }
@@ -188,14 +185,14 @@ procedure TNavigationTypeButton.DrawTooltip;
     Arrow[2][0] := ArrowMiddleX;
     Arrow[2][1] := Y2 + ArrowSize;
 
-    glColorv(TooltipInsideCol);
+    glColorv(TooltipInsideColor);
     glBegin(GL_TRIANGLES);
       glVertexv(Arrow[0]);
       glVertexv(Arrow[1]);
       glVertexv(Arrow[2]);
     glEnd;
 
-    glColorv(TooltipBorderCol);
+    glColorv(TooltipBorderColor);
     glBegin(GL_LINE_STRIP);
       glVertexv(Arrow[0]);
       glVertexv(Arrow[2]);
@@ -214,8 +211,6 @@ end;
 procedure TNavigationTypeButton.DrawTooltip;
 
   procedure DoDraw(const Strings: array of string);
-  const
-    TooltipTextCol  : TVector4f = (0, 0, 0, 1);
   var
     StringList: TStringList;
   begin
@@ -223,13 +218,10 @@ procedure TNavigationTypeButton.DrawTooltip;
     try
       AddStrArrayToStrings(Strings, StringList);
 
-      glTranslatef(Left, 0, 0);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_BLEND);
+      glTranslatef(Left, Bottom - Strings.Count * Font.RowHeight, 0);
       Font.PrintStringsBorderedRectTop(StringList,
         0, TooltipInsideCol, TooltipBorderCol, TooltipTextCol, nil, 5, 1, 1,
         ContainerHeight, Height + 10);
-      glDisable(GL_BLEND);
     finally FreeAndNil(StringList) end;
   end;
 
