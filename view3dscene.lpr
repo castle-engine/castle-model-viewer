@@ -20,24 +20,25 @@
   ----------------------------------------------------------------------------
 }
 
-{ WWW page of this program, with user documentation,
-  is here: [http://vrmlengine.sourceforge.net/view3dscene.php].
+{ view3dscene, a VRML/X3D browser and general 3D model viewer.
+  See [http://vrmlengine.sourceforge.net/view3dscene.php] for user
+  documentation.
 
-  Note: if you want to find out how to use Kambi VRML game engine
-  in your own programs, this program's source code is not the best place
-  to study. It's quite complex, using virtually every feature of our engine,
-  making it all configurable from menu, and filled with a lot
-  of user interface details.
-  Instead you should look at simple example programs in
-  ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.lpr,
-  ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.lpr
+  The other, more internal, name of this program is "Kambi VRML game engine
+  swiss army knife". This program allows to demonstrate and use a lot
+  of our engine features. It's basically a giant GUI to load everything,
+  tweak every option from the menu / toolbar, and such.
 
-  Also ../kambi_vrml_game_engine/examples/vrml/many2vrml.lpr is
-  an example how to write simple command-line converter from Collada, OBJ, 3DS
-  (and all other model formats we can read) to VRML.
+  If you want to find out how to use "Kambi VRML game engine",
+  this isn't the best place to study. Look instead at simple examples
+  in engine sources, like
+    ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.lpr
+    ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.lpr
+    ../kambi_vrml_game_engine/examples/vrml/many2vrml.lpr
+    (the last one is an example of command-line converter from
+    Collada, OBJ, 3DS (and all other model formats we can read) to VRML).
 
-  This is a VRML/X3D browser, also able to load many other 3D model formats.
-  Basic components are :
+  Basic components of this program:
   - use LoadVRMLSequence to load any format to VRML scene.
     This converts any known (to our engine) 3D model format to VRML.
     This convertion doesn't lose anything because VRML is able to
@@ -101,20 +102,9 @@ var
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
 
-  { ponizsze zmienne istotne tylko w trybach nawigacji ktore robia
-    wykrywanie kolizji:
-
-    When SceneAnimation.Collides = true, octree is always initialized
-    (we're after SceneOctreeCreate, before SceneOctreeDestroy).
-    Otherwise, when SceneAnimation.Collides = false, octree *may* be available
-    but doesn't have to. When setting SceneAnimation.Collides to false we do not
-    immediately destroy the octree (in case user will just go back
-    to SceneAnimation.Collides = true next), but it will be destroyed on next
-    rebuild of octree (when we will just destroy old and not recreate new).
-  }
   MenuCollisions: TMenuItemChecked;
 
-  { ustalane w Init, finalizowane w Close }
+  { Initialized in Init, finalized in Close. }
   StatusFont: TGLBitmapFont;
 
   RecentMenu: TGLRecentFiles;
@@ -194,8 +184,9 @@ var
   LastRender_VisibleShapesCount: Cardinal;
 
 { Helper class ---------------------------------------------------------------
-  Some callbacks here require methods, so we just use this
-  dummy class to add them into. }
+
+  Some callbacks here must be methods (procedure of class),
+  so we use this dummy class to contain them. }
 
 type
   THelper = class
@@ -277,6 +268,17 @@ begin
     MenuPreferGravityUpForMoving.Checked := Camera.Walk.PreferGravityUpForMoving;
 end;
 
+{ Return currently used collisions octree.
+
+  Note: When SceneAnimation.Collides = true, octree is always initialized
+  (SceneOctreeCreate is called, and corresponding SceneOctreeDestroy
+  was not).
+  Otherwise, when SceneAnimation.Collides = false, octree *may* be available
+  but doesn't have to. When setting SceneAnimation.Collides to false we do not
+  immediately destroy the octree (in case user will just go back
+  to SceneAnimation.Collides = true next), but it will be destroyed on next
+  rebuild of octree (when we will just destroy old and not recreate new).
+}
 function SceneOctreeCollisions: TVRMLBaseTrianglesOctree;
 begin
   if (SceneAnimation <> nil) and
