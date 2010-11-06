@@ -26,7 +26,7 @@
   change by SetTextureMin/MagFilter,
   description of currently set filters is in TextureMin/MagFilter. }
 
-unit TextureFilters;
+unit V3DSceneTextureFilters;
 
 interface
 

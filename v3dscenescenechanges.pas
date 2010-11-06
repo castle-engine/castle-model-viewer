@@ -21,7 +21,7 @@
 }
 
 { }
-unit SceneChangesUnit;
+unit V3DSceneSceneChanges;
 
 { This unit honours KAMBI_HAS_NURBS symbol, avoiding using nurbs nodes
   if not available. But note that *view3dscene (including this unit)

@@ -23,7 +23,7 @@
 { Simple unit that allows to incrementally display raytracer result
   in TGLWindow window. }
 
-unit RaytraceToWindow;
+unit V3DSceneRaytrace;
 
 interface
 

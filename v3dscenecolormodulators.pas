@@ -30,7 +30,7 @@
   (add this to docs somewhere ?).
 }
 
-unit ColorModulators;
+unit V3DSceneColorModulators;
 
 interface
 

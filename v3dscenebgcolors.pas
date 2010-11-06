@@ -22,7 +22,7 @@
 
 { Simple management of glClearColor OpenGL property. }
 
-unit BGColors;
+unit V3DSceneBGColors;
 
 interface
 
