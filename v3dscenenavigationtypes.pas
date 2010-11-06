@@ -223,10 +223,11 @@ procedure TNavigationTypeButton.DrawTooltip;
     try
       AddStrArrayToStrings(Strings, StringList);
 
-      glTranslatef(Left, Bottom - Strings.Count * Font.RowHeight, 0);
-      Font.PrintStringsBorderedRectTop(StringList,
-        0, TooltipInsideCol, TooltipBorderCol, TooltipTextCol, nil, 5, 1, 1,
-        ContainerHeight, Height + 10);
+      glTranslatef(Left, Bottom - StringList.Count * Font.RowHeight, 0);
+      Font.PrintStringsBorderedRect(StringList, 0,
+        Vector4Single(TooltipInsideColor, 255),
+        Vector4Single(TooltipBorderColor, 255),
+        Vector4Single(TooltipTextColor,  255), nil, 5, 1, 1);
     finally FreeAndNil(StringList) end;
   end;
 
