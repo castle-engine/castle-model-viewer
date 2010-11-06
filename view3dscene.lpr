@@ -78,7 +78,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   Images, CubeMap, DDS, Base3D,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
-  GLWinMessages, ProgressGL, GLWindowRecentFiles, GLImages,
+  GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
@@ -347,8 +347,8 @@ begin
    that fog interpolation has to be corrected for perspective. }
  glHint(GL_FOG_HINT, GL_NICEST);
 
- ProgressGLInterface.Window := Glw;
- Progress.UserInterface := ProgressGLInterface;
+ GLProgressInterface.Window := Glw;
+ Progress.UserInterface := GLProgressInterface;
 
  BGColorChanged;
 
