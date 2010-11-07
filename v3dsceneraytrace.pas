@@ -43,7 +43,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
   const SceneBGColor: TVector3Single;
-  FogNode: TNodeFog; const FogDistanceScaling: Single);
+  FogNode: TNodeFog);
 
 implementation
 
@@ -227,7 +227,7 @@ procedure RaytraceToWin(glwin: TGLWindow;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
   const SceneBGColor: TVector3Single;
-  FogNode: TNodeFog; const FogDistanceScaling: Single);
+  FogNode: TNodeFog);
 var SavedMode: TGLMode;
     CallData: TCallData;
     RealScreenWidth: Cardinal;
@@ -301,7 +301,6 @@ begin
               RayTracer := TClassicRayTracer.Create;
               TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
               TClassicRayTracer(RayTracer).FogNode := FogNode;
-              TClassicRayTracer(RayTracer).FogDistanceScaling := FogDistanceScaling;
               TClassicRayTracer(RayTracer).HeadLightExists := Scene.HeadLightOn;
               if Scene.HeadLightOn then
                 TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight.ActiveLight(CamPosition, CamDir);

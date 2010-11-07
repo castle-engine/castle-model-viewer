@@ -2487,7 +2487,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor,
-      Scene.FogNode, Scene.FogDistanceScaling);
+      Scene.FogNode);
   end;
 
   procedure MergeCloseVertexes;
