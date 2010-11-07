@@ -496,13 +496,10 @@ begin
     S += ' (paused, not processing VRML events)';
   strs.Append(S);
 
-  {statusFont.printStringsBorderedRect(strs, 0, Brown4f, Yellow4f, Black4f,
-    nil, 5, 1, 1);}
-
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
 
-    statusFont.printStringsBorderedRect(strs, 0,
+    statusFont.printStringsBox(strs, 0,
       StatusInsideCol, StatusBorderCol, StatusTextCol,
       nil, 5, 1, 1);
 
