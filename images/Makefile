@@ -9,4 +9,6 @@ clean:
 
 ../v3dsceneimages.pas: warning_icon.png examine.png walk.png fly.png \
   open.png examine_tooltip.png walk_fly_tooltip.png
-	image_to_pas --output .. V3DSceneImages $^
+	image_to_pas --output .. V3DSceneImages \
+	  warning_icon.png examine.png walk.png fly.png open.png \
+	  @alpha=strip examine_tooltip.png walk_fly_tooltip.png
