@@ -92,9 +92,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig,
-  { view3dscene embedded images }
-  ImageWarning_icon, ImageExamine, ImageWalk, ImageFly, ImageOpen;
+  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages;
 
 var
   Glw: TGLUIWindow;
@@ -3262,7 +3260,7 @@ begin
   OpenButton := TKamGLButton.Create(Application);
   OpenButton.Caption := 'Open';
   OpenButton.OnClick := @THelper(nil).OpenButtonClick;
-  OpenButton.Image := ImageOpen.Open;
+  OpenButton.Image := V3DSceneImages.Open;
   OpenButton.MinImageHeight := MinImageHeight;
   Glw.Controls.Insert(0, OpenButton);
 
@@ -3300,9 +3298,9 @@ begin
       Glw.Controls.Insert(0, CameraButtons[NT]);
     end;
 
-  CameraButtons[ntExamine].Image := ImageExamine.Examine;
-  CameraButtons[ntWalk].Image := ImageWalk.Walk;
-  CameraButtons[ntFly].Image := ImageFly.Fly;
+  CameraButtons[ntExamine].Image := V3DSceneImages.Examine;
+  CameraButtons[ntWalk].Image := V3DSceneImages.Walk;
+  CameraButtons[ntFly].Image := V3DSceneImages.Fly;
 
   UpdateToolbarVisible;
 end;

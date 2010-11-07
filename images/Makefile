@@ -1,14 +1,12 @@
 .PHONY: all clean
 
-ALL_UNITS=../imagewarning_icon.pas \
-  ../imageexamine.pas ../imagewalk.pas ../imagefly.pas \
-  ../imageopen.pas ../imageexamine_tooltip.pas \
-  ../imagewalk_fly_tooltip.pas
+ALL_UNITS=../v3dsceneimages.pas
 
 all: $(ALL_UNITS)
 
 clean:
 	rm -f $(ALL_UNITS)
 
-../image%.pas: %.png
-	image_to_pas $< > $@
+../v3dsceneimages.pas: warning_icon.png examine.png walk.png fly.png \
+  open.png examine_tooltip.png walk_fly_tooltip.png
+	image_to_pas --output .. V3DSceneImages $^

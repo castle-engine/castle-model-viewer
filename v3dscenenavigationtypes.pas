@@ -78,8 +78,7 @@ type
 
 implementation
 
-uses ParseParametersUnit, KambiClassUtils, Images, GLImages,
-  ImageExamine_Tooltip, ImageWalk_Fly_Tooltip;
+uses ParseParametersUnit, KambiClassUtils, Images, GLImages, V3DSceneImages;
 
 var
   ImageExamine_TooltipDL: TGLuint;
