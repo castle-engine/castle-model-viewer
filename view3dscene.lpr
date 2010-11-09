@@ -1049,9 +1049,9 @@ begin
 
     UpdateProcessEvents;
 
-    { Make initial ViewerChanged to make initial events to
+    { Make initial CameraChanged to make initial events to
       ProximitySensor, if user is within. }
-    Scene.ViewerChanged(SceneManager.Camera, SceneManager.ViewerToChanges);
+    Scene.CameraChanged(SceneManager.Camera, SceneManager.CameraToChanges);
 
     if not Glw.Closed then
     begin
