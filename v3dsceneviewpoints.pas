@@ -136,30 +136,37 @@ procedure TMenuViewpoints.AddViewpoint(
   ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
 
   { Nice menu item caption for TVRMLViewpointNode or TNodeViewpointGroup }
-  function ViewpointToMenuCaption(Node: TVRMLNode): string;
+  function ViewpointToMenuCaption(const ItemIndex: Integer; Node: TVRMLNode): string;
   var
-    Viewpoint: TNodeX3DViewpointNode;
-    ViewpointGroup: TNodeViewpointGroup;
+    Description: string;
   begin
-    Result := ': ' + Node.NodeTypeName;
+    if ItemIndex < 10 then
+      Result := '_';
+    Result += IntToStr(ItemIndex) + ': ';
+
+    Description := '';
+
     if Node is TNodeX3DViewpointNode then
     begin
-      Viewpoint := TNodeX3DViewpointNode(Node);
-      if Viewpoint.FdDescription.Value <> '' then
-        Result += ' "' + SQuoteMenuEntryCaption(
-          SForCaption(Viewpoint.FdDescription.Value)) + '"';
+      Description := SQuoteMenuEntryCaption(
+        SForCaption(TNodeX3DViewpointNode(Node).FdDescription.Value));
     end else
     if Node is TNodeViewpointGroup then
     begin
-      ViewpointGroup := TNodeViewpointGroup(Node);
-      if ViewpointGroup.FdDescription.Value <> '' then
-        Result += ' "' + SQuoteMenuEntryCaption(
-          SForCaption(ViewpointGroup.FdDescription.Value)) + '"';
-    end else
-    begin
-      if Node.NodeName <> '' then
-        Result += ' "' + SQuoteMenuEntryCaption(Node.NodeName) + '"';
+      Description := SQuoteMenuEntryCaption(
+        SForCaption(TNodeViewpointGroup(Node).FdDescription.Value));
     end;
+
+    { if node doesn't have a "description" field, or it's left empty,
+      use node name }
+    if Description = '' then
+      Description := SQuoteMenuEntryCaption(Node.NodeName);
+
+    { if even the node name is empty, just write node type. }
+    if Description = '' then
+      Description := SQuoteMenuEntryCaption(Node.NodeTypeName);
+
+    Result += Description;
   end;
 
   { Scan ParentInfo information for TNodeViewpointGroup.
@@ -171,7 +178,7 @@ procedure TMenuViewpoints.AddViewpoint(
 
     If some ViewpointGroup on the way has "displayed" = false, then
     we return false and leave AddViewpointGroups in undefined state. }
-  function ParentViewpointGroups(AddViewpointGroups: TVRMLNodesList): boolean;
+  function GetParentViewpointGroups(AddViewpointGroups: TVRMLNodesList): boolean;
   var
     Info: PTraversingInfo;
   begin
@@ -191,20 +198,45 @@ procedure TMenuViewpoints.AddViewpoint(
     end;
   end;
 
+  { For all the ViewpointGroup gathered in AddViewpointGroups,
+    create (or find existing) appropriate submenu.
+    Returns the final menu where you should directly add your viewpoint. }
+  function CreateParentViewpointGroups(AddViewpointGroups: TVRMLNodesList): TMenuViewpointGroup;
+  var
+    Group: TNodeViewpointGroup;
+    I: Integer;
+    NewResult: TMenuViewpointGroup;
+  begin
+    Result := Self;
+    for I := 0 to AddViewpointGroups.Count - 1 do
+    begin
+      Group := AddViewpointGroups[I] as TNodeViewpointGroup;
+      NewResult := Result.FindGroup(Group);
+      if NewResult = nil then
+      begin
+        NewResult := TMenuViewpointGroup.Create(
+          ViewpointToMenuCaption(Result.EntriesCount, Group));
+        NewResult.ViewpointGroup := Group;
+        Result.Append(NewResult);
+      end;
+      Result := NewResult;
+    end;
+  end;
+
 var
   ItemIndex: Integer;
   S: string;
   MenuItem: TMenuItemViewpoint;
+  Group: TMenuViewpointGroup;
 begin
-  if not ParentViewpointGroups(AddViewpointGroups) then Exit;
+  if not GetParentViewpointGroups(AddViewpointGroups) then Exit;
 
-  ItemIndex := EntriesCount;
+  Group := CreateParentViewpointGroups(AddViewpointGroups);
+
+  ItemIndex := Group.EntriesCount;
   if ItemIndex < MaxMenuItems then
   begin
-    if ItemIndex < 10 then
-      S := '_' + IntToStr(ItemIndex) else
-      S := IntToStr(ItemIndex);
-    S += ViewpointToMenuCaption(Node);
+    S := ViewpointToMenuCaption(ItemIndex, Node);
 
     MenuItem := TMenuItemViewpoint.Create(S, 300, SceneBoundViewpoint = Node, false);
     MenuItem.Viewpoint := Node as TVRMLViewpointNode;
@@ -223,7 +255,7 @@ begin
       ViewpointsRadioGroup := MenuItem.Group else
       MenuItem.Group := ViewpointsRadioGroup;
 
-    Append(MenuItem);
+    Group.Append(MenuItem);
   end;
 end;
 
