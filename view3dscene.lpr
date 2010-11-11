@@ -737,17 +737,15 @@ end;
 
 class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
 begin
-  ViewpointsList.Recalculate(Scene);
+  Viewpoints.Recalculate(Scene);
 end;
 
 class procedure THelper.BoundViewpointChanged(Sender: TObject);
 var
   V: TVRMLViewpointNode;
-  BoundViewpointIndex: Integer;
 begin
   V := SceneManager.MainScene.ViewpointStack.Top as TVRMLViewpointNode;
-  BoundViewpointIndex := ViewpointsList.IndexOf(V);
-  ViewpointsList.BoundViewpoint := BoundViewpointIndex;
+  Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
 end;
 
 class procedure THelper.BoundNavigationInfoChanged(Sender: TObject);
@@ -865,7 +863,7 @@ begin
     SceneManager.MainScene }
   Assert(SceneManager.MainScene = nil);
 
-  ViewpointsList.Recalculate(nil);
+  Viewpoints.Recalculate(nil);
 
   SceneFileName := '';
 
@@ -993,8 +991,8 @@ begin
 
     ChangeSceneAnimation(SceneChanges, SceneAnimation);
 
-    { calculate ViewpointsList, including MenuJumpToViewpoint. }
-    ViewpointsList.Recalculate(Scene);
+    { calculate Viewpoints, including MenuJumpToViewpoint. }
+    Viewpoints.Recalculate(Scene);
 
     if UseInitialNavigationType then
     begin
@@ -1008,10 +1006,10 @@ begin
       SceneManager.MainScene.CameraFromNavigationInfo(Camera,
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
       SceneManager.MainScene.CameraFromViewpoint(Camera, false, false);
-      ViewpointsList.BoundViewpoint := ViewpointsList.IndexOf(ViewpointNode);
+      Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
     end else
       { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
-      ViewpointsList.BoundViewpoint := -1;
+      Viewpoints.BoundViewpoint := nil;
 
     SceneInitLights(SceneAnimation, NavigationNode);
 
@@ -2811,7 +2809,7 @@ begin
 
   225: PrecalculateAnimationFromVRMLEvents;
 
-  300..399: JumpToViewpoint(ViewpointsList[MenuItem.IntData - 300] as TVRMLViewpointNode);
+  300: JumpToViewpoint((MenuItem as TMenuItemViewpoint).Viewpoint);
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
     BlendingFactors[MenuItem.IntData - 400].Value;
@@ -3094,9 +3092,8 @@ begin
    M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
  M := TMenu.Create('_Navigation');
-   ViewpointsList.MenuJumpToViewpoint := TMenu.Create('Jump to Viewpoint');
-   ViewpointsList.MakeMenuJumpToViewpoint;
-   M.Append(ViewpointsList.MenuJumpToViewpoint);
+   Viewpoints.Recalculate(Scene);
+   M.Append(Viewpoints);
    M.Append(TMenuSeparator.Create);
    AppendNavigationTypes(M);
    M.Append(TMenuSeparator.Create);

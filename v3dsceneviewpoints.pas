@@ -37,51 +37,52 @@ uses VectorMath, VRMLNodes, GLWindow, KambiUtils, Classes, KambiClassUtils,
 function SForCaption(const S: string): string;
 
 type
-  TObjectsListItem_1 = TVRMLViewpointNode;
-  {$I objectslist_1.inc}
-  TViewpointsList = class(TObjectsList_1)
+  { Menu item referring to a viewpoint.
+
+    Note that in some moments (when we process some events),
+    the @link(Viewpoint) instance may no longer be valid:
+    we can get TVRMLScene.ViewpointStack.OnBoundChanged
+    when other viewpoint nodes are already freed. }
+  TMenuItemViewpoint = class(TMenuItemRadio)
   private
+    FViewpoint: TVRMLViewpointNode;
+  public
+    property Viewpoint: TVRMLViewpointNode read FViewpoint write FViewpoint;
+  end;
+
+  TMenuViewpoints = class(TMenu)
+  private
+    { When nil, then BoundViewpoint is always nil }
+    ViewpointsRadioGroup: TMenuItemRadioGroup;
+
+    { Used only during AddViewpoint callback }
+    SceneBoundViewpoint: TVRMLViewpointNode;
+
     procedure AddViewpoint(
       Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
       ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
-  private
-    FBoundViewpoint: Integer;
-    procedure SetBoundViewpoint(const Value: Integer);
-  private
-    ViewpointsRadioGroup: TMenuItemRadioGroup;
+    function GetBoundViewpoint: TMenuItemViewpoint;
+    procedure SetBoundViewpoint(const Value: TMenuItemViewpoint);
   public
-    MenuJumpToViewpoint: TMenu;
+    { Currently bound viewpoint (@nil if none),
+      used to make appropriate menu item "checked".
 
-    constructor Create;
+      Note: we cannot make this of TVRMLViewpointNode,
+      because the same viewpoint node may be USEd many times
+      within a single scene. }
+    property BoundViewpoint: TMenuItemViewpoint
+      read GetBoundViewpoint write SetBoundViewpoint;
 
-    { Currently bound viewpoint (index on the list, or -1),
-      used here only to make appropriate menu item "checked".
-
-      Note: we cannot make this of TVRMLViewpointNode (which would seem
-      cleaner) because the same viewpoint node may be USEd many times
-      within a single scene.
-      Besides, using TVRMLViewpointNode was risky anyway,
-      as we could get TVRMLScene.ViewpointStack.OnBoundChanged when
-      some viewpoint nodes are already freed. }
-    property BoundViewpoint: Integer
-      read FBoundViewpoint write SetBoundViewpoint default -1;
-
-    { Recalculate our list of viewpoints, also recalculating
-      MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
-
+    { Recalculate menu contents.
       Special value Scene = @nil means no scene is loaded, so no
       viewpoint nodes exist. }
     procedure Recalculate(Scene: TVRMLScene);
 
-    { This does part of Recalculate job: only recalculate
-      MenuJumpToViewpoint contents if MenuJumpToViewpoint is initialized.
-      Call this when MenuJumpToViewpoint reference changed, and you know
-      that actual scene viewpoints didn't change. }
-    procedure MakeMenuJumpToViewpoint;
+    function ItemOf(Viewpoint: TVRMLViewpointNode): TMenuItemViewpoint;
   end;
 
 var
-  ViewpointsList: TViewpointsList;
+  Viewpoints: TMenuViewpoints;
 
 {$undef read_interface}
 
@@ -90,7 +91,6 @@ implementation
 uses SysUtils, KambiStringUtils;
 
 {$define read_implementation}
-{$I objectslist_1.inc}
 
 function SForCaption(const S: string): string;
 begin
@@ -99,72 +99,25 @@ begin
     Result := Copy(Result, 1, 50) + '...';
 end;
 
-constructor TViewpointsList.Create;
-begin
-  inherited;
-  FBoundViewpoint := -1;
-end;
-
-procedure TViewpointsList.AddViewpoint(
-  Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
-  ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
-begin
-  Add(Node as TVRMLViewpointNode);
-end;
-
-procedure TViewpointsList.Recalculate(Scene: TVRMLScene);
-begin
-  Count := 0;
-
-  if (Scene <> nil) and
-     (Scene.RootNode <> nil) then
-    Scene.RootNode.Traverse(TVRMLViewpointNode, @AddViewpoint);
-
-  if MenuJumpToViewpoint <> nil then
-    MakeMenuJumpToViewpoint;
-end;
-
 const
   { We don't add more menu item entries for viewpoints. }
   MaxMenuItems = 20;
 
-procedure TViewpointsList.SetBoundViewpoint(const Value: Integer);
-begin
-  if FBoundViewpoint <> Value then
-  begin
-    FBoundViewpoint := Value;
-
-    if ViewpointsRadioGroup <> nil then
-    begin
-      Assert(MenuJumpToViewpoint <> nil);
-
-      if Between(Value, 0, MaxMenuItems -1) then
-        (MenuJumpToViewpoint.Entries[Value] as TMenuItemRadio).Checked := true else
-        ViewpointsRadioGroup.Selected := nil;
-    end;
-  end;
-end;
-
-procedure TViewpointsList.MakeMenuJumpToViewpoint;
+procedure TMenuViewpoints.AddViewpoint(
+  Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
+  ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
 var
-  Node: TVRMLViewpointNode;
-  I: Integer;
+  ItemIndex: Integer;
   S: string;
   Viewpoint: TNodeX3DViewpointNode;
-  MenuItem: TMenuItemRadio;
+  MenuItem: TMenuItemViewpoint;
 begin
-  MenuJumpToViewpoint.MenuUpdateBegin;
-
-  MenuJumpToViewpoint.EntriesDeleteAll;
-
-  ViewpointsRadioGroup := nil;
-
-  for I := 0 to Min(Count, MaxMenuItems) - 1 do
+  ItemIndex := EntriesCount;
+  if ItemIndex < MaxMenuItems then
   begin
-    if I < 10 then
-      S := '_' + IntToStr(I) else
-      S := IntToStr(I);
-    Node := Items[I];
+    if ItemIndex < 10 then
+      S := '_' + IntToStr(ItemIndex) else
+      S := IntToStr(ItemIndex);
     S += ': ' + Node.NodeTypeName;
     if Node is TNodeX3DViewpointNode then
     begin
@@ -178,33 +131,85 @@ begin
         S += ' "' + SQuoteMenuEntryCaption(Node.NodeName) + '"';
     end;
 
-    MenuItem := TMenuItemRadio.Create(S, 300 + I, I = BoundViewpoint, false);
+    MenuItem := TMenuItemViewpoint.Create(S, 300, SceneBoundViewpoint = Node, false);
+    MenuItem.Viewpoint := Node as TVRMLViewpointNode;
 
-    if I = 0 then
+    { If we have found the currently bound node (and made this menu item
+      selected), then reset SceneBoundViewpoint to nil. This way the first
+      encountered viewpoint node matching Scene.ViewpointStack.Top will be
+      selected.
+
+      TODO: This isn't really 100% correct, but Scene simply doesn't tell
+      us which instance of viewpoint node is actually bound. }
+    if SceneBoundViewpoint = Node then
+      SceneBoundViewpoint := nil;
+
+    if ViewpointsRadioGroup = nil then
       ViewpointsRadioGroup := MenuItem.Group else
       MenuItem.Group := ViewpointsRadioGroup;
 
-    MenuJumpToViewpoint.Append(MenuItem);
+    Append(MenuItem);
   end;
-  MenuJumpToViewpoint.Append(TMenuSeparator.Create);
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Default VRML 2.0 (and X3D) viewpoint', 52));
-  MenuJumpToViewpoint.Append(TMenuSeparator.Create);
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -Z dir)', 53));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +Z dir)', 54));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -X dir)', 55));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +X dir)', 56));
-  MenuJumpToViewpoint.Append(TMenuSeparator.Create);
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -X dir)', 57));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 58));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 59));
-  MenuJumpToViewpoint.Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 60));
+end;
 
-  MenuJumpToViewpoint.MenuUpdateEnd;
+procedure TMenuViewpoints.Recalculate(Scene: TVRMLScene);
+begin
+  MenuUpdateBegin;
+  EntriesDeleteAll;
+
+  ViewpointsRadioGroup := nil;
+
+  if (Scene <> nil) and
+     (Scene.RootNode <> nil) then
+  begin
+    SceneBoundViewpoint := Scene.ViewpointStack.Top as TVRMLViewpointNode;
+    Scene.RootNode.Traverse(TVRMLViewpointNode, @AddViewpoint);
+    SceneBoundViewpoint := nil; //< just for safety
+  end;
+
+  Append(TMenuSeparator.Create);
+  Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
+  Append(TMenuItem.Create('Default VRML 2.0 (and X3D) viewpoint', 52));
+  Append(TMenuSeparator.Create);
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -Z dir)', 53));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +Z dir)', 54));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -X dir)', 55));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +X dir)', 56));
+  Append(TMenuSeparator.Create);
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -X dir)', 57));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 58));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 59));
+  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 60));
+
+  MenuUpdateEnd;
+end;
+
+function TMenuViewpoints.GetBoundViewpoint: TMenuItemViewpoint;
+begin
+  if ViewpointsRadioGroup <> nil then
+    Result := ViewpointsRadioGroup.Selected as TMenuItemViewpoint else
+    Result := nil; //< then no viewpoints exist
+end;
+
+procedure TMenuViewpoints.SetBoundViewpoint(const Value: TMenuItemViewpoint);
+begin
+  if ViewpointsRadioGroup <> nil then
+    ViewpointsRadioGroup.Selected := Value else
+    { When no viewpoints exist, BoundViewpoint is always nil }
+    Assert(Value = nil);
+end;
+
+function TMenuViewpoints.ItemOf(Viewpoint: TVRMLViewpointNode): TMenuItemViewpoint;
+var
+  I: Integer;
+begin
+  if ViewpointsRadioGroup <> nil then
+    for I := 0 to ViewpointsRadioGroup.Count - 1 do
+      if TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]).Viewpoint = Viewpoint then
+        Exit(TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]));
+  Result := nil;
 end;
 
 initialization
-  ViewpointsList := TViewpointsList.Create;
-finalization
-  FreeAndNil(ViewpointsList);
+  Viewpoints := TMenuViewpoints.Create('Jump to Viewpoint');
 end.
