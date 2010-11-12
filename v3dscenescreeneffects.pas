@@ -29,7 +29,7 @@ interface
 uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
 
 type
-  TScreenEffect = (seGrayscale, seNegative);
+  TScreenEffect = (seGrayscale, seNegative, seGamma22, seGamma4);
 
   TScreenEffects = class(TUIControl)
   private
@@ -58,7 +58,7 @@ uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
 
 const
   ScreenEffectsNames: array [TScreenEffect] of string =
-  ('Grayscale', 'Negative');
+  ('Grayscale', 'Negative', 'Gamma 2.2', 'Gamma 4.0');
 
   ScreenEffectsCode: array [TScreenEffect] of string =
   ('#extension GL_ARB_texture_rectangle : enable' +nl+
@@ -77,6 +77,22 @@ const
    '{' +NL+
    '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
    '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
+   '}',
+
+   '#extension GL_ARB_texture_rectangle : enable' +nl+
+   'uniform sampler2DRect screen;' +NL+
+   'void main (void)' +NL+
+   '{' +NL+
+   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
+   '}',
+
+   '#extension GL_ARB_texture_rectangle : enable' +nl+
+   'uniform sampler2DRect screen;' +NL+
+   'void main (void)' +NL+
+   '{' +NL+
+   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
    '}'
   );
 
