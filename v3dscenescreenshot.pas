@@ -25,7 +25,7 @@ unit V3DSceneScreenShot;
 
 interface
 
-uses KambiUtils, Classes, KambiClassUtils, VRMLOpenGLRenderer, KambiTimeUtils;
+uses KambiUtils, Classes, KambiClassUtils, KambiTimeUtils;
 
 {$define read_interface}
 

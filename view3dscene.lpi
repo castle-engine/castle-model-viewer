@@ -271,8 +271,8 @@
         <UsageCount Value="10"/>
       </Unit35>
       <Unit36>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlopenglrenderer.pas"/>
-        <UnitName Value="VRMLOpenGLRenderer"/>
+        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglrenderer.pas"/>
+        <UnitName Value="VRMLGLRenderer"/>
         <CursorPos X="45" Y="4303"/>
         <TopLine Value="4298"/>
         <UsageCount Value="10"/>

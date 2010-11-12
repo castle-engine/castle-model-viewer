@@ -34,7 +34,7 @@ unit V3DSceneColorModulators;
 
 interface
 
-uses KambiUtils, VectorMath, VRMLNodes, VRMLOpenGLRenderer, VRMLGLAnimation;
+uses KambiUtils, VectorMath, VRMLNodes, VRMLGLAnimation;
 
 type
   TColorModulatorType = (

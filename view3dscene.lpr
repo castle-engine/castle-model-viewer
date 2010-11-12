@@ -85,7 +85,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
-  VRMLRendererOptimization, VRMLOpenGLRenderer, VRMLShape, RenderStateUnit,
+  VRMLRendererOptimization, VRMLGLRenderer, VRMLShape, RenderStateUnit,
   VRMLShadowMaps,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneColorModulators, V3DSceneLights, V3DSceneRaytrace,
