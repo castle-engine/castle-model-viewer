@@ -75,6 +75,5 @@ mk_screnshot ()
 # testing actual rendering of the scene)
 
 # mk_screnshot --renderer-optimization none
-# mk_screnshot --renderer-optimization scene-as-a-whole
-# mk_screnshot --renderer-optimization separate-shapes
-# mk_screnshot --renderer-optimization separate-shapes-no-transform
+# mk_screnshot --renderer-optimization scene-display-list
+# mk_screnshot --renderer-optimization shape-display-list
