@@ -29,7 +29,8 @@ interface
 uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
 
 type
-  TScreenEffect = (seGrayscale, seNegative, seGamma22, seGamma4, seEdgeDetect);
+  TScreenEffect = (seGrayscale, seNegative, seGamma22, seGamma4, seEdgeDetect,
+    seRoundHeadLight);
 
   TScreenEffects = class(TUIControl)
   private
@@ -58,7 +59,7 @@ uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
 
 const
   ScreenEffectsNames: array [TScreenEffect] of string =
-  ('Grayscale', 'Negative', 'Gamma 2.2', 'Gamma 4.0', 'Edge Detect');
+  ('Grayscale', 'Negative', 'Gamma 2.2', 'Gamma 4.0', 'Edge Detect', 'Round HeadLight');
 
   ScreenEffectsCode: array [TScreenEffect] of string =
   ('#extension GL_ARB_texture_rectangle : enable' +nl+
@@ -104,6 +105,21 @@ const
    '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
    '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
    '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
+   '}',
+
+   '#extension GL_ARB_texture_rectangle : enable' +nl+
+   'uniform sampler2DRect screen;' +NL+
+   'uniform int screen_width;' +NL+
+   'uniform int screen_height;' +NL+
+   'void main (void)' +NL+
+   '{' +NL+
+   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+   '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
+   '  float radius_out = min(screen_width, screen_height) / 2.0;' +NL+
+   '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
+   '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
+   '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
+   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
    '}'
   );
 
@@ -136,7 +152,7 @@ begin
           Shaders[SE] := TGLSLProgram.Create;
           Shaders[SE].AttachFragmentShader(ScreenEffectsCode[SE]);
           Shaders[SE].Link(true);
-          Shaders[SE].UniformNotFoundAction := uaWarningAlsoOnTypeMismatch;
+          Shaders[SE].UniformNotFoundAction := uaIgnore;
         except
           on E: EGLSLError do
           begin
