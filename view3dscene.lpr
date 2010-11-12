@@ -88,7 +88,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLRendererOptimization, VRMLGLRenderer, VRMLShape, RenderStateUnit,
   VRMLShadowMaps,
   { view3dscene-specific units: }
-  V3DSceneTextureFilters, V3DSceneColorModulators, V3DSceneLights, V3DSceneRaytrace,
+  V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
@@ -2874,8 +2874,6 @@ begin
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
 
-  1000..1099: SetColorModulatorType(
-    TColorModulatorType(MenuItem.IntData-1000), SceneAnimation);
   1100..1199: SetTextureMinFilter(
     TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
@@ -2908,11 +2906,6 @@ begin
 end;
 
 function CreateMainMenu: TMenu;
-
-  procedure AppendColorModulators(M: TMenu);
-  begin
-    M.AppendRadioGroup(ColorModulatorNames, 1000, Ord(ColorModulatorType), true);
-  end;
 
   procedure AppendNavigationTypes(M: TMenu);
   var
@@ -3043,10 +3036,7 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Variance Shadow Maps (Experimental)', 3540, SceneAnimation.Attributes.VarianceShadowMaps, true));
      M.Append(M2);
-   M2 := TMenu.Create('Change Scene Colors');
-     AppendColorModulators(M2);
-     M.Append(M2);
-     M.Append(ScreenEffects.Menu);
+   M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
@@ -3638,7 +3628,6 @@ begin
       SceneManager.Items.Add(SceneAnimation);
 
       InitCameras(SceneManager);
-      InitColorModulator(SceneAnimation);
       InitTextureFilters(SceneAnimation);
 
       RecentMenu := TGLRecentFiles.Create(nil);
