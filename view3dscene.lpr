@@ -79,7 +79,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
-  GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls,
+  GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
@@ -92,7 +92,8 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
-  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages;
+  V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
+  V3DSceneScreenEffects;
 
 var
   Glw: TGLUIWindow;
@@ -212,6 +213,8 @@ type
     procedure InitProperties;
     procedure BeforeDraw; override;
     procedure Draw; override;
+    function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
+    function ScreenEffectsCount: Integer; override;
   end;
 
 var
@@ -221,6 +224,22 @@ procedure TV3DSceneManager.InitProperties;
 begin
   InitShadowsProperties;
   BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+end;
+
+function TV3DSceneManager.GetScreenEffects(const Index: Integer): TGLSLProgram;
+var
+  C: Integer;
+begin
+  C := inherited ScreenEffectsCount;
+  if Index >= C then
+    Result := V3DSceneScreenEffects.ScreenEffects.ActiveEffects(Index - C) else
+    Result := inherited GetScreenEffects(Index);
+end;
+
+function TV3DSceneManager.ScreenEffectsCount: Integer;
+begin
+  Result := (inherited ScreenEffectsCount) +
+    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsCount;
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -2811,6 +2830,14 @@ begin
 
   300: JumpToViewpoint((MenuItem as TMenuItemViewpoint).Viewpoint);
 
+  350..370:
+    begin
+      ScreenEffects.ActiveEffectsRecalculate;
+      { All that is needed to actually render with the new effect is to
+        actually redisplay. }
+      Glwin.PostRedisplay;
+    end;
+
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
     BlendingFactors[MenuItem.IntData - 400].Value;
   420..439: SceneAnimation.Attributes.BlendingDestinationFactor :=
@@ -3019,6 +3046,7 @@ begin
    M2 := TMenu.Create('Change Scene Colors');
      AppendColorModulators(M2);
      M.Append(M2);
+     M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
@@ -3578,6 +3606,8 @@ begin
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
   CreateToolbar;
+
+  Glw.Controls.Add(ScreenEffects);
 
   SceneWarnings := TSceneWarnings.Create;
   try
