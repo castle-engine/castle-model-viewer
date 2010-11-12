@@ -115,7 +115,7 @@ const
    '{' +NL+
    '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
    '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
-   '  float radius_out = min(screen_width, screen_height) / 2.0;' +NL+
+   '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
    '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
    '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
    '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
