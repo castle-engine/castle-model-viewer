@@ -29,8 +29,8 @@ interface
 uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
 
 type
-  TScreenEffect = (seGrayscale, seNegative, seGamma22, seGamma4, seEdgeDetect,
-    seRoundHeadLight);
+  TScreenEffect = (seGrayscale, seGamma22, seGamma4, seEdgeDetect,
+    seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
   private
@@ -59,7 +59,7 @@ uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
 
 const
   ScreenEffectsNames: array [TScreenEffect] of string =
-  ('Grayscale', 'Negative', 'Gamma 2.2', 'Gamma 4.0', 'Edge Detect', 'Round HeadLight');
+  ('Grayscale', 'Gamma 2.2', 'Gamma 4.0', 'Edge Detect', 'Round HeadLight', 'Negative');
 
   ScreenEffectsCode: array [TScreenEffect] of string =
   ('#extension GL_ARB_texture_rectangle : enable' +nl+
@@ -70,14 +70,6 @@ const
    '  gl_FragColor.r = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;' +NL+
    '  gl_FragColor.g = gl_FragColor.r;' +NL+
    '  gl_FragColor.b = gl_FragColor.r;' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
    '}',
 
    '#extension GL_ARB_texture_rectangle : enable' +nl+
@@ -120,6 +112,14 @@ const
    '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
    '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
    '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
+   '}',
+
+   '#extension GL_ARB_texture_rectangle : enable' +nl+
+   'uniform sampler2DRect screen;' +NL+
+   'void main (void)' +NL+
+   '{' +NL+
+   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+   '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
    '}'
   );
 
