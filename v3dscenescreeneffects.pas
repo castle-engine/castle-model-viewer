@@ -29,7 +29,13 @@ interface
 uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
 
 type
-  TScreenEffect = (seGrayscale, seGamma22, seGamma4, seEdgeDetect,
+  { Screen effects predefined in view3dscene.
+    The order below matters: that's the order in which they will be applied.
+    Some findings:
+    - seNegative looks best after at least seGamma22, seGamma4
+    - seEdgeDetect looks best before gamma correction (including seRoundHeadLight)
+  }
+  TScreenEffect = (seGrayscale, seEdgeDetect, seGamma22, seGamma4,
     seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
@@ -59,7 +65,7 @@ uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
 
 const
   ScreenEffectsNames: array [TScreenEffect] of string =
-  ('Grayscale', 'Gamma 2.2', 'Gamma 4.0', 'Edge Detect', 'Round HeadLight', 'Negative');
+  ('Grayscale', 'Edge Detect', 'Gamma 2.2', 'Gamma 4.0', 'Round HeadLight', 'Negative');
 
   ScreenEffectsCode: array [TScreenEffect] of string =
   ('#extension GL_ARB_texture_rectangle : enable' +nl+
@@ -76,6 +82,17 @@ const
    'uniform sampler2DRect screen;' +NL+
    'void main (void)' +NL+
    '{' +NL+
+   '  vec4 left   = texture2DRect(screen, vec2(gl_TexCoord[0].s - 1.0, gl_TexCoord[0].t));' +NL+
+   '  vec4 right  = texture2DRect(screen, vec2(gl_TexCoord[0].s + 1.0, gl_TexCoord[0].t));' +NL+
+   '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
+   '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
+   '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
+   '}',
+
+   '#extension GL_ARB_texture_rectangle : enable' +nl+
+   'uniform sampler2DRect screen;' +NL+
+   'void main (void)' +NL+
+   '{' +NL+
    '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
    '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
    '}',
@@ -86,17 +103,6 @@ const
    '{' +NL+
    '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
    '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  vec4 left   = texture2DRect(screen, vec2(gl_TexCoord[0].s - 1.0, gl_TexCoord[0].t));' +NL+
-   '  vec4 right  = texture2DRect(screen, vec2(gl_TexCoord[0].s + 1.0, gl_TexCoord[0].t));' +NL+
-   '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
-   '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
-   '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
    '}',
 
    '#extension GL_ARB_texture_rectangle : enable' +nl+
