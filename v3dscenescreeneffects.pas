@@ -91,7 +91,8 @@ const
        'void main (void)' +NL+
        '{' +NL+
        '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-       '  gl_FragColor.r = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;' +NL+
+       '  /* Use integer (in 256 range) grayscale weights, to avoid crappy fglrx bugs with float consts */' +NL+
+       '  gl_FragColor.r = (gl_FragColor.r * 54.0 + gl_FragColor.g * 183.0 + gl_FragColor.b * 19.0) / 256.0;' +NL+
        '  gl_FragColor.g = gl_FragColor.r;' +NL+
        '  gl_FragColor.b = gl_FragColor.r;' +NL+
        '}';
