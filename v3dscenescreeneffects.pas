@@ -129,10 +129,11 @@ const
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
        '}';
      NeedsDepth: false),
-    (Name: 'Round HeadLight';
+    (Name: 'Flashlight (Nice Headlight)';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
        'uniform sampler2DRect screen;' +NL+
+       'uniform sampler2DRect screen_depth;' +NL+
        'uniform int screen_width;' +NL+
        'uniform int screen_height;' +NL+
        'void main (void)' +NL+
@@ -140,12 +141,22 @@ const
        '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
        '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
        '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
+       '  vec2 middle_pos = vec2(float(screen_width), float(screen_height)) / 2.0;' +NL+
+       '  float middle_depth = (' +NL+
+       '      texture2DRect(screen_depth, middle_pos).r +' +NL+
+       '      texture2DRect(screen_depth, middle_pos / 2.0).r +' +NL+
+       '      texture2DRect(screen_depth, 3.0 * middle_pos / 2.0).r +' +NL+
+       '      texture2DRect(screen_depth, vec2(middle_pos.x / 2.0, 3.0 * middle_pos.y / 2.0)).r +' +NL+
+       '      texture2DRect(screen_depth, vec2(3.0 * middle_pos.x / 2.0, middle_pos.y / 2.0)).r' +NL+
+       '    ) / 5.0;' +NL+
+       '  middle_depth = 1.0 - pow(middle_depth, 20.0);' +NL+
+       '  radius_out = mix(radius_out / 3.0, radius_out, middle_depth);' +NL+
        '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
        '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
-       '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
+       '  float p = mix(1.0 / 4.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
        '}';
-     NeedsDepth: false),
+     NeedsDepth: true),
     (Name: 'Negative';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
