@@ -215,6 +215,7 @@ type
     procedure Draw; override;
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
+    function ScreenEffectsNeedDepth: boolean; override;
   end;
 
 var
@@ -240,6 +241,12 @@ function TV3DSceneManager.ScreenEffectsCount: Integer;
 begin
   Result := (inherited ScreenEffectsCount) +
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsCount;
+end;
+
+function TV3DSceneManager.ScreenEffectsNeedDepth: boolean;
+begin
+  Result := (inherited ScreenEffectsNeedDepth) or
+    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
 end;
 
 { Helper functions ----------------------------------------------------------- }

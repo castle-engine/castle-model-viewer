@@ -34,9 +34,11 @@ type
     Some findings:
     - seNegative looks best after at least seGamma22, seGamma4
     - seEdgeDetect looks best before gamma correction (including seRoundHeadLight)
+    - seVisualizeDepth overrides color, so it's sensible to place it
+      at the beginning (otherwise it just cancels any other effect)
   }
-  TScreenEffect = (seGrayscale, seEdgeDetect, seGamma22, seGamma4,
-    seRoundHeadLight, seNegative);
+  TScreenEffect = (seVisualizeDepth, seGrayscale, seEdgeDetect,
+    seGamma22, seGamma4, seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
   private
@@ -54,6 +56,7 @@ type
     property ActiveEffectsCount: Integer read FActiveEffectsCount;
     procedure ActiveEffectsRecalculate;
     function ActiveEffects(const Index: Integer): TGLSLProgram;
+    function ActiveEffectsNeedDepth: boolean;
   end;
 
 var
@@ -64,69 +67,95 @@ implementation
 uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
 
 const
-  ScreenEffectsNames: array [TScreenEffect] of string =
-  ('Grayscale', 'Edge Detect', 'Gamma 2.2', 'Gamma 4.0', 'Round HeadLight', 'Negative');
-
-  ScreenEffectsCode: array [TScreenEffect] of string =
-  ('#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  gl_FragColor.r = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;' +NL+
-   '  gl_FragColor.g = gl_FragColor.r;' +NL+
-   '  gl_FragColor.b = gl_FragColor.r;' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  vec4 left   = texture2DRect(screen, vec2(gl_TexCoord[0].s - 1.0, gl_TexCoord[0].t));' +NL+
-   '  vec4 right  = texture2DRect(screen, vec2(gl_TexCoord[0].s + 1.0, gl_TexCoord[0].t));' +NL+
-   '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
-   '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
-   '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'uniform int screen_width;' +NL+
-   'uniform int screen_height;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
-   '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
-   '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
-   '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
-   '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
-   '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
-   '}',
-
-   '#extension GL_ARB_texture_rectangle : enable' +nl+
-   'uniform sampler2DRect screen;' +NL+
-   'void main (void)' +NL+
-   '{' +NL+
-   '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-   '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
-   '}'
+  ScreenEffectsInfo: array [TScreenEffect] of record
+    Name: string;
+    Code: string;
+    NeedsDepth: boolean;
+  end = (
+    (Name: 'Visualize Depth';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       '/* Do not use screen_depth as sampler2DRectShadow with shadow2DRect[Proj],' +NL+
+       '   instead just treat it as luminance texture. */' +NL+
+       'uniform sampler2DRect screen_depth;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen_depth, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(20.0, 20.0, 20.0));' +NL+
+       '}';
+     NeedsDepth: true),
+    (Name: 'Grayscale';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.r = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;' +NL+
+       '  gl_FragColor.g = gl_FragColor.r;' +NL+
+       '  gl_FragColor.b = gl_FragColor.r;' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Edge Detect';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  vec4 left   = texture2DRect(screen, vec2(gl_TexCoord[0].s - 1.0, gl_TexCoord[0].t));' +NL+
+       '  vec4 right  = texture2DRect(screen, vec2(gl_TexCoord[0].s + 1.0, gl_TexCoord[0].t));' +NL+
+       '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
+       '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
+       '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Gamma 2.2';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Gamma 4.0';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Round HeadLight';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'uniform int screen_width;' +NL+
+       'uniform int screen_height;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
+       '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
+       '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
+       '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
+       '  float p = mix(1.0 / 2.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Negative';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
+       '}';
+     NeedsDepth: false)
   );
 
 constructor TScreenEffects.Create(AOwner: TComponent);
@@ -138,7 +167,7 @@ begin
   for SE := Low(SE) to High(SE) do
   begin
     MenuItems[SE] := TMenuItemChecked.Create(
-      SQuoteMenuEntryCaption(ScreenEffectsNames[SE]), 350, false, true);
+      SQuoteMenuEntryCaption(ScreenEffectsInfo[SE].Name), 350, false, true);
     Menu.Append(MenuItems[SE]);
   end;
 end;
@@ -156,13 +185,13 @@ begin
       begin
         try
           Shaders[SE] := TGLSLProgram.Create;
-          Shaders[SE].AttachFragmentShader(ScreenEffectsCode[SE]);
+          Shaders[SE].AttachFragmentShader(ScreenEffectsInfo[SE].Code);
           Shaders[SE].Link(true);
           Shaders[SE].UniformNotFoundAction := uaIgnore;
         except
           on E: EGLSLError do
           begin
-            DataWarning('Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsNames[SE] + ']: ' + E.Message);
+            DataWarning('Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
             FreeAndNil(Shaders[SE]);
           end;
         end;
@@ -203,6 +232,18 @@ begin
         Exit(Shaders[SE]) else
         Dec(I);
     end;
+end;
+
+function TScreenEffects.ActiveEffectsNeedDepth: boolean;
+var
+  SE: TScreenEffect;
+begin
+  for SE := Low(SE) to High(SE) do
+    if MenuItems[SE].Checked and
+       (Shaders[SE] <> nil) and
+       ScreenEffectsInfo[SE].NeedsDepth then
+      Exit(true);
+  Result := false;
 end;
 
 initialization
