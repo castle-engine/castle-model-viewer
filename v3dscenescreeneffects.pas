@@ -243,6 +243,7 @@ begin
         Exit(Shaders[SE]) else
         Dec(I);
     end;
+  raise EInternalError.Create('TScreenEffects.ActiveEffects: Invalid index');
 end;
 
 function TScreenEffects.ActiveEffectsNeedDepth: boolean;
