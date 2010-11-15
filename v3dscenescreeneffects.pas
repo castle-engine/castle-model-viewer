@@ -140,7 +140,7 @@ const
        'void main (void)' +NL+
        '{' +NL+
        '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-       '  float dist = distance(gl_FragCoord.st, vec2(screen_width, screen_height) / 2.0);' +NL+
+       '  float dist = distance(gl_TexCoord[0].st, vec2(screen_width, screen_height) / 2.0);' +NL+
        '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
        '  vec2 middle_pos = vec2(float(screen_width), float(screen_height)) / 2.0;' +NL+
        '  float middle_depth = (' +NL+
