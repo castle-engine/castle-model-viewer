@@ -3284,6 +3284,7 @@ begin
   OpenButton.Caption := 'Open';
   OpenButton.OnClick := @THelper(nil).OpenButtonClick;
   OpenButton.Image := V3DSceneImages.Open;
+  OpenButton.ImageAlphaTest := true;
   OpenButton.MinImageHeight := MinImageHeight;
   Glw.Controls.Insert(0, OpenButton);
 
