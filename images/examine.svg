@@ -7,16 +7,17 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="400"
-   height="360"
+   width="26"
+   height="22"
    id="svg2440"
    sodipodi:version="0.32"
    inkscape:version="0.46"
    sodipodi:docname="examine.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/michalis/sources/vrmlengine/trunk/view3dscene/images/examine.png"
-   inkscape:export-xdpi="7.9299998"
-   inkscape:export-ydpi="7.9299998">
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
+   version="1.0">
   <metadata
      id="metadata2453">
     <rdf:RDF>
@@ -50,44 +51,55 @@
      bordercolor="#666666"
      pagecolor="#ffffff"
      id="base"
-     showgrid="false"
-     inkscape:zoom="0.48515382"
-     inkscape:cx="-98.01841"
-     inkscape:cy="141.05832"
+     showgrid="true"
+     inkscape:zoom="22.627417"
+     inkscape:cx="16.657188"
+     inkscape:cy="7.9446104"
      inkscape:window-x="0"
      inkscape:window-y="49"
-     inkscape:current-layer="g2442" />
+     inkscape:current-layer="g2442"
+     inkscape:showpageshadow="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2396"
+       visible="true"
+       enabled="true"
+       dotted="false" />
+  </sodipodi:namedview>
   <g
      id="g2442"
-     stroke-width="3"
-     stroke="#000"
-     fill="none">
+     style="fill:none;stroke:#000000;stroke-width:3;display:inline"
+     transform="translate(-14,-24)">
     <rect
-       width="240"
-       height="240"
-       x="20"
-       y="90"
-       id="rect2444" />
+       width="17.065548"
+       height="17.044107"
+       x="14.427385"
+       y="28.526989"
+       id="rect2444"
+       style="stroke:#000000;stroke-width:1.01239192;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
-       d="M 380,270 L 140,270 L 140,30"
+       d="M 39.574062,41.346313 L 22.805481,41.346313 L 22.805481,24.422397"
        id="path3756"
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:3,6;stroke-dashoffset:0" />
+       style="fill:none;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <path
-       style=""
-       d="M 140,30 L 380,30 L 380,270"
-       id="rect2446" />
+       d="M 22.804864,24.465975 L 39.574679,24.465975 L 39.574679,41.34693"
+       id="rect2446"
+       style="stroke-width:0.99876666;stroke-miterlimit:4;stroke-dasharray:none" />
     <path
-       d="M 20,90 L 140,30"
-       id="path2463" />
+       d="M 14.42119,28.653376 L 22.805481,24.422397"
+       id="path2463"
+       style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-linecap:round" />
     <path
-       d="M 260,90 L 380,30"
-       id="path2461" />
+       d="M 31.534268,28.662433 L 39.583119,24.41334"
+       id="path2461"
+       style="stroke-width:0.9818868;stroke-miterlimit:4;stroke-dasharray:none" />
     <path
-       d="M 20,330 L 140,270"
+       d="M 14.42119,45.577291 L 22.805481,41.346313"
        id="path2459"
-       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:3,6;stroke-dashoffset:0" />
+       style="fill:none;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <path
-       d="M 260,330 L 380,270"
-       id="path2448" />
+       d="M 31.491217,45.585204 L 39.581975,41.3384"
+       id="path2448"
+       style="stroke-width:0.98417449;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
   </g>
 </svg>
