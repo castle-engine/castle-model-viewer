@@ -3006,6 +3006,11 @@ begin
    M.Append(TMenuItem.Create('_Exit',             12, CtrlW));
    Result.Append(M);
  M := TMenu.Create('_View');
+   M.Append(TMenuItemChecked.Create('_Bounding Box Visible',      82, CtrlB,
+     ShowBBox, true));
+   M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
+     ShowStatus, true));
+   M.Append(TMenuSeparator.Create);
    M2 := TMenu.Create('_Fill Mode');
      MenuAppendFillModes(M2, 500);
      M2.Append(TMenuSeparator.Create);
@@ -3013,8 +3018,8 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Set Wireframe Line Width ...', 530));
      M.Append(M2);
-   M.Append(TMenuItemChecked.Create('Show _Bounding Box',      82, CtrlB,
-     ShowBBox, true));
+   M.Append(ScreenEffects.Menu);
+   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Smooth Shading',         83,
      SceneAnimation.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
@@ -3043,7 +3048,6 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Variance Shadow Maps (Experimental)', 3540, SceneAnimation.Attributes.VarianceShadowMaps, true));
      M.Append(M2);
-   M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
@@ -3220,9 +3224,6 @@ begin
      Glw.FullScreen, true));
    Result.Append(M);
  M := TMenu.Create('_Help');
-   M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
-      ShowStatus, true));
-   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Scene Information',                  121));
    M.Append(TMenuItem.Create('Manifold Edges Information',         129));
    MenuSelectedInfo :=
