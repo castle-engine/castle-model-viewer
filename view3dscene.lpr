@@ -3273,7 +3273,7 @@ procedure CreateToolbar;
 var
   NT: TCameraNavigationType;
 const
-  MinImageHeight = 32;
+  MinImageHeight = 22;
 begin
   ToolbarPanel := TKamPanel.Create(Application);
   ToolbarPanel.Opacity := 0.8;
