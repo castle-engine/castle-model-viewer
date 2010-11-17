@@ -35,14 +35,14 @@ var
   ShadowsOn: boolean = true;
   DrawShadowVolumes: boolean = false;
 
-procedure ShadowsGLInit;
+procedure ShadowsGLOpen;
 procedure ShadowsGLClose;
 
 implementation
 
 uses SysUtils, V3DSceneConfig, GL, KambiGLUtils, V3DSceneFillMode;
 
-procedure ShadowsGLInit;
+procedure ShadowsGLOpen;
 begin
   MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
 end;

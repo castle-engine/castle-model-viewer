@@ -50,7 +50,7 @@ type
 
     constructor Create(AOwner: TComponent); override;
 
-    procedure GLContextInit; override;
+    procedure GLContextOpen; override;
     procedure GLContextClose; override;
 
     property ActiveEffectsCount: Integer read FActiveEffectsCount;
@@ -184,7 +184,7 @@ begin
   end;
 end;
 
-procedure TScreenEffects.GLContextInit;
+procedure TScreenEffects.GLContextOpen;
 var
   SE: TScreenEffect;
 begin

@@ -72,7 +72,7 @@ type
       const ANavigationType: TCameraNavigationType); reintroduce;
     function TooltipStyle: TUIControlDrawStyle; override;
     procedure DrawTooltip; override;
-    procedure GLContextInit; override;
+    procedure GLContextOpen; override;
     procedure GLContextClose; override;
   end;
 
@@ -286,11 +286,11 @@ end;
 
 {$endif}
 
-procedure TNavigationTypeButton.GLContextInit;
+procedure TNavigationTypeButton.GLContextOpen;
 begin
   inherited;
 
-  { Just use GLContextInit/Close for ntExamine to initialize global unit
+  { Just use GLContextOpen/Close for ntExamine to initialize global unit
     variables . }
   if NavigationType = ntExamine then
   begin

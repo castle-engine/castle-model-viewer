@@ -31,7 +31,7 @@ uses GL, GLU, VectorMath;
 var 
   BGColor: TVector3Single;
 
-{ wywoluj zawsze po zmianie BGColor, wywolaj tez na poczatku w OnInit.
+{ wywoluj zawsze po zmianie BGColor, wywolaj tez na poczatku w OnOpen.
   ustawi odpowiednie glClearColor }
 procedure BGColorChanged;
 

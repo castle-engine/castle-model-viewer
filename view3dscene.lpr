@@ -103,7 +103,7 @@ var
 
   MenuCollisions: TMenuItemChecked;
 
-  { Initialized in Init, finalized in Close. }
+  { Initialized in Open, finalized in Close. }
   StatusFont: TGLBitmapFont;
 
   RecentMenu: TGLRecentFiles;
@@ -357,7 +357,7 @@ function ViewpointNode: TVRMLViewpointNode; forward;
 
 { TGLWindow callbacks --------------------------------------------------------- }
 
-procedure Init(Glwin: TGLWindow);
+procedure Open(Glwin: TGLWindow);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
@@ -376,9 +376,9 @@ begin
 
  BGColorChanged;
 
- ShadowsGLInit;
+ ShadowsGLOpen;
 
- AntiAliasingGLInit;
+ AntiAliasingGLOpen;
  AntiAliasingEnable;
 end;
 
@@ -3421,12 +3421,12 @@ begin
   Writeln(FailureMessage);
 end;
 
-{ Call Glw.Init, when anti-aliasing (multi-sampling) and shadows (stencil
+{ Call Glw.Open, when anti-aliasing (multi-sampling) and shadows (stencil
   buffer) are possibly allowed. If EGLContextNotPossible, will try to lower
   requirements and initialize worse GL context. }
-procedure InitContext;
+procedure OpenContext;
 begin
-  Glw.InitOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
+  Glw.OpenOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
 end;
 
 { main --------------------------------------------------------------------- }
@@ -3651,7 +3651,7 @@ begin
         Glw.GtkIconName := 'view3dscene';
         Glw.MainMenu := CreateMainMenu;
         Glw.OnMenuCommand := @MenuCommand;
-        Glw.OnInit := @Init;
+        Glw.OnOpen := @Open;
         Glw.OnClose := @Close;
         Glw.OnMouseDown := @MouseDown;
         Glw.OnResize := @Resize;
@@ -3678,14 +3678,14 @@ begin
           { Assignment below essentially copies
             ShadowsPossibleWanted to ShadowsPossibleCurrently.
             ShadowsPossibleCurrently may be eventually turned to @false
-            by InitContext. }
+            by OpenContext. }
           ShadowsPossibleCurrently := true;
         end;
         Assert(ShadowsPossibleCurrently = ShadowsPossibleWanted);
 
         Glw.MultiSampling := AntiAliasingGlwMultiSampling;
 
-        InitContext;
+        OpenContext;
 
         if WasParam_SceneFileName then
           LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
