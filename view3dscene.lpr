@@ -3667,7 +3667,7 @@ begin
           Glw.ResizeAllowed := raNotAllowed;
 
           { Do not show window on the screen, since we're working in batch mode. }
-          Glw.WindowVisible := false;
+          Glw.Visible := false;
         end;
 
         Glw.SetDemoOptions(K_None, #0, true);
