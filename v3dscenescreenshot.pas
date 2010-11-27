@@ -112,7 +112,7 @@ function MakingScreenShot: boolean;
 
 implementation
 
-uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils, EnumerateFiles,
+uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils,
   DataErrors, Videos;
 
 {$define read_implementation}
