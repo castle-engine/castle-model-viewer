@@ -56,7 +56,7 @@ type
       movie file.
 
       Success = @true for EndCapture means that we successfully did
-      all the images, @false means that exception occured and this
+      all the images, @false means that exception occurred and this
       is called only to finalize some things. }
     procedure BeginCapture; virtual;
     procedure EndCapture(Success: boolean); virtual;
