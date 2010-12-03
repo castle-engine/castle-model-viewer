@@ -96,7 +96,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneScreenEffects;
 
 var
-  Glw: TGLUIWindow;
+  Window: TGLUIWindow;
 
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
@@ -111,7 +111,7 @@ var
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
-    Also note that Glw.Caption (and FPSBaseCaption) also should be modified
+    Also note that Window.Caption (and FPSBaseCaption) also should be modified
     only by those procedures.
 
     In this program's comments I often talk about "null values" of these
@@ -357,7 +357,7 @@ function ViewpointNode: TVRMLViewpointNode; forward;
 
 { TGLWindow callbacks --------------------------------------------------------- }
 
-procedure Open(Glwin: TGLWindow);
+procedure Open(Window: TGLWindow);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
@@ -371,7 +371,7 @@ begin
    that fog interpolation has to be corrected for perspective. }
  glHint(GL_FOG_HINT, GL_NICEST);
 
- GLProgressInterface.Window := Glw;
+ GLProgressInterface.Window := Window;
  Progress.UserInterface := GLProgressInterface;
 
  BGColorChanged;
@@ -382,7 +382,7 @@ begin
  AntiAliasingEnable;
 end;
 
-procedure Close(Glwin: TGLWindow);
+procedure Close(Window: TGLWindow);
 begin
   ShadowsGLClose;
   FreeAndNil(statusFont);
@@ -656,7 +656,7 @@ begin
   inherited;
 end;
 
-procedure Draw(Glwin: TGLWindow);
+procedure Draw(Window: TGLWindow);
 begin
   if ShowStatus and (not MakingScreenShot) then
   begin
@@ -665,7 +665,7 @@ begin
       procedure. }
     glPushAttrib(GL_ENABLE_BIT);
       glDisable(GL_DEPTH_TEST);
-      glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Glwin.Width, 0, Glwin.Height);
+      glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Window.Width, 0, Window.Height);
     glPopAttrib;
   end;
 end;
@@ -676,7 +676,7 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure MouseDown(Glwin: TGLWindow; btn: TMouseButton);
+procedure MouseDown(Window: TGLWindow; btn: TMouseButton);
 var
   Ray0, RayVector: TVector3Single;
 begin
@@ -692,7 +692,7 @@ begin
   begin
     if SceneOctreeCollisions = nil then
     begin
-      MessageOK(Glwin, SOnlyWhenOctreeAvailable, taLeft);
+      MessageOK(Window, SOnlyWhenOctreeAvailable, taLeft);
       Exit;
     end;
 
@@ -724,7 +724,7 @@ begin
 
     UpdateSelectedEnabled;
 
-    Glw.PostRedisplay;
+    Window.PostRedisplay;
   end;
 end;
 
@@ -732,7 +732,7 @@ class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
 begin
   { Our status text displays current sensors (under the mouse,
     and currently active (if any)), so we have to redisplay. }
-  Glw.PostRedisplay;
+  Window.PostRedisplay;
 end;
 
 { Setting viewpoint ---------------------------------------------------------- }
@@ -796,7 +796,7 @@ procedure UpdateWarningsButton;
 begin
   WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
   WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
-  Glw.EventResize; { update WarningsButton.Left }
+  Window.EventResize; { update WarningsButton.Left }
 end;
 
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
@@ -831,10 +831,10 @@ begin
       and progress drawing may cause FlushRedisplay,
       and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called.
       That's why we simply turn normal Draw/BeforeDraw temporarily off. }
-    OldDraw := Glw.OnDraw;
-    OldBeforeDraw := Glw.OnBeforeDraw;
-    Glw.OnDraw := nil;
-    Glw.OnBeforeDraw := nil;
+    OldDraw := Window.OnDraw;
+    OldBeforeDraw := Window.OnBeforeDraw;
+    Window.OnDraw := nil;
+    Window.OnBeforeDraw := nil;
     try
       { For now we construct and store octrees only for the 1st animation frame. }
 
@@ -842,8 +842,8 @@ begin
       Scene.ShapeOctreeProgressTitle := 'Building Shape octree';
       Scene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
-      Glw.OnDraw := OldDraw;
-      Glw.OnBeforeDraw := OldBeforeDraw;
+      Window.OnDraw := OldDraw;
+      Window.OnBeforeDraw := OldBeforeDraw;
     end;
   end;
 end;
@@ -1047,9 +1047,9 @@ begin
     if NewCaption = '' then
       NewCaption := ExtractFileName(SceneFilename);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
-    if Glw.Closed then
-      Glw.Caption := NewCaption else
-      Glw.FPSBaseCaption := NewCaption;
+    if Window.Closed then
+      Window.Caption := NewCaption else
+      Window.FPSBaseCaption := NewCaption;
 
     UpdateCameraUI;
 
@@ -1077,11 +1077,11 @@ begin
       ProximitySensor, if user is within. }
     Scene.CameraChanged(SceneManager.Camera, SceneManager.CameraToChanges);
 
-    if not Glw.Closed then
+    if not Window.Closed then
     begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
-      Glw.EventResize;
+      Window.EventResize;
       Scene.VisibleChangeHere([]);
     end;
 
@@ -1160,7 +1160,7 @@ begin
       except
         on E: Exception do
         begin
-          MessageOK(glw, 'Error while loading scene from "' +ASceneFileName+ '": ' +
+          MessageOK(Window, 'Error while loading scene from "' +ASceneFileName+ '": ' +
             E.Message, taLeft);
           { In this case we can preserve current scene. }
           SceneWarnings.Assign(SavedSceneWarnings);
@@ -1195,7 +1195,7 @@ begin
           our Draw routine works OK when it's called to draw background
           under MessageOK. }
         LoadClearScene;
-        MessageOK(glw, 'Error while loading scene from "' + ASceneFileName + '": ' +
+        MessageOK(Window, 'Error while loading scene from "' + ASceneFileName + '": ' +
           E.Message, taLeft);
         Exit;
       end;
@@ -1358,7 +1358,7 @@ begin
     S.AddStrings(SceneWarnings.Items);
     S.Append('');
     S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');
-    MessageOK(Glw, S, taLeft);
+    MessageOK(Window, S, taLeft);
     WarningsButtonEnabled := false;
     UpdateWarningsButton;
   finally FreeAndNil(S) end;
@@ -1443,7 +1443,7 @@ end;
 
 procedure UpdateToolbarVisible; forward;
 
-procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
+procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -1452,7 +1452,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
    if Camera.NavigationClass = ncWalk then
    begin
     Answer := '';
-    if MessageInputQuery(Glwin,
+    if MessageInputQuery(Window,
       'Input new camera up vector (three float values).' +nl+nl+
       'This vector will be used as new gravity upward vector. ' +
       'This vector must not be zero vector.',
@@ -1464,16 +1464,16 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
      except
       on E: EConvertError do
       begin
-       MessageOK(Glwin, 'Incorrect vector value : '+E.Message);
+       MessageOK(Window, 'Incorrect vector value : '+E.Message);
        Exit;
       end;
      end;
 
      Camera.Walk.GravityUp := NewUp;
-     Glw.PostRedisplay;
+     Window.PostRedisplay;
     end;
    end else
-    MessageOK(Glwin, SNavigationClassWalkNeeded);
+    MessageOK(Window, SNavigationClassWalkNeeded);
   end;
 
   procedure ChangeMoveSpeed;
@@ -1483,20 +1483,20 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     if Camera.NavigationClass = ncWalk then
     begin
       MoveSpeed := Camera.Walk.MoveSpeed;
-      if MessageInputQuery(Glwin, 'New move speed (units per second):', MoveSpeed, taLeft) then
+      if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed, taLeft) then
       begin
         Camera.Walk.MoveSpeed := MoveSpeed;
-        Glw.PostRedisplay;
+        Window.PostRedisplay;
       end;
     end else
-      MessageOK(Glwin, SNavigationClassWalkNeeded);
+      MessageOK(Window, SNavigationClassWalkNeeded);
   end;
 
 
   procedure ShowAndWrite(const S: string);
   begin
     Writeln(S);
-    MessageOK(Glw, S, taLeft);
+    MessageOK(Window, S, taLeft);
   end;
 
   procedure ChangePointSize;
@@ -1504,7 +1504,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.PointSize;
-    if MessageInputQuery(Glwin, 'Change point size:',
+    if MessageInputQuery(Window, 'Change point size:',
       Value, taLeft) then
       SceneAnimation.Attributes.PointSize := Value;
   end;
@@ -1514,7 +1514,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.WireframeWidth;
-    if MessageInputQuery(Glwin, 'Change wireframe line width:',
+    if MessageInputQuery(Window, 'Change wireframe line width:',
       Value, taLeft) then
       SceneAnimation.Attributes.WireframeWidth := Value;
   end;
@@ -1524,7 +1524,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     S: Single;
   begin
     S := SceneAnimation.TimePlayingSpeed;
-    if MessageInputQuery(Glwin,
+    if MessageInputQuery(Window,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes playing animation two times slower,' +nl+
       '2.0 makes it two times faster etc.' +nl+
@@ -1548,7 +1548,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeAnimationTimeSpeedWhenLoading;
   begin
-    MessageInputQuery(Glwin,
+    MessageInputQuery(Window,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes playing animation two times slower,' +nl+
       '2.0 makes it two times faster etc.' +nl+
@@ -1745,7 +1745,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem^.Geometry, so this is only for the frame where
         octree is available. }
-      MessageOK(Glwin, 'This function is not available when you deal with ' +
+      MessageOK(Window, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
     end;
@@ -1788,7 +1788,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.OriginalGeometry, so this is only for the frame where
         octree is available. Moreover, we call
         Scene.ChangedField. }
-      MessageOK(Glwin, 'This function is not available when you deal with ' +
+      MessageOK(Window, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
     end;
@@ -1888,7 +1888,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         SelectedItem.State, so this is only for the frame where
         octree is available. Moreover, we call
         Scene.ChangedField. }
-      MessageOK(Glwin, 'This function is not available when you deal with ' +
+      MessageOK(Window, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit(false);
     end;
@@ -1907,7 +1907,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       M2 := Shape.Material;
       if M2 = nil then
       begin
-        if MessageYesNo(Glw, 'No material present. Add material to this node and then edit it?', taLeft) then
+        if MessageYesNo(Window, 'No material present. Add material to this node and then edit it?', taLeft) then
         begin
           { Note that this may remove old Shape.FdAppearance.Value,
             but only if Shape.Appearance = nil, indicating that
@@ -1954,7 +1954,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         Color := DefaultMaterialDiffuseColor;
     end;
 
-    if Glwin.ColorDialog(Color) then
+    if Window.ColorDialog(Color) then
     begin
       if M2 <> nil then
       begin
@@ -1984,7 +1984,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         Color := DefaultMaterialSpecularColor;
     end;
 
-    if Glwin.ColorDialog(Color) then
+    if Window.ColorDialog(Color) then
     begin
       if M2 <> nil then
       begin
@@ -1999,7 +1999,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeLightModelAmbient;
   begin
-    if glwin.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
+    if Window.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
   end;
 
   procedure SetViewpointForWholeScene(
@@ -2022,7 +2022,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     I: Integer;
   begin
     Wildcard := '';
-    if MessageInputQuery(Glwin,
+    if MessageInputQuery(Window,
       'Input node name to be removed. You can use wildcards (* and ?) in ' +
       'the expression below to match many node names. The input is ' +
       'case sensitive (like all VRML).',
@@ -2041,7 +2041,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
       SceneAnimation.ChangedAll;
 
-      MessageOK(Glwin, Format('Removed %d node instances.', [RemovedNumber]),
+      MessageOK(Window, Format('Removed %d node instances.', [RemovedNumber]),
         taLeft);
     end;
   end;
@@ -2058,7 +2058,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
        '    --camera-up %s \' +nl+
        '    --scene-bg-color %f %f %f \' +nl,
        [ DEF_RAYTRACE_DEPTH,
-         Glw.Width, Glw.Height,
+         Window.Width, Window.Height,
          SceneFilename,
          ExtractOnlyFileName(SceneFilename) + '-rt.png',
          VectorToRawStr(Camera.Walk.Position),
@@ -2086,7 +2086,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   procedure WriteBoundingBox(const Box: TBox3D);
   begin
     if IsEmptyBox3D(Box) then
-      MessageOK(Glw, 'The bounding box is empty.', taLeft) else
+      MessageOK(Window, 'The bounding box is empty.', taLeft) else
     begin
       Writeln(Format(
         '# ----------------------------------------' +nl+
@@ -2133,12 +2133,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     I: Integer;
   begin
     VertexShaderUrl := '';
-    if Glwin.FileDialog('Open vertex shader file', VertexShaderUrl, true,
+    if Window.FileDialog('Open vertex shader file', VertexShaderUrl, true,
       VS_FileFilters) then
     begin
       { We guess that FragmentShaderUrl will be in the same dir as vertex shader }
       FragmentShaderUrl := ExtractFilePath(VertexShaderUrl);
-      if Glwin.FileDialog('Open fragment shader file', FragmentShaderUrl, true,
+      if Window.FileDialog('Open fragment shader file', FragmentShaderUrl, true,
         FS_FileFilters) then
       begin
         ProgramNode := TNodeComposedShader.Create(
@@ -2174,7 +2174,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
           if not ShaderAdder.Added then
           begin
             FreeAndNil(ProgramNode);
-            MessageOK(Glw, 'No shaders added.' +NL+
+            MessageOK(Window, 'No shaders added.' +NL+
               'Hint: this feature adds shaders to Apperance.shaders field. ' +
               'So it requires VRML >= 2.0 models with Appearance nodes present, ' +
               'otherwise nothing will be added.',
@@ -2210,14 +2210,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     FramesCount := 25;
     FileNamePattern := 'image%d.png';
 
-    if MessageInputQuery(Glwin, 'Input start time for recording movie:',
+    if MessageInputQuery(Window, 'Input start time for recording movie:',
       TimeBegin, taLeft) then
-      if MessageInputQuery(Glwin, 'Time step between capturing movie frames:' +NL+NL+
+      if MessageInputQuery(Window, 'Time step between capturing movie frames:' +NL+NL+
         'Note that if you later choose to record to a single movie file, like "output.avi", then we''ll generate a movie with 25 frames per second. ' +
         'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
         'Input time step between capturing movie frames:', TimeStep, taLeft) then
-        if MessageInputQueryCardinal(Glwin, 'Input frames count to capture:', FramesCount, taLeft) then
-          if Glwin.FileDialog('Images pattern or movie filename to save', FileNamePattern, false) then
+        if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount, taLeft) then
+          if Window.FileDialog('Images pattern or movie filename to save', FileNamePattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
               (otherwise some rendering behaves differently when
@@ -2235,7 +2235,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
               MakeAllScreenShots;
             except
               on E: EInvalidScreenShotFileName do
-                MessageOk(Glwin, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
+                MessageOk(Window, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
             end;
 
             ScreenShotsList.FreeContents;
@@ -2252,7 +2252,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     if SceneAnimation.ScenesCount <> 1 then
     begin
-      MessageOK(Glwin, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
+      MessageOK(Window, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
       Exit;
     end;
 
@@ -2260,12 +2260,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     TimeEnd := 10;
     ScenesPerTime := 25;
 
-    if MessageInputQuery(Glwin, 'This will "record" an interactive animation (done by VRML events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
+    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
          nl+
          'World BEGIN time of recording:', TimeBegin, taLeft) and
-       MessageInputQuery(Glwin,
+       MessageInputQuery(Window,
          'World END time of recording:', TimeEnd, taLeft) and
-       MessageInputQueryCardinal(Glwin,
+       MessageInputQueryCardinal(Window,
          'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime, taLeft) then
     begin
       { Note: there's an inherent problem here since RootNode starts
@@ -2332,12 +2332,12 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
   begin
     if SelectedItem = nil then
     begin
-      MessageOk(Glwin, 'Nothing selected.', taLeft);
+      MessageOk(Window, 'Nothing selected.', taLeft);
     end else
     begin
       Shape := TVRMLShape(SelectedItem^.Shape);
       if Shape.OctreeTriangles = nil then
-        MessageOk(Glwin, 'No collision octree was initialized for this shape.', taLeft) else
+        MessageOk(Window, 'No collision octree was initialized for this shape.', taLeft) else
       begin
         Writeln(Shape.OctreeTriangles.Statistics);
       end;
@@ -2355,7 +2355,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Orientation: char;
     Size: Cardinal;
   begin
-    Orientation := MessageChar(Glwin,
+    Orientation := MessageChar(Window,
       'This function will save six separate image files that show cube map environment around you.' + NL +
       NL +
       'In a moment you will be asked to choose directory and base filename for saving these images, right now you have to decide how the cube map faces will be oriented and named. ("Names" of cube map faces will be placed instead of "%s" in image file pattern.)' + NL +
@@ -2375,11 +2375,11 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         FileNamePattern := ExtractOnlyFileName(SceneFileName) + '_cubemap_%s.png' else
         FileNamePattern := 'view3dscene_cubemap_%s.png';
 
-      if Glwin.FileDialog('Image name template to save', FileNamePattern, false) then
+      if Window.FileDialog('Image name template to save', FileNamePattern, false) then
       begin
         Size := DefaultCubeMapSize;
 
-        if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
+        if MessageInputQueryCardinal(Window, 'Size of cube map images', Size, taLeft) then
         begin
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
@@ -2388,7 +2388,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
             @SceneManager.RenderFromViewEverything,
             SceneManager.ProjectionNear, SceneManager.ProjectionFar,
             true, 0, 0);
-          glViewport(0, 0, Glwin.Width, Glwin.Height);
+          glViewport(0, 0, Window.Width, Window.Height);
 
           case Orientation of
             'b':
@@ -2445,18 +2445,18 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       FileName := ExtractOnlyFileName(SceneFileName) + '_cubemap.dds' else
       FileName := 'view3dscene_cubemap.dds';
 
-    if Glwin.FileDialog('Save image to file', FileName, false) then
+    if Window.FileDialog('Save image to file', FileName, false) then
     begin
       Size := DefaultCubeMapSize;
 
-      if MessageInputQueryCardinal(Glwin, 'Size of cube map images', Size, taLeft) then
+      if MessageInputQueryCardinal(Window, 'Size of cube map images', Size, taLeft) then
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
           SceneManager.ProjectionNear, SceneManager.ProjectionFar,
           true, 0, 0);
         try
-          glViewport(0, 0, Glwin.Width, Glwin.Height);
+          glViewport(0, 0, Window.Width, Window.Height);
           DDS.SaveToFile(FileName);
         finally FreeAndNil(DDS) end;
       end;
@@ -2474,14 +2474,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
-      Glwin.EventBeforeDraw;
-      Glwin.EventDraw;
+      Window.EventBeforeDraw;
+      Window.EventDraw;
 
-      Image := TGrayscaleImage.Create(Glwin.Width, Glwin.Height);
+      Image := TGrayscaleImage.Create(Window.Width, Window.Height);
       try
         BeforePackImage(PackData, Image);
         try
-          glReadPixels(0, 0, Glwin.Width, Glwin.Height, GL_DEPTH_COMPONENT,
+          glReadPixels(0, 0, Window.Width, Window.Height, GL_DEPTH_COMPONENT,
             ImageGLType(Image), Image.RawPixels);
         finally AfterPackImage(PackData, Image) end;
 
@@ -2497,7 +2497,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       FileName := 'view3dscene_depth_%d.png';
     FileName := FileNameAutoInc(FileName);
 
-    if Glwin.FileDialog('Save depth to a file', FileName, false,
+    if Window.FileDialog('Save depth to a file', FileName, false,
       SaveImage_FileFilters) then
       DoSave(FileName);
   end;
@@ -2507,7 +2507,7 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
     Pos, Dir, Up: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(Glwin, Scene,
+    RaytraceToWin(Window, Scene,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor,
@@ -2532,14 +2532,14 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
       { We can't do this for animations, because we use
         SelectedItem^.Shape.GeometryOriginal, so this is only for the frame where
         octree is available. }
-      MessageOK(Glwin, 'This function is not available when you deal with ' +
+      MessageOK(Window, 'This function is not available when you deal with ' +
         'precalculated animations (like from Kanim or MD3 files).', taLeft);
       Exit;
     end;
 
     if SelectedItem = nil then
     begin
-      MessageOk(Glwin, 'Nothing selected.', taLeft);
+      MessageOk(Window, 'Nothing selected.', taLeft);
       Exit;
     end;
 
@@ -2547,24 +2547,24 @@ procedure MenuCommand(Glwin: TGLWindow; MenuItem: TMenuItem);
 
     if not Shape.OriginalGeometry.Coord(Shape.OriginalState, Coord) then
     begin
-      MessageOK(Glwin, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
+      MessageOK(Window, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
       Exit;
     end;
 
     if Coord = nil then
     begin
-      MessageOK(Glwin, 'Selected geometry node''s has an empty coordinate field. Nothing to merge.', taLeft);
+      MessageOK(Window, 'Selected geometry node''s has an empty coordinate field. Nothing to merge.', taLeft);
       Exit;
     end;
 
     MergeDistance := 0.01;
-    if MessageInputQuery(Glwin, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
+    if MessageInputQuery(Window, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
       MergeDistance, taLeft, '0.01') then
     begin
       MergedCount := Coord.Items.MergeCloseVertexes(MergeDistance);
       if MergedCount <> 0 then
         Coord.Changed;
-      MessageOK(Glwin, Format('Merged %d vertexes.', [MergedCount]), taLeft);
+      MessageOK(Window, Format('Merged %d vertexes.', [MergedCount]), taLeft);
     end;
   end;
 
@@ -2590,7 +2590,7 @@ begin
  case MenuItem.IntData of
   10: THelper.OpenButtonClick(nil);
 
-  12: Glw.Close;
+  12: Window.Close;
 
   15: begin
         { When reopening, then InitializeCamera parameter is false.
@@ -2602,7 +2602,7 @@ begin
 
   20: begin
         if SceneAnimation.ScenesCount > 1 then
-          MessageOK(Glwin, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML will only save it''s first frame.',
+          MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML will only save it''s first frame.',
             taLeft);
 
         { TODO: this filename gen is stupid, it leads to names like
@@ -2610,14 +2610,14 @@ begin
         if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
           s := AppendToFileName(SceneFilename, '_2') else
           s := ChangeFileExt(SceneFilename, '.wrl');
-        if glwin.FileDialog('Save as VRML file', s, false,
+        if Window.FileDialog('Save as VRML file', s, false,
           SaveVRMLClassic_FileFilters) then
         try
           SaveVRMLClassic(Scene.RootNode, s, SavedVRMLPrecedingComment(SceneFileName));
         except
           on E: Exception do
           begin
-            MessageOK(glw, 'Error while saving scene to "' +S+ '": ' +
+            MessageOK(Window, 'Error while saving scene to "' +S+ '": ' +
               E.Message, taLeft);
           end;
         end;
@@ -2637,7 +2637,7 @@ begin
   3530:
     begin
       C := SceneAnimation.ShadowMapsDefaultSize;
-      if MessageInputQueryCardinal(Glwin, 'Input default shadow map size :' + NL + '(should be a power of 2)', C, taLeft) then
+      if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C, taLeft) then
       begin
         SceneAnimation.ShadowMapsDefaultSize := C;
       end;
@@ -2672,7 +2672,7 @@ begin
 
   82: ShowBBox := not ShowBBox;
   83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;
-  84: if glwin.ColorDialog(BGColor) then BGColorChanged;
+  84: if Window.ColorDialog(BGColor) then BGColorChanged;
   85: with SceneAnimation.Attributes do UseFog := not UseFog;
   86: with SceneAnimation.Attributes do Blending := not Blending;
   87: with SceneAnimation.Attributes do GLSLShaders := not GLSLShaders;
@@ -2704,10 +2704,10 @@ begin
   100: SelectedShapeOctreeStat;
   101: if SceneOctreeCollisions <> nil then
          Writeln(SceneOctreeCollisions.Statistics) else
-         MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
+         MessageOk(Window, SOnlyWhenOctreeAvailable, taLeft);
   103: if SceneOctreeRendering <> nil then
          Writeln(SceneOctreeRendering.Statistics) else
-         MessageOk(Glwin, SOnlyWhenOctreeAvailable, taLeft);
+         MessageOk(Window, SOnlyWhenOctreeAvailable, taLeft);
   102: SceneAnimation.WritelnInfoNodes;
 
   105: PrintRayhunterCommand;
@@ -2753,12 +2753,12 @@ begin
   123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
-  126: Glw.SwapFullScreen;
+  126: (Window as TGLUIWindow).SwapFullScreen;
   127: begin
          if SceneFileName <> '' then
            ProposedScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
            ProposedScreenShotName := 'view3dscene_screen_%d.png';
-         Glwin.SaveScreenDialog(FileNameAutoInc(ProposedScreenShotName));
+         Window.SaveScreenDialog(FileNameAutoInc(ProposedScreenShotName));
        end;
   128: begin
          Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
@@ -2842,7 +2842,7 @@ begin
       ScreenEffects.ActiveEffectsRecalculate;
       { All that is needed to actually render with the new effect is to
         actually redisplay. }
-      Glwin.PostRedisplay;
+      Window.PostRedisplay;
     end;
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
@@ -3221,7 +3221,7 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
-     Glw.FullScreen, true));
+     Window.FullScreen, true));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItem.Create('Scene Information',                  121));
@@ -3265,7 +3265,7 @@ begin
 
     { Call Resize after changing ToolbarPanel.Exists, as warnings button
       position is calculated differently based on it }
-    if not Glw.Closed then Glw.EventResize;
+    if not Window.Closed then Window.EventResize;
   end;
 end;
 
@@ -3278,7 +3278,7 @@ begin
   ToolbarPanel := TKamPanel.Create(Application);
   ToolbarPanel.Opacity := 0.8;
   ToolbarPanel.VerticalSeparators.Count := 2;
-  Glw.Controls.Insert(0, ToolbarPanel);
+  Window.Controls.Insert(0, ToolbarPanel);
 
   OpenButton := TKamGLButton.Create(Application);
   OpenButton.Caption := 'Open';
@@ -3286,7 +3286,7 @@ begin
   OpenButton.Image := V3DSceneImages.Open;
   OpenButton.ImageAlphaTest := true;
   OpenButton.MinImageHeight := MinImageHeight;
-  Glw.Controls.Insert(0, OpenButton);
+  Window.Controls.Insert(0, OpenButton);
 
   CollisionsButton := TKamGLButton.Create(Application);
   CollisionsButton.Caption := 'Collisions';
@@ -3296,14 +3296,14 @@ begin
   if SceneAnimation <> nil then
     CollisionsButton.Pressed := SceneAnimation.Collides else
     CollisionsButton.Pressed := true { default value };
-  Glw.Controls.Insert(0, CollisionsButton);
+  Window.Controls.Insert(0, CollisionsButton);
 
   WarningsButton := TKamGLButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
   WarningsButton.MinImageHeight := MinImageHeight;
-  Glw.Controls.Insert(0, WarningsButton);
+  Window.Controls.Insert(0, WarningsButton);
 
   if SceneWarnings <> nil then
     UpdateWarningsButton else
@@ -3319,7 +3319,7 @@ begin
       CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
-      Glw.Controls.Insert(0, CameraButtons[NT]);
+      Window.Controls.Insert(0, CameraButtons[NT]);
     end;
 
   CameraButtons[ntExamine].Image := V3DSceneImages.Examine;
@@ -3329,7 +3329,7 @@ begin
   UpdateToolbarVisible;
 end;
 
-procedure Resize(Glwin: TGLWindow);
+procedure Resize(Window: TGLWindow);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
   ButtonsMargin = 8; {< between buttons }
@@ -3341,16 +3341,16 @@ begin
   ButtonsHeight := Max(
     CameraButtons[ntExamine { any button }].Height,
     WarningsButton.Height);
-  ButtonsBottom := Glwin.Height - ButtonsHeight - ToolbarMargin;
+  ButtonsBottom := Window.Height - ButtonsHeight - ToolbarMargin;
 
   NextLeft := ToolbarMargin;
 
   if ToolbarPanel.Exists then
   begin
     ToolbarPanel.Left := 0;
-    ToolbarPanel.Width := Glwin.Width;
+    ToolbarPanel.Width := Window.Width;
     ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
-    ToolbarPanel.Bottom := Glwin.Height - ToolbarPanel.Height;
+    ToolbarPanel.Bottom := Window.Height - ToolbarPanel.Height;
 
     { Now place buttons, in left-to-right order }
 
@@ -3380,7 +3380,7 @@ begin
   end;
 
   WarningsButton.Left := Max(NextLeft,
-    Glw.Width - WarningsButton.Width - ToolbarMargin);
+    Window.Width - WarningsButton.Width - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
 end;
 
@@ -3389,7 +3389,7 @@ var
   S: string;
 begin
   S := ExtractFilePath(SceneFilename);
-  if Glw.FileDialog('Open file', s, true,
+  if Window.FileDialog('Open file', s, true,
     LoadVRMLSequence_FileFilters) then
     LoadScene(s, [], 0.0, true);
 end;
@@ -3407,7 +3407,7 @@ end;
 
 { initializing GL context --------------------------------------------------- }
 
-procedure MultiSamplingOff(Glwin: TGLWindow; const FailureMessage: string);
+procedure MultiSamplingOff(Window: TGLWindow; const FailureMessage: string);
 begin
   AntiAliasing := 0;
   if AntiAliasingMenu[AntiAliasing] <> nil then
@@ -3415,18 +3415,18 @@ begin
   Writeln(FailureMessage);
 end;
 
-procedure StencilOff(Glwin: TGLWindow; const FailureMessage: string);
+procedure StencilOff(Window: TGLWindow; const FailureMessage: string);
 begin
   ShadowsPossibleCurrently := false;
   Writeln(FailureMessage);
 end;
 
-{ Call Glw.Open, when anti-aliasing (multi-sampling) and shadows (stencil
+{ Call Window.Open, when anti-aliasing (multi-sampling) and shadows (stencil
   buffer) are possibly allowed. If EGLContextNotPossible, will try to lower
   requirements and initialize worse GL context. }
 procedure OpenContext;
 begin
-  Glw.OpenOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
+  Window.OpenOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
 end;
 
 { main --------------------------------------------------------------------- }
@@ -3571,11 +3571,11 @@ const
   end;
 
 begin
-  Glw := TGLUIWindow.Create(Application);
+  Window := TGLUIWindow.Create(Application);
 
   { parse parameters }
   { glw params }
-  Glw.ParseParameters(StandardParseOptions);
+  Window.ParseParameters(StandardParseOptions);
   { our params }
   CamerasParseParameters;
   VRMLNodesDetailOptionsParse;
@@ -3600,13 +3600,13 @@ begin
   end;
 
   SceneManager := TV3DSceneManager.Create(nil);
-  Glw.Controls.Add(SceneManager);
+  Window.Controls.Add(SceneManager);
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
   CreateToolbar;
 
-  Glw.Controls.Add(ScreenEffects);
+  Window.Controls.Add(ScreenEffects);
 
   SceneWarnings := TSceneWarnings.Create;
   try
@@ -3648,33 +3648,33 @@ begin
       try
         GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
 
-        Glw.GtkIconName := 'view3dscene';
-        Glw.MainMenu := CreateMainMenu;
-        Glw.OnMenuCommand := @MenuCommand;
-        Glw.OnOpen := @Open;
-        Glw.OnClose := @Close;
-        Glw.OnMouseDown := @MouseDown;
-        Glw.OnResize := @Resize;
+        Window.GtkIconName := 'view3dscene';
+        Window.MainMenu := CreateMainMenu;
+        Window.OnMenuCommand := @MenuCommand;
+        Window.OnOpen := @Open;
+        Window.OnClose := @Close;
+        Window.OnMouseDown := @MouseDown;
+        Window.OnResize := @Resize;
 
         { For MakingScreenShot = true, leave OnDraw as @nil
           (it doesn't do anything anyway when MakingScreenShot = true). }
         if not MakingScreenShot then
         begin
-          Glw.OnDraw := @Draw;
+          Window.OnDraw := @Draw;
         end else
         begin
           { --geometry must work as reliably as possible in this case. }
-          Glw.ResizeAllowed := raNotAllowed;
+          Window.ResizeAllowed := raNotAllowed;
 
           { Do not show window on the screen, since we're working in batch mode. }
-          Glw.Visible := false;
+          Window.Visible := false;
         end;
 
-        Glw.SetDemoOptions(K_None, #0, true);
+        Window.SetDemoOptions(K_None, #0, true);
 
         if ShadowsPossibleWanted then
         begin
-          Glw.StencilBufferBits := 8;
+          Window.StencilBufferBits := 8;
           { Assignment below essentially copies
             ShadowsPossibleWanted to ShadowsPossibleCurrently.
             ShadowsPossibleCurrently may be eventually turned to @false
@@ -3683,7 +3683,7 @@ begin
         end;
         Assert(ShadowsPossibleCurrently = ShadowsPossibleWanted);
 
-        Glw.MultiSampling := AntiAliasingGlwMultiSampling;
+        Window.MultiSampling := AntiAliasingGlwMultiSampling;
 
         OpenContext;
 
