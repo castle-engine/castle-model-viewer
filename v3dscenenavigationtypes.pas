@@ -167,7 +167,7 @@ procedure TNavigationTypeButton.DrawTooltip;
     ArrowSize = ButtonBottomMargin + 8;
   var
     X1, Y1, X2, Y2, ArrowMiddleX: Integer;
-    Arrow: array [0..2] of TVector2Integer;
+    Arrow: array [0..2] of TVector2Single;
   begin
     X1 := WindowBorderMargin;
     X2 := X1 + 2 * ImageMargin + Image.Width;
@@ -183,9 +183,9 @@ procedure TNavigationTypeButton.DrawTooltip;
 
     ArrowMiddleX := Left + Width div 2;
     Arrow[0][0] := ArrowMiddleX - ArrowSize;
-    Arrow[0][1] := Y2;
+    Arrow[0][1] := Y2 - 0.5; {< -0.5 needed on NVidia GeForce 9xxx (hal) }
     Arrow[1][0] := ArrowMiddleX + ArrowSize;
-    Arrow[1][1] := Y2;
+    Arrow[1][1] := Y2 - 0.5; {< -0.5 needed on NVidia GeForce 9xxx (hal) }
     Arrow[2][0] := ArrowMiddleX;
     Arrow[2][1] := Y2 + ArrowSize;
 
