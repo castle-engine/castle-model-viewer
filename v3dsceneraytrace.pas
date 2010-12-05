@@ -79,7 +79,7 @@ begin
 end;
 
 { -------------------------------------------------------------------------
-  glwindow calbacks AFTER rendering (when Image is ready) }
+  Window calbacks AFTER rendering (when Image is ready) }
 
 procedure DrawRaytraced(Window: TGLWindow);
 begin
