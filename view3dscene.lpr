@@ -1093,6 +1093,16 @@ begin
   end;
 end;
 
+{ Show the loading message. In normal circumstances, just shows using MessageOK
+  (on Window, which must be initialized now).
+  When we're in screenshot (batch) mode, simply shows it on StdErr. }
+procedure LoadErrorMessage(const S: string);
+begin
+  if not MakingScreenShot then
+    MessageOK(Window, S, taLeft) else
+    Writeln(ErrOutput, 'view3dscene: ', S);
+end;
+
 { This loads the scene from file (using LoadVRMLSequence) and
   then inits our scene variables by LoadSceneCore.
 
@@ -1160,8 +1170,8 @@ begin
       except
         on E: Exception do
         begin
-          MessageOK(Window, 'Error while loading scene from "' +ASceneFileName+ '": ' +
-            E.Message, taLeft);
+          LoadErrorMessage('Error while loading scene from "' +ASceneFileName+ '": ' +
+            E.Message);
           { In this case we can preserve current scene. }
           SceneWarnings.Assign(SavedSceneWarnings);
           Exit;
@@ -1195,8 +1205,8 @@ begin
           our Draw routine works OK when it's called to draw background
           under MessageOK. }
         LoadClearScene;
-        MessageOK(Window, 'Error while loading scene from "' + ASceneFileName + '": ' +
-          E.Message, taLeft);
+        LoadErrorMessage('Error while loading scene from "' + ASceneFileName + '": ' +
+          E.Message);
         Exit;
       end;
     end;
