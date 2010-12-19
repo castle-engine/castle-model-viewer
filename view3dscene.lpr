@@ -93,7 +93,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
-  V3DSceneScreenEffects;
+  V3DSceneScreenEffects, V3DSceneHAnim;
 
 var
   Window: TGLUIWindow;
@@ -2593,6 +2593,29 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Viewpoint.EventSet_Bind.Send(true, Scene.Time);
   end;
 
+  procedure VisualizeHumanoids;
+  var
+    Vis: THumanoidVisualization;
+  begin
+    if SceneAnimation.ScenesCount > 1 then
+    begin
+      MessageOK(Window, 'This function is not available when you deal with ' +
+        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+      Exit;
+    end;
+
+    Vis := THumanoidVisualization.Create;
+    try
+      Vis.JointVisualizationSize := Box3DAvgSize(Scene.BoundingBox, false, 1) / 20;
+      Scene.RootNode.EnumerateNodes(TNodeHAnimHumanoid,
+        @Vis.VisualizeHumanoid, false);
+      MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
+        [Vis.HumanoidsProcessed, Vis.JointsProcessed]), taLeft);
+      if Vis.HumanoidsProcessed <> 0 then
+        Scene.ChangedAll;
+    finally FreeAndNil(Vis) end;
+  end;
+
 var
   S, ProposedScreenShotName: string;
   C: Cardinal;
@@ -2640,6 +2663,8 @@ begin
   33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
+
+  42: VisualizeHumanoids;
 
   3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
   3510..3519: SceneAnimation.ShadowMapsPCF := TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
@@ -3204,6 +3229,8 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Add Humanoids Joints Visualization', 42));
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
