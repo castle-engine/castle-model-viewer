@@ -2607,6 +2607,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Vis := THumanoidVisualization.Create;
     try
       Vis.JointVisualizationSize := Box3DAvgSize(Scene.BoundingBox, false, 1) / 20;
+      Vis.AddAsSegment := false; { for now }
       Scene.RootNode.EnumerateNodes(TNodeHAnimHumanoid,
         @Vis.VisualizeHumanoid, false);
       MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',

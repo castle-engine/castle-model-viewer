@@ -30,9 +30,12 @@ uses VRMLNodes;
 
 type
   THumanoidVisualization = class
+    { Set before using VisualizeHumanoid }
+    JointVisualizationSize: Single;
+    AddAsSegment: boolean;
+    { Read after using VisualizeHumanoid }
     HumanoidsProcessed: Cardinal;
     JointsProcessed: Cardinal;
-    JointVisualizationSize: Single;
     procedure VisualizeHumanoid(Node: TVRMLNode);
   end;
 
@@ -63,7 +66,6 @@ procedure THumanoidVisualization.VisualizeHumanoid(Node: TVRMLNode);
 var
   HumanoidNode: TNodeHAnimHumanoid;
   Joint: TNodeHAnimJoint;
-  JointTransform: TNodeTransform_2;
   SphereShape, TextShape: TNodeShape;
   SphereGeometry: TNodeSphere_2;
   SphereAppearance: TNodeAppearance;
@@ -71,6 +73,7 @@ var
   TextGeometry: TNodeText;
   FontStyle: TNodeFontStyle_2;
   I: Integer;
+  JointGroup: TNodeX3DGroupingNode;
 const
   MatName = 'HumanoidJointVisualizeMat';
 begin
@@ -83,7 +86,10 @@ begin
     if HumanoidNode.FdSkin.Items[I] is TNodeShape then
       MakeShapeTransparent(TNodeShape(HumanoidNode.FdSkin.Items[I]));
 
-  { create sphere Shape for joints. }
+  { create sphere Shape for joints.
+    All joint visualizations share the same sphere Shape.
+    This way they also share the same material, useful for view3dscene
+    "Edit Material" menu item. }
   SphereShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
 
   SphereGeometry := TNodeSphere_2.Create('', HumanoidNode.WWWBasePath);
@@ -104,17 +110,21 @@ begin
       Joint := TNodeHAnimJoint(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointTransform := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
-      JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
-      HumanoidNode.FdSkin.AddItem(JointTransform);
+      if AddAsSegment then
+      begin
+        JointGroup := TNodeHAnimSegment.Create('', HumanoidNode.WWWBasePath);
+        Joint.FdChildren.Add(JointGroup);
+      end else
+      begin
+        JointGroup := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
+        TNodeTransform_2(JointGroup).FdTranslation.Value := Joint.FdCenter.Value;
+        HumanoidNode.FdSkin.AddItem(JointGroup);
+      end;
 
-      { all joint visualizations share the same sphere Shape.
-        This way they also share the same material, useful for view3dscene
-        "Edit Material" menu item. }
-      JointTransform.FdChildren.AddItem(SphereShape);
+      JointGroup.FdChildren.AddItem(SphereShape);
 
       TextShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
-      JointTransform.FdChildren.AddItem(TextShape);
+      JointGroup.FdChildren.AddItem(TextShape);
 
       TextGeometry := TNodeText.Create('', HumanoidNode.WWWBasePath);
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
