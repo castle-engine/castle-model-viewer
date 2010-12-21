@@ -32,7 +32,6 @@ type
   THumanoidVisualization = class
     { Set before using VisualizeHumanoid }
     JointVisualizationSize: Single;
-    AddAsSegment: boolean;
     { Read after using VisualizeHumanoid }
     HumanoidsProcessed: Cardinal;
     JointsProcessed: Cardinal;
@@ -110,16 +109,9 @@ begin
       Joint := TNodeHAnimJoint(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      if AddAsSegment then
-      begin
-        JointGroup := TNodeHAnimSegment.Create('', HumanoidNode.WWWBasePath);
-        Joint.FdChildren.Add(JointGroup);
-      end else
-      begin
-        JointGroup := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
-        TNodeTransform_2(JointGroup).FdTranslation.Value := Joint.FdCenter.Value;
-        HumanoidNode.FdSkin.AddItem(JointGroup);
-      end;
+      JointGroup := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
+      TNodeTransform_2(JointGroup).FdTranslation.Value := Joint.FdCenter.Value;
+      HumanoidNode.FdSkin.AddItem(JointGroup);
 
       JointGroup.FdChildren.AddItem(SphereShape);
 
