@@ -135,6 +135,10 @@ var
     World is in world coords,
     local in local shape (SelectedItem^.State.Transform) coords. }
   SelectedPointWorld, SelectedPointLocal: TVector3Single;
+  { SelectedShape is always SelectedItem^.Shape.
+    Except in GeometryChanged, when SelectedItem may be already freed,
+    and then SelectedShape variable is useful to compare with OnlyShapeChanged. }
+  SelectedShape: TVRMLShape;
 
   { Set to non-nil by CreateMainMenu. }
   MenuSelectedOctreeStat: TMenuItem;
@@ -191,7 +195,8 @@ type
   THelper = class
     class procedure OpenRecent(const FileName: string);
     class procedure GeometryChanged(Scene: TVRMLScene;
-      const SomeLocalGeometryChanged: boolean);
+      const SomeLocalGeometryChanged: boolean;
+      OnlyShapeChanged: TVRMLShape);
     class procedure ViewpointsChanged(Scene: TVRMLScene);
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
@@ -706,6 +711,7 @@ begin
     { calculate SelectedPointLocal }
     if SelectedItem <> nil then
     begin
+      SelectedShape := TVRMLShape(SelectedItem^.Shape);
       try
         SelectedPointLocal := MatrixMultPoint(
           SelectedItem^.State.InvertedTransform, SelectedPointWorld);
@@ -866,6 +872,7 @@ end;
 procedure Unselect;
 begin
   SelectedItem := nil;
+  SelectedShape := nil;
   UpdateSelectedEnabled;
 end;
 
@@ -1329,12 +1336,16 @@ begin
 end;
 
 class procedure THelper.GeometryChanged(Scene: TVRMLScene;
-  const SomeLocalGeometryChanged: boolean);
+  const SomeLocalGeometryChanged: boolean;
+  OnlyShapeChanged: TVRMLShape);
 begin
   if SomeLocalGeometryChanged then
-    { Since some PVRMLTriangle pointers are possibly completely different now,
-      we have to invalidate selection. }
-    Unselect else
+  begin
+    if (OnlyShapeChanged = nil) or
+       (OnlyShapeChanged = SelectedShape) then
+      { Our PVRMLTriangle pointer is possibly invalid now. }
+      Unselect;
+  end else
   if SelectedItem <> nil then
   begin
     { We can keep SelectedItem, but we have to take into account that it's
@@ -2331,7 +2342,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         Recalculate octree.
         GeometryChanged takes care of invalidating SelectedItem and such. }
       SceneOctreeCreate;
-      THelper.GeometryChanged(nil, true);
+      THelper.GeometryChanged(nil, true, nil);
       THelper.ViewpointsChanged(Scene);
     end;
   end;
