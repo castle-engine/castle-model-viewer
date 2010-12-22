@@ -72,7 +72,8 @@ var
   TextGeometry: TNodeText;
   FontStyle: TNodeFontStyle_2;
   I: Integer;
-  JointGroup: TNodeX3DGroupingNode;
+  JointTransform: TNodeTransform_2;
+  CenterRoute: TVRMLRoute;
 const
   MatName = 'HumanoidJointVisualizeMat';
 begin
@@ -99,7 +100,7 @@ begin
   SphereShape.FdAppearance.Value := SphereAppearance;
 
   SphereMaterial := TNodeMaterial_2.Create(MatName, HumanoidNode.WWWBasePath);
-  SphereMaterial.FdTransparency.Value := 0.1;
+  SphereMaterial.FdTransparency.Value := 0.3;
   SphereAppearance.FdMaterial.Value := SphereMaterial;
 
   { for each joint, add it's visualization }
@@ -109,14 +110,19 @@ begin
       Joint := TNodeHAnimJoint(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointGroup := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
-      TNodeTransform_2(JointGroup).FdTranslation.Value := Joint.FdCenter.Value;
-      HumanoidNode.FdSkin.AddItem(JointGroup);
+      JointTransform := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
+      JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
+      HumanoidNode.FdSkin.AddItem(JointTransform);
 
-      JointGroup.FdChildren.AddItem(SphereShape);
+      CenterRoute := TVRMLRoute.Create;
+      CenterRoute.SetSourceDirectly(Joint.FdCenter);
+      CenterRoute.SetDestinationDirectly(JointTransform.FdTranslation);
+      HumanoidNode.Routes.Add(CenterRoute);
+
+      JointTransform.FdChildren.AddItem(SphereShape);
 
       TextShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
-      JointGroup.FdChildren.AddItem(TextShape);
+      JointTransform.FdChildren.AddItem(TextShape);
 
       TextGeometry := TNodeText.Create('', HumanoidNode.WWWBasePath);
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
