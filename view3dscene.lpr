@@ -391,6 +391,8 @@ procedure Close(Window: TGLWindow);
 begin
   ShadowsGLClose;
   FreeAndNil(statusFont);
+
+  Progress.UserInterface := ProgressNullInterface;
 end;
 
 procedure DrawStatus(data: Pointer);
