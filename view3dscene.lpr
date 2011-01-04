@@ -75,7 +75,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   ParseParametersUnit, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS, Base3D,
+  Images, CubeMap, DDS, Base3D, ALSoundEngine,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
@@ -2929,6 +2929,19 @@ begin
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
 
+  { TODO: should be saved to config file too.
+    Note: Enable is also set by --no-sound, should not save then?
+
+    TODO: SetEnable must do ALContextOpen / ALContextClose if needed.
+
+    TODO: we have to zero all the buffers (all the sources will be automatically
+      freed at ALContextClose anyway), otherwise changing Enable
+      or Device while some buffer is loaded will leave invalid buffer id.
+  }
+  801: SoundEngine.Enable := not SoundEngine.Enable;
+  810..850: SoundEngine.Device :=
+    SoundEngine.Devices[MenuItem.IntData - 810].Name;
+
   1100..1199: SetTextureMinFilter(
     TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
@@ -3020,6 +3033,25 @@ function CreateMainMenu: TMenu;
     end;
   end;
 
+  procedure MenuAppendSoundDevices(M: TMenu; BaseIntData: Cardinal);
+  var
+    Radio: TMenuItemRadio;
+    RadioGroup: TMenuItemRadioGroup;
+    I: Integer;
+  begin
+    RadioGroup := nil;
+    for I := 0 to SoundEngine.Devices.Count - 1 do
+    begin
+      Radio := TMenuItemRadio.Create(
+        SQuoteMenuEntryCaption(SoundEngine.Devices[I].NiceName),
+        BaseIntData + I, SoundEngine.Devices[I].Name = SoundEngine.Device, true);
+      if RadioGroup = nil then
+        RadioGroup := Radio.Group else
+        Radio.Group := RadioGroup;
+      M.Append(Radio);
+    end;
+  end;
+
 var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
@@ -3043,10 +3075,16 @@ begin
        M2.Append(M3);
      M2.Append(TMenuItemChecked.Create('_Shadows Possible (Restart view3dscene to Apply)',
        740, ShadowsPossibleWanted, true));
+     M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
        InitialShowBBox, true));
      M2.Append(TMenuItemChecked.Create('Show Status and Toolbar at Start', 771,
        InitialShowStatus, true));
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItemChecked.Create('Sound', 801, SoundEngine.Enable, true));
+     M3 := TMenu.Create('Sound Device');
+       MenuAppendSoundDevices(M3, 810);
+       M2.Append(M3);
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
