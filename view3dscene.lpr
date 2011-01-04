@@ -2932,8 +2932,6 @@ begin
   { TODO: should be saved to config file too.
     Note: Enable is also set by --no-sound, should not save then?
 
-    TODO: SetEnable must do ALContextOpen / ALContextClose if needed.
-
     TODO: we have to zero all the buffers (all the sources will be automatically
       freed at ALContextClose anyway), otherwise changing Enable
       or Device while some buffer is loaded will leave invalid buffer id.
