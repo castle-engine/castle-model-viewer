@@ -2929,10 +2929,6 @@ begin
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
 
-  { TODO: we have to zero all the buffers (all the sources will be automatically
-      freed at ALContextClose anyway), otherwise changing Enable
-      or Device while some buffer is loaded will leave invalid buffer id.
-  }
   801: SoundEngine.Enable := not SoundEngine.Enable;
   810..850: SoundEngine.Device :=
     SoundEngine.Devices[MenuItem.IntData - 810].Name;
