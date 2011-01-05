@@ -26,7 +26,7 @@ unit V3DSceneConfig;
 
 interface
 
-uses KambiUtils, KambiXMLConfig;
+uses KambiUtils, KambiXMLConfig, ALSoundEngine;
 
 var
   { User config file.
@@ -55,9 +55,13 @@ initialization
 
   ConfigFile := TKamXMLConfig.Create(nil);
   ConfigFile.FileName := UserConfigFile('.conf');
+  { SoundEngine.LoadFromConfig must be before SoundEngine.ParseParameters,
+    that may change Enable by --no-sound. }
+  SoundEngine.LoadFromConfig(ConfigFile);
 finalization
   if ConfigFile <> nil then
   begin
+    SoundEngine.SaveToConfig(ConfigFile);
     ConfigFile.Flush;
     FreeAndNil(ConfigFile);
   end;

@@ -2929,10 +2929,7 @@ begin
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
 
-  { TODO: should be saved to config file too.
-    Note: Enable is also set by --no-sound, should not save then?
-
-    TODO: we have to zero all the buffers (all the sources will be automatically
+  { TODO: we have to zero all the buffers (all the sources will be automatically
       freed at ALContextClose anyway), otherwise changing Enable
       or Device while some buffer is loaded will leave invalid buffer id.
   }
