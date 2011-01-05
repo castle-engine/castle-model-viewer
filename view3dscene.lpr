@@ -3600,6 +3600,7 @@ const
            '                        Exact 0 means "no anti-aliasing",' +NL+
            '                        this is the default. Each successive integer' +NL+
            '                        generally makes method one step better.' +NL+
+           SoundEngine.ParseParametersHelp + NL+
            NL+
            TGLWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
            NL+
@@ -3657,9 +3658,8 @@ begin
   Window := TGLUIWindow.Create(Application);
 
   { parse parameters }
-  { glw params }
   Window.ParseParameters(StandardParseOptions);
-  { our params }
+  SoundEngine.ParseParameters;
   CamerasParseParameters;
   VRMLNodesDetailOptionsParse;
   RendererOptimizationOptionsParse(Optimization);
