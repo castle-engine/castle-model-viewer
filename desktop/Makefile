@@ -4,7 +4,7 @@ VIEW3DSCENE_ICON := 6_thicker
 ENGINE_ICON := 8_tentacles_moon_polish
 
 ALL_IMAGES := ../../www/htdocs/images/kambi_vrml_game_engine_icon.png \
-              view3dscene.png view3dscene.svg
+              view3dscene.png view3dscene.svg view3dscene.icns
 
 .PHONY: all_images
 all_images: $(ALL_IMAGES)
@@ -28,3 +28,6 @@ view3dscene.svg: icon/$(VIEW3DSCENE_ICON).svg
 
 view3dscene.png: icon/$(VIEW3DSCENE_ICON).svg
 	inkscape --export-width=48 --export-height=48 $< --export-png=$@
+
+view3dscene.icns: icon/$(VIEW3DSCENE_ICON).svg
+	../../scripts/svg_to_icns.sh $< $@
