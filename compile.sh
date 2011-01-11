@@ -15,3 +15,4 @@ cd ../kambi_vrml_game_engine/
 make clean-glwindow
 
 fpc -dRELEASE "${KAMBI_FPC_OPTIONS:-}" @kambi.cfg ../view3dscene/view3dscene.lpr
+#ppcx64 -dRELEASE "${KAMBI_FPC_OPTIONS:-}" @kambi.cfg ../view3dscene/view3dscene.lpr
