@@ -3550,14 +3550,17 @@ const
     4 : WasParam_WriteToVRML := true;
     5 : begin
          InfoWrite(
-           'view3dscene: VRML (1.0 and 2.0, aka VRML 97), Kanim,' +NL+
-           '3DS, MD3, Wavefront OBJ and Collada viewer.' +NL+
-           'You can move in the scene, possibly with collision-checking.' +NL+
-           'It can also be used to convert models in other formats (3DS etc.) to VRML.' +NL+
-           'It has built-in raytracer, similar to that available in "rayhunter".' +NL+
+           'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
+           'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
+           'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
+           'You can also convert models in other formats to VRML.' +NL+
            NL+
            'Call as' +NL+
-           '  view3dscene [OPTIONS]... FILE-TO-VIEW' +NL+
+           '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
+           NL+
+           'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
+           'As usual, dash (-) means that standard input will be read' +NL+
+           '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
            NL+
            'Available options are:' +NL+
            HelpOptionHelp +NL+
