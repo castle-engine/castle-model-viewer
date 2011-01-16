@@ -569,9 +569,7 @@ begin
     should always work with MainScene = nil. }
   if MainScene = nil then Exit;
 
-  { In methods other than bmGLSLAll, setting Scene.BumpMappingLightPosition
-    may be costly operation. So don't do this. }
-  if MainScene.BumpMappingMethod in bmGLSLAll then
+  if MainScene.BumpMappingMethod <> bmNone then
     MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
 
   BeginRenderSceneWithLights(SceneAnimation);
