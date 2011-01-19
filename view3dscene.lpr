@@ -3748,6 +3748,10 @@ begin
 
           { Do not show window on the screen, since we're working in batch mode. }
           Window.Visible := false;
+
+          { Don't make sound when rendering in batch mode. }
+          SoundEngine.Enable := false;
+          SoundEngine.EnableSaveToConfig := false;
         end;
 
         Window.SetDemoOptions(K_None, #0, true);
