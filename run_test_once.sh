@@ -15,6 +15,13 @@ else
   VIEW3DSCENE=view3dscene
 fi
 
+# If you enable screenshot comparison (lower in this script),
+# this will be used to make a reference (considered "correct") screenshot,
+# that will be compared with others. It may be just the same view3dscene
+# version, or it may be some other stable version.
+VIEW3DSCENE_FOR_CORRECT_SCREENSHOT="$VIEW3DSCENE"
+#VIEW3DSCENE_FOR_CORRECT_SCREENSHOT=view3dscene-3.8.0-release
+
 FILE="$1"
 
 # It's important that temp_file is inside the same directory,
@@ -62,18 +69,37 @@ echo '---- Reading again' "$FILE"
 
 rm -f "$TEMP_FILE"
 
+# Screenshot comparison ------------------------------------------------------
+
+SCREENSHOT_CORRECT=`stringoper ChangeFileExt "$FILE" _test_screen.png`
+SCREENSHOT_COMPARE=`stringoper ChangeFileExt "$FILE" _test_screen_compare.png`
+
 mk_screnshot ()
 {
-  echo '---- Rendering and making screenshot' "$@"
-  TEMP_SCREENSHOT=/tmp/view3dscene_test_screenshot.png
-  "$VIEW3DSCENE" "$FILE" --screenshot 0 "$TEMP_SCREENSHOT" "$@"
-  # display "$TEMP_SCREENSHOT"
-  rm -f "$TEMP_SCREENSHOT"
+  echo '---- Rendering and making screenshot' "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT" "$@"
+  "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_CORRECT" "$@"
+}
+
+compare_screenshot ()
+{
+  echo '---- Comparing screenshot' "$VIEW3DSCENE" "$@"
+  "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_COMPARE" "$@"
+
+  # Don't exit of screenshot comparison fail. That's because
+  # taking screenshots takes a long time, so just continue checking.
+  # The caller will have to check script output to know if something failed.
+  set +e
+  image_compare "$SCREENSHOT_CORRECT" "$SCREENSHOT_COMPARE"
+  set -e
 }
 
 # Uncomment these for much longer test (this does --screenshot,
 # testing actual rendering of the scene)
 
 # mk_screnshot --renderer-optimization none
-# mk_screnshot --renderer-optimization scene-display-list
-# mk_screnshot --renderer-optimization shape-display-list
+# compare_screenshot --renderer-optimization none
+# compare_screenshot --renderer-optimization scene-display-list
+# compare_screenshot --renderer-optimization shape-display-list
+
+rm -f "$SCREENSHOT_CORRECT"
+rm -f "$SCREENSHOT_COMPARE"
