@@ -26,12 +26,18 @@ set -eu
 #
 # Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
 # it contains files that *should* fail when reading).
+#
+# Also doesn't try to check view3dscene_test_temporary_file.wrl,
+# this may be leftover from interrupted previous test (it would cause
+# errors that are not interesting), it will be removed by run_test_once.sh
+# inside anyway.
 
 test_dir()
 {
   set +e
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
+  '(' -type f -name 'view3dscene_test_temporary_file.wrl' ')' -or \
   '(' -type f '(' -iname '*.wrl' -or \
                   -iname '*.wrz' -or \
                   -iname '*.wrl.gz' -or \
