@@ -48,7 +48,7 @@ procedure ResizeViewports(Window: TGLUIWindow; SceneManager: TKamSceneManager);
 
 implementation
 
-uses SysUtils, KambiUtils, GL, UIControls;
+uses VectorMath, SysUtils, KambiUtils, GL, UIControls;
 
 { TBackground ---------------------------------------------------------------- }
 
@@ -88,11 +88,29 @@ procedure SetViewportsConfig(const Value: TViewportsConfig;
     Window.Controls.InsertIfNotExists(0, Viewport);
   end;
 
+  procedure AssignCamera(Target, Source: TKamAbstractViewport);
+  var
+    Pos, Dir, Up, GravityUp: TVector3Single;
+  begin
+    if Target.Camera = nil then
+      Target.Camera := Target.CreateDefaultCamera(Target);
+
+    SceneManager.MainScene.CameraFromNavigationInfo(Target.Camera,
+      SceneManager.Items.BoundingBox);
+    SceneManager.MainScene.CameraFromViewpoint(Target.Camera,
+      false, false);
+
+    Source.Camera.GetView(Pos, Dir, Up, GravityUp);
+    Target.Camera.SetView(Pos, Dir, Up, GravityUp);
+  end;
+
 var
   I: Integer;
+  OldValue: TViewportsConfig;
 begin
   if ViewportsConfig <> Value then
   begin
+    OldValue := ViewportsConfig;
     ViewportsConfig := Value;
     { After a first change of ViewportsConfig,
       use AlwaysApplyProjection = true, otherwise restoring vc1 would
@@ -116,12 +134,29 @@ begin
           AddViewport(Viewports[0]);
           Window.Controls.Remove(Viewports[1]);
           Window.Controls.Remove(Viewports[2]);
+          { Configure camera for newly appearing viewports }
+          if OldValue = vc1 then
+            AssignCamera(Viewports[0], SceneManager);
         end;
       vc4:
         begin
           AddViewport(Viewports[0]);
           AddViewport(Viewports[1]);
           AddViewport(Viewports[2]);
+          { Configure camera for newly appearing viewports }
+          case OldValue of
+            vc1:
+              begin
+                AssignCamera(Viewports[0], SceneManager);
+                AssignCamera(Viewports[1], SceneManager);
+                AssignCamera(Viewports[2], SceneManager);
+              end;
+            vc2Horizontal:
+              begin
+                AssignCamera(Viewports[1], SceneManager);
+                AssignCamera(Viewports[2], Viewports[0]);
+              end;
+          end;
         end;
       else raise EInternalError.Create('ViewportsConfig?');
     end;
@@ -160,16 +195,16 @@ begin
         SceneManager.Height := H - 1;
 
         Viewports[0].Left := W + 1;
-        Viewports[0].Bottom := 0;
+        Viewports[0].Bottom := H + 1;
         Viewports[0].Width := W - 1;
         Viewports[0].Height := H - 1;
 
-        Viewports[1].Left := W + 1;
-        Viewports[1].Bottom := H + 1;
+        Viewports[1].Left := 0;
+        Viewports[1].Bottom := 0;
         Viewports[1].Width := W - 1;
         Viewports[1].Height := H - 1;
 
-        Viewports[2].Left := 0;
+        Viewports[2].Left := W + 1;
         Viewports[2].Bottom := 0;
         Viewports[2].Width := W - 1;
         Viewports[2].Height := H - 1;
