@@ -93,7 +93,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
-  V3DSceneScreenEffects, V3DSceneHAnim;
+  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports;
 
 var
   Window: TGLUIWindow;
@@ -670,6 +670,7 @@ begin
       procedure. }
     glPushAttrib(GL_ENABLE_BIT);
       glDisable(GL_DEPTH_TEST);
+      glViewport(0, 0, Window.Width, Window.Height);
       glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Window.Width, 0, Window.Height);
     glPopAttrib;
   end;
@@ -1039,6 +1040,14 @@ begin
       SceneManager.MainScene.CameraFromNavigationInfo(Camera,
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
       SceneManager.MainScene.CameraFromViewpoint(Camera, false, false);
+      for I := 0 to High(Viewports) do
+        if Viewports[I].Camera <> nil then
+        begin
+          SceneManager.MainScene.CameraFromNavigationInfo(Viewports[I].Camera,
+            SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
+          SceneManager.MainScene.CameraFromViewpoint(Viewports[I].Camera,
+            false, false);
+        end;
       Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
     end else
       { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
@@ -2952,6 +2961,8 @@ begin
     end;
   1600..1699: SetTextureModeRGB(
     TTextureMode(MenuItem.IntData-1600), SceneAnimation);
+  3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
+    View3DScene.Window, SceneManager);
   else raise EInternalError.Create('not impl menu item');
  end;
 
@@ -3290,6 +3301,11 @@ begin
    M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
    Result.Append(M);
  M := TMenu.Create('_Display');
+   M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true);
+   M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
+     Window.FullScreen, true));
+   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
    M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
    M.Append(TMenuItem.Create('Screenshot to _cube map (environment around camera position) ...',  550));
@@ -3297,8 +3313,6 @@ begin
    M.Append(TMenuItem.Create('Screenshot depth to grayscale image ...', 560));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
-   M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
-     Window.FullScreen, true));
    Result.Append(M);
  M := TMenu.Create('_Help');
    M.Append(TMenuItem.Create('Scene Information',                  121));
@@ -3459,6 +3473,8 @@ begin
   WarningsButton.Left := Max(NextLeft,
     Window.Width - WarningsButton.Width - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
+
+  ResizeViewports(View3DScene.Window, SceneManager);
 end;
 
 class procedure THelper.OpenButtonClick(Sender: TObject);
