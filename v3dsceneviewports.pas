@@ -31,9 +31,9 @@ type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
-  ('One viewport',
-   'Two horizontal viewports',
-   'Four viewports'
+  ('_1 viewport',
+   '_2 horizontal viewports',
+   '_4 viewports'
   );
 
 var

@@ -3304,7 +3304,7 @@ begin
    M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
    Result.Append(M);
  M := TMenu.Create('_Display');
-   M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true);
+   M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true, false);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Window.FullScreen, true));
