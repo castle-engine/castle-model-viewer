@@ -1041,13 +1041,7 @@ begin
         SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
       SceneManager.MainScene.CameraFromViewpoint(Camera, false, false);
       for I := 0 to High(Viewports) do
-        if Viewports[I].Camera <> nil then
-        begin
-          SceneManager.MainScene.CameraFromNavigationInfo(Viewports[I].Camera,
-            SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
-          SceneManager.MainScene.CameraFromViewpoint(Viewports[I].Camera,
-            false, false);
-        end;
+        AssignCamera(Viewports[I], SceneManager, SceneManager, false);
       Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
     end else
       { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
@@ -2793,6 +2787,7 @@ begin
          if Camera.NavigationType = High(TCameraNavigationType) then
            Camera.NavigationType := Low(TCameraNavigationType) else
            Camera.NavigationType := Succ(Camera.NavigationType);
+         ViewportsSetNavigationType(Camera.NavigationType);
          UpdateCameraUI;
        end;
 
@@ -2947,6 +2942,7 @@ begin
   1300..1399:
     begin
       Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
+      ViewportsSetNavigationType(Camera.NavigationType);
       UpdateCameraUI;
     end;
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
@@ -3490,6 +3486,7 @@ end;
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
 begin
   Camera.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
+  ViewportsSetNavigationType(Camera.NavigationType);
   UpdateCameraUI;
 end;
 

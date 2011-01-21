@@ -25,7 +25,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses KambiSceneManager, GLWindow;
+uses KambiSceneManager, GLWindow, Cameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
@@ -44,7 +44,17 @@ var
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
   Window: TGLUIWindow; SceneManager: TKamSceneManager);
+
+{ Copy all camera settings from Source.Camera to Target.Camera.
+  If CreateIfNeeded then Target will be created if @nil (otherwise
+  it will be left as @nil). }
+procedure AssignCamera(Target, Source: TKamAbstractViewport;
+  SceneManager: TKamSceneManager; const CreateIfNeeded: boolean);
+
 procedure ResizeViewports(Window: TGLUIWindow; SceneManager: TKamSceneManager);
+
+{ Copy NavigationType to (existing) viewports cameras. }
+procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
 
 implementation
 
@@ -78,6 +88,32 @@ end;
 var
   Background: TBackground;
 
+procedure AssignCamera(Target, Source: TKamAbstractViewport;
+  SceneManager: TKamSceneManager; const CreateIfNeeded: boolean);
+var
+  Pos, Dir, Up, GravityUp: TVector3Single;
+begin
+  if Target.Camera = nil then
+  begin
+    if CreateIfNeeded then
+      Target.Camera := Target.CreateDefaultCamera(Target) else
+      Exit;
+  end;
+
+  SceneManager.MainScene.CameraFromNavigationInfo(Target.Camera,
+    SceneManager.Items.BoundingBox);
+  SceneManager.MainScene.CameraFromViewpoint(Target.Camera,
+    false, false);
+
+  Source.Camera.GetView(Pos, Dir, Up, GravityUp);
+  Target.Camera.SetView(Pos, Dir, Up, GravityUp);
+
+  if (Source.Camera is TUniversalCamera) and
+     (Target.Camera is TUniversalCamera) then
+    TUniversalCamera(Target.Camera).NavigationType :=
+      TUniversalCamera(Source.Camera).NavigationType;
+end;
+
 procedure SetViewportsConfig(const Value: TViewportsConfig;
   Window: TGLUIWindow; SceneManager: TKamSceneManager);
 
@@ -86,22 +122,6 @@ procedure SetViewportsConfig(const Value: TViewportsConfig;
     Viewport.SceneManager := SceneManager;
     Viewport.FullSize := false;
     Window.Controls.InsertIfNotExists(0, Viewport);
-  end;
-
-  procedure AssignCamera(Target, Source: TKamAbstractViewport);
-  var
-    Pos, Dir, Up, GravityUp: TVector3Single;
-  begin
-    if Target.Camera = nil then
-      Target.Camera := Target.CreateDefaultCamera(Target);
-
-    SceneManager.MainScene.CameraFromNavigationInfo(Target.Camera,
-      SceneManager.Items.BoundingBox);
-    SceneManager.MainScene.CameraFromViewpoint(Target.Camera,
-      false, false);
-
-    Source.Camera.GetView(Pos, Dir, Up, GravityUp);
-    Target.Camera.SetView(Pos, Dir, Up, GravityUp);
   end;
 
 var
@@ -136,7 +156,7 @@ begin
           Window.Controls.Remove(Viewports[2]);
           { Configure camera for newly appearing viewports }
           if OldValue = vc1 then
-            AssignCamera(Viewports[0], SceneManager);
+            AssignCamera(Viewports[0], SceneManager, SceneManager, true);
         end;
       vc4:
         begin
@@ -147,14 +167,14 @@ begin
           case OldValue of
             vc1:
               begin
-                AssignCamera(Viewports[0], SceneManager);
-                AssignCamera(Viewports[1], SceneManager);
-                AssignCamera(Viewports[2], SceneManager);
+                AssignCamera(Viewports[0], SceneManager, SceneManager, true);
+                AssignCamera(Viewports[1], SceneManager, SceneManager, true);
+                AssignCamera(Viewports[2], SceneManager, SceneManager, true);
               end;
             vc2Horizontal:
               begin
-                AssignCamera(Viewports[1], SceneManager);
-                AssignCamera(Viewports[2], Viewports[0]);
+                AssignCamera(Viewports[1], SceneManager, SceneManager, true);
+                AssignCamera(Viewports[2], Viewports[0], SceneManager, true);
               end;
           end;
         end;
@@ -210,6 +230,16 @@ begin
         Viewports[2].Height := H - 1;
       end;
   end;
+end;
+
+procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
+var
+  I: Integer;
+begin
+  for I := 0 to High(Viewports) do
+    if (Viewports[I].Camera <> nil) and
+       (Viewports[I].Camera is TUniversalCamera) then
+      TUniversalCamera(Viewports[I].Camera).NavigationType := NavigationType;
 end;
 
 procedure DoInitialization;
