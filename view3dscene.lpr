@@ -221,6 +221,7 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
+    function MouseDown(const Button: TMouseButton): boolean; override;
   end;
 
 var
@@ -682,11 +683,13 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure MouseDown(Window: TGLWindow; btn: TMouseButton);
+function TV3DSceneManager.MouseDown(const Button: TMouseButton): boolean;
 var
   Ray0, RayVector: TVector3Single;
 begin
-  if (btn = mbRight) and
+  Result := inherited;
+
+  if (Button = mbRight) and
      { Support selecting item by right button click only in Walk mode.
 
        In Examine mode, it would collide with zooming in / out,
@@ -694,7 +697,10 @@ begin
        right mouse button. Mouse clicks start dragging, so don't do
        anything here (not even a warning about SNavigationClassWalkNeeded,
        since it would only interfere with navigation). }
-     (Camera.NavigationClass <> ncExamine) then
+     not
+     ( (Camera is TExamineCamera) or
+       ( (Camera is TUniversalCamera) and
+         (TUniversalCamera(Camera).NavigationClass = ncExamine) ) ) then
   begin
     if SceneOctreeCollisions = nil then
     begin
@@ -702,9 +708,10 @@ begin
       Exit;
     end;
 
-    SceneManager.Camera.MouseRay(
-      SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
-      SceneManager.OrthoViewDimensions, Ray0, RayVector);
+    Camera.CustomRay(
+      CorrectLeft, CorrectBottom, CorrectWidth, CorrectHeight, ContainerHeight,
+      Window.MouseX, Window.MouseY, PerspectiveView, PerspectiveViewAngles,
+      OrthoViewDimensions, Ray0, RayVector);
 
     SelectedItem := SceneOctreeCollisions.RayCollision(
       SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
@@ -3746,7 +3753,6 @@ begin
         Window.OnMenuCommand := @MenuCommand;
         Window.OnOpen := @Open;
         Window.OnClose := @Close;
-        Window.OnMouseDown := @MouseDown;
         Window.OnResize := @Resize;
 
         { For MakingScreenShot = true, leave OnDraw as @nil
