@@ -24,10 +24,10 @@
   See [http://vrmlengine.sourceforge.net/view3dscene.php] for user
   documentation.
 
-  The other, more internal, name of this program is "Kambi VRML game engine
-  swiss army knife". This program allows to demonstrate and use a lot
+  The actual name of this program is "Kambi VRML game engine
+  swiss army knife" :) This program shows and uses a lot
   of our engine features. It's basically a giant GUI to load everything,
-  tweak every option from the menu / toolbar, and such.
+  and tweak every option from the menu and toolbar.
 
   If you want to find out how to use "Kambi VRML game engine",
   this isn't the best place to study. Look instead at simple examples
