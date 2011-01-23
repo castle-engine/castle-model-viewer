@@ -2727,7 +2727,6 @@ begin
   60: SetViewpointForWholeScene(1, 2, true , true);
 
   82: ShowBBox := not ShowBBox;
-  83: with SceneAnimation.Attributes do SmoothShading := not SmoothShading;
   84: if Window.ColorDialog(BGColor) then BGColorChanged;
   85: with SceneAnimation.Attributes do UseFog := not UseFog;
   86: with SceneAnimation.Attributes do Blending := not Blending;
@@ -3109,8 +3108,6 @@ begin
      M.Append(M2);
    M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Smooth Shading',         83,
-     SceneAnimation.Attributes.SmoothShading, true));
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85,
      SceneAnimation.Attributes.UseFog, true));
