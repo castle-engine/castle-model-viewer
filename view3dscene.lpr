@@ -45,9 +45,8 @@
     express everything that is implemented in other 3D formats readers.
     And we gain the simplicity of this program (we just treat everything
     as VRML scene, actually VRML animation),
-    optimization (display lists optimizations,
-    OpenGL renderer cache inside VRML renderer), functionality
-    (like automatic normals generation based on creaseAngle).
+    optimization (vbo, OpenGL renderer cache inside VRML renderer),
+    functionality (like automatic normals generation based on creaseAngle).
   - render scene using TVRMLGLScene (actually TVRMLGLAnimation
     and TVRMLGLScene is inside)
   - use Cameras and TGLUIWindow to let user navigate
@@ -85,13 +84,12 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
-  VRMLRendererOptimization, VRMLGLRenderer, VRMLShape, RenderStateUnit,
-  VRMLShadowMaps,
+  VRMLGLRenderer, VRMLShape, RenderStateUnit, VRMLShadowMaps,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
-  V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneOptimization,
+  V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports;
 
@@ -979,7 +977,6 @@ procedure LoadSceneCore(
   RootNodes: TVRMLNodesList;
   ATimes: TDynSingleArray;
   ScenesPerTime: Cardinal;
-  NewOptimization: TGLRendererOptimization;
   const EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 
@@ -1009,13 +1006,6 @@ begin
 
     if AnimationTimeSpeedWhenLoading <> 1.0 then
       ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
-
-    { Optimization is changed here, as it's best to do it when scene
-      is not loaded. }
-    Optimization := NewOptimization;
-    if OptimizationMenu[Optimization] <> nil then
-      OptimizationMenu[Optimization].Checked := true;
-    SceneAnimation.Optimization := Optimization;
 
     SceneAnimation.Load(RootNodes, true, ATimes, ScenesPerTime, EqualityEpsilon);
     SceneAnimation.TimeLoop := TimeLoop;
@@ -1152,19 +1142,11 @@ var
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
-  NewOptimization: TGLRendererOptimization;
   SavedSceneWarnings: TSceneWarnings;
 begin
   RootNodes := TVRMLNodesList.Create;
   Times := TDynSingleArray.Create;
   try
-    { TODO: Show to user that optimization for kanim is from kanim file,
-      not current setting of Optimization ?
-      Optimization is now user's preference,
-      but we silently override it when loading from KAnim file - not nice. }
-
-    NewOptimization := Optimization;
-
     { We have to clear SceneWarnings here (not later)
       to catch also all warnings raised during parsing the VRML file.
       This causes a potential problem: if loading the scene will fail,
@@ -1180,8 +1162,7 @@ begin
       try
       {$endif CATCH_EXCEPTIONS}
         LoadVRMLSequence(ASceneFileName, true,
-          RootNodes, Times,
-          ScenesPerTime, NewOptimization, EqualityEpsilon,
+          RootNodes, Times, ScenesPerTime, EqualityEpsilon,
           TimeLoop, TimeBackwards);
       {$ifdef CATCH_EXCEPTIONS}
       except
@@ -1202,7 +1183,7 @@ begin
     {$endif CATCH_EXCEPTIONS}
       LoadSceneCore(
         RootNodes, Times,
-        ScenesPerTime, NewOptimization, EqualityEpsilon,
+        ScenesPerTime, EqualityEpsilon,
         TimeLoop, TimeBackwards,
         ASceneFileName, SceneChanges, ACameraRadius, InitializeCamera);
     {$ifdef CATCH_EXCEPTIONS}
@@ -1275,7 +1256,6 @@ begin
     LoadSceneCore(
       RootNodes, Times,
       ScenesPerTime,
-      { keep current Optimization } Optimization,
       EqualityEpsilon,
       TimeLoop, TimeBackwards,
       '', [], 1.0, true,
@@ -2953,14 +2933,6 @@ begin
     end;
   1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
     TBumpMappingMethod( MenuItem.IntData-1400);
-  1500..1599:
-    begin
-      Optimization := TGLRendererOptimization(MenuItem.IntData-1500);
-      { This is not needed, as radio items for optimization have AutoCheckedToggle
-        OptimizationMenu[Optimization].Checked := true;
-      }
-      SceneAnimation.Optimization := Optimization;
-    end;
   1600..1699: SetTextureModeRGB(
     TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
@@ -3071,9 +3043,6 @@ begin
    M2 := TMenu.Create('_Preferences');
      M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
        MenuAppendAntiAliasing(M3, 600);
-       M2.Append(M3);
-     M3 := TMenu.Create('_Rendering optimization');
-       MenuAppendOptimization(M3, 1500);
        M2.Append(M3);
      M2.Append(TMenuItemChecked.Create('_Shadows Possible (Restart view3dscene to Apply)',
        740, ShadowsPossibleWanted, true));
@@ -3594,7 +3563,6 @@ const
            '                        as VRML 1.0 to the standard output' +NL+
            CamerasOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
-           RendererOptimizationOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3676,7 +3644,6 @@ begin
   SoundEngine.ParseParameters;
   CamerasParseParameters;
   VRMLNodesDetailOptionsParse;
-  RendererOptimizationOptionsParse(Optimization);
   ParseParameters(Options, @OptionProc, nil);
   { the most important param : filename to load }
   if Parameters.High > 1 then
@@ -3686,14 +3653,6 @@ begin
   begin
     WasParam_SceneFileName := true;
     Param_SceneFileName := Parameters[1];
-  end;
-
-  if ScreenShotsList.Count = 1 then
-  begin
-    { There's no point in using better optimization. They would waste
-      time to prepare display lists, while we only render scene once. }
-    Optimization := roNone;
-    OptimizationSaveConfig := false;
   end;
 
   SceneManager := TV3DSceneManager.Create(nil);
@@ -3729,7 +3688,6 @@ begin
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
-      SceneAnimation.Optimization := Optimization;
       SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
       SceneManager.Items.Add(SceneAnimation);
 
