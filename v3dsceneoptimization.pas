@@ -47,9 +47,9 @@ end;
 
 initialization
   Optimization := TGLRendererOptimization(
-    ConfigFile.GetValue('renderer_optimization', Ord(DefaultOptimization)));
+    ConfigFile.GetValue('renderer_optimization_3', Ord(DefaultOptimization)));
 finalization
   if OptimizationSaveConfig then
-    ConfigFile.SetDeleteValue('renderer_optimization',
+    ConfigFile.SetDeleteValue('renderer_optimization_3',
       Ord(Optimization), Ord(DefaultOptimization));
 end.
