@@ -17,7 +17,6 @@ Others:
     - SceneOctreeCreate/Free
     - RaytraceToWin call inside MenuCommand
     - SceneTriangle/ShapeStateOctree
-  - headlight
 
   - background animations work, but actually they are too resource intensive
     (see kambi_vrml_test_suite/kanim/ background test)
