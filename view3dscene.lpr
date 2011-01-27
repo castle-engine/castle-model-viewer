@@ -3503,7 +3503,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..12] of TOption =
+  Options: array[0..13] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3516,6 +3516,7 @@ const
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-vrml-changes'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone)
   );
@@ -3620,6 +3621,10 @@ const
           DebugLogVRMLChanges := true;
         end;
     11: begin
+          InitializeLog(Version);
+          LogRendererCache := true;
+        end;
+    12: begin
           { for proper menu display, we have to keep AntiAliasing
             within 0..MaxAntiAliasing range (although GLAntiAliasing
             unit accepts any cardinal value). }
@@ -3627,7 +3632,7 @@ const
           if AntiAliasingMenu[AntiAliasing] <> nil then
             AntiAliasingMenu[AntiAliasing].Checked := true;
         end;
-    12: begin
+    13: begin
           ShowBBox := false;
           ShowStatus := false;
           UpdateToolbarVisible;
