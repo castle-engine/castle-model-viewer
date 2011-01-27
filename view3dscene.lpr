@@ -3589,6 +3589,7 @@ const
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
+           '  --debug-log-cache     Write log info, including cache, on stdout' +nl+
            '  --debug-log-vrml-changes' +nl+
            '                        If --debug-log, output also info about' +NL+
            '                        VRML graph changes. This indicates' +nl+
