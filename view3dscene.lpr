@@ -74,7 +74,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   ParseParametersUnit, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS, Base3D, ALSoundEngine,
+  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
   { OpenGL related units: }
   GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
@@ -359,42 +359,23 @@ end;
 function ProjectionType: TProjectionType; forward;
 function ViewpointNode: TVRMLViewpointNode; forward;
 
-{ TGLWindow callbacks --------------------------------------------------------- }
+{ TStatusText ---------------------------------------------------------------- }
 
-procedure Open(Window: TGLWindow);
+type
+  TStatusText = class(TUIControl)
+  public
+    function DrawStyle: TUIControlDrawStyle; override;
+    procedure Draw; override;
+  end;
+
+function TStatusText.DrawStyle: TUIControlDrawStyle;
 begin
- statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
-
- { normalize normals because we will scale our objects in Examiner navigation;
-   chwilowo i tak w Scene.Render zawsze jest wlaczane glEnable(GL_NORMALIZE)
-   ale to nie zawsze bedzie prawdziwe.  }
- glEnable(GL_NORMALIZE);
- glEnable(GL_DEPTH_TEST);
-
- { We want to be able to render any scene --- so we have to be prepared
-   that fog interpolation has to be corrected for perspective. }
- glHint(GL_FOG_HINT, GL_NICEST);
-
- GLProgressInterface.Window := Window;
- Progress.UserInterface := GLProgressInterface;
-
- BGColorChanged;
-
- ShadowsGLOpen;
-
- AntiAliasingGLOpen;
- AntiAliasingEnable;
+  if Exists then
+    Result := ds2D else
+    Result := dsNone;
 end;
 
-procedure Close(Window: TGLWindow);
-begin
-  ShadowsGLClose;
-  FreeAndNil(statusFont);
-
-  Progress.UserInterface := ProgressNullInterface;
-end;
-
-procedure DrawStatus(data: Pointer);
+procedure TStatusText.Draw;
 const
   StatusInsideCol: TVector4f = (0, 0, 0, 0.7);
   StatusBorderCol: TVector4f = (0, 1, 0, 1);
@@ -478,63 +459,103 @@ var
 var
   s: string;
 begin
- glLoadIdentity;
- glTranslatef(5, 5, 0);
+  if not Exists then Exit;
 
- strs := TStringList.Create;
- try
-  DescribeSensors;
+  glLoadIdentity;
+  glTranslatef(5, 5, 0);
 
-  { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
-  if SceneOctreeCollisions = nil then
-    S += ' (octree resources released)';
-  strs.Append(S); }
+  strs := TStringList.Create;
+  try
+    DescribeSensors;
 
-  if Camera.NavigationClass = ncWalk then
-  begin
-   strs.Append(Format('Camera: pos %s, dir %s, up %s',
-     [ VectorToNiceStr(Camera.Walk.Position),
-       VectorToNiceStr(Camera.Walk.Direction),
-       VectorToNiceStr(Camera.Walk.Up) ]));
-   strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
-     [ Camera.Walk.MoveSpeed,
-       Camera.Walk.CameraPreferredHeight,
-       CurrentAboveHeight ]));
-  end;
+    { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
+    if SceneOctreeCollisions = nil then
+      S += ' (octree resources released)';
+    strs.Append(S); }
 
-  { if SceneLightsCount = 0 then
-   s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
-  strs.Append(Format('Use scene lights: %s', [s])); }
+    if Camera.NavigationClass = ncWalk then
+    begin
+      strs.Append(Format('Camera: pos %s, dir %s, up %s',
+        [ VectorToNiceStr(Camera.Walk.Position),
+          VectorToNiceStr(Camera.Walk.Direction),
+          VectorToNiceStr(Camera.Walk.Up) ]));
+      strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
+        [ Camera.Walk.MoveSpeed,
+          Camera.Walk.CameraPreferredHeight,
+          CurrentAboveHeight ]));
+    end;
 
-  if SceneAnimation.Attributes.UseOcclusionQuery or
-     SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
-    S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
-    S := '';
-  strs.Append(Format('Rendered Shapes : %d%s of %d ',
-    [ LastRender_RenderedShapesCount, S,
-      LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
+    { if SceneLightsCount = 0 then
+     s := '(useless, scene has no lights)' else
+     s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
+    strs.Append(Format('Use scene lights: %s', [s])); }
 
-  if SceneAnimation.TimeAtLoad = 0.0 then
-    S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
-    S := Format('World time: load time + %d = %d',
-      [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
-       Trunc(SceneAnimation.Time)]);
-  if not AnimationTimePlaying then
-    S += ' (paused)';
-  if not ProcessEventsWanted then
-    S += ' (paused, not processing VRML events)';
-  strs.Append(S);
+    if SceneAnimation.Attributes.UseOcclusionQuery or
+       SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
+      S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
+      S := '';
+    strs.Append(Format('Rendered Shapes : %d%s of %d ',
+      [ LastRender_RenderedShapesCount, S,
+        LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
 
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
+    if SceneAnimation.TimeAtLoad = 0.0 then
+      S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
+      S := Format('World time: load time + %d = %d',
+        [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
+         Trunc(SceneAnimation.Time)]);
+    if not AnimationTimePlaying then
+      S += ' (paused)';
+    if not ProcessEventsWanted then
+      S += ' (paused, not processing VRML events)';
+    strs.Append(S);
 
-    statusFont.printStringsBox(strs, 0,
-      StatusInsideCol, StatusBorderCol, StatusTextCol,
-      nil, 5, 1, 1);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-  glDisable(GL_BLEND);
- finally strs.Free end;
+      statusFont.printStringsBox(strs, 0,
+        StatusInsideCol, StatusBorderCol, StatusTextCol,
+        nil, 5, 1, 1);
+
+    glDisable(GL_BLEND);
+  finally strs.Free end;
+end;
+
+var
+  StatusText: TStatusText;
+
+{ TGLWindow callbacks --------------------------------------------------------- }
+
+procedure Open(Window: TGLWindow);
+begin
+ statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
+
+ { normalize normals because we will scale our objects in Examiner navigation;
+   chwilowo i tak w Scene.Render zawsze jest wlaczane glEnable(GL_NORMALIZE)
+   ale to nie zawsze bedzie prawdziwe.  }
+ glEnable(GL_NORMALIZE);
+ glEnable(GL_DEPTH_TEST);
+
+ { We want to be able to render any scene --- so we have to be prepared
+   that fog interpolation has to be corrected for perspective. }
+ glHint(GL_FOG_HINT, GL_NICEST);
+
+ GLProgressInterface.Window := Window;
+ Progress.UserInterface := GLProgressInterface;
+
+ BGColorChanged;
+
+ ShadowsGLOpen;
+
+ AntiAliasingGLOpen;
+ AntiAliasingEnable;
+end;
+
+procedure Close(Window: TGLWindow);
+begin
+  ShadowsGLClose;
+  FreeAndNil(statusFont);
+
+  Progress.UserInterface := ProgressNullInterface;
 end;
 
 procedure TV3DSceneManager.RenderFromView3D;
@@ -658,21 +679,6 @@ begin
   { Make sure to call InitProperties before inherited. }
   InitProperties;
   inherited;
-end;
-
-procedure Draw(Window: TGLWindow);
-begin
-  if ShowStatus and (not MakingScreenShot) then
-  begin
-    { Note that DrawStatus changes current modelview matrix,
-      so you want to always leave drawing status at the end of this Draw
-      procedure. }
-    glPushAttrib(GL_ENABLE_BIT);
-      glDisable(GL_DEPTH_TEST);
-      glViewport(0, 0, Window.Width, Window.Height);
-      glProjectionPushPopOrtho2D(@DrawStatus, nil, 0, Window.Width, 0, Window.Height);
-    glPopAttrib;
-  end;
 end;
 
 const
@@ -1452,7 +1458,7 @@ begin
   end;
 end;
 
-procedure UpdateToolbarVisible; forward;
+procedure UpdateStatusToolbarVisible; forward;
 
 procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
@@ -2784,7 +2790,7 @@ begin
        end;
   122: begin
          ShowStatus := not ShowStatus;
-         UpdateToolbarVisible;
+         UpdateStatusToolbarVisible;
        end;
   123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
@@ -3306,30 +3312,36 @@ var
   OpenButton: TKamGLButton;
 
 { call when ShowStatus or MakingScreenShot changed }
-procedure UpdateToolbarVisible;
+procedure UpdateStatusToolbarVisible;
 var
   NT: TCameraNavigationType;
+  Vis: boolean;
 begin
+  Vis := ShowStatus and not MakingScreenShot;
+
   if ToolbarPanel <> nil then // check was CreateToolbar called already?
   begin
-    ToolbarPanel.Exists := ShowStatus and not MakingScreenShot;
-    OpenButton.Exists := ToolbarPanel.Exists;
-    CollisionsButton.Exists := ToolbarPanel.Exists;
+    ToolbarPanel.Exists := Vis;
+    OpenButton.Exists := Vis;
+    CollisionsButton.Exists := Vis;
 
-    { Note that WarningsButton ignores the ToolbarPanel.Exists.
+    { Note that WarningsButton ignores the Vis.
       This is by design --- always signal warnings. }
 
     for NT := Low(NT) to High(NT) do
       if CameraButtons[NT] <> nil then
-        CameraButtons[NT].Exists := ToolbarPanel.Exists;
+        CameraButtons[NT].Exists := Vis;
 
     { Call Resize after changing ToolbarPanel.Exists, as warnings button
       position is calculated differently based on it }
     if not Window.Closed then Window.EventResize;
   end;
+
+  if StatusText <> nil then
+    StatusText.Exists := Vis;
 end;
 
-procedure CreateToolbar;
+procedure CreateStatusToolbar;
 var
   NT: TCameraNavigationType;
 const
@@ -3339,6 +3351,9 @@ begin
   ToolbarPanel.Opacity := 0.8;
   ToolbarPanel.VerticalSeparators.Count := 2;
   Window.Controls.Insert(0, ToolbarPanel);
+
+  StatusText := TStatusText.Create(Application);
+  Window.Controls.Insert(0, StatusText);
 
   OpenButton := TKamGLButton.Create(Application);
   OpenButton.Caption := 'Open';
@@ -3386,7 +3401,7 @@ begin
   CameraButtons[ntWalk].Image := V3DSceneImages.Walk;
   CameraButtons[ntFly].Image := V3DSceneImages.Fly;
 
-  UpdateToolbarVisible;
+  UpdateStatusToolbarVisible;
 end;
 
 procedure Resize(Window: TGLWindow);
@@ -3636,7 +3651,7 @@ const
     13: begin
           ShowBBox := false;
           ShowStatus := false;
-          UpdateToolbarVisible;
+          UpdateStatusToolbarVisible;
         end;
     else raise EInternalError.Create('OptionProc');
    end;
@@ -3666,7 +3681,7 @@ begin
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
-  CreateToolbar;
+  CreateStatusToolbar;
 
   Window.Controls.Add(ScreenEffects);
 
@@ -3716,12 +3731,7 @@ begin
         Window.OnClose := @Close;
         Window.OnResize := @Resize;
 
-        { For MakingScreenShot = true, leave OnDraw as @nil
-          (it doesn't do anything anyway when MakingScreenShot = true). }
-        if not MakingScreenShot then
-        begin
-          Window.OnDraw := @Draw;
-        end else
+        if MakingScreenShot then
         begin
           { --geometry must work as reliably as possible in this case. }
           Window.ResizeAllowed := raNotAllowed;
