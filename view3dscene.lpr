@@ -589,18 +589,10 @@ begin
   if SceneAnimation.Attributes.PureGeometry then
     glColorv(PureGeometryColor);
 
-    if FillMode = fmSilhouetteBorderEdges then
-      RenderSilhouetteBorderEdges(Vector4Single((Camera as TUniversalCamera).Walk.Position, 1), MainScene) else
-    begin
-      { Scene.RenderFrustum (inside inherited)
-        will automatically use octree, if available.
-        Note that octree may be not available (for animations,
-        OctreeRendering is constructed only for the 1st scene.
-        Also, generation of octree may be turned off for
-        speed purposes.) }
-
+  if FillMode = fmSilhouetteBorderEdges then
+    RenderSilhouetteBorderEdges(Vector4Single((Camera as TUniversalCamera).Walk.Position, 1), MainScene) else
+  begin
     inherited;
-
     LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
     LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
     LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
