@@ -680,9 +680,6 @@ begin
   if MainScene.BumpMappingMethod <> bmNone then
     MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
 
-  if SceneAnimation.Attributes.PureGeometry then
-    glColorv(PureGeometryColor);
-
   if FillMode = fmSilhouetteBorderEdges then
     RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene) else
   begin
@@ -719,9 +716,6 @@ begin
 
   if GetMainScene.BumpMappingMethod <> bmNone then
     GetMainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
-
-  if SceneAnimation.Attributes.PureGeometry then
-    glColorv(PureGeometryColor);
 
   if FillMode = fmSilhouetteBorderEdges then
     RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene) else

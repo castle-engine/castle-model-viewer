@@ -66,7 +66,7 @@ end;
 var
   SavedBMColor: TVector4Single;
 
-procedure Render3DBegin(Scene: TVRMLGLScene);
+procedure Render3DShadowsBegin(Scene: TVRMLGLScene);
 begin
   { Thanks to using PureGeometryShadowedColor, shadow is visible
     even when Attributes.PureGeometry. Note: no need to push current
@@ -81,9 +81,15 @@ begin
   Scene.BumpMappingLightDiffuseColor := Black4Single;
 end;
 
-procedure Render3DEnd(Scene: TVRMLGLScene);
+procedure Render3DShadowsEnd(Scene: TVRMLGLScene);
 begin
   Scene.BumpMappingLightDiffuseColor := SavedBMColor;
+end;
+
+procedure Render3DNoShadowsBegin(Scene: TVRMLGLScene);
+begin
+  if Scene.Attributes.PureGeometry then
+    glColorv(PureGeometryColor);
 end;
 
 procedure TV3DShadowsSceneManager.Render3D(
@@ -91,11 +97,14 @@ procedure TV3DShadowsSceneManager.Render3D(
 begin
   if InShadow then
   begin
-    Render3DBegin(MainScene);
+    Render3DShadowsBegin(MainScene);
     inherited;
-    Render3DEnd(MainScene);
+    Render3DShadowsEnd(MainScene);
   end else
+  begin
+    Render3DNoShadowsBegin(MainScene);
     inherited;
+  end;
 end;
 
 procedure TV3DShadowsViewport.Render3D(
@@ -103,11 +112,14 @@ procedure TV3DShadowsViewport.Render3D(
 begin
   if InShadow then
   begin
-    Render3DBegin(GetMainScene);
+    Render3DShadowsBegin(GetMainScene);
     inherited;
-    Render3DEnd(GetMainScene);
+    Render3DShadowsEnd(GetMainScene);
   end else
+  begin
+    Render3DNoShadowsBegin(GetMainScene);
     inherited;
+  end;
 end;
 
 initialization
