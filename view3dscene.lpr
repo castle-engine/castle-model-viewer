@@ -1457,6 +1457,7 @@ var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
   OldTime: TKamTime;
+  Image: TRGBImage;
 begin
   { Save global things that we change, to restore them later.
     This isn't needed for batch mode screenshots, but it doesn't hurt
@@ -1483,7 +1484,10 @@ begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
           SceneManager.Draw;
           glFlush();
-          SaveScreen_NoFlush(ScreenShotsList[I].UseFileName(J), GL_BACK);
+          Image := SaveScreen_NoFlush(0, 0, Window.Width, Window.Height, GL_BACK);
+          try
+            SaveImage(Image, ScreenShotsList[I].UseFileName(J));
+          finally FreeAndNil(Image) end;
         end;
         ScreenShotsList[I].EndCapture(true);
       except

@@ -230,7 +230,6 @@ procedure RaytraceToWin(Window: TGLWindow;
   FogNode: TNodeFog);
 var SavedMode: TGLMode;
     CallData: TCallData;
-    RealScreenWidth: Cardinal;
 
     RaytracerKind: TRaytracerKind;
     RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
@@ -271,7 +270,7 @@ begin
     AfterRTMainMenu := CreateAfterRTMainMenu;
     WhileRTMainMenu := CreateWhileRTMainMenu;
 
-    CallData.Image := Window.SaveAlignedScreen(RealScreenWidth);
+    CallData.Image := Window.SaveAlignedScreen;
 
     { switch to our mode }
     SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT, false,
