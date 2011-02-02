@@ -84,7 +84,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
-  VRMLGLRenderer, VRMLShape, RenderStateUnit, VRMLShadowMaps,
+  VRMLGLRenderer, VRMLShape, RenderStateUnit, VRMLShadowMaps, KambiSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -206,14 +206,13 @@ type
     class procedure CollisionsButtonClick(Sender: TObject);
   end;
 
-{ SceneManager --------------------------------------------------------------- }
+{ SceneManager and viewport ------------------------------------------------ }
 
 type
   TV3DSceneManager = class(TV3DShadowsSceneManager)
   protected
     procedure RenderFromView3D; override;
   public
-    procedure InitProperties;
     procedure BeforeDraw; override;
     procedure Draw; override;
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
@@ -222,13 +221,25 @@ type
     function MouseDown(const Button: TMouseButton): boolean; override;
   end;
 
+  TV3DViewport = class(TV3DShadowsViewport)
+  protected
+    procedure RenderFromView3D; override;
+  public
+    procedure BeforeDraw; override;
+    procedure Draw; override;
+    function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
+    function ScreenEffectsCount: Integer; override;
+    function ScreenEffectsNeedDepth: boolean; override;
+//TODO:    function MouseDown(const Button: TMouseButton): boolean; override;
+  end;
+
 var
   SceneManager: TV3DSceneManager;
 
-procedure TV3DSceneManager.InitProperties;
+procedure ViewportProperties(Viewport: TKamAbstractViewport);
 begin
-  InitShadowsProperties;
-  BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+  ViewportShadowsProperties(Viewport);
+  Viewport.BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
 end;
 
 function TV3DSceneManager.GetScreenEffects(const Index: Integer): TGLSLProgram;
@@ -248,6 +259,28 @@ begin
 end;
 
 function TV3DSceneManager.ScreenEffectsNeedDepth: boolean;
+begin
+  Result := (inherited ScreenEffectsNeedDepth) or
+    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
+end;
+
+function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
+var
+  C: Integer;
+begin
+  C := inherited ScreenEffectsCount;
+  if Index >= C then
+    Result := V3DSceneScreenEffects.ScreenEffects.ActiveEffects(Index - C) else
+    Result := inherited GetScreenEffects(Index);
+end;
+
+function TV3DViewport.ScreenEffectsCount: Integer;
+begin
+  Result := (inherited ScreenEffectsCount) +
+    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsCount;
+end;
+
+function TV3DViewport.ScreenEffectsNeedDepth: boolean;
 begin
   Result := (inherited ScreenEffectsNeedDepth) or
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
@@ -552,7 +585,8 @@ begin
   Progress.UserInterface := ProgressNullInterface;
 end;
 
-procedure TV3DSceneManager.RenderFromView3D;
+{ Render visualization of various stuff, like bounding box, octree and such. }
+procedure RenderVisualizations;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
   var
@@ -577,35 +611,14 @@ procedure TV3DSceneManager.RenderFromView3D;
   end;
 
 begin
-  { Although TKamSceneManager is ready for MainScene = nil case,
-    RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TKamSceneManager
-    should always work with MainScene = nil. }
-  if MainScene = nil then Exit;
-
-  if MainScene.BumpMappingMethod <> bmNone then
-    MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
-
-  if SceneAnimation.Attributes.PureGeometry then
-    glColorv(PureGeometryColor);
-
-  if FillMode = fmSilhouetteBorderEdges then
-    RenderSilhouetteBorderEdges(Vector4Single((Camera as TUniversalCamera).Walk.Position, 1), MainScene) else
-  begin
-    inherited;
-    LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
-    LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
-    LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
-  end;
-
-  { Visualization of other stuff depends on DEPTH_TEST enabled
-    (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
-  glEnable(GL_DEPTH_TEST);
-
-  OctreeDisplay(SceneAnimation);
-
   if RenderState.Target = rtScreen then
   begin
+    { Visualization below depends on DEPTH_TEST enabled
+      (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
+    glEnable(GL_DEPTH_TEST);
+
+    OctreeDisplay(SceneAnimation);
+
     if showBBox and (not MakingScreenShot) then
     begin
       { Display current bounding box only if there's a chance that it's
@@ -656,17 +669,81 @@ begin
   end;
 end;
 
+procedure TV3DSceneManager.RenderFromView3D;
+begin
+  { Although TKamAbstractViewport is ready for MainScene = nil case,
+    this RenderFromView3D below is not. Doesn't seem needed,
+    but better to secure for this case, since any TKamAbstractViewport
+    should always work with MainScene = nil. }
+  if MainScene = nil then Exit;
+
+  if MainScene.BumpMappingMethod <> bmNone then
+    MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
+
+  if SceneAnimation.Attributes.PureGeometry then
+    glColorv(PureGeometryColor);
+
+  if FillMode = fmSilhouetteBorderEdges then
+    RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene) else
+  begin
+    inherited;
+    LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
+    LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
+    LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
+  end;
+
+  RenderVisualizations;
+end;
+
 procedure TV3DSceneManager.BeforeDraw;
 begin
-  { Make sure to call InitProperties before inherited. }
-  InitProperties;
+  { Make sure to call ViewportProperties before inherited. }
+  ViewportProperties(Self);
   inherited;
 end;
 
 procedure TV3DSceneManager.Draw;
 begin
-  { Make sure to call InitProperties before inherited. }
-  InitProperties;
+  { Make sure to call ViewportProperties before inherited. }
+  ViewportProperties(Self);
+  inherited;
+end;
+
+procedure TV3DViewport.RenderFromView3D;
+begin
+  { Although TKamAbstractViewport is ready for MainScene = nil case,
+    this RenderFromView3D below is not. Doesn't seem needed,
+    but better to secure for this case, since any TKamAbstractViewport
+    should always work with MainScene = nil. }
+  if GetMainScene = nil then Exit;
+
+  if GetMainScene.BumpMappingMethod <> bmNone then
+    GetMainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
+
+  if SceneAnimation.Attributes.PureGeometry then
+    glColorv(PureGeometryColor);
+
+  if FillMode = fmSilhouetteBorderEdges then
+    RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene) else
+  begin
+    inherited;
+    { Custom viewports don't set LastRender_* }
+  end;
+
+  RenderVisualizations;
+end;
+
+procedure TV3DViewport.BeforeDraw;
+begin
+  { Make sure to call ViewportProperties before inherited. }
+  ViewportProperties(Self);
+  inherited;
+end;
+
+procedure TV3DViewport.Draw;
+begin
+  { Make sure to call ViewportProperties before inherited. }
+  ViewportProperties(Self);
   inherited;
 end;
 
@@ -3669,6 +3746,8 @@ begin
   Window.Controls.Add(SceneManager);
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
+
+  InitializeViewports(TV3DViewport);
 
   CreateStatusToolbar;
 

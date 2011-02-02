@@ -29,6 +29,7 @@ uses KambiSceneManager, GLWindow, Cameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
+  TViewportClass = class of TKamViewport;
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
   ('_1 viewport',
@@ -55,6 +56,8 @@ procedure ResizeViewports(Window: TGLUIWindow; SceneManager: TKamSceneManager);
 
 { Copy NavigationType to (existing) viewports cameras. }
 procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
+
+procedure InitializeViewports(ViewportClass: TViewportClass);
 
 implementation
 
@@ -242,12 +245,12 @@ begin
       TUniversalCamera(Viewports[I].Camera).NavigationType := NavigationType;
 end;
 
-procedure DoInitialization;
+procedure InitializeViewports(ViewportClass: TViewportClass);
 var
   I: Integer;
 begin
   for I := 0 to High(Viewports) do
-    Viewports[I] := TKamViewport.Create(nil);
+    Viewports[I] := ViewportClass.Create(nil);
   Background := TBackground.Create(nil);
 end;
 
@@ -260,8 +263,6 @@ begin
   FreeAndNil(Background);
 end;
 
-initialization
-  DoInitialization;
 finalization
   DoFinalization;
 end.

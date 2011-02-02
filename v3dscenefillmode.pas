@@ -48,6 +48,8 @@ const
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
 procedure RenderSilhouetteBorderEdges(
+  const ObserverPos: TVector3Single; Scene: TVRMLGLScene);
+procedure RenderSilhouetteBorderEdges(
   const ObserverPos: TVector4Single; Scene: TVRMLGLScene);
 
 implementation
@@ -71,6 +73,12 @@ begin
       FillModesMenu[FM].Group := RadioGroup;
     M.Append(FillModesMenu[FM]);
   end;
+end;
+
+procedure RenderSilhouetteBorderEdges(
+  const ObserverPos: TVector3Single; Scene: TVRMLGLScene);
+begin
+  RenderSilhouetteBorderEdges(Vector4Single(ObserverPos, 1), Scene);
 end;
 
 procedure RenderSilhouetteBorderEdges(
