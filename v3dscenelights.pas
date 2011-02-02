@@ -37,9 +37,6 @@ var
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
   NavigationNode: TNodeNavigationInfo);
 
-procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
-procedure EndRenderSceneWithLights;
-
 var
   LightModelAmbient: TVector3Single;
 
@@ -58,24 +55,6 @@ begin
       (that's because loaded animation always has at least one RootNode) }
     SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
       NodesCount(TVRMLLightNode, true);
-end;
-
-procedure BeginRenderSceneWithLights(SceneAnimation: TVRMLGLAnimation);
-begin
-  glPushAttrib(GL_LIGHTING_BIT);
-    { Note that GL_LIGHTING is controlled by Attributes.Lighting
-      (when @false, model will not be lit, as we do not enable OpenGL
-      lighting ourselves anywhere.)
-
-      Also Attributes.PureGeometry is correctly taken into account.
-      (when PureGeometry = true, it's like Lighting = always false.) }
-  if SceneAnimation.Attributes.PureGeometry then
-    glColorv(PureGeometryColor);
-end;
-
-procedure EndRenderSceneWithLights;
-begin
- glPopAttrib;
 end;
 
 procedure LightModelAmbientChanged;

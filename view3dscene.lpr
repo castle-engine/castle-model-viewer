@@ -586,7 +586,8 @@ begin
   if MainScene.BumpMappingMethod <> bmNone then
     MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
 
-  BeginRenderSceneWithLights(SceneAnimation);
+  if SceneAnimation.Attributes.PureGeometry then
+    glColorv(PureGeometryColor);
 
     if FillMode = fmSilhouetteBorderEdges then
       RenderSilhouetteBorderEdges(Vector4Single((Camera as TUniversalCamera).Walk.Position, 1), MainScene) else
@@ -598,14 +599,12 @@ begin
         Also, generation of octree may be turned off for
         speed purposes.) }
 
-      inherited;
+    inherited;
 
-      LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
-      LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
-      LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
-    end;
-
-  EndRenderSceneWithLights;
+    LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
+    LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
+    LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
+  end;
 
   { Visualization of other stuff depends on DEPTH_TEST enabled
     (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
