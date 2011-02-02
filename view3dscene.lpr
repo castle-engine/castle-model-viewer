@@ -529,12 +529,6 @@ procedure Open(Window: TGLWindow);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
- { normalize normals because we will scale our objects in Examiner navigation;
-   chwilowo i tak w Scene.Render zawsze jest wlaczane glEnable(GL_NORMALIZE)
-   ale to nie zawsze bedzie prawdziwe.  }
- glEnable(GL_NORMALIZE);
- glEnable(GL_DEPTH_TEST);
-
  { We want to be able to render any scene --- so we have to be prepared
    that fog interpolation has to be corrected for perspective. }
  glHint(GL_FOG_HINT, GL_NICEST);
@@ -612,6 +606,10 @@ begin
     end;
 
   EndRenderSceneWithLights;
+
+  { Visualization of other stuff depends on DEPTH_TEST enabled
+    (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
+  glEnable(GL_DEPTH_TEST);
 
   OctreeDisplay(SceneAnimation);
 
