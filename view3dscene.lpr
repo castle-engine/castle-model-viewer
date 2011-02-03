@@ -1546,7 +1546,6 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       MessageOK(Window, SNavigationClassWalkNeeded);
   end;
 
-
   procedure ShowAndWrite(const S: string);
   begin
     Writeln(S);
