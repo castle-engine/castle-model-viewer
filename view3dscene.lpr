@@ -748,8 +748,6 @@ const
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
 function TV3DSceneManager.MouseDown(const Button: TMouseButton): boolean;
-var
-  Ray0, RayVector: TVector3Single;
 begin
   Result := inherited;
 
@@ -766,19 +764,8 @@ begin
        ( (Camera is TUniversalCamera) and
          (TUniversalCamera(Camera).NavigationClass = ncExamine) ) ) then
   begin
-    if SceneOctreeCollisions = nil then
-    begin
-      MessageOK(Window, SOnlyWhenOctreeAvailable, taLeft);
-      Exit;
-    end;
-
-    Camera.CustomRay(
-      CorrectLeft, CorrectBottom, CorrectWidth, CorrectHeight, ContainerHeight,
-      Window.MouseX, Window.MouseY, PerspectiveView, PerspectiveViewAngles,
-      OrthoViewDimensions, Ray0, RayVector);
-
-    SelectedItem := SceneOctreeCollisions.RayCollision(
-      SelectedPointWorld, Ray0, RayVector, true, nil, false, nil);
+    SelectedItem := Scene.PointingDeviceOverItem;
+    SelectedPointWorld := Scene.PointingDeviceOverPoint;
 
     { calculate SelectedPointLocal }
     if SelectedItem <> nil then
@@ -792,13 +779,6 @@ begin
           SelectedItem := nil;
       end;
     end;
-
-    { DirectCollisionTestsCounter is not recorded,
-      so I may write it now on console in case it will be useful.
-      For now it's commented out --- not interesting to typical user.
-    Writeln(Format('%d tests for collisions between ray ' +
-      'and triangles were needed to learn this.',
-      [ SceneOctreeCollisions.DirectCollisionTestsCounter ])); }
 
     UpdateSelectedEnabled;
 
