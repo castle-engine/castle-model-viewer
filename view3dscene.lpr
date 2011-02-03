@@ -218,7 +218,6 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
-    function MouseDown(const Button: TMouseButton): boolean; override;
   end;
 
   TV3DViewport = class(TV3DShadowsViewport)
@@ -230,7 +229,6 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
-//TODO:    function MouseDown(const Button: TMouseButton): boolean; override;
   end;
 
 var
@@ -747,10 +745,8 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-function TV3DSceneManager.MouseDown(const Button: TMouseButton): boolean;
+procedure MouseDown(Window: TGLWindow; Button: TMouseButton);
 begin
-  Result := inherited;
-
   if (Button = mbRight) and
      { Support selecting item by right button click only in Walk mode.
 
@@ -759,10 +755,7 @@ begin
        right mouse button. Mouse clicks start dragging, so don't do
        anything here (not even a warning about SNavigationClassWalkNeeded,
        since it would only interfere with navigation). }
-     not
-     ( (Camera is TExamineCamera) or
-       ( (Camera is TUniversalCamera) and
-         (TUniversalCamera(Camera).NavigationClass = ncExamine) ) ) then
+     (Camera.NavigationClass <> ncExamine) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
@@ -3776,6 +3769,7 @@ begin
         Window.OnOpen := @Open;
         Window.OnClose := @Close;
         Window.OnResize := @Resize;
+        Window.OnMouseDown := @MouseDown;
 
         if MakingScreenShot then
         begin
