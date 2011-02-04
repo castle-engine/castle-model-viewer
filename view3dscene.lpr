@@ -1419,7 +1419,7 @@ end;
 { This performs all screenshot takes, as specified in ScreenShotsList.
   It is used both for batch mode screenshots (--screenshot, --screenshot-range)
   and interactive (menu items about screenshots) operation. }
-procedure MakeAllScreenShots;
+procedure MakeAllScreenShots(ReadBuffer: TGLenum);
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
@@ -1451,7 +1451,7 @@ begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
           SceneManager.Draw;
           glFlush();
-          Image := SaveScreen_NoFlush(0, 0, Window.Width, Window.Height, GL_BACK);
+          Image := SaveScreen_NoFlush(0, 0, Window.Width, Window.Height, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseFileName(J));
           finally FreeAndNil(Image) end;
@@ -1480,7 +1480,7 @@ begin
     ScreenshotRender.Buffer := tbNone;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
-    MakeAllScreenShots;
+    MakeAllScreenShots(ScreenshotRender.ColorBuffer);
     ScreenshotRender.RenderEnd;
   finally FreeAndNil(ScreenshotRender) end;
 end;
@@ -2301,7 +2301,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             ScreenShotsList.Add(Range);
 
             try
-              MakeAllScreenShots;
+              MakeAllScreenShots(GL_BACK);
             except
               on E: EInvalidScreenShotFileName do
                 MessageOk(Window, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
