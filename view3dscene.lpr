@@ -1469,6 +1469,29 @@ begin
   end;
 end;
 
+{ Make all the screenshots, preferably using FBO.
+  This allows the window to be hidden. }
+procedure MakeAllScreenShotsFBO;
+var
+  ScreenshotRender: TGLRenderToTexture;
+begin
+  ScreenshotRender := TGLRenderToTexture.Create(Window.Width, Window.Height);
+  try
+    ScreenshotRender.Buffer := tbNone;
+    //TODO: ScreenshotRender.Stencil := true;
+    ScreenshotRender.GLContextOpen;
+    ScreenshotRender.RenderBegin;
+
+    { TODO: if something inside VRML/X3D rendering will require FBO too,
+      this will fail, as TGLRenderToTexture.RenderEnd simply restores
+      the framebuffer = 0. We want a stack of framebuffers. }
+
+    MakeAllScreenShots;
+
+    ScreenshotRender.RenderEnd;
+  finally FreeAndNil(ScreenshotRender) end;
+end;
+
 { menu things ------------------------------------------------------------ }
 
 const
@@ -3772,7 +3795,9 @@ begin
 
         if MakingScreenShot then
         begin
-          { --geometry must work as reliably as possible in this case. }
+          { --geometry must work as reliably as possible in this case.
+            This is only in case FBO will not be available,
+            TGLRenderToTexture will then use normal window contents. }
           Window.ResizeAllowed := raNotAllowed;
 
           { Do not show window on the screen, since we're working in batch mode. }
@@ -3806,7 +3831,7 @@ begin
 
         if MakingScreenShot then
         begin
-          MakeAllScreenShots;
+          MakeAllScreenShotsFBO;
           Exit;
         end;
 
