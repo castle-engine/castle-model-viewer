@@ -1480,13 +1480,7 @@ begin
     ScreenshotRender.Buffer := tbNone;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
-
-    { TODO: if something inside VRML/X3D rendering will require FBO too,
-      this will fail, as TGLRenderToTexture.RenderEnd simply restores
-      the framebuffer = 0. We want a stack of framebuffers. }
-
     MakeAllScreenShots;
-
     ScreenshotRender.RenderEnd;
   finally FreeAndNil(ScreenshotRender) end;
 end;
