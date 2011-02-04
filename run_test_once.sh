@@ -21,6 +21,7 @@ fi
 # version, or it may be some other stable version.
 VIEW3DSCENE_FOR_CORRECT_SCREENSHOT="$VIEW3DSCENE"
 #VIEW3DSCENE_FOR_CORRECT_SCREENSHOT=view3dscene-3.8.0-release
+#VIEW3DSCENE_FOR_CORRECT_SCREENSHOT="$HOME"/sources/vrmlengine/view3dscene-old-renderer-for-comparison/view3dscene/view3dscene
 
 FILE="$1"
 
@@ -71,35 +72,42 @@ rm -f "$TEMP_FILE"
 
 # Screenshot comparison ------------------------------------------------------
 
+# Comment this "return" line, to have much longer test,
+# doing --screenshot and comparing results. This tests the renderer.
+return
+
 SCREENSHOT_CORRECT=`stringoper ChangeFileExt "$FILE" _test_screen.png`
 SCREENSHOT_COMPARE=`stringoper ChangeFileExt "$FILE" _test_screen_compare.png`
 
 mk_screnshot ()
 {
-  echo '---- Rendering and making screenshot' "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT" "$@"
-  "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_CORRECT" "$@"
+  echo '---- Rendering and making screenshot' "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT"
+  "$VIEW3DSCENE_FOR_CORRECT_SCREENSHOT" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_CORRECT"
 }
 
 compare_screenshot ()
 {
-  echo '---- Comparing screenshot' "$VIEW3DSCENE" "$@"
-  "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_COMPARE" "$@"
+  echo '---- Comparing screenshot' "$VIEW3DSCENE"
+  "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_COMPARE"
 
   # Don't exit of screenshot comparison fail. That's because
   # taking screenshots takes a long time, so just continue checking.
   # The caller will have to check script output to know if something failed.
-  set +e
-  image_compare "$SCREENSHOT_CORRECT" "$SCREENSHOT_COMPARE"
-  set -e
+  # (Also the comparison images will be left, unrecognized
+  # by version control system, for cases that failed.)
+  if image_compare "$SCREENSHOT_CORRECT" "$SCREENSHOT_COMPARE"; then
+    true # do nothing
+  else
+    DELETE_SCREENSHOTS=''
+  fi
 }
 
-# Uncomment these for much longer test (this does --screenshot,
-# testing actual rendering of the scene)
+DELETE_SCREENSHOTS='t'
 
-# mk_screnshot --renderer-optimization none
-# compare_screenshot --renderer-optimization none
-# compare_screenshot --renderer-optimization scene-display-list
-# compare_screenshot --renderer-optimization shape-display-list
+mk_screnshot
+compare_screenshot
 
-rm -f "$SCREENSHOT_CORRECT"
-rm -f "$SCREENSHOT_COMPARE"
+if [ -n "$DELETE_SCREENSHOTS" ]; then
+  rm -f "$SCREENSHOT_CORRECT"
+  rm -f "$SCREENSHOT_COMPARE"
+fi
