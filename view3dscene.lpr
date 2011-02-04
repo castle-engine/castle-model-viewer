@@ -1478,7 +1478,6 @@ begin
   ScreenshotRender := TGLRenderToTexture.Create(Window.Width, Window.Height);
   try
     ScreenshotRender.Buffer := tbNone;
-    //TODO: ScreenshotRender.Stencil := true;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
 
