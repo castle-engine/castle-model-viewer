@@ -31,6 +31,10 @@ set -eu
 # this may be leftover from interrupted previous test (it would cause
 # errors that are not interesting), it will be removed by run_test_once.sh
 # inside anyway.
+#
+# Also ssao tests are not used for now, because fglrx is awfully slow
+# for them (like 1 frame for ~couple of minutes, using full cpu power;
+# seems like it falls back to software shaders implementation for this case).
 
 test_dir()
 {
@@ -38,6 +42,10 @@ test_dir()
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f -name 'view3dscene_test_temporary_file.wrl' ')' -or \
+  '(' -type f -name 'ssao_barna29_0.x3dv' ')' -or \
+  '(' -type f -name 'ssao_stairs_with_test_plane.x3dv' ')' -or \
+  '(' -type f -name 'ssao_stairs.x3dv' ')' -or \
+  '(' -type f -name 'twoboxes_ssao.x3dv' ')' -or \
   '(' -type f '(' -iname '*.wrl' -or \
                   -iname '*.wrz' -or \
                   -iname '*.wrl.gz' -or \
