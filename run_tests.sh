@@ -10,19 +10,19 @@ set -eu
 # - view3dscene binary compiled (either in current dir,
 #   or on the $PATH, see run_test_once.sh script setting VIEW3DSCENE variable)
 # - stringoper binary compiled and available on $PATH
-#   (stringoper comes from ../kambi_vrml_game_engine/base/tools/stringoper.lpr)
+#   (stringoper comes from ../kambi_vrml_game_engine/examples/base/stringoper.lpr)
+# - image_compare binary compiled and available on $PATH,
+#   only if you uncomment the "screenshot comparison" test in run_test_once.sh
+#   (image_compare comes from ../kambi_vrml_game_engine/examples/images/image_compare.lpr)
 #
-# For details what is tested, see run_test_once.sh script.
-# By default tests are fully automatic, although you can uncomment some
-# things to peek inside.
-# In short: every suitable 3D model format is
-# - Read, and written back to VRML. Then this written result is read back.
-#   This somewhat makes sure that there are no problems with parsing
+# Every suitable 3D model format is tested by the run_test_once.sh script:
+# - It reads a model, writes it back to VRML file, and then reads again.
+#   This somewhat tests that there are no problems with parsing
 #   and saving VRML (and other) files.
-# - Then we check rendering abilities, by making screenshots with
-#   various renderer-optimization options.
-#   (This test is currently commented out by default, as it takes a lot
-#   of time...)
+# - Then we check rendering abilities, by making screenshots
+#   and comparing (you can compare against the same view3dscene
+#   or against some previous stable view3dscene version).
+#   (This test is commented out by default, as it takes a lot of time...)
 #
 # Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
 # it contains files that *should* fail when reading).
