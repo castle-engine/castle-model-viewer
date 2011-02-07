@@ -1857,8 +1857,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         SelectedItem^.OriginalGeometry, so this is only for the frame where
         octree is available. Moreover, we call
         Scene.ChangedField. }
-      MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+      MessageOK(Window, 'This function is not available when you deal with precalculated animations (like from Kanim or MD3 files).');
       Exit;
     end;
 
@@ -1871,7 +1870,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     if (SelectedItem^.FaceCoordIndexBegin = -1) or
        (SelectedItem^.FaceCoordIndexEnd = -1) then
     begin
-      ShowAndWrite('The selected triangle is not part of IndexedFaceSet node.');
+      MessageOK(Window, 'The selected triangle is not part of IndexedFaceSet node.');
       Exit;
     end;
 
@@ -1908,14 +1907,13 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       TexCoords := TexCoordsField.Items;
     end else
     begin
-      ShowAndWrite('Internal error: cannot get the coordIndex field.');
+      MessageOK(Window, Format('Cannot remove faces from "%s" node.', [Geometry.NodeTypeName]));
       Exit;
     end;
 
     if MFNonEmpty(Colors) or MFNonEmpty(Materials) or MFNonEmpty(Normals) then
     begin
-      ShowAndWrite('Removing faces from a geometry node with colorIndex, ' +
-        'materialIndex or normalIndex not implemented yet.');
+      MessageOK(Window, 'Removing faces from a geometry node with colorIndex, materialIndex or normalIndex not implemented yet.');
       Exit;
     end;
 
