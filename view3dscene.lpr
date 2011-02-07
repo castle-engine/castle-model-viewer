@@ -1678,13 +1678,13 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             SelectedGeometry.NodeTypeName,
             Box3DToNiceStr(SelectedShape.BoundingBox)]);
 
-      if (SelectedItem^.FaceCoordIndexBegin <> -1) and
-         (SelectedItem^.FaceCoordIndexEnd <> -1) then
+      if (SelectedItem^.Face.IndexBegin <> -1) and
+         (SelectedItem^.Face.IndexEnd <> -1) then
       begin
         S += Format('Face containing the selected triangle spans from %d to' +
           ' %d coordIndex entries. ',
-          [ SelectedItem^.FaceCoordIndexBegin,
-            SelectedItem^.FaceCoordIndexEnd ]);
+          [ SelectedItem^.Face.IndexBegin,
+            SelectedItem^.Face.IndexEnd ]);
       end;
 
       VCNotOver := SelectedShape.VerticesCount(false);
@@ -1867,8 +1867,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    if (SelectedItem^.FaceCoordIndexBegin = -1) or
-       (SelectedItem^.FaceCoordIndexEnd = -1) then
+    if (SelectedItem^.Face.IndexBegin = -1) or
+       (SelectedItem^.Face.IndexEnd = -1) then
     begin
       MessageOK(Window, 'The selected triangle is not part of IndexedFaceSet node.');
       Exit;
@@ -1919,9 +1919,9 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
     { calculate IndexBegin and IndexCount. Remember that after
       1st call, SelectedItem pointer may become invalid. }
-    IndexBegin := SelectedItem^.FaceCoordIndexBegin;
-    IndexCount := SelectedItem^.FaceCoordIndexEnd -
-                  SelectedItem^.FaceCoordIndexBegin + 1;
+    IndexBegin := SelectedItem^.Face.IndexBegin;
+    IndexCount := SelectedItem^.Face.IndexEnd -
+                  SelectedItem^.Face.IndexBegin + 1;
 
     Coords.Delete(IndexBegin, IndexCount);
     Scene.ChangedField(CoordsField);
