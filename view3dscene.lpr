@@ -2767,6 +2767,7 @@ begin
   85: with SceneAnimation.Attributes do UseFog := not UseFog;
   86: with SceneAnimation.Attributes do Blending := not Blending;
   87: with SceneAnimation.Attributes do GLSLShaders := not GLSLShaders;
+  892: with SceneAnimation.Attributes do ForceShaderRendering := not ForceShaderRendering;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
   89: with SceneAnimation.Attributes do BlendingSort := not BlendingSort;
   90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
@@ -3136,8 +3137,11 @@ begin
    M.Append(TMenuItem.Create('Change Background Color ...',    84));
    M.Append(TMenuItemChecked.Create('_Fog',                    85,
      SceneAnimation.Attributes.UseFog, true));
-   M.Append(TMenuItemChecked.Create('_GLSL shaders',          87,
+   M.Append(TMenuItemChecked.Create('_GLSL shaders',           87,
      SceneAnimation.Attributes.GLSLShaders, true));
+   { TODO: CtrlS is used only for easy testing, will be removed for release }
+   M.Append(TMenuItemChecked.Create('Force Shader Rendering', 892, CtrlS,
+     SceneAnimation.Attributes.ForceShaderRendering, true));
    M2 := TMenu.Create('Bump mapping');
      AppendBumpMappingMethods(M2);
      M.Append(M2);
