@@ -2726,7 +2726,7 @@ begin
   3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
   3510..3519: SceneAnimation.Attributes.PercentageCloserFiltering :=
     TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
-  3520: with SceneAnimation do ShadowMapsVisualizeDepth := not ShadowMapsVisualizeDepth;
+  3520: with SceneAnimation.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
   3530:
     begin
       C := SceneAnimation.ShadowMapsDefaultSize;
@@ -3159,7 +3159,7 @@ begin
      M2.AppendRadioGroup(PCFNames, 3510,
        Ord(SceneAnimation.Attributes.PercentageCloserFiltering), true);
      M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.ShadowMapsVisualizeDepth, true));
+     M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.Attributes.VisualizeDepthMap, true));
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
      M2.Append(TMenuSeparator.Create);
