@@ -2724,7 +2724,8 @@ begin
   42: VisualizeHumanoids;
 
   3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
-  3510..3519: SceneAnimation.ShadowMapsPCF := TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
+  3510..3519: SceneAnimation.Attributes.PercentageCloserFiltering :=
+    TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
   3520: with SceneAnimation do ShadowMapsVisualizeDepth := not ShadowMapsVisualizeDepth;
   3530:
     begin
@@ -3155,7 +3156,8 @@ begin
    M2 := TMenu.Create('Shadow Maps');
      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
      M2.Append(TMenuSeparator.Create);
-     M2.AppendRadioGroup(PCFNames, 3510, Ord(SceneAnimation.ShadowMapsPCF), true);
+     M2.AppendRadioGroup(PCFNames, 3510,
+       Ord(SceneAnimation.Attributes.PercentageCloserFiltering), true);
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.ShadowMapsVisualizeDepth, true));
      M2.Append(TMenuSeparator.Create);
