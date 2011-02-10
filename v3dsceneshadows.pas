@@ -10,12 +10,14 @@ type
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsSceneManager = class(TKamSceneManager)
   protected
-    procedure Render3D(TransparentGroup: TTransparentGroup; InShadow: boolean); override;
+    procedure Render3D(const LightsEnabled: Cardinal;
+      const TransparentGroup: TTransparentGroup; InShadow: boolean); override;
   end;
 
   TV3DShadowsViewport = class(TKamViewport)
   protected
-    procedure Render3D(TransparentGroup: TTransparentGroup; InShadow: boolean); override;
+    procedure Render3D(const LightsEnabled: Cardinal;
+      const TransparentGroup: TTransparentGroup; InShadow: boolean); override;
   end;
 
 var
@@ -93,7 +95,8 @@ begin
 end;
 
 procedure TV3DShadowsSceneManager.Render3D(
-  TransparentGroup: TTransparentGroup; InShadow: boolean);
+  const LightsEnabled: Cardinal;
+  const TransparentGroup: TTransparentGroup; InShadow: boolean);
 begin
   if InShadow then
   begin
@@ -108,7 +111,8 @@ begin
 end;
 
 procedure TV3DShadowsViewport.Render3D(
-  TransparentGroup: TTransparentGroup; InShadow: boolean);
+  const LightsEnabled: Cardinal;
+  const TransparentGroup: TTransparentGroup; InShadow: boolean);
 begin
   if InShadow then
   begin
