@@ -2983,8 +2983,7 @@ begin
       ViewportsSetNavigationType(Camera.NavigationType);
       UpdateCameraUI;
     end;
-  1400..1499: SceneAnimation.Attributes.BumpMappingMaximum :=
-    TBumpMappingMethod( MenuItem.IntData-1400);
+  1400: with SceneAnimation.Attributes do BumpMapping := not BumpMapping;
   1600..1699: SetTextureModeRGB(
     TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
@@ -3038,25 +3037,6 @@ function CreateMainMenu: TMenu;
           Radio.Group := RadioGroup;
         M.Append(Radio);
       end;
-  end;
-
-  procedure AppendBumpMappingMethods(M: TMenu);
-  var
-    BM: TBumpMappingMethod;
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
-  begin
-    RadioGroup := nil;
-    for BM := Low(BM) to High(BM) do
-    begin
-      Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(BumpMappingMethodNames[BM]),
-        Ord(BM) + 1400, BM = DefaultBumpMappingMaximum, true);
-      if RadioGroup = nil then
-        RadioGroup := Radio.Group else
-        Radio.Group := RadioGroup;
-      M.Append(Radio);
-    end;
   end;
 
   procedure MenuAppendSoundDevices(M: TMenu; BaseIntData: Cardinal);
@@ -3137,9 +3117,8 @@ begin
    { TODO: CtrlS is used only for easy testing, will be removed for release }
    M.Append(TMenuItemChecked.Create('Force Shader Rendering', 892, CtrlS,
      SceneAnimation.Attributes.ForceShaderRendering, true));
-   M2 := TMenu.Create('Bump mapping');
-     AppendBumpMappingMethods(M2);
-     M.Append(M2);
+   M.Append(TMenuItemChecked.Create('Bump mapping', 1400,
+     SceneAnimation.Attributes.BumpMapping, true));
    MenuShadowsMenu := TMenu.Create('Shadow Volumes');
      MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
      MenuShadowsMenu.Append(TMenuItemChecked.Create('Use shadow volumes (requires light with kambiShadowsMain)', 750,
