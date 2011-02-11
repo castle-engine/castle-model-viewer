@@ -65,9 +65,6 @@ begin
   Viewport.ShadowVolumesDraw := DrawShadowVolumes;
 end;
 
-var
-  SavedBMColor: TVector4Single;
-
 procedure Render3DShadowsBegin(Scene: TVRMLGLScene);
 begin
   { Thanks to using PureGeometryShadowedColor, shadow is visible
@@ -76,16 +73,6 @@ begin
     and caller is prepared to deal with it. }
   if Scene.Attributes.PureGeometry then
     glColorv(PureGeometryShadowedColor);
-
-  { Thanks to changing BumpMappingLightDiffuseColor, shadow is visible
-    even when bump mapping is at work. }
-  SavedBMColor := Scene.BumpMappingLightDiffuseColor;
-  Scene.BumpMappingLightDiffuseColor := Black4Single;
-end;
-
-procedure Render3DShadowsEnd(Scene: TVRMLGLScene);
-begin
-  Scene.BumpMappingLightDiffuseColor := SavedBMColor;
 end;
 
 procedure Render3DNoShadowsBegin(Scene: TVRMLGLScene);
@@ -102,7 +89,6 @@ begin
   begin
     Render3DShadowsBegin(MainScene);
     inherited;
-    Render3DShadowsEnd(MainScene);
   end else
   begin
     Render3DNoShadowsBegin(MainScene);
@@ -118,7 +104,6 @@ begin
   begin
     Render3DShadowsBegin(GetMainScene);
     inherited;
-    Render3DShadowsEnd(GetMainScene);
   end else
   begin
     Render3DNoShadowsBegin(GetMainScene);

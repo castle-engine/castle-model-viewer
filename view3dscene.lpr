@@ -675,9 +675,6 @@ begin
     should always work with MainScene = nil. }
   if MainScene = nil then Exit;
 
-  if MainScene.BumpMappingMethod <> bmNone then
-    MainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
-
   if FillMode = fmSilhouetteBorderEdges then
     RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene) else
   begin
@@ -711,9 +708,6 @@ begin
     but better to secure for this case, since any TKamAbstractViewport
     should always work with MainScene = nil. }
   if GetMainScene = nil then Exit;
-
-  if GetMainScene.BumpMappingMethod <> bmNone then
-    GetMainScene.BumpMappingLightPosition := SceneManager.Camera.GetPosition;
 
   if FillMode = fmSilhouetteBorderEdges then
     RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene) else
