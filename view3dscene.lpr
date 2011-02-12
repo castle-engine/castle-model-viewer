@@ -2136,12 +2136,13 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Writeln(S);
   end;
 
-  procedure WritelnCameraSettings(Version: TVRMLCameraVersion);
+  procedure WritelnCameraSettings(const Version: TVRMLCameraVersion;
+    const Xml: boolean);
   var
     Pos, Dir, Up, GravityUp: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
-    Writeln(MakeVRMLCameraStr(Version, Pos, Dir, Up, GravityUp));
+    Writeln(MakeVRMLCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
@@ -2799,10 +2800,11 @@ begin
 
   105: PrintRayhunterCommand;
 
-  106: WritelnCameraSettings(1);
-  107: WritelnCameraSettings(2);
+  106: WritelnCameraSettings(1, false);
+  107: WritelnCameraSettings(2, false);
+  108: WritelnCameraSettings(2, true);
 
-  108: begin
+{ Only for debugging:
          Writeln(
            'Current camera frustum planes :' +nl+
            '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
@@ -2817,6 +2819,7 @@ begin
            Writeln(
            '  Far    : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpFar]));
        end;
+}
 
   109: WriteBoundingBox(SceneAnimation.BoundingBox);
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
@@ -3290,14 +3293,13 @@ begin
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Current Camera _Node (VRML 1.0)',   106));
-   M.Append(TMenuItem.Create('Print Current Camera Node (VRML 2.0, X3D)',    107));
+   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
+   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
+   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
    M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
    M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Current Camera _Frustum', 108));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
    MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
