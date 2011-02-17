@@ -11,17 +11,17 @@ const
     ForSource: boolean;
     ForDestination: boolean;
   end =
-  ( ( Value: GL_ZERO;                Name: 'GL_ZERO';                ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_ONE;                 Name: 'GL_ONE';                 ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_DST_COLOR;           Name: 'GL_DST_COLOR';           ForSource: true ; ForDestination: false; ),
-    ( Value: GL_SRC_COLOR;           Name: 'GL_SRC_COLOR';           ForSource: false; ForDestination: true ; ),
-    ( Value: GL_ONE_MINUS_DST_COLOR; Name: 'GL_ONE_MINUS_DST_COLOR'; ForSource: true ; ForDestination: false; ),
-    ( Value: GL_ONE_MINUS_SRC_COLOR; Name: 'GL_ONE_MINUS_SRC_COLOR'; ForSource: false; ForDestination: true ; ),
-    ( Value: GL_SRC_ALPHA;           Name: 'GL_SRC_ALPHA';           ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_ONE_MINUS_SRC_ALPHA; Name: 'GL_ONE_MINUS_SRC_ALPHA'; ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_DST_ALPHA;           Name: 'GL_DST_ALPHA';           ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_ONE_MINUS_DST_ALPHA; Name: 'GL_ONE_MINUS_DST_ALPHA'; ForSource: true ; ForDestination: true ; ),
-    ( Value: GL_SRC_ALPHA_SATURATE;  Name: 'GL_SRC_ALPHA_SATURATE';  ForSource: true ; ForDestination: false; )
+  ( ( Value: GL_ZERO;                Name: 'Zero'                       ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_ONE;                 Name: 'One'                        ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_DST_COLOR;           Name: 'Dst (Screen) Color'         ; ForSource: true ; ForDestination: false; ),
+    ( Value: GL_SRC_COLOR;           Name: 'Src (Shape) Color'          ; ForSource: false; ForDestination: true ; ),
+    ( Value: GL_ONE_MINUS_DST_COLOR; Name: '1 - Dst (Screen) Color'     ; ForSource: true ; ForDestination: false; ),
+    ( Value: GL_ONE_MINUS_SRC_COLOR; Name: '1 - Src (Shape) Color'      ; ForSource: false; ForDestination: true ; ),
+    ( Value: GL_SRC_ALPHA;           Name: 'Src (Shape) Alpha'          ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_ONE_MINUS_SRC_ALPHA; Name: '1 - Src (Shape) Alpha'      ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_DST_ALPHA;           Name: 'Dst (Screen) Alpha'         ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_ONE_MINUS_DST_ALPHA; Name: '1 - Dst (Screen) Alpha'     ; ForSource: true ; ForDestination: true ; ),
+    ( Value: GL_SRC_ALPHA_SATURATE;  Name: 'Src (Shape) Alpha Saturated'; ForSource: true ; ForDestination: false; )
   );
 
   { Although for my engine default is GL_ONE

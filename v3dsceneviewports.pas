@@ -32,9 +32,9 @@ type
   TViewportClass = class of TKamViewport;
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
-  ('_1 viewport',
-   '_2 horizontal viewports',
-   '_4 viewports'
+  ('_1 Viewport',
+   '_2 Horizontal Viewports',
+   '_4 Viewports'
   );
 
 var

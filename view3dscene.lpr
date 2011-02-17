@@ -3143,7 +3143,7 @@ begin
      M.Append(M2);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
-     '_Lighting (GL__LIGHTING enabled)',         91, CtrlL,
+     '_Lighting Calculation',         91, CtrlL,
      SceneAnimation.Attributes.Lighting, true));
    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
      (Scene <> nil) and Scene.HeadlightOn, true);
@@ -3312,11 +3312,11 @@ begin
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Window.FullScreen, true));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('_Screenshot to image ...',         127, K_F5));
-   M.Append(TMenuItem.Create('Screenshot to video / multiple images ...', 540));
-   M.Append(TMenuItem.Create('Screenshot to _cube map (environment around camera position) ...',  550));
-   M.Append(TMenuItem.Create('Screenshot to cube map DDS (environment around camera position) ...',  555));
-   M.Append(TMenuItem.Create('Screenshot depth to grayscale image ...', 560));
+   M.Append(TMenuItem.Create('_Screenshot to Image ...',         127, K_F5));
+   M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
+   M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
+   M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
+   M.Append(TMenuItem.Create('Screenshot Depth to Grayscale Image ...', 560));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
    Result.Append(M);

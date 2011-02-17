@@ -41,20 +41,20 @@ type
 
 const
   TextureMinFilterNames: array [TTextureMinFilter] of string =
-  ( 'GL_NEAREST (fastest)',
-    'GL_LINEAR',
-    'GL_NEAREST_MIPMAP_NEAREST',
-    'GL_NEAREST_MIPMAP_LINEAR',
-    'GL_LINEAR_MIPMAP_NEAREST',
-    'GL_LINEAR_MIPMAP_LINEAR (best looking)');
+  ( 'Nearest (Fastest)',
+    'Linear',
+    'Nearest Pixel and Nearest Mipmap',
+    'Nearest Pixel and Linear Mipmap',
+    'Linear Pixel and Nearest Mipmap',
+    'Linear Pixel and Linear Mimap (Trilinear; Best Quality)');
 
   TextureMagFilterNames: array [TTextureMagFilter] of string =
-  ( 'GL_NEAREST (fastest)',
-    'GL_LINEAR (best looking)');
+  ( 'Nearest (Fastest)',
+    'Linear (Best Quality)');
 
   TextureModeRGBNames: array [TTextureMode] of string =
-  ( 'GL_MODULATE (texture * light)',
-    'GL_REPLACE (texture color overrides light)' );
+  ( 'Modulate (texture * light)',
+    'Replace (texture color overrides light)' );
 
 procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
 
