@@ -28,20 +28,31 @@ interface
 
 uses GL, GLU, VectorMath;
 
-var 
+const
+  DefaultBGColor: TVector3Single = (0, 0, 0);
+
+var
   BGColor: TVector3Single;
 
-{ wywoluj zawsze po zmianie BGColor, wywolaj tez na poczatku w OnOpen.
-  ustawi odpowiednie glClearColor }
+{ Call always after changing BGColor, call also once at the GL context open.
+  Sets glClearColor. }
 procedure BGColorChanged;
 
 implementation
 
+uses V3DSceneConfig;
+
 procedure BGColorChanged;
 begin
- { alpha ponizszego koloru jest bez znaczenia dla view3dscene. 
-   Wartosc 0 jest tak samo dobra jak kazda inna. }
- glClearColor(BGColor[0], BGColor[1], BGColor[2], 0);
+  { Alpha of this is irrelevant. }
+  glClearColor(BGColor[0], BGColor[1], BGColor[2], 0);
 end;
 
+initialization
+  BGColor := ConfigFile.GetValue(
+    'video_options/default_background_color', DefaultBGColor);
+finalization
+  if ConfigFile <> nil then
+    ConfigFile.SetDeleteValue('video_options/default_background_color',
+      BGColor, DefaultBGColor);
 end.
