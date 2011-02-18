@@ -647,10 +647,7 @@ begin
 
     if SelectedItem <> nil then
     begin
-      if not GLVersion.BuggyPointSetAttrib then
-        glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_POINT_BIT) else
-        glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
-
+      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
         glColorv(White3Single);
 
