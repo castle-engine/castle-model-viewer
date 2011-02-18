@@ -615,6 +615,9 @@ begin
       (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
     glEnable(GL_DEPTH_TEST);
 
+    { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
+    glLineWidth(SceneAnimation.Attributes.LineWidth);
+
     OctreeDisplay(SceneAnimation);
 
     if showBBox and (not MakingScreenShot) then
@@ -651,7 +654,6 @@ begin
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
         glColorv(White3Single);
 
-        glLineWidth(3.0); { saved by GL_LINE_BIT }
         glBegin(GL_LINE_LOOP);
           glVertexv(SelectedItem^.World.Triangle[0]);
           glVertexv(SelectedItem^.World.Triangle[1]);
@@ -676,7 +678,11 @@ begin
   if MainScene = nil then Exit;
 
   if FillMode = fmSilhouetteBorderEdges then
-    RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene) else
+  begin
+    { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
+    glLineWidth(SceneAnimation.Attributes.LineWidth);
+    RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene);
+  end else
   begin
     inherited;
     LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
@@ -1567,19 +1573,17 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.PointSize;
-    if MessageInputQuery(Window, 'Change point size:',
-      Value, taLeft) then
+    if MessageInputQuery(Window, 'Change point size:', Value, taLeft) then
       SceneAnimation.Attributes.PointSize := Value;
   end;
 
-  procedure ChangeWireframeWidth;
+  procedure ChangeLineWidth;
   var
     Value: Single;
   begin
-    Value := SceneAnimation.Attributes.WireframeWidth;
-    if MessageInputQuery(Window, 'Change wireframe line width:',
-      Value, taLeft) then
-      SceneAnimation.Attributes.WireframeWidth := Value;
+    Value := SceneAnimation.Attributes.LineWidth;
+    if MessageInputQuery(Window, 'Change line width:', Value, taLeft) then
+      SceneAnimation.Attributes.LineWidth := Value;
   end;
 
   procedure ChangeAnimationTimeSpeed;
@@ -2952,7 +2956,7 @@ begin
       FillModesMenu[FillMode].Checked := true;
     end;
 
-  530: ChangeWireframeWidth;
+  530: ChangeLineWidth;
 
   540: ScreenShotToVideo;
   550: ScreenShotToCubeMap;
@@ -3091,6 +3095,9 @@ begin
      M3 := TMenu.Create('Sound Device');
        MenuAppendSoundDevices(M3, 810);
        M2.Append(M3);
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItem.Create('Point Size ...', 182));
+     M2.Append(TMenuItem.Create('Line Width ...', 530));
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);
@@ -3107,8 +3114,6 @@ begin
      MenuAppendFillModes(M2, 500);
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Next _Fill Mode', 520, CtrlF));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Set Wireframe Line Width ...', 530));
      M.Append(M2);
    M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
@@ -3210,8 +3215,6 @@ begin
      M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
      M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
      M.Append(M2);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Set Point Size ...', 182));
    Result.Append(M);
  M := TMenu.Create('_Navigation');
    Viewpoints.Recalculate(Scene);
