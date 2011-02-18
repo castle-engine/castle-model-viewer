@@ -647,9 +647,9 @@ begin
 
     if SelectedItem <> nil then
     begin
-      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT);
+      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-        glColorv(White3Single);
+        glColorv(Vector4Single(1, 1, 1, 0.25)); { may be changed carelessly }
 
         glBegin(GL_LINE_LOOP);
           glVertexv(SelectedItem^.World.Triangle[0]);
@@ -657,9 +657,17 @@ begin
           glVertexv(SelectedItem^.World.Triangle[2]);
         glEnd;
 
-        glPointSize(5.0); { saved by GL_POINT_BIT }
+        glPointSize(5.0); { may be changed carelessly }
         glBegin(GL_POINTS);
           glVertexv(SelectedPointWorld);
+        glEnd;
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
+        glEnable(GL_BLEND); { saved by GL_ENABLE_BIT }
+        glBegin(GL_TRIANGLES);
+          glVertexv(SelectedItem^.World.Triangle[0]);
+          glVertexv(SelectedItem^.World.Triangle[1]);
+          glVertexv(SelectedItem^.World.Triangle[2]);
         glEnd;
       glPopAttrib;
     end;
