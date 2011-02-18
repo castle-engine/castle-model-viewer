@@ -197,6 +197,7 @@ procedure TNavigationTypeButton.DrawTooltip;
     glEnd;
 
     glColorv(TooltipBorderColor);
+    glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
       glVertexv(Arrow[0]);
       glVertexv(Arrow[2]);
