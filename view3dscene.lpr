@@ -1419,6 +1419,22 @@ begin
   finally FreeAndNil(S) end;
 end;
 
+procedure AttributesLoadFromConfig(Attributes: TVRMLRenderingAttributes);
+begin
+  Attributes.LineWidth := ConfigFile.GetFloat('video_options/line_width',
+    DefaultLineWidth);
+  Attributes.PointSize := ConfigFile.GetFloat('video_options/point_size',
+    DefaultPointSize);
+end;
+
+procedure AttributesSaveToConfig(Attributes: TVRMLRenderingAttributes);
+begin
+  ConfigFile.SetDeleteFloat('video_options/line_width',
+    Attributes.LineWidth, DefaultLineWidth);
+  ConfigFile.SetDeleteFloat('video_options/point_size',
+    Attributes.PointSize, DefaultPointSize);
+end;
+
 { make screen shots ---------------------------------------------------------- }
 
 { This performs all screenshot takes, as specified in ScreenShotsList.
@@ -3750,6 +3766,7 @@ begin
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
+      AttributesLoadFromConfig(SceneAnimation.Attributes);
       SceneManager.Items.Add(SceneAnimation);
 
       InitCameras(SceneManager);
@@ -3816,6 +3833,8 @@ begin
 
         Application.Run;
       finally FreeScene end;
+
+      AttributesSaveToConfig(SceneAnimation.Attributes);
     finally
       FreeAndNil(SceneAnimation);
       if RecentMenu <> nil then
