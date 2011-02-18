@@ -36,6 +36,7 @@ initialization
   AntiAliasing := ConfigFile.GetValue(
     'video_options/anti_aliasing', DefaultAntiAliasing);
 finalization
-  ConfigFile.SetDeleteValue('video_options/anti_aliasing',
-    AntiAliasing, DefaultAntiAliasing);
+  if ConfigFile <> nil then
+    ConfigFile.SetDeleteValue('video_options/anti_aliasing',
+      AntiAliasing, DefaultAntiAliasing);
 end.
