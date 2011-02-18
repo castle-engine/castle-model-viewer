@@ -24,15 +24,6 @@ const
     ( Value: GL_SRC_ALPHA_SATURATE;  Name: 'Src (Shape) Alpha Saturated'; ForSource: true ; ForDestination: false; )
   );
 
-  { Although for my engine default is GL_ONE
-    (see VRMLGLScene.DefaultBlendingDestinationFactor),
-    and it's not a problem since it's configurable...
-
-    But for view3dscene default is GL_ONE_MINUS_SRC_ALPHA, since this is usually
-    expected by VRML authors. And sometimes things are simply almost invisible
-    when on white background. }
-  V3DDefaultBlendingDestinationFactor = GL_ONE_MINUS_SRC_ALPHA;
-
 implementation
 
 end.

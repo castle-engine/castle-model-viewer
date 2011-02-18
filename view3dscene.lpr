@@ -3034,10 +3034,10 @@ function CreateMainMenu: TMenu;
       begin
         if Source then
           IsDefault := BlendingFactors[I].Value = DefaultBlendingSourceFactor else
-          IsDefault := BlendingFactors[I].Value = V3DDefaultBlendingDestinationFactor;
+          IsDefault := BlendingFactors[I].Value = DefaultBlendingDestinationFactor;
         Caption := SQuoteMenuEntryCaption(BlendingFactors[I].Name);
         if IsDefault then
-          Caption += ' (default)';
+          Caption += ' (Default)';
         Radio := TMenuItemRadio.Create(Caption, BaseIntData + I, IsDefault, true);
         if RadioGroup = nil then
           RadioGroup := Radio.Group else
@@ -3745,7 +3745,6 @@ begin
     { init "scene global variables" to null values }
     SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
-      SceneAnimation.Attributes.BlendingDestinationFactor := V3DDefaultBlendingDestinationFactor;
       SceneManager.Items.Add(SceneAnimation);
 
       InitCameras(SceneManager);
