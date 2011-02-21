@@ -3144,13 +3144,6 @@ begin
      M.Append(M2);
    M.Append(TMenuItemChecked.Create('Bump mapping', 1400,
      SceneAnimation.Attributes.BumpMapping, true));
-   MenuShadowsMenu := TMenu.Create('Shadow Volumes');
-     MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
-     MenuShadowsMenu.Append(TMenuItemChecked.Create('Use shadow volumes (requires light with kambiShadowsMain)', 750,
-       ShadowsOn, true));
-     MenuShadowsMenu.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
-       DrawShadowVolumes, true));
-     M.Append(MenuShadowsMenu);
    M2 := TMenu.Create('Shadow Maps');
      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
      M2.Append(TMenuSeparator.Create);
@@ -3163,6 +3156,13 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Variance Shadow Maps (Experimental)', 3540, SceneAnimation.Attributes.VarianceShadowMaps, true));
      M.Append(M2);
+   MenuShadowVolumes := TMenu.Create('Shadow Volumes');
+     MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
+     MenuShadowVolumes.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
+       ShadowsOn, true));
+     MenuShadowVolumes.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
+       DrawShadowVolumes, true));
+     M.Append(MenuShadowVolumes);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItemChecked.Create(
      '_Lighting Calculation',         91, CtrlL,

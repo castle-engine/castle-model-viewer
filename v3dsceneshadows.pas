@@ -21,7 +21,7 @@ type
   end;
 
 var
-  MenuShadowsMenu: TMenu;
+  MenuShadowVolumes: TMenu;
 
 const
   DefaultShadowsPossibleWanted = true;
@@ -51,7 +51,7 @@ uses SysUtils, V3DSceneConfig, GL, KambiGLUtils, V3DSceneFillMode;
 
 procedure ShadowsGLOpen;
 begin
-  MenuShadowsMenu.Enabled := ShadowsPossibleCurrently;
+  MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
 end;
 
 procedure ShadowsGLClose;
