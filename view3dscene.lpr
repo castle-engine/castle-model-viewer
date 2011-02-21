@@ -2785,7 +2785,6 @@ begin
 
   82: ShowBBox := not ShowBBox;
   84: if Window.ColorDialog(BGColor) then BGColorChanged;
-  85: with SceneAnimation.Attributes do UseFog := not UseFog;
   86: with SceneAnimation.Attributes do Blending := not Blending;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
   89: with SceneAnimation.Attributes do BlendingSort := not BlendingSort;
@@ -3139,8 +3138,6 @@ begin
      M.Append(M2);
    M.Append(ScreenEffects.Menu);
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Fog',                    85,
-     SceneAnimation.Attributes.UseFog, true));
    M2 := TMenu.Create('Shaders');
      M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
        4000, Ord(SceneAnimation.Attributes.Shaders), true);
