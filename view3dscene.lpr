@@ -3569,7 +3569,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..13] of TOption =
+  Options: array[0..14] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3583,6 +3583,7 @@ const
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-vrml-changes'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone)
   );
@@ -3655,11 +3656,11 @@ const
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
-           '  --debug-log-cache     Write log info, including cache, on stdout' +nl+
+           '  --debug-log-cache     Write log info, including cache.' +nl+
+           '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
            '  --debug-log-vrml-changes' +nl+
-           '                        If --debug-log, output also info about' +NL+
-           '                        VRML graph changes. This indicates' +nl+
-           '                        how VRML events are optimized.' +nl+
+           '                        Write log info, including VRML graph changes.' +nl+
+           '                        This shows how VRML events are optimized.' +nl+
            NL+
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
@@ -3692,6 +3693,10 @@ const
           LogRendererCache := true;
         end;
     12: begin
+          InitializeLog(Version);
+          LogShaders := true;
+        end;
+    13: begin
           { for proper menu display, we have to keep AntiAliasing
             within 0..MaxAntiAliasing range (although GLAntiAliasing
             unit accepts any cardinal value). }
@@ -3699,7 +3704,7 @@ const
           if AntiAliasingMenu[AntiAliasing] <> nil then
             AntiAliasingMenu[AntiAliasing].Checked := true;
         end;
-    13: begin
+    14: begin
           ShowBBox := false;
           ShowStatus := false;
           UpdateStatusToolbarVisible;
