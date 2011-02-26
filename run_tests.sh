@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene tests on ../kambi_vrml_test_suite/ (and some other dirs).
-# You can checkout kambi_vrml_test_suite from SVN, or download and unpack
-# from [http://vrmlengine.sourceforge.net/kambi_vrml_test_suite.php],
+# Run view3dscene tests on ../demo_models/ (and some other dirs).
+# You can checkout demo_models from SVN, or download and unpack
+# from [http://vrmlengine.sourceforge.net/demo_models.php],
 # such that it's a sibling of view3dscene.
 #
 # This requires
@@ -24,7 +24,7 @@ set -eu
 #   or against some previous stable view3dscene version).
 #   (This test is commented out by default, as it takes a lot of time...)
 #
-# Doesn't enter 'errors' subdir (for kambi_vrml_test_suite,
+# Doesn't enter 'errors' subdir (for demo_models,
 # it contains files that *should* fail when reading).
 #
 # Also doesn't try to check view3dscene_test_temporary_file.wrl,
@@ -61,7 +61,7 @@ test_dir()
   set -e
 }
 
-test_dir ../kambi_vrml_test_suite/
+test_dir ../demo_models/
 test_dir ../vrml_engine_doc/
 test_dir ../castle/data/
 test_dir ../rift/data/
