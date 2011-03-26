@@ -90,16 +90,16 @@ begin
     All joint visualizations share the same sphere Shape.
     This way they also share the same material, useful for view3dscene
     "Edit Material" menu item. }
-  SphereShape := TNodeShape.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+  SphereShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
 
-  SphereGeometry := TNodeSphere_2.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+  SphereGeometry := TNodeSphere_2.Create('', HumanoidNode.WWWBasePath);
   SphereGeometry.FdRadius.Value := JointVisualizationSize / 2;
   SphereShape.FdGeometry.Value := SphereGeometry;
 
-  SphereAppearance := TNodeAppearance.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+  SphereAppearance := TNodeAppearance.Create('', HumanoidNode.WWWBasePath);
   SphereShape.FdAppearance.Value := SphereAppearance;
 
-  SphereMaterial := TNodeMaterial_2.Create(MatName, HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+  SphereMaterial := TNodeMaterial_2.Create(MatName, HumanoidNode.WWWBasePath);
   SphereMaterial.FdTransparency.Value := 0.3;
   SphereAppearance.FdMaterial.Value := SphereMaterial;
 
@@ -110,7 +110,7 @@ begin
       Joint := TNodeHAnimJoint(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointTransform := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+      JointTransform := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.AddItem(JointTransform);
 
@@ -121,14 +121,14 @@ begin
 
       JointTransform.FdChildren.AddItem(SphereShape);
 
-      TextShape := TNodeShape.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+      TextShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
       JointTransform.FdChildren.AddItem(TextShape);
 
-      TextGeometry := TNodeText.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+      TextGeometry := TNodeText.Create('', HumanoidNode.WWWBasePath);
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
       TextShape.FdGeometry.Value := TextGeometry;
 
-      FontStyle := TNodeFontStyle_2.Create('', HumanoidNode.WWWBasePath, HumanoidNode.Cache);
+      FontStyle := TNodeFontStyle_2.Create('', HumanoidNode.WWWBasePath);
       FontStyle.FdSize.Value := JointVisualizationSize;
       TextGeometry.FdFontStyle.Value := FontStyle;
     end;
