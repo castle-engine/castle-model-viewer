@@ -1205,7 +1205,7 @@ begin
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif CATCH_EXCEPTIONS}
-        LoadVRMLSequence(ASceneFileName, true,
+        LoadVRMLSequence(ASceneFileName, SceneAnimation.Cache, true,
           RootNodes, Times, ScenesPerTime, EqualityEpsilon,
           TimeLoop, TimeBackwards);
       {$ifdef CATCH_EXCEPTIONS}
@@ -1332,14 +1332,16 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML and then auto-generate
     xxx_scene.inc file to load VRML scene from a simple string. }
-  LoadSimpleScene(LoadVRMLClassicFromString({$I clear_scene.inc}, ''), false);
+  LoadSimpleScene(LoadVRMLClassicFromString({$I clear_scene.inc}, '',
+    SceneAnimation.Cache), false);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(LoadVRMLClassicFromString({$I welcome_scene.inc}, ''));
+  LoadSimpleScene(LoadVRMLClassicFromString({$I welcome_scene.inc}, '',
+    SceneAnimation.Cache));
 end;
 
 function SavedVRMLPrecedingComment(const SourceFileName: string): string;
@@ -2003,14 +2005,9 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             but only if Shape.Material was nil, and together
             this indicates that something incorrect was placed in "material"
             field. }
-          if Shape.Appearance = nil then
-          begin
-            Shape.FdAppearance.Value := TNodeAppearance.Create('', '');
-            Assert(Shape.Appearance <> nil);
-          end;
 
-          M2 := TNodeMaterial_2.Create('', '');
-          Shape.Appearance.FdMaterial.Value := M2;
+          M2 := TNodeMaterial_2.Create('', Shape.WWWBasePath, Shape.Cache);
+          Shape.Material := M2;
           Scene.ChangedAll;
         end else
           Exit(false);
@@ -2230,15 +2227,15 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       begin
         ProgramNode := TNodeComposedShader.Create(
           { any name that has a chance to be unique }
-          'view3dscene_shader_' + IntToStr(Random(1000)), '');
+          'view3dscene_shader_' + IntToStr(Random(1000)), '', SceneAnimation.Cache);
         ProgramNode.FdLanguage.Value := 'GLSL';
 
-        ShaderPart := TNodeShaderPart.Create('', '');
+        ShaderPart := TNodeShaderPart.Create('', '', SceneAnimation.Cache);
         ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'VERTEX';
         ShaderPart.FdUrl.Items.Add(VertexShaderUrl);
 
-        ShaderPart := TNodeShaderPart.Create('', '');
+        ShaderPart := TNodeShaderPart.Create('', '', SceneAnimation.Cache);
         ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'FRAGMENT';
         ShaderPart.FdUrl.Items.Add(FragmentShaderUrl);

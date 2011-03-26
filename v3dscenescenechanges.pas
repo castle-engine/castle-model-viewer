@@ -302,8 +302,8 @@ begin
     (* stworz newRootNode : Group, jego chidren to
       ShapeHints { faceType UNKNOWN_FACE_TYPE }
       i dotychczasowy root node sceny. *)
-    newRootNode := TNodeGroup_1.Create('', scene.RootNode.WWWBasePath);
-    newRootNode.VRML1ChildAdd(TNodeShapeHints.Create('', scene.RootNode.WWWBasePath));
+    newRootNode := TNodeGroup_1.Create('', Scene.RootNode.WWWBasePath, Scene.Cache);
+    newRootNode.VRML1ChildAdd(TNodeShapeHints.Create('', Scene.RootNode.WWWBasePath, Scene.Cache));
     TNodeShapeHints(newRootNode.VRML1Children[0]).FdFaceType.Value := FACETYPE_UNKNOWN;
     newRootNode.VRML1ChildAdd(scene.RootNode);
 
