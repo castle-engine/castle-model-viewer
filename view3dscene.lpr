@@ -3003,7 +3003,8 @@ begin
       ViewportsSetNavigationType(Camera.NavigationType);
       UpdateCameraUI;
     end;
-  1400: with SceneAnimation.Attributes do BumpMapping := not BumpMapping;
+  1400..1499: SceneAnimation.Attributes.BumpMapping :=
+    TBumpMapping(MenuItem.IntData - 1400);
   1600..1699: SetTextureModeRGB(
     TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
@@ -3137,8 +3138,10 @@ begin
      M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
        4000, Ord(SceneAnimation.Attributes.Shaders), true);
      M.Append(M2);
-   M.Append(TMenuItemChecked.Create('Bump mapping', 1400,
-     SceneAnimation.Attributes.BumpMapping, true));
+   M2 := TMenu.Create('Bump mapping');
+     M2.AppendRadioGroup(BumpMappingNames, 1400,
+       Ord(SceneAnimation.Attributes.BumpMapping), true);
+     M.Append(M2);
    M2 := TMenu.Create('Shadow Maps');
      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
      M2.Append(TMenuSeparator.Create);
