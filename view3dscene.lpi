@@ -300,6 +300,9 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
+    <SearchPaths>
+      <IncludeFiles Value="../kambi_vrml_game_engine/src/base;../kambi_vrml_game_engine/src/base/templates"/>
+    </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
