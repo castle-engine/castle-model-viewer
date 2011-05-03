@@ -241,10 +241,9 @@ begin
 
   if SingleMovieFile and Success then
   begin
-    Executable := KamFileSearch(
+    Executable := PathFileSearch(
       {$ifdef MSWINDOWS} 'ffmpeg.exe' {$endif}
-      {$ifdef UNIX} 'ffmpeg' {$endif}
-      , GetEnvironmentVariable('PATH'));
+      {$ifdef UNIX} 'ffmpeg' {$endif});
 
     Writeln(Output, 'Searching on PATH: ' + GetEnvironmentVariable('PATH'));
 
