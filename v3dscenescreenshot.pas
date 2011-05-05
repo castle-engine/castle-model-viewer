@@ -245,8 +245,6 @@ begin
       {$ifdef MSWINDOWS} 'ffmpeg.exe' {$endif}
       {$ifdef UNIX} 'ffmpeg' {$endif});
 
-    Writeln(Output, 'Searching on PATH: ' + GetEnvironmentVariable('PATH'));
-
     if Executable = '' then
     begin
       DataWarning(Format('You must have "ffmpeg" program from ' +
