@@ -423,7 +423,7 @@ var
       Desc: string;
       J: Integer;
     begin
-      Result := Format('%s', [Sensor.FullName]);
+      Result := Format('%s', [Sensor.NiceName]);
 
       if Sensor is TNodeX3DPointingDeviceSensorNode then
         Desc := TNodeX3DPointingDeviceSensorNode(Sensor).FdDescription.Value else
@@ -1792,13 +1792,13 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         C := Lights.Count else
         C := 0;
 
-      S := Format('Total %d lights active on selected object.', [C]);
+      S := Format('Total %d lights active on selected object:', [C]);
 
       if Lights <> nil then
         for i := 0 to Lights.Count - 1 do
         begin
-         s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
-           [ I, Lights.Items[i].Node.FullName ]);
+         s += NL + Format(' %d: %s: ',
+           [ I, Lights.Items[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
            SelectedPointWorld, Lights.Items[i].Location,
@@ -1806,11 +1806,11 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
          if ShadowingItem <> nil then
          begin
-          s += Format('but no, this light is blocked by triangle %s from shape %s.',
+          s += Format('no, this light is blocked by triangle %s from shape %s.',
             [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
-              TVRMLShape(ShadowingItem^.Shape).DebugName ])
+              TVRMLShape(ShadowingItem^.Shape).NiceName ])
          end else
-          s += 'hmm, yes ! No object blocks this light here.';
+          s += 'yes, no object blocks this light, it shines on selected point.';
         end;
     end;
 
