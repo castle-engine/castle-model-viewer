@@ -1787,7 +1787,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     i: integer;
     ShadowingItem: PVRMLTriangle;
     S: string;
-    ActiveLights: TDynActiveLightArray;
+    Lights: TDynLightInstanceArray;
     C: Integer;
   begin
     if SelectedItem = nil then
@@ -1795,22 +1795,22 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       s := 'Nothing selected.';
     end else
     begin
-      ActiveLights := SelectedItem^.State.CurrentActiveLights;
+      Lights := SelectedItem^.State.Lights;
 
-      if ActiveLights <> nil then
-        C := ActiveLights.Count else
+      if Lights <> nil then
+        C := Lights.Count else
         C := 0;
 
-      S := Format('Total %d lights active for selected object.', [C]);
+      S := Format('Total %d lights active on selected object.', [C]);
 
-      if ActiveLights <> nil then
-        for i := 0 to ActiveLights.Count - 1 do
+      if Lights <> nil then
+        for i := 0 to Lights.Count - 1 do
         begin
          s += nl+ nl + Format('Light %d (node %s) possibly affects selected point ... ',
-           [ I, NodeNiceName(ActiveLights.Items[i].LightNode) ]);
+           [ I, NodeNiceName(Lights.Items[i].Node) ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-           SelectedPointWorld, ActiveLights.Items[i].TransfLocation,
+           SelectedPointWorld, Lights.Items[i].Location,
              false, SelectedItem, true, nil);
 
          if ShadowingItem <> nil then
