@@ -1797,7 +1797,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       if Lights <> nil then
         for i := 0 to Lights.Count - 1 do
         begin
-         s += NL + Format(' %d: %s: ',
+         s += NL + NL + Format('Light %d: %s: ',
            [ I, Lights.Items[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
