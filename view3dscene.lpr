@@ -2681,23 +2681,15 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   procedure SaveAs;
   var
     ProposedSaveName, Extension, FileFilters: string;
-    SaveVerMajor, SaveVerMinor: Integer;
+    SaveVersion: TVRMLVersion;
   begin
     if SceneAnimation.ScenesCount > 1 then
       MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.',
         taLeft);
 
-    SaveVRMLVersion(Scene.RootNode, SaveVerMajor, SaveVerMinor);
-
-    if SaveVerMajor >= 3 then
-    begin
-      Extension := '.x3dv';
-      FileFilters := SaveX3DClassic_FileFilters;
-    end else
-    begin
-      Extension := '.wrl';
-      FileFilters := SaveVRMLClassic_FileFilters;
-    end;
+    SaveVersion := SaveVRMLVersion(Scene.RootNode);
+    Extension := SaveVersion.FileExtension;
+    FileFilters := SaveVersion.FileClassicFilters;
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
     if AnsiSameText(ProposedSaveName, SceneFilename) then
@@ -2709,7 +2701,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       FileFilters) then
     try
       SaveVRMLClassic(Scene.RootNode, ProposedSaveName,
-        SaveComment(SceneFileName), SaveVerMajor, SaveVerMinor);
+        SaveComment(SceneFileName), SaveVersion);
     except
       on E: Exception do
       begin
