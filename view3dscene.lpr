@@ -2689,7 +2689,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
     SaveVersion := SaveVRMLVersion(Scene.RootNode);
     Extension := SaveVersion.FileExtension;
-    FileFilters := SaveVersion.FileClassicFilters;
+    FileFilters := SaveVersion.FileFiltersClassic;
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
     if AnsiSameText(ProposedSaveName, SceneFilename) then
