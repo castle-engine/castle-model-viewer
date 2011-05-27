@@ -2680,7 +2680,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure SaveAs;
   var
-    ProposedSaveName, Extension: string;
+    ProposedSaveName, Extension, FileFilters: string;
     SaveVerMajor, SaveVerMinor: Integer;
   begin
     if SceneAnimation.ScenesCount > 1 then
@@ -2690,8 +2690,14 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     SaveVRMLVersion(Scene.RootNode, SaveVerMajor, SaveVerMinor);
 
     if SaveVerMajor >= 3 then
-      Extension := '.x3dv' else
+    begin
+      Extension := '.x3dv';
+      FileFilters := SaveX3DClassic_FileFilters;
+    end else
+    begin
       Extension := '.wrl';
+      FileFilters := SaveVRMLClassic_FileFilters;
+    end;
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
     if AnsiSameText(ProposedSaveName, SceneFilename) then
@@ -2700,7 +2706,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       ProposedSaveName := AppendToFileName(SceneFilename, '_2');
 
     if Window.FileDialog('Save as VRML/X3D file', ProposedSaveName, false,
-      SaveVRMLClassic_FileFilters) then
+      FileFilters) then
     try
       SaveVRMLClassic(Scene.RootNode, ProposedSaveName,
         SaveComment(SceneFileName), SaveVerMajor, SaveVerMinor);
