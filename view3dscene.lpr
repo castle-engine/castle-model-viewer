@@ -2678,8 +2678,43 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     finally FreeAndNil(Vis) end;
   end;
 
+  procedure SaveAs;
+  var
+    ProposedSaveName, Extension: string;
+    SaveVerMajor, SaveVerMinor: Integer;
+  begin
+    if SceneAnimation.ScenesCount > 1 then
+      MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.',
+        taLeft);
+
+    SaveVRMLVersion(Scene.RootNode, SaveVerMajor, SaveVerMinor);
+
+    if SaveVerMajor >= 3 then
+      Extension := '.x3dv' else
+      Extension := '.wrl';
+
+    ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
+    if AnsiSameText(ProposedSaveName, SceneFilename) then
+      { TODO: this filename gen is stupid, it leads to names like
+        _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
+      ProposedSaveName := AppendToFileName(SceneFilename, '_2');
+
+    if Window.FileDialog('Save as VRML/X3D file', ProposedSaveName, false,
+      SaveVRMLClassic_FileFilters) then
+    try
+      SaveVRMLClassic(Scene.RootNode, ProposedSaveName,
+        SaveComment(SceneFileName), SaveVerMajor, SaveVerMinor);
+    except
+      on E: Exception do
+      begin
+        MessageOK(Window, 'Error while saving scene to "' +ProposedSaveName+
+          '": ' + E.Message, taLeft);
+      end;
+    end;
+  end;
+
 var
-  S, ProposedScreenShotName: string;
+  ProposedScreenShotName: string;
   C: Cardinal;
 begin
  case MenuItem.IntData of
@@ -2695,28 +2730,7 @@ begin
         LoadScene(SceneFileName, [], 0.0, false);
       end;
 
-  20: begin
-        if SceneAnimation.ScenesCount > 1 then
-          MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML will only save it''s first frame.',
-            taLeft);
-
-        { TODO: this filename gen is stupid, it leads to names like
-          _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
-        if AnsiSameText(ExtractFileExt(SceneFilename), '.wrl') then
-          s := AppendToFileName(SceneFilename, '_2') else
-          s := ChangeFileExt(SceneFilename, '.wrl');
-        if Window.FileDialog('Save as VRML file', s, false,
-          SaveVRMLClassic_FileFilters) then
-        try
-          SaveVRMLClassic(Scene.RootNode, s, SaveComment(SceneFileName));
-        except
-          on E: Exception do
-          begin
-            MessageOK(Window, 'Error while saving scene to "' +S+ '": ' +
-              E.Message, taLeft);
-          end;
-        end;
-      end;
+  20: SaveAs;
 
   21: WarningsButton.DoClick;
 
@@ -3081,7 +3095,7 @@ begin
    MenuReopen := TMenuItem.Create('_Reopen',      15);
    MenuReopen.Enabled := false;
    M.Append(MenuReopen);
-   M.Append(TMenuItem.Create('_Save as VRML ...', 20));
+   M.Append(TMenuItem.Create('_Save as VRML/X3D ...', 20));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
    M.Append(TMenuSeparator.Create);
