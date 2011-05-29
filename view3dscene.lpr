@@ -858,6 +858,8 @@ begin
   Writeln(ErrOutput, ProgramName + ': VRML Warning: ' + S);
   SceneWarnings.Add(S);
   UpdateWarningsButton;
+  if Window <> nil then
+    Window.PostRedisplay;
 end;
 
 procedure DoDataWarning(const s: string);
