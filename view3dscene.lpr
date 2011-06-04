@@ -84,7 +84,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
-  VRMLGLRenderer, VRMLShape, RenderStateUnit, VRMLShadowMaps, KambiSceneManager,
+  VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, KambiSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -605,7 +605,7 @@ procedure RenderVisualizations;
   end;
 
 begin
-  if RenderState.Target = rtScreen then
+  if RenderingCamera.Target = rtScreen then
   begin
     { Visualization below depends on DEPTH_TEST enabled
       (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
