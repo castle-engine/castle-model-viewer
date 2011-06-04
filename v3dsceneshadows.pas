@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses GLWindow, VRMLGLScene, VectorMath, KambiSceneManager;
+uses GLWindow, VRMLGLScene, Base3D, VectorMath, KambiSceneManager;
 
 type
   { Takes care of settingshadow volume properties, and modifies a little
@@ -10,14 +10,12 @@ type
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsSceneManager = class(TKamSceneManager)
   protected
-    procedure Render3D(BaseLights: TObject;
-      const TransparentGroup: TTransparentGroup; InShadow: boolean); override;
+    procedure Render3D(const Params: TRenderParams); override;
   end;
 
   TV3DShadowsViewport = class(TKamViewport)
   protected
-    procedure Render3D(BaseLights: TObject;
-      const TransparentGroup: TTransparentGroup; InShadow: boolean); override;
+    procedure Render3D(const Params: TRenderParams); override;
   end;
 
 var
@@ -81,11 +79,9 @@ begin
     glColorv(PureGeometryColor);
 end;
 
-procedure TV3DShadowsSceneManager.Render3D(
-  BaseLights: TObject;
-  const TransparentGroup: TTransparentGroup; InShadow: boolean);
+procedure TV3DShadowsSceneManager.Render3D(const Params: TRenderParams);
 begin
-  if InShadow then
+  if Params.InShadow then
   begin
     Render3DShadowsBegin(MainScene);
     inherited;
@@ -96,11 +92,9 @@ begin
   end;
 end;
 
-procedure TV3DShadowsViewport.Render3D(
-  BaseLights: TObject;
-  const TransparentGroup: TTransparentGroup; InShadow: boolean);
+procedure TV3DShadowsViewport.Render3D(const Params: TRenderParams);
 begin
-  if InShadow then
+  if Params.InShadow then
   begin
     Render3DShadowsBegin(GetMainScene);
     inherited;

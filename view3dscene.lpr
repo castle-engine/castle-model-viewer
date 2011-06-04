@@ -211,7 +211,7 @@ type
 type
   TV3DSceneManager = class(TV3DShadowsSceneManager)
   protected
-    procedure RenderFromView3D(BaseLights: TObject); override;
+    procedure RenderFromView3D(const Params: TVRMLRenderParams); override;
   public
     procedure BeforeDraw; override;
     procedure Draw; override;
@@ -222,7 +222,7 @@ type
 
   TV3DViewport = class(TV3DShadowsViewport)
   protected
-    procedure RenderFromView3D(BaseLights: TObject); override;
+    procedure RenderFromView3D(const Params: TVRMLRenderParams); override;
   public
     procedure BeforeDraw; override;
     procedure Draw; override;
@@ -670,7 +670,7 @@ begin
   end;
 end;
 
-procedure TV3DSceneManager.RenderFromView3D(BaseLights: TObject);
+procedure TV3DSceneManager.RenderFromView3D(const Params: TVRMLRenderParams);
 begin
   { Although TKamAbstractViewport is ready for MainScene = nil case,
     this RenderFromView3D below is not. Doesn't seem needed,
@@ -708,7 +708,7 @@ begin
   inherited;
 end;
 
-procedure TV3DViewport.RenderFromView3D(BaseLights: TObject);
+procedure TV3DViewport.RenderFromView3D(const Params: TVRMLRenderParams);
 begin
   { Although TKamAbstractViewport is ready for MainScene = nil case,
     this RenderFromView3D below is not. Doesn't seem needed,
