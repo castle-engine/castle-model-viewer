@@ -212,6 +212,7 @@ type
   TV3DSceneManager = class(TV3DShadowsSceneManager)
   protected
     procedure RenderFromView3D(const Params: TVRMLRenderParams); override;
+    procedure Render3D(const Params: TRenderParams); override;
   public
     procedure BeforeDraw; override;
     procedure Draw; override;
@@ -223,6 +224,7 @@ type
   TV3DViewport = class(TV3DShadowsViewport)
   protected
     procedure RenderFromView3D(const Params: TVRMLRenderParams); override;
+    procedure Render3D(const Params: TRenderParams); override;
   public
     procedure BeforeDraw; override;
     procedure Draw; override;
@@ -670,6 +672,15 @@ begin
   end;
 end;
 
+procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
+begin
+  inherited;
+  { RenderVisualizations are opaque, so they should be renderer here
+    to correctly mix with partially transparent 3D scenes. }
+  if Params.TransparentGroup in [tgAll, tgOpaque] then
+    RenderVisualizations;
+end;
+
 procedure TV3DSceneManager.RenderFromView3D(const Params: TVRMLRenderParams);
 begin
   { Although TKamAbstractViewport is ready for MainScene = nil case,
@@ -683,15 +694,15 @@ begin
     { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
     glLineWidth(SceneAnimation.Attributes.LineWidth);
     RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene);
+    RenderVisualizations;
   end else
   begin
     inherited;
+    { inherited will call Render3D that will call RenderVisualizations }
     LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
     LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
     LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
   end;
-
-  RenderVisualizations;
 end;
 
 procedure TV3DSceneManager.BeforeDraw;
@@ -708,6 +719,15 @@ begin
   inherited;
 end;
 
+procedure TV3DViewport.Render3D(const Params: TRenderParams);
+begin
+  inherited;
+  { RenderVisualizations are opaque, so they should be renderer here
+    to correctly mix with partially transparent 3D scenes. }
+  if Params.TransparentGroup in [tgAll, tgOpaque] then
+    RenderVisualizations;
+end;
+
 procedure TV3DViewport.RenderFromView3D(const Params: TVRMLRenderParams);
 begin
   { Although TKamAbstractViewport is ready for MainScene = nil case,
@@ -717,13 +737,15 @@ begin
   if GetMainScene = nil then Exit;
 
   if FillMode = fmSilhouetteBorderEdges then
-    RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene) else
+  begin
+    RenderVisualizations;
+    RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene);
+  end else
   begin
     inherited;
+    { inherited will call Render3D that will call RenderVisualizations }
     { Custom viewports don't set LastRender_* }
   end;
-
-  RenderVisualizations;
 end;
 
 procedure TV3DViewport.BeforeDraw;
