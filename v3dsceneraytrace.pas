@@ -302,7 +302,7 @@ begin
               TClassicRayTracer(RayTracer).FogNode := FogNode;
               TClassicRayTracer(RayTracer).HeadLightExists := Scene.HeadLightOn;
               if Scene.HeadLightOn then
-                TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight.LightInstance(CamPosition, CamDir);
+                TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight(CamPosition, CamDir)^;
             end;
           rtkPathTracer:
             begin
