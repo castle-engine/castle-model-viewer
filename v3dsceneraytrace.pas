@@ -28,7 +28,7 @@ unit V3DSceneRaytrace;
 interface
 
 uses GL, GLU, GLExt, GLWindow, VectorMath, VRMLNodes,
-  KambiFilesUtils, KambiStringUtils, VRMLScene, VRMLHeadLight;
+  KambiFilesUtils, KambiStringUtils, VRMLScene;
 
 const
   DEF_RAYTRACE_DEPTH = 3;
