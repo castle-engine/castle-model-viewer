@@ -1489,6 +1489,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
+          ViewportsDraw;
           SceneManager.Draw;
           glFlush();
           Image := SaveScreen_NoFlush(0, 0, Window.Width, Window.Height, ReadBuffer);

@@ -59,6 +59,11 @@ procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
+{ If some custom viewports are visible then redraw background and 
+  all viewports. Remember to always call SceneManager.Draw afterwards,
+  as SceneManager is also another viewport. }
+procedure ViewportsDraw;
+
 implementation
 
 uses VectorMath, SysUtils, KambiUtils, GL, UIControls;
@@ -252,6 +257,18 @@ begin
   for I := 0 to High(Viewports) do
     Viewports[I] := ViewportClass.Create(nil);
   Background := TBackground.Create(nil);
+end;
+
+procedure ViewportsDraw;
+var
+  I: Integer;
+const
+  Visible: array [TViewportsConfig] of Integer = (0, 1, 3);
+begin
+  if ViewportsConfig <> vc1 then
+    Background.Draw;
+  for I := 0 to Visible[ViewportsConfig] - 1 do
+    Viewports[I].Draw;
 end;
 
 procedure DoFinalization;
