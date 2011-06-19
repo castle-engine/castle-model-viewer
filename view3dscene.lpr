@@ -2604,7 +2604,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Pos, Dir, Up: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(Window, SceneManager, Scene,
+    RaytraceToWin(Window, SceneManager.BaseLights, Scene,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor,
