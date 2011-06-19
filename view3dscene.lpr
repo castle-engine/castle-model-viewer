@@ -3126,7 +3126,7 @@ begin
      M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
        MenuAppendAntiAliasing(M3, 600);
        M2.Append(M3);
-     M2.Append(TMenuItemChecked.Create('_Shadows Possible (Restart view3dscene to Apply)',
+     M2.Append(TMenuItemChecked.Create('_Shadow Volumes Possible (Restart view3dscene to Apply)',
        740, ShadowsPossibleWanted, true));
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
