@@ -28,7 +28,7 @@ unit V3DSceneRaytrace;
 interface
 
 uses GL, GLU, GLExt, GLWindow, VectorMath, VRMLNodes,
-  KambiFilesUtils, KambiStringUtils, VRMLScene;
+  KambiFilesUtils, KambiStringUtils, VRMLScene, KambiSceneManager;
 
 const
   DEF_RAYTRACE_DEPTH = 3;
@@ -37,6 +37,7 @@ const
 
 { Ray-tracer. }
 procedure RaytraceToWin(Window: TGLWindow;
+  SceneManager: TKamSceneManager;
   Scene: TVRMLScene;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
@@ -221,6 +222,7 @@ end;
 { ----------------------------------------------------------------------------- }
 
 procedure RaytraceToWin(Window: TGLWindow;
+  SceneManager: TKamSceneManager;
   Scene: TVRMLScene;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
@@ -300,9 +302,8 @@ begin
               RayTracer := TClassicRayTracer.Create;
               TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
               TClassicRayTracer(RayTracer).FogNode := FogNode;
-              TClassicRayTracer(RayTracer).HeadLightExists := Scene.HeadLightOn;
-              if Scene.HeadLightOn then
-                TClassicRayTracer(RayTracer).HeadLight := Scene.HeadLight(CamPosition, CamDir)^;
+              TClassicRayTracer(RayTracer).HeadLightExists :=
+                SceneManager.HeadlightInstance(TClassicRayTracer(RayTracer).HeadLight);
             end;
           rtkPathTracer:
             begin
