@@ -1802,7 +1802,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     i: integer;
     ShadowingItem: PVRMLTriangle;
     S: string;
-    Lights: TDynLightInstanceArray;
+    Lights: TLightInstancesList;
     C: Integer;
   begin
     if SelectedItem = nil then
