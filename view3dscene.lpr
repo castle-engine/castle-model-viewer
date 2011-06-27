@@ -697,7 +697,17 @@ begin
     RenderVisualizations;
   end else
   begin
+    if FillModes[FillMode].PureGeometry then
+    begin
+      { Otherwise, model with PureGeometry will not have depth test enabled,
+        which will make bounding box visible through, and break shadow volumes. }
+      glPushAttrib(GL_ENABLE_BIT);
+      glEnable(GL_DEPTH_TEST);
+    end;
     inherited;
+    if FillModes[FillMode].PureGeometry then
+      glPopAttrib;
+
     { inherited will call Render3D that will call RenderVisualizations }
     LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
     LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
@@ -742,7 +752,17 @@ begin
     RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene);
   end else
   begin
+    if FillModes[FillMode].PureGeometry then
+    begin
+      { Otherwise, model with PureGeometry will not have depth test enabled,
+        which will make bounding box visible through, and break shadow volumes. }
+      glPushAttrib(GL_ENABLE_BIT);
+      glEnable(GL_DEPTH_TEST);
+    end;
     inherited;
+    if FillModes[FillMode].PureGeometry then
+      glPopAttrib;
+
     { inherited will call Render3D that will call RenderVisualizations }
     { Custom viewports don't set LastRender_* }
   end;
