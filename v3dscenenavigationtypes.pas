@@ -25,8 +25,8 @@ unit V3DSceneNavigationTypes;
 
 interface
 
-uses SysUtils, KambiUtils, GLWindow, Cameras, Boxes3D, VectorMath,
-  GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls, KambiTimeUtils,
+uses SysUtils, KambiUtils, GLWindow, Cameras, VectorMath,
+  GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls,
   GLControls;
 
 { Call this once on created SceneManager.

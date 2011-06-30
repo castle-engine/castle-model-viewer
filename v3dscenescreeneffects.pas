@@ -64,7 +64,7 @@ var
 
 implementation
 
-uses SysUtils, KambiGLUtils, DataErrors, KambiLog;
+uses SysUtils, KambiGLUtils, DataErrors;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
