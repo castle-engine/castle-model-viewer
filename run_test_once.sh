@@ -74,7 +74,7 @@ rm -f "$TEMP_FILE"
 
 # Comment this "return" line, to have much longer test,
 # doing --screenshot and comparing results. This tests the renderer.
-return
+exit 0
 
 SCREENSHOT_CORRECT=`stringoper ChangeFileExt "$FILE" _test_screen.png`
 SCREENSHOT_COMPARE=`stringoper ChangeFileExt "$FILE" _test_screen_compare.png`
