@@ -76,7 +76,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
   { OpenGL related units: }
-  GL, GLU, GLExt, GLWindow, KambiGLUtils, OpenGLBmpFonts,
+  GL, GLWindow, KambiGLUtils, OpenGLBmpFonts,
   GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
