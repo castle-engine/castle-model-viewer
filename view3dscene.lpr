@@ -3266,7 +3266,7 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Next Navigation Type', 111, CtrlN));
    M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('Walk / Fly mode Settings');
+   M2 := TMenu.Create('Walk and Fly Settings');
      M2.Append(TMenuItemChecked.Create(
        '_Use Mouse Look',                       128, CtrlM,
          Camera.Walk.MouseLook, true));
