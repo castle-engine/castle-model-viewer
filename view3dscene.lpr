@@ -1366,19 +1366,20 @@ const
   SaveGenerator = 'view3dscene, http://vrmlengine.sourceforge.net/view3dscene.php';
 
 { Load model from ASceneFileName ('-' means stdin),
-  do SceneChanges, and write it as VRML to stdout.
-  This is simply the function to handle --write-to-vrml command-line option. }
-procedure WriteToVRML(const ASceneFileName: string;
-  const SceneChanges: TSceneChanges);
-var Scene: TVRMLScene;
+  do SceneChanges, and write it as VRML/X3D to stdout.
+  This is used to handle --write command-line option. }
+procedure WriteModel(const ASceneFileName: string;
+  const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding);
+var
+  Scene: TVRMLScene;
 begin
- Scene := TVRMLScene.Create(nil);
- try
-  Scene.Load(ASceneFileName, true);
-  ChangeScene(SceneChanges, Scene);
-  SaveVRMLClassic(Scene.RootNode, StdOutStream,
-    SaveGenerator, ExtractFileName(ASceneFileName));
- finally Scene.Free end;
+  Scene := TVRMLScene.Create(nil);
+  try
+    Scene.Load(ASceneFileName, true);
+    ChangeScene(SceneChanges, Scene);
+    SaveVRML(Scene.RootNode, StdOutStream,
+      SaveGenerator, ExtractFileName(ASceneFileName), Encoding);
+  finally Scene.Free end;
 end;
 
 class procedure THelper.OpenRecent(const FileName: string);
@@ -2701,7 +2702,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     finally FreeAndNil(Vis) end;
   end;
 
-  procedure SaveAs;
+  procedure SaveAs(const Encoding: TX3DEncoding; const MessageTitle: string);
   var
     ProposedSaveName, Extension, FileFilters: string;
     SaveVersion: TVRMLVersion;
@@ -2711,8 +2712,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         taLeft);
 
     SaveVersion := SaveVRMLVersion(Scene.RootNode);
-    Extension := SaveVersion.FileExtension;
-    FileFilters := SaveVersion.FileFiltersClassic;
+    Extension := SaveVersion.FileExtension(Encoding);
+    FileFilters := SaveVersion.FileFilters(Encoding);
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
     if AnsiSameText(ProposedSaveName, SceneFilename) then
@@ -2720,11 +2721,11 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
       ProposedSaveName := AppendToFileName(SceneFilename, '_2');
 
-    if Window.FileDialog('Save as VRML/X3D file', ProposedSaveName, false,
+    if Window.FileDialog(MessageTitle, ProposedSaveName, false,
       FileFilters) then
     try
-      SaveVRMLClassic(Scene.RootNode, ProposedSaveName,
-        SaveGenerator, ExtractFileName(SceneFileName), SaveVersion);
+      SaveVRML(Scene.RootNode, ProposedSaveName,
+        SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding);
     except
       on E: Exception do
       begin
@@ -2751,7 +2752,8 @@ begin
         LoadScene(SceneFileName, [], 0.0, false);
       end;
 
-  20: SaveAs;
+  900: SaveAs(xeClassic, MenuItem.Caption);
+  910: SaveAs(xeXML    , MenuItem.Caption);
 
   21: WarningsButton.DoClick;
 
@@ -3116,7 +3118,8 @@ begin
    MenuReopen := TMenuItem.Create('_Reopen',      15);
    MenuReopen.Enabled := false;
    M.Append(MenuReopen);
-   M.Append(TMenuItem.Create('_Save as VRML/X3D ...', 20));
+   M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900));
+   M.Append(TMenuItem.Create('Save As X3D (_XML encoding) ...', 910));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
    M.Append(TMenuSeparator.Create);
@@ -3585,14 +3588,15 @@ end;
 
 var
   Param_CameraRadius: Single = 0.0;
-  WasParam_WriteToVRML: boolean = false;
+  WasParam_Write: boolean = false;
+  Param_Encoding: TX3DEncoding = xeClassic;
 
   WasParam_SceneFileName: boolean = false;
   Param_SceneFileName: string;
   Param_SceneChanges: TSceneChanges = [];
 
 const
-  Options: array[0..14] of TOption =
+  Options: array[0..16] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3608,7 +3612,9 @@ const
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
-    (Short: 'H'; Long: 'hide-extras'; Argument: oaNone)
+    (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
+    (Short:  #0; Long: 'write'; Argument: oaNone),
+    (Short:  #0; Long: 'encoding'; Argument: oaRequired)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3622,7 +3628,10 @@ const
     1 : Include(Param_SceneChanges, scNoNormals);
     2 : Include(Param_SceneChanges, scNoSolidObjects);
     3 : Include(Param_SceneChanges, scNoConvexFaces);
-    4 : WasParam_WriteToVRML := true;
+    4 : begin
+          WasParam_Write := true;
+          Param_Encoding := xeClassic;
+        end;
     5 : begin
          InfoWrite(
            'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
@@ -3650,8 +3659,16 @@ const
            '  --scene-change-no-solid-objects ,' +NL+
            '  --scene-change-no-convex-faces' +NL+
            '                        Change scene somehow after loading' +NL+
-           '  --write-to-vrml       After loading (and changing) scene, write it' +NL+
-           '                        as VRML 1.0 to the standard output' +NL+
+           '  --write               Load the scene,'+NL+
+           '                        optionally process by --scene-change-xxx,' +NL+
+           '                        save it as VRML/X3D to the standard output,' +NL+
+           '                        exit. Use --encoding to choose encoding.' +NL+
+           '  --encoding classic|xml' +NL+
+           '                        Choose X3D encoding to use with --write option.' +NL+
+           '                        Default is "classic". Choosing XML encoding' +NL+
+           '                        will convert VRML to X3D if needed, but it works' +NL+
+           '                        sensibly only for VRML 2.0 now (not for VRML 1.0).' +NL+
+           '  --write-to-vrml       Obsolete shortcut for "--write --encoding=classic"' +NL+
            CamerasOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
@@ -3732,6 +3749,12 @@ const
           ShowStatus := false;
           UpdateStatusToolbarVisible;
         end;
+    15: WasParam_Write := true;
+    16: if SameText(Argument, 'classic') then
+          Param_Encoding := xeClassic else
+        if SameText(Argument, 'xml') then
+          Param_Encoding := xeXML else
+          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -3771,13 +3794,13 @@ begin
     VRMLWarning := @DoVRMLWarning;
     DataWarning := @DoDataWarning;
 
-    if WasParam_WriteToVRML then
+    if WasParam_Write then
     begin
       if not WasParam_SceneFileName then
         raise EInvalidParams.Create('You used --write-to-vrml option, '+
           'this means that you want to convert some 3d model file to VRML. ' +
           'But you didn''t provide any filename on command-line to load.');
-      WriteToVRML(Param_SceneFileName, Param_SceneChanges);
+      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_Encoding);
       Exit;
     end;
 
