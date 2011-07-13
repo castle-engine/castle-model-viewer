@@ -79,7 +79,10 @@ do_compare_classic_save ()
   echo '---- Comparing classic save with' "$VIEW3DSCENE_OTHER"
   "$VIEW3DSCENE_OTHER" "$FILE" --write-to-vrml > "$SAVE_CLASSIC_OLD"
   "$VIEW3DSCENE"       "$FILE" --write-to-vrml > "$SAVE_CLASSIC_NEW"
+
+  set +e
   diff -wur "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
+  set -e
 
   rm -f "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
 }
