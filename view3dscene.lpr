@@ -2752,8 +2752,8 @@ begin
         LoadScene(SceneFileName, [], 0.0, false);
       end;
 
-  900: SaveAs(xeClassic, MenuItem.Caption);
-  910: SaveAs(xeXML    , MenuItem.Caption);
+  900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption));
+  910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption));
 
   21: WarningsButton.DoClick;
 
