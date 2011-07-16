@@ -1378,7 +1378,7 @@ begin
     Scene.Load(ASceneFileName, true);
     ChangeScene(SceneChanges, Scene);
     SaveVRML(Scene.RootNode, StdOutStream,
-      SaveGenerator, ExtractFileName(ASceneFileName), Encoding);
+      SaveGenerator, ExtractFileName(ASceneFileName), Encoding, false);
   finally Scene.Free end;
 end;
 
@@ -2702,7 +2702,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     finally FreeAndNil(Vis) end;
   end;
 
-  procedure SaveAs(const Encoding: TX3DEncoding; const MessageTitle: string);
+  procedure SaveAs(const Encoding: TX3DEncoding; const MessageTitle: string;
+    const ForceConvertingToX3D: boolean);
   var
     ProposedSaveName, Extension, FileFilters: string;
     SaveVersion: TVRMLVersion;
@@ -2712,8 +2713,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         taLeft);
 
     SaveVersion := SaveVRMLVersion(Scene.RootNode);
-    Extension := SaveVersion.FileExtension(Encoding);
-    FileFilters := SaveVersion.FileFilters(Encoding);
+    Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
+    FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
     if AnsiSameText(ProposedSaveName, SceneFilename) then
@@ -2725,7 +2726,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       FileFilters) then
     try
       SaveVRML(Scene.RootNode, ProposedSaveName,
-        SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding);
+        SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding,
+        ForceConvertingToX3D);
     except
       on E: Exception do
       begin
@@ -2752,8 +2754,9 @@ begin
         LoadScene(SceneFileName, [], 0.0, false);
       end;
 
-  900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption));
-  910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption));
+  900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
+  905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
+  910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption), true { doesn't matter });
 
   21: WarningsButton.DoClick;
 
@@ -3118,8 +3121,9 @@ begin
    MenuReopen := TMenuItem.Create('_Reopen',      15);
    MenuReopen.Enabled := false;
    M.Append(MenuReopen);
-   M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900));
-   M.Append(TMenuItem.Create('Save As X3D (_XML encoding) ...', 910));
+   M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900, CtrlS));
+   M.Append(TMenuItem.Create('Save As X3D (_classic encoding; converts VRML to X3D) ...', 905));
+   M.Append(TMenuItem.Create('Save As X3D (_XML encoding; converts VRML to X3D) ...', 910));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
    M.Append(TMenuSeparator.Create);
