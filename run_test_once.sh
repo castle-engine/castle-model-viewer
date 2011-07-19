@@ -96,21 +96,25 @@ do_compare_classic_save ()
 
 do_save_xml_valid ()
 {
-  local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3d`
-  local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3dv`
+  if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
+    echo '---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
+  else
+    local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3d`
+    local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3dv`
 
-  echo '---- Testing is xml valid (can be read back, by view3dscene and xmllint)'
-  "$VIEW3DSCENE" "$FILE"     --write --encoding=xml     > "$SAVE_XML"
-  "$VIEW3DSCENE" "$SAVE_XML" --write --encoding=classic > "$SAVE_CLASSIC"
+    echo '---- Testing is xml valid (can be read back, by view3dscene and xmllint)'
+    "$VIEW3DSCENE" "$FILE"     --write --encoding=xml     > "$SAVE_XML"
+    "$VIEW3DSCENE" "$SAVE_XML" --write --encoding=classic > "$SAVE_CLASSIC"
 
-  set +e
-  # We do not test with official DTD or XSD, they are too buggy ---
-  # at least for xmllint.  --postvalid
-  xmllint --noout "$SAVE_XML"
-  # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
-  set -e
+    set +e
+    # We do not test with official DTD or XSD, they are too buggy ---
+    # at least for xmllint.  --postvalid
+    xmllint --noout "$SAVE_XML"
+    # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
+    set -e
 
-  rm -f "$SAVE_CLASSIC" "$SAVE_XML"
+    rm -f "$SAVE_CLASSIC" "$SAVE_XML"
+  fi
 }
 
 # Test writing and reading back XML encoded X3D.
