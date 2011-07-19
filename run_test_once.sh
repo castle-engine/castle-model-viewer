@@ -69,7 +69,7 @@ echo '---- Reading again' "$FILE"
 
 rm -f "$TEMP_FILE"
 
-# SaveToStream comparison ----------------------------------------------------
+# SaveToStream old/new comparison ----------------------------------------------
 
 do_compare_classic_save ()
 {
@@ -91,6 +91,32 @@ do_compare_classic_save ()
 # Uses --write (--write-to-vrml for older view3dscene versions) to save,
 # and standard Unix "diff" to compare.
 # do_compare_classic_save
+
+# SaveToStream xml/classic comparison ------------------------------------------
+
+do_compare_classic_xml_save ()
+{
+  local SAVE_1_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_classic_xml_1.x3dv`
+  local     SAVE_2_XML=`stringoper ChangeFileExt "$FILE" _test_classic_xml_2.x3d`
+  local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_classic_xml_2.x3dv`
+
+  echo '---- Comparing saving to classic vs saving to xml and then classic'
+  "$VIEW3DSCENE" "$FILE" --write --write-force-x3d --encoding=classic > "$SAVE_1_CLASSIC"
+  "$VIEW3DSCENE" "$FILE" --write                   --encoding=xml     > "$SAVE_2_XML"
+  "$VIEW3DSCENE" "$SAVE_2_XML" --write             --encoding=classic > "$SAVE_2_CLASSIC"
+
+  set +e
+  diff -wur "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
+  set -e
+
+  rm -f "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC" "$SAVE_2_XML"
+}
+
+# Uncomment this to compare classic save with saving to xml,
+# reading back this xml and saving to classic.
+# This checks that saving + loading xml preserves everything.
+# Uses --write to save, and standard Unix "diff" to compare.
+#do_compare_classic_xml_save
 
 # Screenshot comparison ------------------------------------------------------
 
