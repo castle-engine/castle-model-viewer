@@ -106,7 +106,7 @@ do_compare_classic_xml_save ()
   "$VIEW3DSCENE" "$SAVE_2_XML" --write             --encoding=classic > "$SAVE_2_CLASSIC"
 
   set +e
-  diff -wur "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
+  diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
   set -e
 
   rm -f "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC" "$SAVE_2_XML"
