@@ -105,7 +105,7 @@ do_save_xml_valid ()
 
   set +e
   # We do not test with official DTD or XSD, they are too buggy ---
-  # at least for xmllint.  --postvalid 
+  # at least for xmllint.  --postvalid
   xmllint --noout "$SAVE_XML"
   # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
   set -e
@@ -151,6 +151,8 @@ do_compare_classic_xml_save ()
 #   of FPC DOM unit, outside of our reach; and it's there for a good reason
 #   (fast log lookup)). So result has some fields ordered differently.
 # - Bacause of IS treatment, other things may also be ordered differently.
+# - Newlines inside attribute values are replaced by spaces by FPC DOM unit.
+#   See http://bugs.freepascal.org/view.php?id=19770
 #
 # Although, at least this automatically tests that generated XML is valid
 # (can be read back). If it cleaned _test_classic_xml temp files, then at least
