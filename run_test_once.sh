@@ -92,6 +92,32 @@ do_compare_classic_save ()
 # and standard Unix "diff" to compare.
 # do_compare_classic_save
 
+# SaveToStream xml valid -----------------------------------------------------
+
+do_save_xml_valid ()
+{
+  local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3d`
+  local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3dv`
+
+  echo '---- Testing is xml valid (can be read back, by view3dscene and xmllint)'
+  "$VIEW3DSCENE" "$FILE"     --write --encoding=xml     > "$SAVE_XML"
+  "$VIEW3DSCENE" "$SAVE_XML" --write --encoding=classic > "$SAVE_CLASSIC"
+
+  set +e
+  # We do not test with official DTD or XSD, they are too buggy ---
+  # at least for xmllint.  --postvalid 
+  xmllint --noout "$SAVE_XML"
+  # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
+  set -e
+
+  rm -f "$SAVE_CLASSIC" "$SAVE_XML"
+}
+
+# Test writing and reading back XML encoded X3D.
+# Also, test it's basic validity by xmllint.
+# This basically tests that XML output produces something valid that can be read back.
+do_save_xml_valid
+
 # SaveToStream xml/classic comparison ------------------------------------------
 
 do_compare_classic_xml_save ()
@@ -116,7 +142,20 @@ do_compare_classic_xml_save ()
 # reading back this xml and saving to classic.
 # This checks that saving + loading xml preserves everything.
 # Uses --write to save, and standard Unix "diff" to compare.
-#do_compare_classic_xml_save
+#
+# This test is unfortunately far from automatic. You need to spend some
+# time to filter our harmless differences, occuring for various reasons:
+# - meta "source" is different (we could introduce a command-line option
+#   to avoid it, but just for this test? Not worth it for now.)
+# - reading XML always sorts attribute names (this is a limitation
+#   of FPC DOM unit, outside of our reach; and it's there for a good reason
+#   (fast log lookup)). So result has some fields ordered differently.
+# - Bacause of IS treatment, other things may also be ordered differently.
+#
+# Although, at least this automatically tests that generated XML is valid
+# (can be read back). If it cleaned _test_classic_xml temp files, then at least
+# this was OK. But this is also tested by do_save_xml_valid above.
+# do_compare_classic_xml_save
 
 # Screenshot comparison ------------------------------------------------------
 
