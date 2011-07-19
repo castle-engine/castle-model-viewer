@@ -870,7 +870,11 @@ procedure UpdateWarningsButton;
 begin
   WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
   WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
-  Window.EventResize; { update WarningsButton.Left }
+  { When window is closed, width/height may be incorrect (even negative,
+    because of GLWindowDefaultSize). Do not call EventResize then.
+    May happen when you used --write, and some warning occurs. }
+  if not Window.Closed then
+    Window.EventResize; { update WarningsButton.Left }
 end;
 
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
