@@ -875,9 +875,9 @@ end;
 
 procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
 begin
-  { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
-    we write to output VRML contents. }
-  Writeln(ErrOutput, ProgramName + ': VRML Warning: ' + S);
+  { Write to ErrOutput, not normal Output, since when --write is used,
+    we write to output VRML/X3D contents. }
+  Writeln(ErrOutput, ProgramName + ': VRML/X3D Warning: ' + S);
   SceneWarnings.Add(S);
   UpdateWarningsButton;
   if Window <> nil then
@@ -886,8 +886,8 @@ end;
 
 procedure DoDataWarning(const s: string);
 begin
-  { Write to ErrOutput, not normal Output, since when --write-to-vrml was used,
-    we write to output VRML contents. }
+  { Write to ErrOutput, not normal Output, since when --write is used,
+    we write to output VRML/X3D contents. }
   Writeln(ErrOutput, ProgramName + ': Data Warning: ' + S);
   SceneWarnings.Add(S);
   UpdateWarningsButton;
@@ -1369,7 +1369,8 @@ const
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
 procedure WriteModel(const ASceneFileName: string;
-  const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding);
+  const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
+  const ForceConvertingToX3D: boolean);
 var
   Scene: TVRMLScene;
 begin
@@ -1378,7 +1379,7 @@ begin
     Scene.Load(ASceneFileName, true);
     ChangeScene(SceneChanges, Scene);
     SaveVRML(Scene.RootNode, StdOutStream,
-      SaveGenerator, ExtractFileName(ASceneFileName), Encoding, false);
+      SaveGenerator, ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
   finally Scene.Free end;
 end;
 
@@ -3598,9 +3599,10 @@ var
   WasParam_SceneFileName: boolean = false;
   Param_SceneFileName: string;
   Param_SceneChanges: TSceneChanges = [];
+  Param_ForceConvertingToX3D: boolean = false;
 
 const
-  Options: array[0..16] of TOption =
+  Options: array[0..17] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3618,7 +3620,8 @@ const
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
     (Short:  #0; Long: 'write'; Argument: oaNone),
-    (Short:  #0; Long: 'encoding'; Argument: oaRequired)
+    (Short:  #0; Long: 'encoding'; Argument: oaRequired),
+    (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3669,9 +3672,12 @@ const
            '                        exit. Use --encoding to choose encoding.' +NL+
            '  --encoding classic|xml' +NL+
            '                        Choose X3D encoding to use with --write option.' +NL+
-           '                        Default is "classic". Choosing XML encoding' +NL+
-           '                        will convert VRML to X3D if needed, but it works' +NL+
-           '                        sensibly only for VRML 2.0 now (not for VRML 1.0).' +NL+
+           '                        Default is "classic".' +NL+
+           '  --write-force-x3d     Force convertion from VRML to X3D with --write option.' +NL+
+           '                        Note that if you choose XML encoding' +NL+
+           '                        (by --encoding=xml), this is automatic.' +NL+
+           '                        Note that this works sensibly only for VRML 2.0' +NL+
+           '                        now (not for Inventor/VRML 1.0).' +NL+
            '  --write-to-vrml       Obsolete shortcut for "--write --encoding=classic"' +NL+
            CamerasOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
@@ -3759,6 +3765,7 @@ const
         if SameText(Argument, 'xml') then
           Param_Encoding := xeXML else
           raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
+    17: Param_ForceConvertingToX3D := true;
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -3804,7 +3811,8 @@ begin
         raise EInvalidParams.Create('You used --write-to-vrml option, '+
           'this means that you want to convert some 3d model file to VRML. ' +
           'But you didn''t provide any filename on command-line to load.');
-      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_Encoding);
+      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_Encoding,
+        Param_ForceConvertingToX3D);
       Exit;
     end;
 
