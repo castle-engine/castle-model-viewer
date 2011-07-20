@@ -155,8 +155,6 @@ do_compare_classic_xml_save ()
 #   of FPC DOM unit, outside of our reach; and it's there for a good reason
 #   (fast log lookup)). So result has some fields ordered differently.
 # - Bacause of IS treatment, other things may also be ordered differently.
-# - Newlines inside attribute values are replaced by spaces by FPC DOM unit.
-#   See http://bugs.freepascal.org/view.php?id=19770
 #
 # Although, at least this automatically tests that generated XML is valid
 # (can be read back). If it cleaned _test_classic_xml temp files, then at least
