@@ -48,14 +48,14 @@ procedure THumanoidVisualization.VisualizeHumanoid(Node: TVRMLNode);
     or Material if they didn't exist etc.) }
   procedure MakeShapeTransparent(const Shape: TNodeShape);
   var
-    Mat: TNodeMaterial_2;
+    Mat: TNodeMaterial;
   begin
     if Shape.Appearance <> nil then
     begin
       if (Shape.Appearance.FdMaterial.Value <> nil) and
-         (Shape.Appearance.FdMaterial.Value is TNodeMaterial_2) then
+         (Shape.Appearance.FdMaterial.Value is TNodeMaterial) then
       begin
-        Mat := TNodeMaterial_2(Shape.Appearance.FdMaterial.Value);
+        Mat := TNodeMaterial(Shape.Appearance.FdMaterial.Value);
         if Mat.FdTransparency.Value = 0 then
           Mat.FdTransparency.Value := 0.5;
       end;
@@ -66,13 +66,13 @@ var
   HumanoidNode: TNodeHAnimHumanoid;
   Joint: TNodeHAnimJoint;
   SphereShape, TextShape: TNodeShape;
-  SphereGeometry: TNodeSphere_2;
+  SphereGeometry: TNodeSphere;
   SphereAppearance: TNodeAppearance;
-  SphereMaterial: TNodeMaterial_2;
+  SphereMaterial: TNodeMaterial;
   TextGeometry: TNodeText;
-  FontStyle: TNodeFontStyle_2;
+  FontStyle: TNodeFontStyle;
   I: Integer;
-  JointTransform: TNodeTransform_2;
+  JointTransform: TNodeTransform;
   CenterRoute: TVRMLRoute;
 const
   MatName = 'HumanoidJointVisualizeMat';
@@ -92,14 +92,14 @@ begin
     "Edit Material" menu item. }
   SphereShape := TNodeShape.Create('', HumanoidNode.WWWBasePath);
 
-  SphereGeometry := TNodeSphere_2.Create('', HumanoidNode.WWWBasePath);
+  SphereGeometry := TNodeSphere.Create('', HumanoidNode.WWWBasePath);
   SphereGeometry.FdRadius.Value := JointVisualizationSize / 2;
   SphereShape.FdGeometry.Value := SphereGeometry;
 
   SphereAppearance := TNodeAppearance.Create('', HumanoidNode.WWWBasePath);
   SphereShape.FdAppearance.Value := SphereAppearance;
 
-  SphereMaterial := TNodeMaterial_2.Create(MatName, HumanoidNode.WWWBasePath);
+  SphereMaterial := TNodeMaterial.Create(MatName, HumanoidNode.WWWBasePath);
   SphereMaterial.FdTransparency.Value := 0.3;
   SphereAppearance.FdMaterial.Value := SphereMaterial;
 
@@ -110,7 +110,7 @@ begin
       Joint := TNodeHAnimJoint(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointTransform := TNodeTransform_2.Create('', HumanoidNode.WWWBasePath);
+      JointTransform := TNodeTransform.Create('', HumanoidNode.WWWBasePath);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.AddItem(JointTransform);
 
@@ -128,7 +128,7 @@ begin
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
       TextShape.FdGeometry.Value := TextGeometry;
 
-      FontStyle := TNodeFontStyle_2.Create('', HumanoidNode.WWWBasePath);
+      FontStyle := TNodeFontStyle.Create('', HumanoidNode.WWWBasePath);
       FontStyle.FdSize.Value := JointVisualizationSize;
       TextGeometry.FdFontStyle.Value := FontStyle;
     end;

@@ -66,7 +66,7 @@ type
   TSceneChangesDo = class
   public
     procedure NoNormal_Indexed_1(node: TVRMLNode);
-    procedure NoNormal_IFS_2(node: TVRMLNode);
+    procedure NoNormal_IFS(node: TVRMLNode);
     procedure NoNormal_ElevationGrid(node: TVRMLNode);
 
     procedure NoSolid_ShapeHints(node: TVRMLNode);
@@ -87,7 +87,7 @@ type
     {$endif KAMBI_HAS_NURBS}
 
     procedure NoConvex_ShapeHints(node: TVRMLNode);
-    procedure NoConvex_IFS_2(node: TVRMLNode);
+    procedure NoConvex_IFS(node: TVRMLNode);
     procedure NoConvex_Extrusion(node: TVRMLNode);
   end;
 
@@ -96,9 +96,9 @@ begin
   (Node as TVRMLIndexedNode_1).FdNormalIndex.Items.SetLength(0);
 end;
 
-procedure TSceneChangesDo.NoNormal_IFS_2(node: TVRMLNode);
+procedure TSceneChangesDo.NoNormal_IFS(node: TVRMLNode);
 begin
-  (Node as TNodeIndexedFaceSet_2).FdNormal.Value := nil;
+  (Node as TNodeIndexedFaceSet).FdNormal.Value := nil;
 end;
 
 procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TVRMLNode);
@@ -133,17 +133,17 @@ end;
 
 procedure TSceneChangesDo.NoSolid_Cone(Node: TVRMLNode);
 begin
-  (Node As TNodeCone_2).FdSolid.Value := false;
+  (Node As TNodeCone).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoSolid_Cylinder(Node: TVRMLNode);
 begin
-  (Node As TNodeCylinder_2).FdSolid.Value := false;
+  (Node As TNodeCylinder).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoSolid_Sphere(Node: TVRMLNode);
 begin
-  (Node As TNodeSphere_2).FdSolid.Value := false;
+  (Node As TNodeSphere).FdSolid.Value := false;
 end;
 
 procedure TSceneChangesDo.NoSolid_Text(Node: TVRMLNode);
@@ -185,9 +185,9 @@ begin
   (Node as TNodeShapeHints).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
-procedure TSceneChangesDo.NoConvex_IFS_2(node: TVRMLNode);
+procedure TSceneChangesDo.NoConvex_IFS(node: TVRMLNode);
 begin
-  (Node as TNodeIndexedFaceSet_2).FdConvex.Value := false;
+  (Node as TNodeIndexedFaceSet).FdConvex.Value := false;
 end;
 
 procedure TSceneChangesDo.NoConvex_Extrusion(node: TVRMLNode);
@@ -228,15 +228,15 @@ begin
   try
     Scene.RootNode.EnumerateNodes(TVRMLIndexedNode_1,
       @DoChanges.NoNormal_Indexed_1, onlyFromActivePart);
-    Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.NoNormal_IFS_2, onlyFromActivePart);
+    Scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet,
+      @DoChanges.NoNormal_IFS, onlyFromActivePart);
     Scene.RootNode.EnumerateNodes(TNodeElevationGrid,
       @DoChanges.NoNormal_ElevationGrid, onlyFromActivePart);
   finally FreeAndNil(DoChanges) end;
 
   { Do this at the end.
     Note that for VRML >= 2.0, Normal nodes were already removed by
-    NoNormal_IFS_2 (in more intelligent way). }
+    NoNormal_IFS (in more intelligent way). }
   RemoveNodeClass(scene.RootNode, TNodeNormal, onlyFromActivePart);
   RemoveNodeClass(scene.RootNode, TNodeNormalBinding, onlyFromActivePart);
 end;
@@ -257,11 +257,11 @@ begin
       @DoChanges.NoSolid_ElevationGrid, false);
     scene.RootNode.EnumerateNodes(TNodeBox,
       @DoChanges.NoSolid_Box, false);
-    scene.RootNode.EnumerateNodes(TNodeCone_2,
+    scene.RootNode.EnumerateNodes(TNodeCone,
       @DoChanges.NoSolid_Cone, false);
-    scene.RootNode.EnumerateNodes(TNodeCylinder_2,
+    scene.RootNode.EnumerateNodes(TNodeCylinder,
       @DoChanges.NoSolid_Cylinder, false);
-    scene.RootNode.EnumerateNodes(TNodeSphere_2,
+    scene.RootNode.EnumerateNodes(TNodeSphere,
       @DoChanges.NoSolid_Sphere, false);
     scene.RootNode.EnumerateNodes(TNodeText,
       @DoChanges.NoSolid_Text, false);
@@ -291,8 +291,8 @@ begin
   try
     scene.RootNode.EnumerateNodes(TNodeShapeHints,
       @DoChanges.NoConvex_ShapeHints, false);
-    scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet_2,
-      @DoChanges.NoConvex_IFS_2, false);
+    scene.RootNode.EnumerateNodes(TNodeIndexedFaceSet,
+      @DoChanges.NoConvex_IFS, false);
     scene.RootNode.EnumerateNodes(TNodeExtrusion,
       @DoChanges.NoConvex_Extrusion, false);
   finally FreeAndNil(DoChanges) end;

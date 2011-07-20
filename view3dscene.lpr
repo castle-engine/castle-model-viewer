@@ -1691,7 +1691,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     s, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M1: TNodeMaterial_1;
-    M2: TNodeMaterial_2;
+    M2: TNodeMaterial;
     SelectedShape: TVRMLShape;
     SelectedGeometry: TVRMLGeometryNode;
     Tex: TNodeX3DTextureNode;
@@ -1924,14 +1924,14 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       TexCoordsField := TNodeIndexedFaceSet_1(Geometry).FdTextureCoordIndex;
       TexCoords := TexCoordsField.Items;
     end else
-    if Geometry is TNodeIndexedFaceSet_2 then
+    if Geometry is TNodeIndexedFaceSet then
     begin
-      Colors := TNodeIndexedFaceSet_2(Geometry).FdColorIndex.Items;
-      CoordsField := TNodeIndexedFaceSet_2(Geometry).FdCoordIndex;
+      Colors := TNodeIndexedFaceSet(Geometry).FdColorIndex.Items;
+      CoordsField := TNodeIndexedFaceSet(Geometry).FdCoordIndex;
       Coords := CoordsField.Items;
       Materials := nil;
-      Normals := TNodeIndexedFaceSet_2(Geometry).FdNormalIndex.Items;
-      TexCoordsField := TNodeIndexedFaceSet_2(Geometry).FdTexCoordIndex;
+      Normals := TNodeIndexedFaceSet(Geometry).FdNormalIndex.Items;
+      TexCoordsField := TNodeIndexedFaceSet(Geometry).FdTexCoordIndex;
       TexCoords := TexCoordsField.Items;
     end else
     if Geometry is TNodeIndexedTriangleMesh_1 then
@@ -1983,7 +1983,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     M1 and M2 pointers after this. }
   function ChangeMaterialInit(
     out M1: TNodeMaterial_1;
-    out M2: TNodeMaterial_2): boolean;
+    out M2: TNodeMaterial): boolean;
   var
     Shape: TNodeX3DShapeNode;
   begin
@@ -2023,7 +2023,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             this indicates that something incorrect was placed in "material"
             field. }
 
-          M2 := TNodeMaterial_2.Create('', Shape.WWWBasePath);
+          M2 := TNodeMaterial.Create('', Shape.WWWBasePath);
           Shape.Material := M2;
           Scene.ChangedAll;
         end else
@@ -2040,7 +2040,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   procedure ChangeMaterialDiffuse;
   var
     M1: TNodeMaterial_1;
-    M2: TNodeMaterial_2;
+    M2: TNodeMaterial;
     Color: TVector3Single;
   begin
     if not ChangeMaterialInit(M1, M2) then Exit;
@@ -2070,7 +2070,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   procedure ChangeMaterialSpecular;
   var
     M1: TNodeMaterial_1;
-    M2: TNodeMaterial_2;
+    M2: TNodeMaterial;
     Color: TVector3Single;
   begin
     if not ChangeMaterialInit(M1, M2) then Exit;
