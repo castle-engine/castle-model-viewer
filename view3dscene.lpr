@@ -2722,10 +2722,6 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
 
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
-    if AnsiSameText(ProposedSaveName, SceneFilename) then
-      { TODO: this filename gen is stupid, it leads to names like
-        _2, _2_2, _2_2_2... while it should lead to _2, _3, _4 etc.... }
-      ProposedSaveName := AppendToFileName(SceneFilename, '_2');
 
     if Window.FileDialog(MessageTitle, ProposedSaveName, false,
       FileFilters) then
