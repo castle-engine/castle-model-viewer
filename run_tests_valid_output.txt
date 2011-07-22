@@ -509,7 +509,6 @@ view3dscene: VRML/X3D Warning: Wrong vertex index in indexed node IndexedFaceSet
 ---- Reading ../demo_models/shadow_maps/sunny_street/sunny_street_processed.x3dv
 ---- Reading again ../demo_models/shadow_maps/sunny_street/sunny_street_processed.x3dv
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
-view3dscene: VRML/X3D Warning: X3D XML: containerField indicated unknown field name ("receiveShadows" by node "SpotLight" inside node "Transform"), using the default containerField value "children" succeded
 ---- Reading ../demo_models/shadow_maps/sunny_street/sunny_street_final.x3dv
 ---- Reading again ../demo_models/shadow_maps/sunny_street/sunny_street_final.x3dv
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
@@ -636,15 +635,14 @@ view3dscene: VRML/X3D Warning: Unknown node URN "urn:not_existing"
 ---- Reading ../demo_models/nurbs/nurbs_curve_interpolators.wrl
 ---- Reading again ../demo_models/nurbs/nurbs_curve_interpolators.wrl
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
-view3dscene: VRML/X3D Warning: Invalid node name for SFNode field: "-2.2853889465332031 1.2357779741287231 1.6360900402069092 -1 0 0 1.1418639421463013 1.0032039880752563 -1.7750730514526367 1 0 0 3.1206340789794922 1.865494966506958 2.3221969604492188"
-view3dscene: VRML/X3D Warning: Unknown X3D field name (unhandled X3D XML attribute) "keyValue" in node "NurbsPositionInterpolator"
+view3dscene: VRML/X3D Warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
+view3dscene: VRML/X3D Warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
 ---- Reading ../demo_models/nurbs/nurbs_surface_interpolator.x3dv
 ---- Reading again ../demo_models/nurbs/nurbs_surface_interpolator.x3dv
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
 ---- Reading ../demo_models/nurbs/nurbs_dune_tests.wrl
 ---- Reading again ../demo_models/nurbs/nurbs_dune_tests.wrl
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
-view3dscene: VRML/X3D Warning: Invalid node name for SFNode field: "-2 0 0 1.0318620204925537 -9.1627826690673828 -9.9217405319213867 -3.4750471115112305 4.9690589904785156 15.807208061218262 12.895538330078125 -3.3177449703216553 -12.167689323425293 11.731983184814453 -4.2736001014709473 11.22956371307373"
 ---- Reading ../demo_models/nurbs/nurbs_dune_primitives.x3dv
 ---- Reading again ../demo_models/nurbs/nurbs_dune_primitives.x3dv
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
@@ -654,7 +652,6 @@ view3dscene: VRML/X3D Warning: Invalid node name for SFNode field: "-2 0 0 1.031
 ---- Reading ../demo_models/nurbs/nurbs_weights.wrl
 ---- Reading again ../demo_models/nurbs/nurbs_weights.wrl
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
-view3dscene: VRML/X3D Warning: Invalid node name for SFNode field: "-5 0 2 -2.5 5 2 0 0 2 2.5 -5 2 5 0 2"
 ---- Reading ../demo_models/x3d/inline_url_change.x3dv
 ---- Reading again ../demo_models/x3d/inline_url_change.x3dv
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
@@ -697,10 +694,10 @@ view3dscene: VRML/X3D Warning: Error when reading, will skip the rest of VRML/X3
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
 view3dscene: VRML/X3D Warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 309: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
 ---- Reading ../demo_models/x3d/warnings/invalid_container_field_on_use.x3d
-view3dscene: VRML/X3D Warning: Unknown X3D field name (indicated by containerField value) "skinCoord" by node "Coordinate" inside node "Group"
+view3dscene: VRML/X3D Warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 ---- Reading again ../demo_models/x3d/warnings/invalid_container_field_on_use.x3d
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
-view3dscene: VRML/X3D Warning: Unknown X3D field name (indicated by containerField value) "skinCoord" by node "Coordinate" inside node "Group"
+view3dscene: VRML/X3D Warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 ---- Reading ../demo_models/x3d/warnings/import_export_warnings.x3dv
 view3dscene: VRML/X3D Warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 view3dscene: VRML/X3D Warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
@@ -867,6 +864,9 @@ view3dscene: VRML/X3D Warning: Cannot save VRML route: destination node name "Ki
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
 ---- Reading ../demo_models/x3d/inline_load_control_test_1.x3dv
 ---- Reading again ../demo_models/x3d/inline_load_control_test_1.x3dv
+---- Testing is xml valid (can be read back, by view3dscene and xmllint)
+---- Reading ../demo_models/x3d/container_field_def_use.x3d
+---- Reading again ../demo_models/x3d/container_field_def_use.x3d
 ---- Testing is xml valid (can be read back, by view3dscene and xmllint)
 ---- Reading ../demo_models/x3d/tricky_def_use.x3dv
 ---- Reading again ../demo_models/x3d/tricky_def_use.x3dv
