@@ -88,7 +88,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
-  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports;
+  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion;
 
 var
   Window: TGLUIWindow;
@@ -1529,7 +1529,6 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  Version = '3.10.0';
   DisplayProgramName = 'view3dscene';
 
 type

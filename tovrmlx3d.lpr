@@ -30,16 +30,19 @@
 program tovrmlx3d;
 
 uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, Object3DAsVRML,
-  ParseParametersUnit;
+  ParseParametersUnit, V3DSceneVersion;
 
 var
   Encoding: TX3DEncoding = xeClassic;
+  ForceX3D: boolean = false;
 
 const
-  Options: array[0..1] of TOption =
+  Options: array [0..3] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
-    (Short:  #0; Long: 'encoding'; Argument: oaRequired)
+    (Short: 'v'; Long: 'version'; Argument: oaNone),
+    (Short:  #0; Long: 'encoding'; Argument: oaRequired),
+    (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -54,18 +57,29 @@ begin
            NL+
            'Available options are:' +NL+
            HelpOptionHelp +NL+
+           VersionOptionHelp +NL+
            '  --encoding classic|xml' +NL+
-           '                        Choose X3D encoding to use.' +NL+
-           '                        Default is "classic". Choosing XML encoding' +NL+
-           '                        will convert VRML to X3D if needed, but it works' +NL+
-           '                        sensibly only for VRML 2.0 now (not for VRML 1.0).');
+           '                        Choose X3D encoding to use with --write option.' +NL+
+           '                        Default is "classic".' +NL+
+           '  --force-x3d           Force convertion from VRML to X3D with --write option.' +NL+
+           '                        Note that if you choose XML encoding' +NL+
+           '                        (by --encoding=xml), this is automatic.' +NL+
+           '                        Note that this works sensibly only for VRML 2.0' +NL+
+           '                        (not for older Inventor/VRML 1.0).' +NL+
+           NL+
+           SVrmlEngineProgramHelpSuffix('tovrmlx3d', Version, true));
          ProgramBreak;
        end;
-    1: if SameText(Argument, 'classic') then
+    1: begin
+         Writeln(Version);
+         ProgramBreak;
+       end;
+    2: if SameText(Argument, 'classic') then
          Encoding := xeClassic else
        if SameText(Argument, 'xml') then
          Encoding := xeXML else
          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
+    3: ForceX3D := true;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -81,7 +95,7 @@ begin
 
   Node := LoadVRML(FileName, true);
   try
-    SaveVRML(Node, StdOutStream, 'tovrmlx3d, http://vrmlengine.sourceforge.net/',
-      ExtractFileName(FileName), Encoding);
+    SaveVRML(Node, StdOutStream, 'tovrmlx3d, http://vrmlengine.sourceforge.net/view3dscene.php#section_converting',
+      ExtractFileName(FileName), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
 end.
