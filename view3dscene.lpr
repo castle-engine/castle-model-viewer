@@ -1088,7 +1088,7 @@ begin
       and rendering may be called during progress bars even from this function. }
     SceneManager.MainScene := Scene;
 
-    ChangeSceneAnimation(SceneChanges, SceneAnimation);
+    ChangeAnimation(SceneChanges, SceneAnimation);
 
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
@@ -1376,15 +1376,14 @@ procedure WriteModel(const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
   const ForceConvertingToX3D: boolean);
 var
-  Scene: TVRMLScene;
+  Node: TVRMLNode;
 begin
-  Scene := TVRMLScene.Create(nil);
+  Node := LoadVRML(ASceneFileName, true);
   try
-    Scene.Load(ASceneFileName, true);
-    ChangeScene(SceneChanges, Scene);
-    SaveVRML(Scene.RootNode, StdOutStream,
-      SaveGenerator, ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
-  finally Scene.Free end;
+    Node := ChangeNode(SceneChanges, Node);
+    SaveVRML(Node, StdOutStream, SaveGenerator,
+      ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
+  finally FreeAndNil(Node) end;
 end;
 
 class procedure THelper.OpenRecent(const FileName: string);
@@ -2712,23 +2711,34 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   var
     ProposedSaveName, Extension, FileFilters: string;
     SaveVersion: TVRMLVersion;
+    Convertion: boolean;
   begin
-    if SceneAnimation.ScenesCount > 1 then
-      MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.',
-        taLeft);
-
     SaveVersion := SaveVRMLVersion(Scene.RootNode);
+    Convertion := SaveVRMLWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
+
+    if SceneAnimation.ScenesCount > 1 then
+      if Convertion then
+      begin
+        MessageOK(Window, 'This is a precalculated animation (like from Kanim or MD3 file). Converting it from VRML to X3D is not supported.', taLeft);
+        Exit;
+      end else
+        MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.', taLeft);
+
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
-
     ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
 
-    if Window.FileDialog(MessageTitle, ProposedSaveName, false,
-      FileFilters) then
+    if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     try
+      if Convertion then
+        Scene.BeforeNodesFree;
+
       SaveVRML(Scene.RootNode, ProposedSaveName,
         SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding,
         ForceConvertingToX3D);
+
+      if Convertion then
+        Scene.ChangedAll;
     except
       on E: Exception do
       begin
@@ -2761,9 +2771,9 @@ begin
 
   21: WarningsButton.DoClick;
 
-  31: ChangeSceneAnimation([scNoNormals], SceneAnimation);
-  32: ChangeSceneAnimation([scNoSolidObjects], SceneAnimation);
-  33: ChangeSceneAnimation([scNoConvexFaces], SceneAnimation);
+  31: ChangeAnimation([scNoNormals], SceneAnimation);
+  32: ChangeAnimation([scNoSolidObjects], SceneAnimation);
+  33: ChangeAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
 
@@ -3808,8 +3818,8 @@ begin
     if WasParam_Write then
     begin
       if not WasParam_SceneFileName then
-        raise EInvalidParams.Create('You used --write-to-vrml option, '+
-          'this means that you want to convert some 3d model file to VRML. ' +
+        raise EInvalidParams.Create('You used --write option, '+
+          'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any filename on command-line to load.');
       WriteModel(Param_SceneFileName, Param_SceneChanges, Param_Encoding,
         Param_ForceConvertingToX3D);
