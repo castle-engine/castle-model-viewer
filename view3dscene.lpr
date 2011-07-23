@@ -34,9 +34,6 @@
   in engine sources, like
     ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.lpr
     ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.lpr
-    ../kambi_vrml_game_engine/examples/vrml/tovrmlx3d.lpr
-    (the last one is an example of command-line converter from
-    Collada, OBJ, 3DS (and all other model formats we can read) to VRML).
 
   Basic components of this program:
   - use LoadVRMLSequence to load any format to VRML scene.
@@ -3917,7 +3914,7 @@ end.
 
 {
   Local Variables:
-  kam-compile-release-command-unix:    "./compile.sh && mv -fv view3dscene      ~/bin/"
-  kam-compile-release-command-windows: "./compile.sh && mv -fv view3dscene.exe c:\\\\bin\\\\"
+  kam-compile-release-command-unix:    "./compile.sh && mv -fv view3dscene     tovrmlx3d     ~/bin/"
+  kam-compile-release-command-windows: "./compile.sh && mv -fv view3dscene.exe tovrmlx3d.exe c:\\\\bin\\\\"
   End:
 }
