@@ -127,59 +127,59 @@ end;
 
 class procedure TSceneChangesDo.NoSolid_ElevationGrid(Node: TVRMLNode);
 begin
-  (Node As TNodeElevationGrid).FdSolid.Value := false;
+  (Node as TNodeElevationGrid).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Box(Node: TVRMLNode);
 begin
-  (Node As TNodeBox).FdSolid.Value := false;
+  (Node as TNodeBox).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Cone(Node: TVRMLNode);
 begin
-  (Node As TNodeCone).FdSolid.Value := false;
+  (Node as TNodeCone).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Cylinder(Node: TVRMLNode);
 begin
-  (Node As TNodeCylinder).FdSolid.Value := false;
+  (Node as TNodeCylinder).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Sphere(Node: TVRMLNode);
 begin
-  (Node As TNodeSphere).FdSolid.Value := false;
+  (Node as TNodeSphere).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Text(Node: TVRMLNode);
 begin
-  (Node As TNodeText).FdSolid.Value := false;
+  (Node as TNodeText).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Text3D(Node: TVRMLNode);
 begin
-  (Node As TNodeText3D).FdSolid.Value := false;
+  (Node as TNodeText3D).FdSolid.Value := false;
 end;
 
 {$ifdef KAMBI_HAS_NURBS}
 
 class procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
 begin
-  (Node As TNodeX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
+  (Node as TNodeX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TVRMLNode);
 begin
-  (Node As TNodeNurbsSweptSurface).FdSolid.Value := false;
+  (Node as TNodeNurbsSweptSurface).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_NurbsSwungSurface(Node: TVRMLNode);
 begin
-  (Node As TNodeNurbsSwungSurface).FdSolid.Value := false;
+  (Node as TNodeNurbsSwungSurface).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TVRMLNode);
 begin
-  (Node As TNodeNurbsSurface).FdSolid.Value := false;
+  (Node as TNodeNurbsSurface).FdSolid.Value := false;
 end;
 
 {$endif KAMBI_HAS_NURBS}
