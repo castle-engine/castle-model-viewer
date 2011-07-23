@@ -31,7 +31,7 @@ TEMP_FILE=`dirname "$FILE"`/view3dscene_test_temporary_file.wrl
 
 echo '---- Reading' "$FILE"
 #echo '(temp is ' "$TEMP_FILE" ')'
-"$VIEW3DSCENE" "$FILE" --write --encoding=classic > "$TEMP_FILE"
+"$VIEW3DSCENE" "$FILE" --write --write-encoding=classic > "$TEMP_FILE"
 
 # Check input file and output file headers.
 # They indicate VRML version used to write the file.
@@ -65,7 +65,7 @@ if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
 fi
 
 echo '---- Reading again' "$FILE"
-"$VIEW3DSCENE" "$TEMP_FILE" --write --encoding=classic > /dev/null
+"$VIEW3DSCENE" "$TEMP_FILE" --write --write-encoding=classic > /dev/null
 
 rm -f "$TEMP_FILE"
 
@@ -103,8 +103,8 @@ do_save_xml_valid ()
     local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3dv`
 
     echo '---- Testing is xml valid (can be read back, by view3dscene and xmllint)'
-    "$VIEW3DSCENE" "$FILE"     --write --encoding=xml     > "$SAVE_XML"
-    "$VIEW3DSCENE" "$SAVE_XML" --write --encoding=classic > "$SAVE_CLASSIC"
+    "$VIEW3DSCENE" "$FILE"     --write --write-encoding=xml     > "$SAVE_XML"
+    "$VIEW3DSCENE" "$SAVE_XML" --write --write-encoding=classic > "$SAVE_CLASSIC"
 
     set +e
     # We do not test with official DTD or XSD, they are too buggy ---
@@ -131,9 +131,9 @@ do_compare_classic_xml_save ()
   local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_classic_xml_2.x3dv`
 
   echo '---- Comparing saving to classic vs saving to xml and then classic'
-  "$VIEW3DSCENE" "$FILE" --write --write-force-x3d --encoding=classic > "$SAVE_1_CLASSIC"
-  "$VIEW3DSCENE" "$FILE" --write                   --encoding=xml     > "$SAVE_2_XML"
-  "$VIEW3DSCENE" "$SAVE_2_XML" --write             --encoding=classic > "$SAVE_2_CLASSIC"
+  "$VIEW3DSCENE" "$FILE" --write --write-force-x3d --write-encoding=classic > "$SAVE_1_CLASSIC"
+  "$VIEW3DSCENE" "$FILE" --write                   --write-encoding=xml     > "$SAVE_2_XML"
+  "$VIEW3DSCENE" "$SAVE_2_XML" --write             --write-encoding=classic > "$SAVE_2_CLASSIC"
 
   set +e
   diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"

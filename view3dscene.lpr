@@ -3604,12 +3604,11 @@ end;
 var
   Param_CameraRadius: Single = 0.0;
   WasParam_Write: boolean = false;
-  Param_Encoding: TX3DEncoding = xeClassic;
-
+  Param_WriteEncoding: TX3DEncoding = xeClassic;
+  Param_WriteForceX3D: boolean = false;
   WasParam_SceneFileName: boolean = false;
   Param_SceneFileName: string;
   Param_SceneChanges: TSceneChanges = [];
-  Param_ForceConvertingToX3D: boolean = false;
 
 const
   Options: array[0..17] of TOption =
@@ -3630,7 +3629,7 @@ const
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
     (Short:  #0; Long: 'write'; Argument: oaNone),
-    (Short:  #0; Long: 'encoding'; Argument: oaRequired),
+    (Short:  #0; Long: 'write-encoding'; Argument: oaRequired),
     (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone)
   );
 
@@ -3647,7 +3646,7 @@ const
     3 : Include(Param_SceneChanges, scNoConvexFaces);
     4 : begin
           WasParam_Write := true;
-          Param_Encoding := xeClassic;
+          Param_WriteEncoding := xeClassic;
         end;
     5 : begin
          InfoWrite(
@@ -3679,16 +3678,16 @@ const
            '  --write               Load the scene,'+NL+
            '                        optionally process by --scene-change-xxx,' +NL+
            '                        save it as VRML/X3D to the standard output,' +NL+
-           '                        exit. Use --encoding to choose encoding.' +NL+
-           '  --encoding classic|xml' +NL+
+           '                        exit. Use --write-encoding to choose encoding.' +NL+
+           '  --write-encoding classic|xml' +NL+
            '                        Choose X3D encoding to use with --write option.' +NL+
            '                        Default is "classic".' +NL+
            '  --write-force-x3d     Force convertion from VRML to X3D with --write option.' +NL+
            '                        Note that if you choose XML encoding' +NL+
-           '                        (by --encoding=xml), this is automatic.' +NL+
+           '                        (by --write-encoding=xml), this is automatic.' +NL+
            '                        Note that this works sensibly only for VRML 2.0' +NL+
-           '                        now (not for Inventor/VRML 1.0).' +NL+
-           '  --write-to-vrml       Obsolete shortcut for "--write --encoding=classic"' +NL+
+           '                        (not for older Inventor/VRML 1.0).' +NL+
+           '  --write-to-vrml       Obsolete shortcut for "--write --write-encoding=classic"' +NL+
            CamerasOptionsHelp +NL+
            VRMLNodesDetailOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
@@ -3771,11 +3770,11 @@ const
         end;
     15: WasParam_Write := true;
     16: if SameText(Argument, 'classic') then
-          Param_Encoding := xeClassic else
+          Param_WriteEncoding := xeClassic else
         if SameText(Argument, 'xml') then
-          Param_Encoding := xeXML else
-          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
-    17: Param_ForceConvertingToX3D := true;
+          Param_WriteEncoding := xeXML else
+          raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
+    17: Param_WriteForceX3D := true;
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -3821,8 +3820,8 @@ begin
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any filename on command-line to load.');
-      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_Encoding,
-        Param_ForceConvertingToX3D);
+      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_WriteEncoding,
+        Param_WriteForceX3D);
       Exit;
     end;
 
