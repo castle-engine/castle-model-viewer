@@ -81,7 +81,7 @@ do_compare_classic_save ()
   "$VIEW3DSCENE"       "$FILE" --write-to-vrml > "$SAVE_CLASSIC_NEW"
 
   set +e
-  diff -wur "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
+  diff -w --ignore-blank-lines --unified=0 "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
   set -e
 
   rm -f "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
