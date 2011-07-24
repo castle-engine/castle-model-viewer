@@ -42,7 +42,7 @@ const
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'encoding'; Argument: oaRequired),
-    (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone)
+    (Short:  #0; Long: 'force-x3d'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
