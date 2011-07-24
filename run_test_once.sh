@@ -80,8 +80,8 @@ rm -f "$TEMP_FILE"
 
 do_compare_classic_save ()
 {
-  SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_old.x3dv`
-  SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_new.x3dv`
+  local SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_old.x3dv`
+  local SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_new.x3dv`
 
   echo '---- Comparing classic save with' "$VIEW3DSCENE_OTHER"
   "$VIEW3DSCENE_OTHER" "$FILE" --write-to-vrml > "$SAVE_CLASSIC_OLD"
@@ -94,7 +94,7 @@ do_compare_classic_save ()
   rm -f "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
 }
 
-# Uncomment this to compare classic save with other (older?) view3dscene version.
+# Uncomment this to compare classic save with other (e.g. older) view3dscene version.
 # Uses --write (--write-to-vrml for older view3dscene versions) to save,
 # and standard Unix "diff" to compare.
 # do_compare_classic_save
@@ -124,9 +124,9 @@ do_save_xml_valid ()
   fi
 }
 
-# Test writing and reading back XML encoded X3D.
-# Also, test it's basic validity by xmllint.
-# This basically tests that XML output produces something valid that can be read back.
+# Test writing and reading back X3D encoded in XML.
+# This tests that XML output produces something valid that can be read back.
+# Also, test basic generated XML validity by xmllint.
 do_save_xml_valid
 
 # SaveToStream xml/classic comparison ------------------------------------------
@@ -149,8 +149,8 @@ do_compare_classic_xml_save ()
   rm -f "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC" "$SAVE_2_XML"
 }
 
-# Uncomment this to compare classic save with saving to xml,
-# reading back this xml and saving to classic.
+# Uncomment this to compare saving to X3D classic with saving to X3D XML,
+# reading back this XML and saving to classic.
 # This checks that saving + loading xml preserves everything.
 # Uses --write to save, and standard Unix "diff" to compare.
 #
@@ -166,18 +166,21 @@ do_compare_classic_xml_save ()
 # Although, at least this automatically tests that generated XML is valid
 # (can be read back). If it cleaned _test_classic_xml temp files, then at least
 # this was OK. But this is also tested by do_save_xml_valid above.
+#
 # do_compare_classic_xml_save
 
 # Screenshot comparison ------------------------------------------------------
 
-mk_screnshot ()
+do_compare_screenshot ()
 {
+  local SCREENSHOT_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_old.png`
+  local SCREENSHOT_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_new.png`
+
+  local DELETE_SCREENSHOTS='t'
+
   echo '---- Rendering and making screenshot' "$VIEW3DSCENE_OTHER"
   "$VIEW3DSCENE_OTHER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
-}
 
-compare_screenshot ()
-{
   echo '---- Comparing screenshot' "$VIEW3DSCENE"
   "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
 
@@ -191,19 +194,6 @@ compare_screenshot ()
   else
     DELETE_SCREENSHOTS=''
   fi
-}
-
-do_compare_screenshot ()
-{
-  SCREENSHOT_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_old.png`
-  SCREENSHOT_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_new.png`
-
-  DELETE_SCREENSHOTS='t'
-
-  mk_screnshot
-  # You could comment this, if you only want to check if screenshot generation
-  # works, without comparing if with older view3dscene.
-  compare_screenshot
 
   if [ -n "$DELETE_SCREENSHOTS" ]; then
     rm -f "$SCREENSHOT_OLD"
@@ -211,14 +201,18 @@ do_compare_screenshot ()
   fi
 }
 
-# Uncomment this to compare screenshots with other (older?) view3dscene version.
-# Uses --screenshot to capture, and image_compare
-# (see kambi_vrml_game_engine/examples/images/) to compare.
-# This is quite longer test, but it nicely checks for any regressions
-# in the renderer.
+# Uncomment this to generate screenshots,
+# and compare them with other (e.g. older) view3dscene version.
+# Uses --screenshot to capture, and image_compare to compare
+# (compile and put on $PATH this:
+# ../kambi_vrml_game_engine/examples/images/image_compare.lpr).
 #
-# The output (_test_screen*.png files that were not removed) should be examined
-# by hand afterwards. Note that many differences should be ignored
-# (OpenGL is not guaranteed to display the same scene pixel-by-pixel exactly
+# This tests screenshot generation goes Ok,
+# and checks for any regressions in the renderer.
+#
+# The output (_test_temporary_screen*.png files that were not removed)
+# should be examined manually afterwards. Note that many differences should
+# be ignored (OpenGL is not guaranteed to render the same scene pixel-by-pixel
 # the same if some state is different).
+#
 # do_compare_screenshot
