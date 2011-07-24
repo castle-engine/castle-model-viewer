@@ -70,7 +70,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   ParseParametersUnit, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
-  DataErrors, KambiLog, ProgressConsole, DateUtils, Frustum,
+  KambiWarnings, KambiLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
   { OpenGL related units: }
   GL, GLWindow, KambiGLUtils, OpenGLBmpFonts,
@@ -80,7 +80,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLFields, VRMLShapeOctree,
   VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLErrors, VRMLGLAnimation,
+  VRMLCameraUtils, VRMLGLAnimation,
   VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, KambiSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
@@ -874,24 +874,15 @@ begin
     Window.EventResize; { update WarningsButton.Left }
 end;
 
-procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const s: string);
+procedure OnWarningHandle(const AType: TWarningType; const Category, S: string);
 begin
   { Write to ErrOutput, not normal Output, since when --write is used,
     we write to output VRML/X3D contents. }
-  Writeln(ErrOutput, ProgramName + ': VRML/X3D Warning: ' + S);
-  SceneWarnings.Add(S);
+  Writeln(ErrOutput, ProgramName + ': ' + Category + ' warning: ' + S);
+  SceneWarnings.Add(Category + ': ' + S);
   UpdateWarningsButton;
   if Window <> nil then
     Window.PostRedisplay;
-end;
-
-procedure DoDataWarning(const s: string);
-begin
-  { Write to ErrOutput, not normal Output, since when --write is used,
-    we write to output VRML/X3D contents. }
-  Writeln(ErrOutput, ProgramName + ': Data Warning: ' + S);
-  SceneWarnings.Add(S);
-  UpdateWarningsButton;
 end;
 
 procedure SceneOctreeCreate;
@@ -3807,8 +3798,7 @@ begin
 
   SceneWarnings := TSceneWarnings.Create;
   try
-    VRMLWarning := @DoVRMLWarning;
-    DataWarning := @DoDataWarning;
+    OnWarning := @OnWarningHandle;
 
     if WasParam_Write then
     begin

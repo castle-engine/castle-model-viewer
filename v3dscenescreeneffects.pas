@@ -64,7 +64,7 @@ var
 
 implementation
 
-uses SysUtils, KambiGLUtils, DataErrors;
+uses SysUtils, KambiGLUtils, KambiWarnings;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
@@ -203,7 +203,7 @@ begin
         except
           on E: EGLSLError do
           begin
-            DataWarning('Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
+            OnWarning(wtMinor, 'GLSL', 'Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
             FreeAndNil(Shaders[SE]);
           end;
         end;

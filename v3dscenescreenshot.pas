@@ -113,7 +113,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils,
-  DataErrors, Videos;
+  KambiWarnings, Videos;
 
 {$define read_implementation}
 {$I objectslist_1.inc}
@@ -247,7 +247,7 @@ begin
 
     if Executable = '' then
     begin
-      DataWarning(Format('You must have "ffmpeg" program from ' +
+      OnWarning(wtMinor, 'Video', Format('You must have "ffmpeg" program from ' +
         '[http://ffmpeg.mplayerhq.hu/] installed and available on $PATH to be able to ' +
         'create movie files". Leaving generated temporary images "%s"',
         [TemporaryImagesPattern]));
@@ -268,7 +268,7 @@ begin
       begin
         TempFile := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter);
         if not DeleteFile(TempFile) then
-          DataWarning(Format('Cannot delete temporary file "%s"', [TempFile]));
+          OnWarning(wtMinor, 'Video', Format('Cannot delete temporary file "%s"', [TempFile]));
       end;
       Writeln('done.');
     end;

@@ -30,7 +30,7 @@
 program tovrmlx3d;
 
 uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, Object3DAsVRML,
-  ParseParametersUnit, V3DSceneVersion, VRMLErrors, KambiFilesUtils;
+  ParseParametersUnit, V3DSceneVersion, KambiWarnings, KambiFilesUtils;
 
 var
   Encoding: TX3DEncoding = xeClassic;
@@ -84,11 +84,6 @@ begin
   end;
 end;
 
-procedure DoVRMLWarning(const WarningType: TVRMLWarningType; const S: string);
-begin
-  Writeln(ErrOutput, ProgramName + ': VRML/X3D Warning: ' + S);
-end;
-
 var
   FileName: string;
   Node: TVRMLNode;
@@ -98,7 +93,7 @@ begin
   Parameters.CheckHigh(1);
   FileName := Parameters[1];
 
-  VRMLWarning := @DoVRMLWarning;
+  OnWarning := @OnWarningWrite;
 
   Node := LoadVRML(FileName, true);
   try
