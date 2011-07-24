@@ -1,36 +1,43 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene tests on ../demo_models/ (and some other dirs).
+# Run view3dscene / tovrmlx3d tests on ../demo_models/ (and some other dirs).
 # You can checkout demo_models from SVN, or download and unpack
 # from [http://vrmlengine.sourceforge.net/demo_models.php],
 # such that it's a sibling of view3dscene.
 #
 # This requires
-# - view3dscene binary compiled (either in current dir,
-#   or on the $PATH, see run_test_once.sh script setting VIEW3DSCENE variable)
+# - view3dscene and tovrmlx3d binaries compiled (either in current dir,
+#   or on the $PATH, see run_test_once.sh)
 # - stringoper binary compiled and available on $PATH
 #   (stringoper comes from ../kambi_vrml_game_engine/examples/base/stringoper.lpr)
 # - image_compare binary compiled and available on $PATH,
 #   only if you uncomment the "screenshot comparison" test in run_test_once.sh
 #   (image_compare comes from ../kambi_vrml_game_engine/examples/images/image_compare.lpr)
+# - xmllint for some optional XML validation.
+# - alternative view3dscene / tovrmlx3d for some optional comparisons,
+#   to detect regressions.
 #
 # Every suitable 3D model format is tested by the run_test_once.sh script:
-# - It reads a model, writes it back to VRML file, and then reads again.
+# - It reads a model, writes it back to file, and then reads again.
 #   This somewhat tests that there are no problems with parsing
-#   and saving VRML (and other) files.
-# - Then we check rendering abilities, by making screenshots
-#   and comparing (you can compare against the same view3dscene
+#   and saving 3D files.
+# - Various other reading and writing validation is done by comparing
+#   outputs going through various (classic and XML) encodings.
+# - Check rendering, by making screenshots
+#   and comparing (against the same view3dscene
 #   or against some previous stable view3dscene version).
-#   (This test is commented out by default, as it takes a lot of time...)
+#
+# Some of the tests are commented out by default in run_test_once.sh,
+# as they require more time or have to be interpreted manually (to filter
+# out some harmless warnings). Default tests are quick and fully automatic.
 #
 # Doesn't enter 'errors' subdir (for demo_models,
 # it contains files that *should* fail when reading).
 #
-# Also doesn't try to check view3dscene_test_temporary_file.wrl,
-# this may be leftover from interrupted previous test (it would cause
-# errors that are not interesting), it will be removed by run_test_once.sh
-# inside anyway.
+# Also doesn't try to check *test_temporary* files,
+# these may be leftover from interrupted previous tests (it would cause
+# errors that are not interesting).
 #
 # Also ssao tests are not used for now, because fglrx is awfully slow
 # for them (like 1 frame for ~couple of minutes, using full cpu power;
@@ -41,7 +48,7 @@ test_dir()
   set +e
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
-  '(' -type f -name 'view3dscene_test_temporary_file.wrl' ')' -or \
+  '(' -type f -name '*test_temporary*' ')' -or \
   '(' -type f -name 'ssao_barna29_0.x3dv' ')' -or \
   '(' -type f -name 'ssao_stairs_with_test_plane.x3dv' ')' -or \
   '(' -type f -name 'ssao_stairs.x3dv' ')' -or \
