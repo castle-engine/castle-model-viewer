@@ -41,6 +41,11 @@ set -eu
 # as they require more time or have to be interpreted manually (to filter
 # out some harmless warnings). Default tests are quick and fully automatic.
 
+# `sort' results are affected by the current locale (see man sort).
+# We want them to be predictable, the same on every system,
+# to make comparing two outputs (like run_tests_valid_output.txt) reliable.
+export LANG=C
+
 test_dir()
 {
   set +e
