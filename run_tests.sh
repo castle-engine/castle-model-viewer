@@ -70,12 +70,13 @@ test_dir()
                   -iname '*.x3dv.gz' -or \
                   -iname '*.3ds' -or \
                   -iname '*.dae' ')' \
-              -exec ./run_test_once.sh '{}' ';' ')'
+              -print0 ')' | \
+  sort --zero-terminated | \
+  xargs -0 --max-args=1 ./run_test_once.sh
   set -e
 }
 
 test_dir ../demo_models/
-test_dir ../vrml_engine_doc/
 test_dir ../castle/data/
 test_dir ../rift/data/
 
