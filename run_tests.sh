@@ -52,6 +52,13 @@ test_dir()
   #   for them (like 1 frame for ~couple of minutes, using full cpu power;
   #   seems like it falls back to software shaders implementation for this case).
 
+  # The find output is run through sort and then xargs.
+  # Otherwise, find prints files in an unpredictable order (from readdir),
+  # which makes comparing two outputs from two different systems (like
+  # comparing run_tests_valid_output.txt with output on michalis.ii snapshots)
+  # impossible. Fortunately, find and sort goes very fast (compared to actual
+  # run_test_once.sh time).
+
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f -name '*test_temporary*' ')' -or \
