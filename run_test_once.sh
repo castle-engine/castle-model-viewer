@@ -34,7 +34,7 @@ FILE="$1"
 # It's important that temp_file is inside the same directory,
 # otherwise re-reading it would not work because relative URLs
 # are broken.
-TEMP_FILE=`dirname "$FILE"`/view3dscene_test_temporary_file.wrl
+TEMP_FILE=`dirname "$FILE"`/test_temporary.wrl
 
 echo '---- Reading' "$FILE"
 #echo '(temp is ' "$TEMP_FILE" ')'
@@ -80,8 +80,8 @@ rm -f "$TEMP_FILE"
 
 do_compare_classic_save ()
 {
-  SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _classic_save_test_old.x3dv`
-  SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _classic_save_test_new.x3dv`
+  SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_old.x3dv`
+  SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_new.x3dv`
 
   echo '---- Comparing classic save with' "$VIEW3DSCENE_OTHER"
   "$VIEW3DSCENE_OTHER" "$FILE" --write-to-vrml > "$SAVE_CLASSIC_OLD"
@@ -106,8 +106,8 @@ do_save_xml_valid ()
   if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
     echo '---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
   else
-    local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3d`
-    local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_save_xml_valid.x3dv`
+    local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3d`
+    local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3dv`
 
     echo '---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
     "$TOVRMLX3D" "$FILE"     --encoding=xml     > "$SAVE_XML"
@@ -133,9 +133,9 @@ do_save_xml_valid
 
 do_compare_classic_xml_save ()
 {
-  local SAVE_1_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_classic_xml_1.x3dv`
-  local     SAVE_2_XML=`stringoper ChangeFileExt "$FILE" _test_classic_xml_2.x3d`
-  local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_classic_xml_2.x3dv`
+  local SAVE_1_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_1.x3dv`
+  local     SAVE_2_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3d`
+  local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3dv`
 
   echo '---- Comparing saving to classic vs saving to xml and then classic'
   "$TOVRMLX3D" "$FILE"  --force-x3d --encoding=classic > "$SAVE_1_CLASSIC"
@@ -195,8 +195,8 @@ compare_screenshot ()
 
 do_compare_screenshot ()
 {
-  SCREENSHOT_OLD=`stringoper ChangeFileExt "$FILE" _test_screen_old.png`
-  SCREENSHOT_NEW=`stringoper ChangeFileExt "$FILE" _test_screen_new.png`
+  SCREENSHOT_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_old.png`
+  SCREENSHOT_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_new.png`
 
   DELETE_SCREENSHOTS='t'
 
