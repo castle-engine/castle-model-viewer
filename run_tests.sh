@@ -1,22 +1,31 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene / tovrmlx3d tests on ../demo_models/ (and some other dirs).
+# Run view3dscene / tovrmlx3d tests on 3D models inside ../demo_models/
+# (and some other dirs, see lower).
 # You can checkout demo_models from SVN, or download and unpack
 # from [http://vrmlengine.sourceforge.net/demo_models.php],
 # such that it's a sibling of view3dscene.
+# This is designed to work with any 3D models, so feel free to use this
+# on your own private 3D models (add "test_dir" call lower,
+# or just call run_test_once.sh explicitly with your 3D model filename).
 #
-# This requires
+# Requires at least:
 # - view3dscene and tovrmlx3d binaries compiled (either in current dir,
 #   or on the $PATH, see run_test_once.sh)
 # - stringoper binary compiled and available on $PATH
 #   (stringoper comes from ../kambi_vrml_game_engine/examples/base/stringoper.lpr)
+# Some optional tests require also:
 # - image_compare binary compiled and available on $PATH,
 #   only if you uncomment the "screenshot comparison" test in run_test_once.sh
 #   (image_compare comes from ../kambi_vrml_game_engine/examples/images/image_compare.lpr)
-# - xmllint for some optional XML validation.
-# - alternative view3dscene / tovrmlx3d for some optional comparisons,
-#   to detect regressions.
+# - xmllint for basic XML validation (should be included in any
+#   popular Linux distribution).
+# - for some optional comparisons (regression checking), it's useful
+#   to have alternative view3dscene / tovrmlx3d binaries installed.
+#   For example, if you test view3dscene from SVN, you may also install last
+#   stable view3dscene release. Just rename the binary (like view3dscene-3.10.0-release),
+#   and uncomment appropriate parts of run_test_once.sh.
 #
 # Every suitable 3D model format is tested by the run_test_once.sh script:
 # - It reads a model, writes it back to file, and then reads again.
@@ -31,21 +40,18 @@ set -eu
 # Some of the tests are commented out by default in run_test_once.sh,
 # as they require more time or have to be interpreted manually (to filter
 # out some harmless warnings). Default tests are quick and fully automatic.
-#
-# Doesn't enter 'errors' subdir (for demo_models,
-# it contains files that *should* fail when reading).
-#
-# Also doesn't try to check *test_temporary* files,
-# these may be leftover from interrupted previous tests (it would cause
-# errors that are not interesting).
-#
-# Also ssao tests are not used for now, because fglrx is awfully slow
-# for them (like 1 frame for ~couple of minutes, using full cpu power;
-# seems like it falls back to software shaders implementation for this case).
 
 test_dir()
 {
   set +e
+
+  # Explanation for some omitted files/dirs:
+  # - errors subdirs in demo_models contains files that *should* fail when reading.
+  # - *test_temporary* files are leftovers from interrupted previous tests.
+  # - ssao tests are not used for now, because fglrx is awfully slow
+  #   for them (like 1 frame for ~couple of minutes, using full cpu power;
+  #   seems like it falls back to software shaders implementation for this case).
+
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f -name '*test_temporary*' ')' -or \

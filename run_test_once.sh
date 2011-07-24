@@ -1,11 +1,15 @@
 #!/bin/bash
 set -eu
 
+# Run various tests of view3dscene / tovrmlx3d on a given 3D model.
+# 3D model filename is provided as a parameter for this script.
 # This script is usually run by run_tests.sh script, see there for some
 # comments.
 
-# You can disable heaptrc for shorter output (useful only for debug builds
-# that have heaptrc compiled in)
+# Disable heaptrc, to get shorter output and avoid reports of harmless leaks
+# occuring when ending program with Halt.
+# Useful in case you test debug builds of view3dscene/tovrmlx3d
+# (that have heaptrc compiled in).
 export HEAPTRC=disabled
 
 if [ -f view3dscene ]; then
@@ -31,52 +35,61 @@ VIEW3DSCENE_OTHER=view3dscene-3.10.0-release
 
 FILE="$1"
 
-# It's important that temp_file is inside the same directory,
-# otherwise re-reading it would not work because relative URLs
-# are broken.
-TEMP_FILE=`dirname "$FILE"`/test_temporary.wrl
+# Reading and saving ---------------------------------------------------------
 
-echo '---- Reading' "$FILE"
-#echo '(temp is ' "$TEMP_FILE" ')'
-"$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE"
+do_read_save ()
+{
+  # It's important that temp_file is inside the same directory,
+  # otherwise re-reading it would not work because relative URLs
+  # are broken.
+  local TEMP_FILE=`dirname "$FILE"`/test_temporary.wrl
 
-# Check input file and output file headers.
-# They indicate VRML version used to write the file.
-# They should match, otherwise SuggestVRMLVersion of some nodes
-# possibly doesn't work and the resulting file has different VRML version.
-#
-# Note that this test works only with classic VRML files (XML X3D versions,
-# or gzip compressed, have version elsewhere, other 3D formats are converted
-# to any version we like, and output is always classic VRML --- so comparison
-# has no sense).
+  echo '---- Reading' "$FILE"
+  "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE"
 
-FILE_EXTENSION=`stringoper ExtractFileExt "$FILE"`
+  # Check input file and output file headers.
+  # They indicate VRML version used to write the file.
+  # They should match, otherwise SuggestVRMLVersion of some nodes
+  # possibly doesn't work and the resulting file has different VRML version.
+  #
+  # Note that this test works only with classic VRML files (XML X3D versions,
+  # or gzip compressed, have version elsewhere, other 3D formats are converted
+  # to any version we like, and output is always classic VRML --- so comparison
+  # has no sense).
 
-if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
-         '(' "$FILE_EXTENSION" = '..x3dv' ')' ')' -a \
-     '(' `basename "$FILE"` != cones_gzipped_but_with_normal_extension.wrl ')' ]; then
-  INPUT_HEADER=`head -n 1 "$FILE"`
-  OUTPUT_HEADER=`head -n 1 "$TEMP_FILE"`
+  local FILE_EXTENSION=`stringoper ExtractFileExt "$FILE"`
 
-  # trim both headers, to trim possibly different newlines
-  # (maybe they are stripped by ` already?)
-  # and whitespace around.
-  INPUT_HEADER="`stringoper Trim \"$INPUT_HEADER\"`"
-  OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
+  if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
+           '(' "$FILE_EXTENSION" = '.x3dv' ')' ')' -a \
+       '(' `basename "$FILE"` != cones_gzipped_but_with_normal_extension.wrl ')' ]; then
+    local INPUT_HEADER=`head -n 1 "$FILE"`
+    local OUTPUT_HEADER=`head -n 1 "$TEMP_FILE"`
 
-  if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
-    echo 'WARNING: input/output headers differ:'
-    echo 'Header on input is' "$INPUT_HEADER"
-    echo 'Header on output is' "$OUTPUT_HEADER"
+    # trim both headers, to trim possibly different newlines
+    # (maybe they are stripped by ` already?)
+    # and whitespace around.
+    local INPUT_HEADER="`stringoper Trim \"$INPUT_HEADER\"`"
+    local OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
+
+    if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
+      echo 'WARNING: input/output headers differ:'
+      echo 'Header on input is' "$INPUT_HEADER"
+      echo 'Header on output is' "$OUTPUT_HEADER"
+    fi
   fi
-fi
 
-echo '---- Reading again' "$FILE"
-"$TOVRMLX3D" "$TEMP_FILE" --encoding=classic > /dev/null
+  echo '---- Reading again' "$FILE"
+  "$TOVRMLX3D" "$TEMP_FILE" --encoding=classic > /dev/null
 
-rm -f "$TEMP_FILE"
+  rm -f "$TEMP_FILE"
+}
 
-# SaveToStream old/new comparison ----------------------------------------------
+# Test reading and writing back 3D file.
+# For 3D models in VRML/X3D classic encoding, also check that
+# saving back produces the same header (indicating the same VRML/X3D version).
+do_read_save
+
+# Saving to file: regressions ------------------------------------------------
 
 do_compare_classic_save ()
 {
@@ -99,7 +112,7 @@ do_compare_classic_save ()
 # and standard Unix "diff" to compare.
 # do_compare_classic_save
 
-# SaveToStream xml valid -----------------------------------------------------
+# Saving to file: XML validity -------------------------------------------------
 
 do_save_xml_valid ()
 {
@@ -129,7 +142,7 @@ do_save_xml_valid ()
 # Also, test basic generated XML validity by xmllint.
 do_save_xml_valid
 
-# SaveToStream xml/classic comparison ------------------------------------------
+# Saving to file: XML/classic preserving ---------------------------------------
 
 do_compare_classic_xml_save ()
 {
@@ -169,7 +182,7 @@ do_compare_classic_xml_save ()
 #
 # do_compare_classic_xml_save
 
-# Screenshot comparison ------------------------------------------------------
+# Screenshots comparison -----------------------------------------------------
 
 do_compare_screenshot ()
 {
