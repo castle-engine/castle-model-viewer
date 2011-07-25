@@ -79,6 +79,9 @@
 ---- Reading ../demo_models/background/background_set_bind.x3dv
 ---- Reading again ../demo_models/background/background_set_bind.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/background/background_sunset.x3dv
+---- Reading again ../demo_models/background/background_sunset.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/background/background_test_mobile_intel_gpu_bugs.x3d
 ---- Reading again ../demo_models/background/background_test_mobile_intel_gpu_bugs.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
