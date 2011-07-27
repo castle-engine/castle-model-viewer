@@ -1136,6 +1136,9 @@ tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the fiel
 ---- Reading ../demo_models/vrml_1/castle_with_lights_and_camera_ortho.wrl
 ---- Reading again ../demo_models/vrml_1/castle_with_lights_and_camera_ortho.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/vrml_1/concave.wrl
+---- Reading again ../demo_models/vrml_1/concave.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/cones.wrl
 ---- Reading again ../demo_models/vrml_1/cones.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -1201,9 +1204,6 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/kings_head_transparent.wrl
 ---- Reading again ../demo_models/vrml_1/kings_head_transparent.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/non_convex_face.wrl
----- Reading again ../demo_models/vrml_1/non_convex_face.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/points.wrl
 ---- Reading again ../demo_models/vrml_1/points.wrl
@@ -1297,12 +1297,6 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/kings_head_transparent.wrl
 ---- Reading again ../demo_models/vrml_2/kings_head_transparent.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/non_convex_face.wrl
----- Reading again ../demo_models/vrml_2/non_convex_face.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/non_convex_face_multiple_verts.wrl
----- Reading again ../demo_models/vrml_2/non_convex_face_multiple_verts.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/normals.wrl
 ---- Reading again ../demo_models/vrml_2/normals.wrl
@@ -1485,6 +1479,9 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/clip_plane.x3dv
 ---- Reading again ../demo_models/x3d/clip_plane.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/concave.x3dv
+---- Reading again ../demo_models/x3d/concave.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/cones.x3dv
 ---- Reading again ../demo_models/x3d/cones.x3dv
