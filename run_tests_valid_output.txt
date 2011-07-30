@@ -133,63 +133,63 @@
 ---- Reading ../demo_models/bump_mapping/steep_parallax_lion.wrl
 ---- Reading again ../demo_models/bump_mapping/steep_parallax_lion.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/collada/cart-collada131-baked-matrix.dae
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
----- Reading again ../demo_models/collada/cart-collada131-baked-matrix.dae
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
----- Reading ../demo_models/collada/cart-collada131-no-matrix.dae
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
----- Reading again ../demo_models/collada/cart-collada131-no-matrix.dae
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
 ---- Reading ../demo_models/collada/cart-collada140.dae
 ---- Reading again ../demo_models/collada/cart-collada140.dae
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/collada/humanoid-collada131-baked-matrix.dae
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
----- Reading again ../demo_models/collada/humanoid-collada131-baked-matrix.dae
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
----- Reading ../demo_models/collada/humanoid-collada131-no-matrix.dae
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
----- Reading again ../demo_models/collada/humanoid-collada131-no-matrix.dae
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
 ---- Reading ../demo_models/collada/humanoid-collada140.dae
 ---- Reading again ../demo_models/collada/humanoid-collada140.dae
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/collada/spec-example-141.dae
 ---- Reading again ../demo_models/collada/spec-example-141.dae
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/collada/warnings/cart-collada131-baked-matrix.dae
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
+---- Reading again ../demo_models/collada/warnings/cart-collada131-baked-matrix.dae
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
+---- Reading ../demo_models/collada/warnings/cart-collada131-no-matrix.dae
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
+---- Reading again ../demo_models/collada/warnings/cart-collada131-no-matrix.dae
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values (offset 0 + stride 3 * (count 800 - 1) + 3) in <float_array>, but only 636 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values (offset 0 + stride 3 * (count 656 - 1) + 3) in <float_array>, but only 528 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values (offset 0 + stride 3 * (count 240 - 1) + 3) in <float_array>, but only 156 are avilable
+---- Reading ../demo_models/collada/warnings/humanoid-collada131-baked-matrix.dae
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
+---- Reading again ../demo_models/collada/warnings/humanoid-collada131-baked-matrix.dae
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
+---- Reading ../demo_models/collada/warnings/humanoid-collada131-no-matrix.dae
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
+---- Reading again ../demo_models/collada/warnings/humanoid-collada131-no-matrix.dae
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values (offset 0 + stride 3 * (count 16 - 1) + 3) in <float_array>, but only 15 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values (offset 0 + stride 3 * (count 4032 - 1) + 3) in <float_array>, but only 2982 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values (offset 0 + stride 3 * (count 5632 - 1) + 3) in <float_array>, but only 4230 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values (offset 0 + stride 3 * (count 992 - 1) + 3) in <float_array>, but only 726 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values (offset 0 + stride 3 * (count 32 - 1) + 3) in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
 ---- Reading ../demo_models/compositing_shaders/composed_shader_using_plugs.x3dv
 ---- Reading again ../demo_models/compositing_shaders/composed_shader_using_plugs.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
