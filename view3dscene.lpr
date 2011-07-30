@@ -2841,7 +2841,6 @@ begin
   103: if SceneOctreeRendering <> nil then
          Writeln(SceneOctreeRendering.Statistics) else
          MessageOk(Window, SOnlyWhenOctreeAvailable, taLeft);
-  102: SceneAnimation.WritelnInfoNodes;
 
   105: PrintRayhunterCommand;
 
@@ -3339,8 +3338,6 @@ begin
    M.Append(TMenuItem.Create('Add Humanoids Joints Visualization', 42));
    Result.Append(M);
  M := TMenu.Create('_Console');
-   M.Append(TMenuItem.Create('Print VRML _Info nodes',        102));
-   M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
