@@ -1364,11 +1364,11 @@ procedure WriteModel(const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
   const ForceConvertingToX3D: boolean);
 var
-  Node: TVRMLNode;
+  Node: TVRMLRootNode;
 begin
   Node := LoadVRML(ASceneFileName, true);
   try
-    Node := ChangeNode(SceneChanges, Node);
+    ChangeNode(SceneChanges, Node);
     SaveVRML(Node, StdOutStream, SaveGenerator,
       ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
   finally FreeAndNil(Node) end;
@@ -2333,7 +2333,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   var
     ScenesPerTime: Cardinal;
     TimeBegin, TimeEnd: Single;
-    RootNode: TVRMLNode;
+    RootNode: TVRMLRootNode;
   const
     EqualityEpsilon = 0.0001;
   begin

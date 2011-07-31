@@ -42,12 +42,9 @@ type
   TSceneChanges = set of TSceneChange;
 
 { Transforms scene root node as appropriate.
-  Returns new root node. (Old root node is either included here,
-  or already freed.)
-
   When you use this on a TVRMLScene class, remember to surround
   by TVRMLScene.BeforeNodesFree and TVRMLScene.ChangedAll. }
-function ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLNode): TVRMLNode;
+procedure ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLRootNode);
 
 { Transforms all scenes inside the animation as appropriate. }
 procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TVRMLGLAnimation);
@@ -192,7 +189,8 @@ procedure RemoveNodeClass(RootNode: TVRMLNode;
 var
   Node: TVRMLNode;
 begin
-  { usuwania node'ow ze sceny lepiej nie robic przez EnumNodes -
+  { TODO: do this by EnumerateReplaceNodes.
+    usuwania node'ow ze sceny lepiej nie robic przez EnumNodes -
     nie mozemy zaburzac hierarchii sceny w czasie jej przegladania.}
   repeat
     node := RootNode.TryFindNode(NodeClass, onlyFromActivePart);
@@ -201,70 +199,57 @@ begin
   until false;
 end;
 
-{ obie procedury SceneChange_RemoveNormals i SceneChange_MakeNoObjectsSolid
-  moglyby zostac napisane tak zeby nie wywolywac od razu scene.ChangedAll
-  tylko jakies bardziej konkretne Changed* (a wiec tez powodujace mniejsza
-  strate czasu na odtworzenie precalculated czesci sceny).
+{ TODO: maybe avoid calling costly ChangedAll after scene changes. }
 
-  I byc moze kiedys to zrobie. Ale na razie o to nie dbam i nawet nie jest
-  to dla mnie sor-ry bo do niczego mi szybkosc ponizszych procedur nie jest
-  potrzebna. }
-
-function SceneChange_NoNormals(Node: TVRMLNode): TVRMLNode;
-const
-  onlyFromActivePart = false;
+procedure SceneChange_NoNormals(Node: TVRMLRootNode);
 begin
-  Result := Node;
-
-  Result.EnumerateNodes(TVRMLIndexedNode_1,
-    @TSceneChangesDo(nil).NoNormal_Indexed_1, onlyFromActivePart);
-  Result.EnumerateNodes(TNodeIndexedFaceSet,
-    @TSceneChangesDo(nil).NoNormal_IFS, onlyFromActivePart);
-  Result.EnumerateNodes(TNodeElevationGrid,
-    @TSceneChangesDo(nil).NoNormal_ElevationGrid, onlyFromActivePart);
+  Node.EnumerateNodes(TVRMLIndexedNode_1,
+    @TSceneChangesDo(nil).NoNormal_Indexed_1, false);
+  Node.EnumerateNodes(TNodeIndexedFaceSet,
+    @TSceneChangesDo(nil).NoNormal_IFS, false);
+  Node.EnumerateNodes(TNodeElevationGrid,
+    @TSceneChangesDo(nil).NoNormal_ElevationGrid, false);
 
   { Do this at the end.
     Note that for VRML >= 2.0, Normal nodes were already removed by
     NoNormal_IFS (in more intelligent way). }
-  RemoveNodeClass(Result, TNodeNormal, onlyFromActivePart);
-  RemoveNodeClass(Result, TNodeNormalBinding, onlyFromActivePart);
+  RemoveNodeClass(Node, TNodeNormal, false);
+  RemoveNodeClass(Node, TNodeNormalBinding, false);
 end;
 
-function SceneChange_NoSolidObjects(Node: TVRMLNode): TVRMLNode;
+procedure SceneChange_NoSolidObjects(Node: TVRMLRootNode);
 begin
-  Result := Node;
-
-  Result.EnumerateNodes(TNodeShapeHints,
+  Node.EnumerateNodes(TNodeShapeHints,
     @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
-  Result.EnumerateNodes(TNodeX3DComposedGeometryNode,
+  Node.EnumerateNodes(TNodeX3DComposedGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DComposedGeometry, false);
-  Result.EnumerateNodes(TNodeExtrusion,
+  Node.EnumerateNodes(TNodeExtrusion,
     @TSceneChangesDo(nil).NoSolid_Extrusion, false);
-  Result.EnumerateNodes(TNodeElevationGrid,
+  Node.EnumerateNodes(TNodeElevationGrid,
     @TSceneChangesDo(nil).NoSolid_ElevationGrid, false);
-  Result.EnumerateNodes(TNodeBox,
+  Node.EnumerateNodes(TNodeBox,
     @TSceneChangesDo(nil).NoSolid_Box, false);
-  Result.EnumerateNodes(TNodeCone,
+  Node.EnumerateNodes(TNodeCone,
     @TSceneChangesDo(nil).NoSolid_Cone, false);
-  Result.EnumerateNodes(TNodeCylinder,
+  Node.EnumerateNodes(TNodeCylinder,
     @TSceneChangesDo(nil).NoSolid_Cylinder, false);
-  Result.EnumerateNodes(TNodeSphere,
+  Node.EnumerateNodes(TNodeSphere,
     @TSceneChangesDo(nil).NoSolid_Sphere, false);
-  Result.EnumerateNodes(TNodeText,
+  Node.EnumerateNodes(TNodeText,
     @TSceneChangesDo(nil).NoSolid_Text, false);
-  Result.EnumerateNodes(TNodeText3D,
+  Node.EnumerateNodes(TNodeText3D,
     @TSceneChangesDo(nil).NoSolid_Text3D, false);
-  Result.EnumerateNodes(TNodeX3DNurbsSurfaceGeometryNode,
+  Node.EnumerateNodes(TNodeX3DNurbsSurfaceGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DNurbsSurfaceGeometryNode, false);
-  Result.EnumerateNodes(TNodeNurbsSweptSurface,
+  Node.EnumerateNodes(TNodeNurbsSweptSurface,
     @TSceneChangesDo(nil).NoSolid_NurbsSweptSurface, false);
-  Result.EnumerateNodes(TNodeNurbsSwungSurface,
+  Node.EnumerateNodes(TNodeNurbsSwungSurface,
     @TSceneChangesDo(nil).NoSolid_NurbsSwungSurface, false);
-  Result.EnumerateNodes(TNodeNurbsSurface,
+  Node.EnumerateNodes(TNodeNurbsSurface,
     @TSceneChangesDo(nil).NoSolid_NurbsSurface, false);
 end;
 
-function SceneChange_NoConvexFaces(Node: TVRMLNode): TVRMLNode;
+procedure SceneChange_NoConvexFaces(Node: TVRMLRootNode);
 var
   SH: TNodeShapeHints;
 begin
@@ -275,36 +260,31 @@ begin
   Node.EnumerateNodes(TNodeExtrusion,
     @TSceneChangesDo(nil).NoConvex_Extrusion, false);
 
-  Result := Node;
-
-  if Result.TryFindNode(TVRMLGeometryNode_1, false) <> nil then
+  if Node.TryFindNode(TVRMLGeometryNode_1, false) <> nil then
   begin
-    Result := TNodeGroup_1.Create('', Node.WWWBasePath);
     SH := TNodeShapeHints.Create('', Node.WWWBasePath);
     SH.FdFaceType.Value := FACETYPE_UNKNOWN;
-    Result.VRML1ChildAdd(SH);
-    Result.VRML1ChildAdd(Node);
+    Node.FdChildren.Add(0, SH);
   end;
 end;
 
 { ChangeScene --------------------------------------------------------------- }
 
 type
-  TSceneChangeFunction = function (Node: TVRMLNode): TVRMLNode;
+  TSceneChangeFunction = procedure (Node: TVRMLRootNode);
 const
   SCFunctions: array[TSceneChange]of TSceneChangeFunction =
   ( @SceneChange_NoNormals,
     @SceneChange_NoSolidObjects,
     @SceneChange_NoConvexFaces );
 
-function ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLNode): TVRMLNode;
+procedure ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLRootNode);
 var
   SC: TSceneChange;
 begin
-  Result := Node;
   for SC := Low(SC) to High(SC) do
     if SC in SceneChanges then
-      Result := SCFunctions[SC](Result);
+      SCFunctions[SC](Node);
 end;
 
 procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TVRMLGLAnimation);
@@ -313,7 +293,7 @@ var
 begin
   Scene.BeforeNodesFree;
   for I := 0 to Scene.ScenesCount - 1 do
-    Scene.Scenes[I].RootNode := ChangeNode(SceneChanges, Scene.Scenes[I].RootNode);
+    ChangeNode(SceneChanges, Scene.Scenes[I].RootNode);
   Scene.ChangedAll;
 end;
 
