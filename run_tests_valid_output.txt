@@ -1675,9 +1675,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (l
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
----- Reading ../demo_models/x3d/warnings/shader_unrecognized_uniform.x3dv
----- Reading again ../demo_models/x3d/warnings/shader_unrecognized_uniform.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/warnings/shading_problems.x3dv
 ---- Reading again ../demo_models/x3d/warnings/shading_problems.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
