@@ -285,7 +285,7 @@ end;
 { unit initialization / finalization ---------------------------------------- }
 
 initialization
-  ScreenShotsList := TScreenShotsList.Create;
+  ScreenShotsList := TScreenShotsList.Create(false);
 finalization
   FreeWithContentsAndNil(ScreenShotsList);
 end.

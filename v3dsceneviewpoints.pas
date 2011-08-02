@@ -270,7 +270,7 @@ begin
      (Scene.RootNode <> nil) then
   begin
     SceneBoundViewpoint := Scene.ViewpointStack.Top as TVRMLViewpointNode;
-    AddViewpointGroups := TVRMLNodesList.Create;
+    AddViewpointGroups := TVRMLNodesList.Create(false);
 
     Scene.RootNode.Traverse(TVRMLViewpointNode, @AddViewpoint);
 

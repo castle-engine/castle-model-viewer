@@ -1200,7 +1200,7 @@ var
   TimeLoop, TimeBackwards: boolean;
   SavedSceneWarnings: TSceneWarnings;
 begin
-  RootNodes := TVRMLNodesList.Create;
+  RootNodes := TVRMLNodesList.Create(false);
   Times := TDynSingleArray.Create;
   try
     { We have to clear SceneWarnings here (not later)
@@ -1297,7 +1297,7 @@ var
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 begin
-  RootNodes := TVRMLNodesList.Create;
+  RootNodes := TVRMLNodesList.Create(false);
   Times := TDynSingleArray.Create;
   try
     RootNodes.Add(Node);
