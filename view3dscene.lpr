@@ -2325,7 +2325,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
                 MessageOk(Window, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
             end;
 
-            ScreenShotsList.FreeContents;
+            ScreenShotsList.Clear;
           end;
   end;
 

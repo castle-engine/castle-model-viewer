@@ -28,8 +28,6 @@ interface
 uses KambiUtils, Classes, KambiClassUtils, KambiTimeUtils,
   FGL {$ifdef VER2_2}, FGLObjectList22 {$endif};
 
-{$define read_interface}
-
 type
   EInvalidScreenShotFileName = class(EInvalidParams);
 
@@ -91,9 +89,7 @@ type
     procedure EndCapture(Success: boolean); override;
   end;
 
-  TObjectsListItem_1 = TScreenShot;
-  {$I objectslist_1.inc}
-  TScreenShotsList = class(TObjectsList_1)
+  TScreenShotsList = class(specialize TFPGObjectList<TScreenShot>)
   private
     ScreenShotCounter: Cardinal;
   public
@@ -109,15 +105,10 @@ var
   ScreenShotsList.Count <> 0. }
 function MakingScreenShot: boolean;
 
-{$undef read_interface}
-
 implementation
 
 uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils,
   KambiWarnings, Videos;
-
-{$define read_implementation}
-{$I objectslist_1.inc}
 
 function MakingScreenShot: boolean;
 begin
@@ -286,7 +277,7 @@ end;
 { unit initialization / finalization ---------------------------------------- }
 
 initialization
-  ScreenShotsList := TScreenShotsList.Create(false);
+  ScreenShotsList := TScreenShotsList.Create(true);
 finalization
-  FreeWithContentsAndNil(ScreenShotsList);
+  FreeAndNil(ScreenShotsList);
 end.
