@@ -190,6 +190,8 @@ var
   Node: TVRMLNode;
 begin
   { TODO: do this by EnumerateReplaceNodes.
+    Actually, most usage of FreeRemovingFromAllParents in engine should
+    be replaced by faster and cleaner EnumerateReplaceNodes?
     usuwania node'ow ze sceny lepiej nie robic przez EnumNodes -
     nie mozemy zaburzac hierarchii sceny w czasie jej przegladania.}
   repeat
