@@ -78,7 +78,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
-  VRMLNodes, Object3DAsVRML, VRMLGLScene, VRMLTriangle,
+  VRMLNodes, X3DLoad, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLGLAnimation,
   VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, KambiSceneManager,

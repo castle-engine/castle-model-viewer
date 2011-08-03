@@ -29,7 +29,7 @@
 
 program tovrmlx3d;
 
-uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, Object3DAsVRML,
+uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, X3DLoad,
   ParseParametersUnit, V3DSceneVersion, KambiWarnings, KambiFilesUtils;
 
 var
