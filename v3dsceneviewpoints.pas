@@ -72,7 +72,7 @@ type
 
     { Used only during AddViewpoint callback }
     SceneBoundViewpoint: TVRMLViewpointNode;
-    AddViewpointGroups: TVRMLNodesList;
+    AddViewpointGroups: TVRMLNodeList;
 
     procedure AddViewpoint(
       Node: TVRMLNode; StateStack: TVRMLGraphTraverseStateStack;
@@ -178,7 +178,7 @@ procedure TMenuViewpoints.AddViewpoint(
 
     If some ViewpointGroup on the way has "displayed" = false, then
     we return false and leave AddViewpointGroups in undefined state. }
-  function GetParentViewpointGroups(AddViewpointGroups: TVRMLNodesList): boolean;
+  function GetParentViewpointGroups(AddViewpointGroups: TVRMLNodeList): boolean;
   var
     Info: PTraversingInfo;
   begin
@@ -201,7 +201,7 @@ procedure TMenuViewpoints.AddViewpoint(
   { For all the ViewpointGroup gathered in AddViewpointGroups,
     create (or find existing) appropriate submenu.
     Returns the final menu where you should directly add your viewpoint. }
-  function CreateParentViewpointGroups(AddViewpointGroups: TVRMLNodesList): TMenuViewpointGroup;
+  function CreateParentViewpointGroups(AddViewpointGroups: TVRMLNodeList): TMenuViewpointGroup;
   var
     Group: TNodeViewpointGroup;
     I: Integer;
@@ -270,7 +270,7 @@ begin
      (Scene.RootNode <> nil) then
   begin
     SceneBoundViewpoint := Scene.ViewpointStack.Top as TVRMLViewpointNode;
-    AddViewpointGroups := TVRMLNodesList.Create(false);
+    AddViewpointGroups := TVRMLNodeList.Create(false);
 
     Scene.RootNode.Traverse(TVRMLViewpointNode, @AddViewpoint);
 

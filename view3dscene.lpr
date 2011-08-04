@@ -450,7 +450,7 @@ var
     end;
 
   var
-    Sensors: TPointingDeviceSensorsList;
+    Sensors: TPointingDeviceSensorList;
     I: Integer;
   begin
     if SceneAnimation.ScenesCount = 1 then
@@ -1030,7 +1030,7 @@ procedure LoadClearScene; forward;
   InitialNavigationType. This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
-  RootNodes: TVRMLNodesList;
+  RootNodes: TVRMLNodeList;
   ATimes: TDynSingleArray;
   ScenesPerTime: Cardinal;
   const EqualityEpsilon: Single;
@@ -1193,14 +1193,14 @@ procedure LoadScene(ASceneFileName: string;
 {$define CATCH_EXCEPTIONS}
 
 var
-  RootNodes: TVRMLNodesList;
+  RootNodes: TVRMLNodeList;
   Times: TDynSingleArray;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
   SavedSceneWarnings: TSceneWarnings;
 begin
-  RootNodes := TVRMLNodesList.Create(false);
+  RootNodes := TVRMLNodeList.Create(false);
   Times := TDynSingleArray.Create;
   try
     { We have to clear SceneWarnings here (not later)
@@ -1291,13 +1291,13 @@ end;
 procedure LoadSimpleScene(Node: TVRMLNode;
   UseInitialNavigationType: boolean = true);
 var
-  RootNodes: TVRMLNodesList;
+  RootNodes: TVRMLNodeList;
   Times: TDynSingleArray;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 begin
-  RootNodes := TVRMLNodesList.Create(false);
+  RootNodes := TVRMLNodeList.Create(false);
   Times := TDynSingleArray.Create;
   try
     RootNodes.Add(Node);

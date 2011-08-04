@@ -89,7 +89,7 @@ type
     procedure EndCapture(Success: boolean); override;
   end;
 
-  TScreenShotsList = class(specialize TFPGObjectList<TScreenShot>)
+  TScreenShotList = class(specialize TFPGObjectList<TScreenShot>)
   private
     ScreenShotCounter: Cardinal;
   public
@@ -99,7 +99,7 @@ type
 var
   { List of screenshots to take.
     Created / destroyed in init / fini of this unit. }
-  ScreenShotsList: TScreenShotsList;
+  ScreenShotsList: TScreenShotList;
 
 { Are we currently making a screenshot? Just a shortcut for
   ScreenShotsList.Count <> 0. }
@@ -267,9 +267,9 @@ begin
   end;
 end;
 
-{ TScreenShotsList ----------------------------------------------------------- }
+{ TScreenShotList ----------------------------------------------------------- }
 
-procedure TScreenShotsList.BeginCapture;
+procedure TScreenShotList.BeginCapture;
 begin
   ScreenShotCounter := 1;
 end;
@@ -277,7 +277,7 @@ end;
 { unit initialization / finalization ---------------------------------------- }
 
 initialization
-  ScreenShotsList := TScreenShotsList.Create(true);
+  ScreenShotsList := TScreenShotList.Create(true);
 finalization
   FreeAndNil(ScreenShotsList);
 end.
