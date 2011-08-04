@@ -1947,7 +1947,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     IndexCount := SelectedItem^.Face.IndexEnd -
                   SelectedItem^.Face.IndexBegin + 1;
 
-    Coords.Delete(IndexBegin, IndexCount);
+    Coords.DeleteRange(IndexBegin, IndexCount);
     Scene.ChangedField(CoordsField);
 
     { Texture coordinates, if not empty, have always (both in VRML 1.0
@@ -1957,7 +1957,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       as we removed coords. }
     if TexCoords <> nil then
     begin
-      TexCoords.Delete(IndexBegin, IndexCount);
+      TexCoords.DeleteRange(IndexBegin, IndexCount);
       Scene.ChangedField(TexCoordsField);
     end;
   end;
