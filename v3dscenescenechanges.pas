@@ -84,7 +84,7 @@ type
 
 class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TVRMLNode);
 begin
-  (Node as TVRMLIndexedNode_1).FdNormalIndex.Items.SetLength(0);
+  (Node as TVRMLIndexedNode_1).FdNormalIndex.Items.Clear;
 end;
 
 class procedure TSceneChangesDo.NoNormal_IFS(node: TVRMLNode);
