@@ -1046,7 +1046,7 @@ procedure LoadSceneCore(
   var
     I: Integer;
   begin
-    for I := 0 to A.High do
+    for I := 0 to A.Count - 1 do
       A.Items[I] *= Value;
   end;
 
