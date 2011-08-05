@@ -68,7 +68,7 @@ program view3dscene;
 
 uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  ParseParametersUnit, ProgressUnit, Cameras,
+  KambiParameters, ProgressUnit, Cameras,
   KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
   KambiWarnings, KambiLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
@@ -3771,7 +3771,7 @@ begin
   SoundEngine.ParseParameters;
   CamerasParseParameters;
   VRMLNodesDetailOptionsParse;
-  ParseParameters(Options, @OptionProc, nil);
+  Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : filename to load }
   if Parameters.High > 1 then
    raise EInvalidParams.Create('Excessive command-line parameters. '+

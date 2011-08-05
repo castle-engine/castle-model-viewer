@@ -26,7 +26,7 @@ unit V3DSceneScreenShot;
 interface
 
 uses KambiUtils, Classes, KambiClassUtils, KambiTimeUtils,
-  FGL {$ifdef VER2_2}, FGLObjectList22 {$endif}, ParseParametersUnit;
+  FGL {$ifdef VER2_2}, FGLObjectList22 {$endif}, KambiParameters;
 
 type
   EInvalidScreenShotFileName = class(EInvalidParams);

@@ -30,7 +30,7 @@
 program tovrmlx3d;
 
 uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, X3DLoad,
-  ParseParametersUnit, V3DSceneVersion, KambiWarnings, KambiFilesUtils;
+  KambiParameters, V3DSceneVersion, KambiWarnings, KambiFilesUtils;
 
 var
   Encoding: TX3DEncoding = xeClassic;
@@ -89,7 +89,7 @@ var
   Node: TVRMLNode;
 begin
   { parse command-line }
-  ParseParameters(Options, @OptionProc, nil);
+  Parameters.Parse(Options, @OptionProc, nil);
   Parameters.CheckHigh(1);
   FileName := Parameters[1];
 

@@ -78,7 +78,7 @@ type
 
 implementation
 
-uses ParseParametersUnit, KambiClassUtils, Images, GLImages, V3DSceneImages;
+uses KambiParameters, KambiClassUtils, Images, GLImages, V3DSceneImages;
 
 var
   ImageExamine_TooltipDL: TGLuint;
@@ -115,7 +115,7 @@ const
   Options: array[0..0]of TOption =
   ((Short:#0; Long:'navigation'; Argument: oaRequired));
 begin
-  ParseParameters(Options, @OptionProc, nil, true);
+  Parameters.Parse(Options, @OptionProc, nil, true);
 end;
 
 { TNavigationTypeButton ------------------------------------------------------ }
