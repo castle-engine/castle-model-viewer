@@ -437,7 +437,7 @@ var
             Desc += '[';
           end else
             Desc += ', ';
-          Desc += TNodeAnchor(Sensor).FdUrl.Items.Items[J];
+          Desc += TNodeAnchor(Sensor).FdUrl.Items[J];
         end;
         if TNodeAnchor(Sensor).FdUrl.Count <> 0 then
           Desc += ']';
@@ -1047,7 +1047,7 @@ procedure LoadSceneCore(
     I: Integer;
   begin
     for I := 0 to A.Count - 1 do
-      A.Items[I] *= Value;
+      A.List^[I] *= Value;
   end;
 
 var
@@ -1812,10 +1812,10 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         for i := 0 to Lights.Count - 1 do
         begin
          s += NL + NL + Format('Light %d: %s: ',
-           [ I, Lights.Items[i].Node.NiceName ]);
+           [ I, Lights.List^[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-           SelectedPointWorld, Lights.Items[i].Location,
+           SelectedPointWorld, Lights.List^[i].Location,
              false, SelectedItem, true, nil);
 
          if ShadowingItem <> nil then
@@ -1861,7 +1861,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
           weird value for normalIndex, materialIndex and textureCoordIndex
           fields. We treat it like an empty field, otherwise we wouldn't
           be able to process most VRML 1.0 files. }
-        (not ((Field.Count = 1) and (Field.Items[0] = -1)));
+        (not ((Field.Count = 1) and (Field[0] = -1)));
     end;
 
   var
@@ -2036,7 +2036,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdDiffuseColor.Count > 0 then
-        Color := M1.FdDiffuseColor.Items.Items[0] else
+        Color := M1.FdDiffuseColor.Items.List^[0] else
         Color := DefaultMaterialDiffuseColor;
     end;
 
@@ -2066,7 +2066,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdSpecularColor.Count > 0 then
-        Color := M1.FdSpecularColor.Items.Items[0] else
+        Color := M1.FdSpecularColor.Items.List^[0] else
         Color := DefaultMaterialSpecularColor;
     end;
 
@@ -3057,7 +3057,7 @@ function CreateMainMenu: TMenu;
   begin
     Group := M.AppendRadioGroup(CameraNames, 1300, Ord(Camera.NavigationType), true);
     for Mode := Low(Mode) to High(Mode) do
-      CameraRadios[Mode] := Group.Items[Ord(Mode)];
+      CameraRadios[Mode] := Group[Ord(Mode)];
   end;
 
   procedure AppendBlendingFactors(M: TMenu; Source: boolean;
