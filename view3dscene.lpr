@@ -3095,6 +3095,12 @@ function CreateMainMenu: TMenu;
     RadioGroup: TMenuItemRadioGroup;
     I: Integer;
   begin
+    { When making screenshot, we will disable sound always.
+      Do not try to read SoundEngine.Devices,
+      and even this may initialize some OpenAL stuff, printing messages
+      about ALSA. }
+    if MakingScreenShot then Exit;
+
     RadioGroup := nil;
     for I := 0 to SoundEngine.Devices.Count - 1 do
     begin
