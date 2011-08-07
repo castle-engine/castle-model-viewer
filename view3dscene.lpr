@@ -1047,7 +1047,7 @@ procedure LoadSceneCore(
     I: Integer;
   begin
     for I := 0 to A.Count - 1 do
-      A.List^[I] *= Value;
+      A.L[I] *= Value;
   end;
 
 var
@@ -1812,10 +1812,10 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         for i := 0 to Lights.Count - 1 do
         begin
          s += NL + NL + Format('Light %d: %s: ',
-           [ I, Lights.List^[i].Node.NiceName ]);
+           [ I, Lights.L[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-           SelectedPointWorld, Lights.List^[i].Location,
+           SelectedPointWorld, Lights.L[i].Location,
              false, SelectedItem, true, nil);
 
          if ShadowingItem <> nil then
@@ -2036,7 +2036,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdDiffuseColor.Count > 0 then
-        Color := M1.FdDiffuseColor.Items.List^[0] else
+        Color := M1.FdDiffuseColor.Items.L[0] else
         Color := DefaultMaterialDiffuseColor;
     end;
 
@@ -2066,7 +2066,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdSpecularColor.Count > 0 then
-        Color := M1.FdSpecularColor.Items.List^[0] else
+        Color := M1.FdSpecularColor.Items.L[0] else
         Color := DefaultMaterialSpecularColor;
     end;
 
