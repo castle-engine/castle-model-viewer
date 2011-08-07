@@ -1031,7 +1031,7 @@ procedure LoadClearScene; forward;
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNodes: TVRMLNodeList;
-  ATimes: TDynSingleArray;
+  ATimes: TSingleList;
   ScenesPerTime: Cardinal;
   const EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
@@ -1042,7 +1042,7 @@ procedure LoadSceneCore(
 
   UseInitialNavigationType: boolean = true);
 
-  procedure ScaleAll(A: TDynSingleArray; const Value: Single);
+  procedure ScaleAll(A: TSingleList; const Value: Single);
   var
     I: Integer;
   begin
@@ -1194,14 +1194,14 @@ procedure LoadScene(ASceneFileName: string;
 
 var
   RootNodes: TVRMLNodeList;
-  Times: TDynSingleArray;
+  Times: TSingleList;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
   SavedSceneWarnings: TSceneWarnings;
 begin
   RootNodes := TVRMLNodeList.Create(false);
-  Times := TDynSingleArray.Create;
+  Times := TSingleList.Create;
   try
     { We have to clear SceneWarnings here (not later)
       to catch also all warnings raised during parsing the VRML file.
@@ -1292,13 +1292,13 @@ procedure LoadSimpleScene(Node: TVRMLNode;
   UseInitialNavigationType: boolean = true);
 var
   RootNodes: TVRMLNodeList;
-  Times: TDynSingleArray;
+  Times: TSingleList;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 begin
   RootNodes := TVRMLNodeList.Create(false);
-  Times := TDynSingleArray.Create;
+  Times := TSingleList.Create;
   try
     RootNodes.Add(Node);
     Times.Add(0);
@@ -1854,7 +1854,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure RemoveSelectedFace;
 
-    function MFNonEmpty(Field: TDynLongIntArray): boolean;
+    function MFNonEmpty(Field: TLongIntList): boolean;
     begin
       Result := (Field <> nil) and (Field.Count > 0) and
         { Single "-1" value in an MF field is the VRML 1.0 default
@@ -1866,7 +1866,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   var
     Geometry: TVRMLGeometryNode;
-    Colors, Coords, Materials, Normals, TexCoords: TDynLongIntArray;
+    Colors, Coords, Materials, Normals, TexCoords: TLongIntList;
     CoordsField, TexCoordsField: TMFLong;
     IndexBegin, IndexCount: Integer;
   begin
