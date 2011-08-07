@@ -571,11 +571,23 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/movie_texture/movie_texture_tests.wrl
 ---- Reading again ../demo_models/movie_texture/movie_texture_tests.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/billboards.x3dv
+---- Reading again ../demo_models/navigation/billboards.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/billboards_wild_rotations.x3dv
+---- Reading again ../demo_models/navigation/billboards_wild_rotations.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/billboards_with_shadow.x3dv
+---- Reading again ../demo_models/navigation/billboards_with_shadow.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/kambi_extensions/viewpoint_up_down_fields.wrl
 ---- Reading again ../demo_models/navigation/kambi_extensions/viewpoint_up_down_fields.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/kambi_extensions/viewpoints_tests.wrl
 ---- Reading again ../demo_models/navigation/kambi_extensions/viewpoints_tests.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/lod_test.x3dv
+---- Reading again ../demo_models/navigation/lod_test.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/navigation_info_bind.x3dv
 ---- Reading again ../demo_models/navigation/navigation_info_bind.x3dv
@@ -1465,15 +1477,6 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Reading ../demo_models/x3d/axis_simple.x3d
 ---- Reading again ../demo_models/x3d/axis_simple.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/billboards.x3dv
----- Reading again ../demo_models/x3d/billboards.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/billboards_wild_rotations.x3dv
----- Reading again ../demo_models/x3d/billboards_wild_rotations.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/billboards_with_shadow.x3dv
----- Reading again ../demo_models/x3d/billboards_with_shadow.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/castle_static_group_ortho_view.x3dv
 ---- Reading again ../demo_models/x3d/castle_static_group_ortho_view.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1561,9 +1564,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/line_set.x3dv
 ---- Reading again ../demo_models/x3d/line_set.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/lod_test.x3dv
----- Reading again ../demo_models/x3d/lod_test.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/points_colorrgba.x3dv
 ---- Reading again ../demo_models/x3d/points_colorrgba.x3dv
