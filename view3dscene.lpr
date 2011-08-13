@@ -1951,25 +1951,28 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    { calculate IndexBegin and IndexCount. Remember that after
-      1st call, SelectedItem pointer may become invalid. }
-    IndexBegin := SelectedItem^.Face.IndexBegin;
-    IndexCount := SelectedItem^.Face.IndexEnd -
-                  SelectedItem^.Face.IndexBegin + 1;
+    Inc(DisableAutoDynamicGeometry);
+    try
+      { calculate IndexBegin and IndexCount. Remember that after
+        1st call, SelectedItem pointer may become invalid. }
+      IndexBegin := SelectedItem^.Face.IndexBegin;
+      IndexCount := SelectedItem^.Face.IndexEnd -
+                    SelectedItem^.Face.IndexBegin + 1;
 
-    Coords.DeleteRange(IndexBegin, IndexCount);
-    Scene.ChangedField(CoordsField);
+      Coords.DeleteRange(IndexBegin, IndexCount);
+      Scene.ChangedField(CoordsField);
 
-    { Texture coordinates, if not empty, have always (both in VRML 1.0
-      and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
-      from Inventor) the same ordering as coordIndex.
-      So we can remove equivalent texture coords in the same manner
-      as we removed coords. }
-    if TexCoords <> nil then
-    begin
-      TexCoords.DeleteRange(IndexBegin, IndexCount);
-      Scene.ChangedField(TexCoordsField);
-    end;
+      { Texture coordinates, if not empty, have always (both in VRML 1.0
+        and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
+        from Inventor) the same ordering as coordIndex.
+        So we can remove equivalent texture coords in the same manner
+        as we removed coords. }
+      if TexCoords <> nil then
+      begin
+        TexCoords.DeleteRange(IndexBegin, IndexCount);
+        Scene.ChangedField(TexCoordsField);
+      end;
+    finally Dec(DisableAutoDynamicGeometry) end;
   end;
 
   { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
