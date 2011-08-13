@@ -1894,7 +1894,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     if (SelectedItem^.Face.IndexBegin = -1) or
        (SelectedItem^.Face.IndexEnd = -1) then
     begin
-      MessageOK(Window, 'The selected triangle is not part of IndexedFaceSet node.');
+      MessageOK(Window, 'The selected triangle is not part of IndexedFaceSet or IndexedTriangleSet node.');
       Exit;
     end;
 
@@ -1919,6 +1919,16 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Normals := TNodeIndexedFaceSet(Geometry).FdNormalIndex.Items;
       TexCoordsField := TNodeIndexedFaceSet(Geometry).FdTexCoordIndex;
       TexCoords := TexCoordsField.Items;
+    end else
+    if Geometry is TNodeIndexedTriangleSet then
+    begin
+      Colors := nil; { colorIndex not available, index is used }
+      CoordsField := TNodeIndexedTriangleSet(Geometry).FdIndex;
+      Coords := CoordsField.Items;
+      Materials := nil;
+      Normals := nil; { normalIndex not available, index is used }
+      TexCoordsField := nil; { texCoordIndex not available, index is used }
+      TexCoords := nil;
     end else
     if Geometry is TNodeIndexedTriangleMesh_1 then
     begin
