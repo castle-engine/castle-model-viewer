@@ -623,12 +623,12 @@ begin
       if SceneAnimation.ScenesCount > 1 then
       begin
         glColorv(Red3Single);
-        if not IsEmptyBox3D(SceneAnimation.CurrentScene.BoundingBox) then
+        if not SceneAnimation.CurrentScene.BoundingBox.IsEmpty then
           glDrawBox3DWire(SceneAnimation.CurrentScene.BoundingBox);
       end;
 
       glColorv(Green3Single);
-      if not IsEmptyBox3D(SceneAnimation.BoundingBox) then
+      if not SceneAnimation.BoundingBox.IsEmpty then
         glDrawBox3DWire(SceneAnimation.BoundingBox);
     end;
 
@@ -1700,7 +1700,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             SelectedGeometry.NodeName,
             SelectedShape.OriginalGeometry.NodeTypeName,
             SelectedGeometry.NodeTypeName,
-            Box3DToNiceStr(SelectedShape.BoundingBox)]);
+            SelectedShape.BoundingBox.ToNiceStr]);
 
       if (SelectedItem^.Face.IndexBegin <> -1) and
          (SelectedItem^.Face.IndexEnd <> -1) then
@@ -2185,7 +2185,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure WriteBoundingBox(const Box: TBox3D);
   begin
-    if IsEmptyBox3D(Box) then
+    if Box.IsEmpty then
       MessageOK(Window, 'The bounding box is empty.', taLeft) else
     begin
       Writeln(Format(
@@ -2209,11 +2209,11 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         '    geometry Box {' +nl+
         '      size %2:s %3:s %4:s' +nl+
         '    } } }',
-        [ Box3DToNiceStr(Box),
-          VectorToRawStr(Box3DMiddle(Box)),
-          FloatToRawStr(Box[1, 0] - Box[0, 0]),
-          FloatToRawStr(Box[1, 1] - Box[0, 1]),
-          FloatToRawStr(Box[1, 2] - Box[0, 2]) ]));
+        [ Box.ToNiceStr,
+          VectorToRawStr(Box.Middle),
+          FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]),
+          FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]),
+          FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]) ]));
     end;
   end;
 
@@ -2696,7 +2696,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
     Vis := THumanoidVisualization.Create;
     try
-      Vis.JointVisualizationSize := Box3DAvgSize(Scene.BoundingBox, false, 1) / 20;
+      Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
       Scene.RootNode.EnumerateNodes(TNodeHAnimHumanoid,
         @Vis.VisualizeHumanoid, false);
       MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
