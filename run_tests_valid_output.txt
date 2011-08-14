@@ -535,6 +535,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/lights_materials/raytracer/raytracer_very_specular.wrl
 ---- Reading again ../demo_models/lights_materials/raytracer/raytracer_very_specular.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/lights_materials/shading_smooth_even_on_flat_normals.x3d
+---- Reading again ../demo_models/lights_materials/shading_smooth_even_on_flat_normals.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/lights_materials/specular_demo.wrl
 ---- Reading again ../demo_models/lights_materials/specular_demo.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1065,6 +1068,9 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeft
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/texturing_advanced/multi_tex_blend_modes.x3dv
 ---- Reading again ../demo_models/texturing_advanced/multi_tex_blend_modes.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/texturing_advanced/multi_tex_order.x3dv
+---- Reading again ../demo_models/texturing_advanced/multi_tex_order.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/texturing_advanced/multi_tex_primitives.x3dv
 ---- Reading again ../demo_models/texturing_advanced/multi_tex_primitives.x3dv
