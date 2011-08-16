@@ -674,7 +674,7 @@ begin
   inherited;
   { RenderVisualizations are opaque, so they should be renderer here
     to correctly mix with partially transparent 3D scenes. }
-  if Params.TransparentGroup in [tgAll, tgOpaque] then
+  if not Params.Transparent then
     RenderVisualizations;
 end;
 
@@ -721,7 +721,7 @@ begin
   inherited;
   { RenderVisualizations are opaque, so they should be renderer here
     to correctly mix with partially transparent 3D scenes. }
-  if Params.TransparentGroup in [tgAll, tgOpaque] then
+  if not Params.Transparent then
     RenderVisualizations;
 end;
 
