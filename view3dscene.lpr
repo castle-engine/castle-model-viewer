@@ -1121,9 +1121,10 @@ begin
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
 
-      { regardless of ProcessEvents, we may change the vrml graph,
-        e.g. by Edit->Material->... }
-      SceneAnimation.Scenes[I].Static := SceneAnimation.ScenesCount <> 1;
+      { Regardless of ProcessEvents, we may change the vrml graph,
+        e.g. by Edit->Material->...
+        This is now ensured by TryFirstSceneDynamic. }
+      Assert(SceneAnimation.Scenes[I].Static = (SceneAnimation.ScenesCount <> 1));
     end;
 
     UpdateProcessEvents;
@@ -3823,9 +3824,10 @@ begin
       (and we don't want to clutter stdout). }
     Progress.UserInterface := ProgressNullInterface;
 
-    { init "scene global variables" to null values }
+    { init "scene global variables" to initial empty values }
     SceneAnimation := TVRMLGLAnimation.Create(nil);
     try
+      SceneAnimation.TryFirstSceneDynamic := true;
       AttributesLoadFromConfig(SceneAnimation.Attributes);
       SceneManager.Items.Add(SceneAnimation);
 
