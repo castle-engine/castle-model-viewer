@@ -293,10 +293,15 @@ procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TVRMLGLAnimation);
 var
   I: Integer;
 begin
-  Scene.BeforeNodesFree;
-  for I := 0 to Scene.ScenesCount - 1 do
-    ChangeNode(SceneChanges, Scene.Scenes[I].RootNode);
-  Scene.ChangedAll;
+  { Check SceneChanges, to avoid expensive ChangedAll (that also invalidates
+    all data prepared in shapes, like octrees) when not needed. }
+  if SceneChanges <> [] then
+  begin
+    Scene.BeforeNodesFree;
+    for I := 0 to Scene.ScenesCount - 1 do
+      ChangeNode(SceneChanges, Scene.Scenes[I].RootNode);
+    Scene.ChangedAll;
+  end;
 end;
 
 end.
