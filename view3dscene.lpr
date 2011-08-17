@@ -858,9 +858,6 @@ end;
 
 { Scene operations ---------------------------------------------------------- }
 
-var
-  DebugLogVRMLChanges: boolean = false;
-
 { Call when WarningsButtonEnabled or SceneWarnings.Count changes
   or when window sizes change. }
 procedure UpdateWarningsButton;
@@ -1120,11 +1117,6 @@ begin
 
     for I := 0 to SceneAnimation.ScenesCount - 1 do
     begin
-      { Order is somewhat important here: first turn DebugLogVRMLChanges on,
-        then turn events on, otherwise events on initialize() of scripts
-        will not be logged. }
-      SceneAnimation.Scenes[I].LogChanges := DebugLogVRMLChanges;
-
       SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
@@ -3626,7 +3618,7 @@ const
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-log-vrml-changes'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-changes'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
@@ -3720,9 +3712,7 @@ const
            '  --debug-log           Write log info to stdout.' +NL+
            '  --debug-log-cache     Write log info, including cache.' +nl+
            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
-           '  --debug-log-vrml-changes' +nl+
-           '                        Write log info, including VRML graph changes.' +nl+
-           '                        This shows how VRML events are optimized.' +nl+
+           '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
            NL+
            SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
@@ -3748,7 +3738,7 @@ const
     9 : InitializeLog(Version);
     10: begin
           InitializeLog(Version);
-          DebugLogVRMLChanges := true;
+          LogChanges := true;
         end;
     11: begin
           InitializeLog(Version);
