@@ -2291,6 +2291,67 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
+  var
+    ScreenShotName: string;
+    Image: TImage;
+    ReadBuffer: TGLenum;
+    Fbo: TGLRenderToTexture;
+    ImageClass: TImageClass;
+  begin
+    if SceneFileName <> '' then
+      ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
+      ScreenShotName := 'view3dscene_screen_%d.png';
+    ScreenShotName := FileNameAutoInc(ScreenShotName);
+    { Below is a little expanded version of TGLWindow.SaveScreenDialog.
+      Expanded, to allow Transparency: boolean parameter,
+      that it turn causes FBO rendering (as we need alpha channel in color buffer). }
+    if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+    begin
+      Assert(Window.DoubleBuffer); { view3dscene always has double buffer }
+
+      if Transparency then
+      begin
+        Fbo := TGLRenderToTexture.Create(Window.Width, Window.Height);
+        Fbo.Buffer := tbNone;
+        Fbo.ColorBufferAlpha := true;
+        Fbo.GLContextOpen;
+        Fbo.RenderBegin;
+        ReadBuffer := Fbo.ColorBuffer;
+        ImageClass := TRGBAlphaImage;
+
+        if glGetInteger(GL_ALPHA_BITS) = 0 then
+          { In case FBO is not available, and main context doesn't have alpha
+            bits either. }
+          OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
+      end else
+      begin
+        ReadBuffer := GL_BACK;
+        ImageClass := TRGBAlphaImage;
+      end;
+
+      try
+        Window.EventBeforeDraw;
+        Window.EventDraw;
+        Image := SaveScreen_noflush(ImageClass,
+          0, 0, Window.Width, Window.Height, ReadBuffer);
+        try
+          try
+            SaveImage(Image, ScreenShotName);
+          except
+            on E: Exception do Window.MessageOK('Unable to save screen: ' + E.Message, mtError);
+          end;
+        finally FreeAndNil(Image) end;
+      finally
+        if Transparency then
+        begin
+          Fbo.RenderEnd;
+          FreeAndNil(Fbo);
+        end;
+      end;
+    end;
+  end;
+
   procedure ScreenShotToVideo;
   var
     TimeBegin, TimeStep: TKamTime;
@@ -2742,7 +2803,6 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   end;
 
 var
-  ProposedScreenShotName: string;
   C: Cardinal;
 begin
  case MenuItem.IntData of
@@ -2895,12 +2955,9 @@ begin
   124: ChangeGravityUp;
   125: Raytrace;
   126: (Window as TGLUIWindow).SwapFullScreen;
-  127: begin
-         if SceneFileName <> '' then
-           ProposedScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
-           ProposedScreenShotName := 'view3dscene_screen_%d.png';
-         Window.SaveScreenDialog(FileNameAutoInc(ProposedScreenShotName));
-       end;
+  150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
+  151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
+
   128: begin
          Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
 
@@ -3369,7 +3426,8 @@ begin
    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
      Window.FullScreen, true));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('_Screenshot to Image ...',         127, K_F5));
+   M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
+   M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
    M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
    M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
    M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
