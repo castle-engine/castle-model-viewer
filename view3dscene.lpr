@@ -80,7 +80,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLFields, VRMLShapeOctree,
   VRMLNodes, X3DLoad, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLGLAnimation,
+  VRMLCameraUtils, VRMLGLAnimation, VRMLGLBackground,
   VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, KambiSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
@@ -216,6 +216,7 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
+    function Background: TVRMLGLBackground; override;
   end;
 
   TV3DViewport = class(TV3DShadowsViewport)
@@ -228,6 +229,7 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
+    function Background: TVRMLGLBackground; override;
   end;
 
 var
@@ -261,6 +263,16 @@ begin
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
 end;
 
+var
+  DisableBackground: Cardinal;
+
+function TV3DSceneManager.Background: TVRMLGLBackground;
+begin
+  if DisableBackground <> 0 then
+    Result := nil else
+    Result := inherited;
+end;
+
 function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
 var
   C: Integer;
@@ -281,6 +293,13 @@ function TV3DViewport.ScreenEffectsNeedDepth: boolean;
 begin
   Result := (inherited ScreenEffectsNeedDepth) or
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
+end;
+
+function TV3DViewport.Background: TVRMLGLBackground;
+begin
+  if DisableBackground <> 0 then
+    Result := nil else
+    Result := inherited;
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -2319,6 +2338,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         Fbo.RenderBegin;
         ReadBuffer := Fbo.ColorBuffer;
         ImageClass := TRGBAlphaImage;
+        Inc(DisableBackground);
 
         if glGetInteger(GL_ALPHA_BITS) = 0 then
           { In case FBO is not available, and main context doesn't have alpha
@@ -2347,6 +2367,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         begin
           Fbo.RenderEnd;
           FreeAndNil(Fbo);
+          Dec(DisableBackground);
         end;
       end;
     end;
