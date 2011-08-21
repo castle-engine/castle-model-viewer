@@ -2347,7 +2347,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       end else
       begin
         ReadBuffer := GL_BACK;
-        ImageClass := TRGBAlphaImage;
+        ImageClass := TRGBImage;
       end;
 
       try
