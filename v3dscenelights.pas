@@ -54,7 +54,7 @@ begin
     { If Loaded, then 1st scene exists and has RootNode <> nil
       (that's because loaded animation always has at least one RootNode) }
     SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
-      NodesCount(TAbstractX3DLightNode, true);
+      NodesCount(TAbstractLightNode, true);
 end;
 
 procedure LightModelAmbientChanged;

@@ -104,7 +104,7 @@ end;
 
 class procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TX3DNode);
 begin
-  (Node as TAbstractX3DComposedGeometryNode).FdSolid.Value := false;
+  (Node as TAbstractComposedGeometryNode).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_Extrusion(node: TX3DNode);
@@ -149,7 +149,7 @@ end;
 
 class procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TX3DNode);
 begin
-  (Node as TAbstractX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
+  (Node as TAbstractNurbsSurfaceGeometryNode).FdSolid.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TX3DNode);
@@ -223,7 +223,7 @@ procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
 begin
   Node.EnumerateNodes(TShapeHintsNode,
     @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
-  Node.EnumerateNodes(TAbstractX3DComposedGeometryNode,
+  Node.EnumerateNodes(TAbstractComposedGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DComposedGeometry, false);
   Node.EnumerateNodes(TExtrusionNode,
     @TSceneChangesDo(nil).NoSolid_Extrusion, false);
@@ -241,7 +241,7 @@ begin
     @TSceneChangesDo(nil).NoSolid_Text, false);
   Node.EnumerateNodes(TText3DNode,
     @TSceneChangesDo(nil).NoSolid_Text3D, false);
-  Node.EnumerateNodes(TAbstractX3DNurbsSurfaceGeometryNode,
+  Node.EnumerateNodes(TAbstractNurbsSurfaceGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DNurbsSurfaceGeometryNode, false);
   Node.EnumerateNodes(TNurbsSweptSurfaceNode,
     @TSceneChangesDo(nil).NoSolid_NurbsSweptSurface, false);

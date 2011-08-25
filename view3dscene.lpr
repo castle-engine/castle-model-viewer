@@ -443,8 +443,8 @@ var
     begin
       Result := Format('%s', [Sensor.NiceName]);
 
-      if Sensor is TAbstractX3DPointingDeviceSensorNode then
-        Desc := TAbstractX3DPointingDeviceSensorNode(Sensor).FdDescription.Value else
+      if Sensor is TAbstractPointingDeviceSensorNode then
+        Desc := TAbstractPointingDeviceSensorNode(Sensor).FdDescription.Value else
       if Sensor is TAnchorNode then
       begin
         Desc := TAnchorNode(Sensor).FdDescription.Value;
@@ -1692,7 +1692,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     M2: TMaterialNode;
     SelectedShape: TVRMLShape;
     SelectedGeometry: TAbstractGeometryNode;
-    Tex: TAbstractX3DTextureNode;
+    Tex: TAbstractTextureNode;
   begin
     if SelectedItem = nil then
     begin
