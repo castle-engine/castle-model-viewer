@@ -1996,7 +1996,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     out M1: TMaterialNode_1;
     out M2: TMaterialNode): boolean;
   var
-    Shape: TAbstractX3DShapeNode;
+    Shape: TAbstractShapeNode;
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
