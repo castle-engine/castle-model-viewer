@@ -44,7 +44,7 @@ procedure RaytraceToWin(Window: TGLWindow;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
   const SceneBGColor: TVector3Single;
-  FogNode: TNodeFog);
+  FogNode: TFogNode);
 
 implementation
 
@@ -229,7 +229,7 @@ procedure RaytraceToWin(Window: TGLWindow;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
   const SceneBGColor: TVector3Single;
-  FogNode: TNodeFog);
+  FogNode: TFogNode);
 var SavedMode: TGLMode;
     CallData: TCallData;
 

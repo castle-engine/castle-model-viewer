@@ -44,7 +44,7 @@ type
 { Transforms scene root node as appropriate.
   When you use this on a TVRMLScene class, remember to surround
   by TVRMLScene.BeforeNodesFree and TVRMLScene.ChangedAll. }
-procedure ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLRootNode);
+procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
 
 { Transforms all scenes inside the animation as appropriate. }
 procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TVRMLGLAnimation);
@@ -58,136 +58,136 @@ uses SysUtils;
 type
   TSceneChangesDo = class
   public
-    class procedure NoNormal_Indexed_1(node: TVRMLNode);
-    class procedure NoNormal_IFS(node: TVRMLNode);
-    class procedure NoNormal_ElevationGrid(node: TVRMLNode);
+    class procedure NoNormal_Indexed_1(node: TX3DNode);
+    class procedure NoNormal_IFS(node: TX3DNode);
+    class procedure NoNormal_ElevationGrid(node: TX3DNode);
 
-    class procedure NoSolid_ShapeHints(node: TVRMLNode);
-    class procedure NoSolid_X3DComposedGeometry(node: TVRMLNode);
-    class procedure NoSolid_Extrusion(node: TVRMLNode);
-    class procedure NoSolid_ElevationGrid(node: TVRMLNode);
-    class procedure NoSolid_Box(node: TVRMLNode);
-    class procedure NoSolid_Cone(node: TVRMLNode);
-    class procedure NoSolid_Cylinder(node: TVRMLNode);
-    class procedure NoSolid_Sphere(node: TVRMLNode);
-    class procedure NoSolid_Text(node: TVRMLNode);
-    class procedure NoSolid_Text3D(node: TVRMLNode);
-    class procedure NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
-    class procedure NoSolid_NurbsSweptSurface(Node: TVRMLNode);
-    class procedure NoSolid_NurbsSwungSurface(Node: TVRMLNode);
-    class procedure NoSolid_NurbsSurface(Node: TVRMLNode);
+    class procedure NoSolid_ShapeHints(node: TX3DNode);
+    class procedure NoSolid_X3DComposedGeometry(node: TX3DNode);
+    class procedure NoSolid_Extrusion(node: TX3DNode);
+    class procedure NoSolid_ElevationGrid(node: TX3DNode);
+    class procedure NoSolid_Box(node: TX3DNode);
+    class procedure NoSolid_Cone(node: TX3DNode);
+    class procedure NoSolid_Cylinder(node: TX3DNode);
+    class procedure NoSolid_Sphere(node: TX3DNode);
+    class procedure NoSolid_Text(node: TX3DNode);
+    class procedure NoSolid_Text3D(node: TX3DNode);
+    class procedure NoSolid_X3DNurbsSurfaceGeometryNode(Node: TX3DNode);
+    class procedure NoSolid_NurbsSweptSurface(Node: TX3DNode);
+    class procedure NoSolid_NurbsSwungSurface(Node: TX3DNode);
+    class procedure NoSolid_NurbsSurface(Node: TX3DNode);
 
-    class procedure NoConvex_ShapeHints(node: TVRMLNode);
-    class procedure NoConvex_IFS(node: TVRMLNode);
-    class procedure NoConvex_Extrusion(node: TVRMLNode);
+    class procedure NoConvex_ShapeHints(node: TX3DNode);
+    class procedure NoConvex_IFS(node: TX3DNode);
+    class procedure NoConvex_Extrusion(node: TX3DNode);
   end;
 
-class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TVRMLNode);
+class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TX3DNode);
 begin
-  (Node as TVRMLIndexedNode_1).FdNormalIndex.Items.Clear;
+  (Node as TAbstractIndexedNode_1).FdNormalIndex.Items.Clear;
 end;
 
-class procedure TSceneChangesDo.NoNormal_IFS(node: TVRMLNode);
+class procedure TSceneChangesDo.NoNormal_IFS(node: TX3DNode);
 begin
-  (Node as TNodeIndexedFaceSet).FdNormal.Value := nil;
+  (Node as TIndexedFaceSetNode).FdNormal.Value := nil;
 end;
 
-class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TVRMLNode);
+class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
 begin
-  (Node as TNodeElevationGrid).FdNormal.Value := nil;
+  (Node as TElevationGridNode).FdNormal.Value := nil;
 end;
 
-class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
 begin
-  (Node as TNodeShapeHints).FdShapeType.Value := SHTYPE_UNKNOWN;
+  (Node as TShapeHintsNode).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
-class procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TX3DNode);
 begin
-  (Node as TNodeX3DComposedGeometryNode).FdSolid.Value := false;
+  (Node as TAbstractX3DComposedGeometryNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Extrusion(node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Extrusion(node: TX3DNode);
 begin
-  (Node as TNodeExtrusion).FdSolid.Value := false;
+  (Node as TExtrusionNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_ElevationGrid(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_ElevationGrid(Node: TX3DNode);
 begin
-  (Node as TNodeElevationGrid).FdSolid.Value := false;
+  (Node as TElevationGridNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Box(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Box(Node: TX3DNode);
 begin
-  (Node as TNodeBox).FdSolid.Value := false;
+  (Node as TBoxNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Cone(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Cone(Node: TX3DNode);
 begin
-  (Node as TNodeCone).FdSolid.Value := false;
+  (Node as TConeNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Cylinder(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Cylinder(Node: TX3DNode);
 begin
-  (Node as TNodeCylinder).FdSolid.Value := false;
+  (Node as TCylinderNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Sphere(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Sphere(Node: TX3DNode);
 begin
-  (Node as TNodeSphere).FdSolid.Value := false;
+  (Node as TSphereNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Text(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Text(Node: TX3DNode);
 begin
-  (Node as TNodeText).FdSolid.Value := false;
+  (Node as TTextNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_Text3D(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_Text3D(Node: TX3DNode);
 begin
-  (Node as TNodeText3D).FdSolid.Value := false;
+  (Node as TText3DNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TX3DNode);
 begin
-  (Node as TNodeX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
+  (Node as TAbstractX3DNurbsSurfaceGeometryNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TX3DNode);
 begin
-  (Node as TNodeNurbsSweptSurface).FdSolid.Value := false;
+  (Node as TNurbsSweptSurfaceNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_NurbsSwungSurface(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_NurbsSwungSurface(Node: TX3DNode);
 begin
-  (Node as TNodeNurbsSwungSurface).FdSolid.Value := false;
+  (Node as TNurbsSwungSurfaceNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TVRMLNode);
+class procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TX3DNode);
 begin
-  (Node as TNodeNurbsSurface).FdSolid.Value := false;
+  (Node as TNurbsSurfaceNode).FdSolid.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TVRMLNode);
+class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
 begin
-  (Node as TNodeShapeHints).FdFaceType.Value := FACETYPE_UNKNOWN;
+  (Node as TShapeHintsNode).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
-class procedure TSceneChangesDo.NoConvex_IFS(node: TVRMLNode);
+class procedure TSceneChangesDo.NoConvex_IFS(node: TX3DNode);
 begin
-  (Node as TNodeIndexedFaceSet).FdConvex.Value := false;
+  (Node as TIndexedFaceSetNode).FdConvex.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoConvex_Extrusion(node: TVRMLNode);
+class procedure TSceneChangesDo.NoConvex_Extrusion(node: TX3DNode);
 begin
-  (Node as TNodeExtrusion).FdConvex.Value := false;
+  (Node as TExtrusionNode).FdConvex.Value := false;
 end;
 
 { SceneChange_Xxx functions ---------------------------------------- }
 
-procedure RemoveNodeClass(RootNode: TVRMLNode;
-  NodeClass: TVRMLNodeClass; onlyFromActivePart: boolean);
+procedure RemoveNodeClass(RootNode: TX3DNode;
+  NodeClass: TX3DNodeClass; onlyFromActivePart: boolean);
 var
-  Node: TVRMLNode;
+  Node: TX3DNode;
 begin
   { TODO: do this by EnumerateReplaceNodes.
     Actually, most usage of FreeRemovingFromAllParents in engine should
@@ -203,68 +203,68 @@ end;
 
 { TODO: maybe avoid calling costly ChangedAll after scene changes. }
 
-procedure SceneChange_NoNormals(Node: TVRMLRootNode);
+procedure SceneChange_NoNormals(Node: TX3DRootNode);
 begin
-  Node.EnumerateNodes(TVRMLIndexedNode_1,
+  Node.EnumerateNodes(TAbstractIndexedNode_1,
     @TSceneChangesDo(nil).NoNormal_Indexed_1, false);
-  Node.EnumerateNodes(TNodeIndexedFaceSet,
+  Node.EnumerateNodes(TIndexedFaceSetNode,
     @TSceneChangesDo(nil).NoNormal_IFS, false);
-  Node.EnumerateNodes(TNodeElevationGrid,
+  Node.EnumerateNodes(TElevationGridNode,
     @TSceneChangesDo(nil).NoNormal_ElevationGrid, false);
 
   { Do this at the end.
     Note that for VRML >= 2.0, Normal nodes were already removed by
     NoNormal_IFS (in more intelligent way). }
-  RemoveNodeClass(Node, TNodeNormal, false);
-  RemoveNodeClass(Node, TNodeNormalBinding, false);
+  RemoveNodeClass(Node, TNormalNode, false);
+  RemoveNodeClass(Node, TNormalBindingNode, false);
 end;
 
-procedure SceneChange_NoSolidObjects(Node: TVRMLRootNode);
+procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
 begin
-  Node.EnumerateNodes(TNodeShapeHints,
+  Node.EnumerateNodes(TShapeHintsNode,
     @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
-  Node.EnumerateNodes(TNodeX3DComposedGeometryNode,
+  Node.EnumerateNodes(TAbstractX3DComposedGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DComposedGeometry, false);
-  Node.EnumerateNodes(TNodeExtrusion,
+  Node.EnumerateNodes(TExtrusionNode,
     @TSceneChangesDo(nil).NoSolid_Extrusion, false);
-  Node.EnumerateNodes(TNodeElevationGrid,
+  Node.EnumerateNodes(TElevationGridNode,
     @TSceneChangesDo(nil).NoSolid_ElevationGrid, false);
-  Node.EnumerateNodes(TNodeBox,
+  Node.EnumerateNodes(TBoxNode,
     @TSceneChangesDo(nil).NoSolid_Box, false);
-  Node.EnumerateNodes(TNodeCone,
+  Node.EnumerateNodes(TConeNode,
     @TSceneChangesDo(nil).NoSolid_Cone, false);
-  Node.EnumerateNodes(TNodeCylinder,
+  Node.EnumerateNodes(TCylinderNode,
     @TSceneChangesDo(nil).NoSolid_Cylinder, false);
-  Node.EnumerateNodes(TNodeSphere,
+  Node.EnumerateNodes(TSphereNode,
     @TSceneChangesDo(nil).NoSolid_Sphere, false);
-  Node.EnumerateNodes(TNodeText,
+  Node.EnumerateNodes(TTextNode,
     @TSceneChangesDo(nil).NoSolid_Text, false);
-  Node.EnumerateNodes(TNodeText3D,
+  Node.EnumerateNodes(TText3DNode,
     @TSceneChangesDo(nil).NoSolid_Text3D, false);
-  Node.EnumerateNodes(TNodeX3DNurbsSurfaceGeometryNode,
+  Node.EnumerateNodes(TAbstractX3DNurbsSurfaceGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DNurbsSurfaceGeometryNode, false);
-  Node.EnumerateNodes(TNodeNurbsSweptSurface,
+  Node.EnumerateNodes(TNurbsSweptSurfaceNode,
     @TSceneChangesDo(nil).NoSolid_NurbsSweptSurface, false);
-  Node.EnumerateNodes(TNodeNurbsSwungSurface,
+  Node.EnumerateNodes(TNurbsSwungSurfaceNode,
     @TSceneChangesDo(nil).NoSolid_NurbsSwungSurface, false);
-  Node.EnumerateNodes(TNodeNurbsSurface,
+  Node.EnumerateNodes(TNurbsSurfaceNode,
     @TSceneChangesDo(nil).NoSolid_NurbsSurface, false);
 end;
 
-procedure SceneChange_NoConvexFaces(Node: TVRMLRootNode);
+procedure SceneChange_NoConvexFaces(Node: TX3DRootNode);
 var
-  SH: TNodeShapeHints;
+  SH: TShapeHintsNode;
 begin
-  Node.EnumerateNodes(TNodeShapeHints,
+  Node.EnumerateNodes(TShapeHintsNode,
     @TSceneChangesDo(nil).NoConvex_ShapeHints, false);
-  Node.EnumerateNodes(TNodeIndexedFaceSet,
+  Node.EnumerateNodes(TIndexedFaceSetNode,
     @TSceneChangesDo(nil).NoConvex_IFS, false);
-  Node.EnumerateNodes(TNodeExtrusion,
+  Node.EnumerateNodes(TExtrusionNode,
     @TSceneChangesDo(nil).NoConvex_Extrusion, false);
 
-  if Node.TryFindNode(TVRMLGeometryNode_1, false) <> nil then
+  if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
   begin
-    SH := TNodeShapeHints.Create('', Node.WWWBasePath);
+    SH := TShapeHintsNode.Create('', Node.WWWBasePath);
     SH.FdFaceType.Value := FACETYPE_UNKNOWN;
     Node.FdChildren.Add(0, SH);
   end;
@@ -273,14 +273,14 @@ end;
 { ChangeScene --------------------------------------------------------------- }
 
 type
-  TSceneChangeFunction = procedure (Node: TVRMLRootNode);
+  TSceneChangeFunction = procedure (Node: TX3DRootNode);
 const
   SCFunctions: array[TSceneChange]of TSceneChangeFunction =
   ( @SceneChange_NoNormals,
     @SceneChange_NoSolidObjects,
     @SceneChange_NoConvexFaces );
 
-procedure ChangeNode(SceneChanges: TSceneChanges; Node: TVRMLRootNode);
+procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
 var
   SC: TSceneChange;
 begin

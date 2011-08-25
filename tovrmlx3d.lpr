@@ -24,7 +24,7 @@
   to run view3dscene) installed on your system.
 
   For your own uses, you can easily extend this to process VRML/X3D graph.
-  For example, add or remove some nodes. See TVRMLNode methods.
+  For example, add or remove some nodes. See TX3DNode methods.
 }
 
 program tovrmlx3d;
@@ -86,7 +86,7 @@ end;
 
 var
   FileName: string;
-  Node: TVRMLNode;
+  Node: TX3DNode;
 begin
   { parse command-line }
   Parameters.Parse(Options, @OptionProc, nil);

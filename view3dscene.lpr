@@ -406,7 +406,7 @@ begin
 end;
 
 function ProjectionType: TProjectionType; forward;
-function ViewpointNode: TVRMLViewpointNode; forward;
+function ViewpointNode: TAbstractViewpointNode; forward;
 
 { TStatusText ---------------------------------------------------------------- }
 
@@ -436,19 +436,19 @@ var
     one (if any)). }
   procedure DescribeSensors;
 
-    function DescribeSensor(Sensor: TVRMLNode): string;
+    function DescribeSensor(Sensor: TX3DNode): string;
     var
       Desc: string;
       J: Integer;
     begin
       Result := Format('%s', [Sensor.NiceName]);
 
-      if Sensor is TNodeX3DPointingDeviceSensorNode then
-        Desc := TNodeX3DPointingDeviceSensorNode(Sensor).FdDescription.Value else
-      if Sensor is TNodeAnchor then
+      if Sensor is TAbstractX3DPointingDeviceSensorNode then
+        Desc := TAbstractX3DPointingDeviceSensorNode(Sensor).FdDescription.Value else
+      if Sensor is TAnchorNode then
       begin
-        Desc := TNodeAnchor(Sensor).FdDescription.Value;
-        for J := 0 to TNodeAnchor(Sensor).FdUrl.Count - 1 do
+        Desc := TAnchorNode(Sensor).FdDescription.Value;
+        for J := 0 to TAnchorNode(Sensor).FdUrl.Count - 1 do
         begin
           if J = 0 then
           begin
@@ -456,9 +456,9 @@ var
             Desc += '[';
           end else
             Desc += ', ';
-          Desc += TNodeAnchor(Sensor).FdUrl.Items[J];
+          Desc += TAnchorNode(Sensor).FdUrl.Items[J];
         end;
-        if TNodeAnchor(Sensor).FdUrl.Count <> 0 then
+        if TAnchorNode(Sensor).FdUrl.Count <> 0 then
           Desc += ']';
       end else
         Desc := '';
@@ -827,23 +827,23 @@ end;
 
 { Setting viewpoint ---------------------------------------------------------- }
 
-function NavigationNode: TNodeNavigationInfo;
+function NavigationNode: TNavigationInfoNode;
 begin
   if Scene <> nil then
-    Result := Scene.NavigationInfoStack.Top as TNodeNavigationInfo else
+    Result := Scene.NavigationInfoStack.Top as TNavigationInfoNode else
     Result := nil;
 end;
 
-function ViewpointNode: TVRMLViewpointNode;
+function ViewpointNode: TAbstractViewpointNode;
 begin
   if Scene <> nil then
-    Result := Scene.ViewpointStack.Top as TVRMLViewpointNode else
+    Result := Scene.ViewpointStack.Top as TAbstractViewpointNode else
     Result := nil;
 end;
 
 function ProjectionType: TProjectionType;
 var
-  Viewpoint: TVRMLViewpointNode;
+  Viewpoint: TAbstractViewpointNode;
 begin
   Viewpoint := ViewpointNode;
   if Viewpoint <> nil then
@@ -858,9 +858,9 @@ end;
 
 class procedure THelper.BoundViewpointChanged(Sender: TObject);
 var
-  V: TVRMLViewpointNode;
+  V: TAbstractViewpointNode;
 begin
-  V := SceneManager.MainScene.ViewpointStack.Top as TVRMLViewpointNode;
+  V := SceneManager.MainScene.ViewpointStack.Top as TAbstractViewpointNode;
   Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
 end;
 
@@ -1046,7 +1046,7 @@ procedure LoadClearScene; forward;
   InitialNavigationType. This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
-  RootNodes: TVRMLNodeList;
+  RootNodes: TX3DNodeList;
   ATimes: TSingleList;
   ScenesPerTime: Cardinal;
   const EqualityEpsilon: Single;
@@ -1205,14 +1205,14 @@ procedure LoadScene(ASceneFileName: string;
 {$define CATCH_EXCEPTIONS}
 
 var
-  RootNodes: TVRMLNodeList;
+  RootNodes: TX3DNodeList;
   Times: TSingleList;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
   SavedSceneWarnings: TSceneWarnings;
 begin
-  RootNodes := TVRMLNodeList.Create(false);
+  RootNodes := TX3DNodeList.Create(false);
   Times := TSingleList.Create;
   try
     { We have to clear SceneWarnings here (not later)
@@ -1298,18 +1298,18 @@ begin
 end;
 
 { This should be used to load special "clear" and "welcome" scenes.
-  This loads a scene directly from TVRMLNode, and assumes that
+  This loads a scene directly from TX3DNode, and assumes that
   LoadSceneCore will not fail. }
-procedure LoadSimpleScene(Node: TVRMLNode;
+procedure LoadSimpleScene(Node: TX3DNode;
   UseInitialNavigationType: boolean = true);
 var
-  RootNodes: TVRMLNodeList;
+  RootNodes: TX3DNodeList;
   Times: TSingleList;
   ScenesPerTime: Cardinal;
   EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 begin
-  RootNodes := TVRMLNodeList.Create(false);
+  RootNodes := TX3DNodeList.Create(false);
   Times := TSingleList.Create;
   try
     RootNodes.Add(Node);
@@ -1376,7 +1376,7 @@ procedure WriteModel(const ASceneFileName: string;
   const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
   const ForceConvertingToX3D: boolean);
 var
-  Node: TVRMLRootNode;
+  Node: TX3DRootNode;
 begin
   Node := LoadVRML(ASceneFileName, true);
   try
@@ -1536,16 +1536,16 @@ const
 
 type
   TShaderAdder = class
-    ProgramNode: TNodeComposedShader;
+    ProgramNode: TComposedShaderNode;
     Added: boolean;
-    procedure AddShader(Node: TVRMLNode);
+    procedure AddShader(Node: TX3DNode);
   end;
 
-procedure TShaderAdder.AddShader(Node: TVRMLNode);
+procedure TShaderAdder.AddShader(Node: TX3DNode);
 var
   ShadersField: TMFNode;
 begin
-  ShadersField := (Node as TNodeAppearance).FdShaders;
+  ShadersField := (Node as TAppearanceNode).FdShaders;
   if not ((ShadersField.Count = 1) and (ShadersField.Items[0] = ProgramNode)) then
   begin
     ShadersField.Clear;
@@ -1688,11 +1688,11 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   var
     s, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
-    M1: TNodeMaterial_1;
-    M2: TNodeMaterial;
+    M1: TMaterialNode_1;
+    M2: TMaterialNode;
     SelectedShape: TVRMLShape;
-    SelectedGeometry: TVRMLGeometryNode;
-    Tex: TNodeX3DTextureNode;
+    SelectedGeometry: TAbstractGeometryNode;
+    Tex: TAbstractX3DTextureNode;
   begin
     if SelectedItem = nil then
     begin
@@ -1877,7 +1877,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     end;
 
   var
-    Geometry: TVRMLGeometryNode;
+    Geometry: TAbstractGeometryNode;
     Colors, Coords, Materials, Normals, TexCoords: TLongIntList;
     CoordsField, TexCoordsField: TMFLong;
     IndexBegin, IndexCount: Integer;
@@ -1912,44 +1912,44 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
     Geometry := TVRMLShape(SelectedItem^.Shape).OriginalGeometry;
 
-    if Geometry is TNodeIndexedFaceSet_1 then
+    if Geometry is TIndexedFaceSetNode_1 then
     begin
       Colors := nil;
-      CoordsField := TNodeIndexedFaceSet_1(Geometry).FdCoordIndex;
+      CoordsField := TIndexedFaceSetNode_1(Geometry).FdCoordIndex;
       Coords := CoordsField.Items;
-      Materials := TNodeIndexedFaceSet_1(Geometry).FdMaterialIndex.Items;
-      Normals := TNodeIndexedFaceSet_1(Geometry).FdNormalIndex.Items;
-      TexCoordsField := TNodeIndexedFaceSet_1(Geometry).FdTextureCoordIndex;
+      Materials := TIndexedFaceSetNode_1(Geometry).FdMaterialIndex.Items;
+      Normals := TIndexedFaceSetNode_1(Geometry).FdNormalIndex.Items;
+      TexCoordsField := TIndexedFaceSetNode_1(Geometry).FdTextureCoordIndex;
       TexCoords := TexCoordsField.Items;
     end else
-    if Geometry is TNodeIndexedFaceSet then
+    if Geometry is TIndexedFaceSetNode then
     begin
-      Colors := TNodeIndexedFaceSet(Geometry).FdColorIndex.Items;
-      CoordsField := TNodeIndexedFaceSet(Geometry).FdCoordIndex;
+      Colors := TIndexedFaceSetNode(Geometry).FdColorIndex.Items;
+      CoordsField := TIndexedFaceSetNode(Geometry).FdCoordIndex;
       Coords := CoordsField.Items;
       Materials := nil;
-      Normals := TNodeIndexedFaceSet(Geometry).FdNormalIndex.Items;
-      TexCoordsField := TNodeIndexedFaceSet(Geometry).FdTexCoordIndex;
+      Normals := TIndexedFaceSetNode(Geometry).FdNormalIndex.Items;
+      TexCoordsField := TIndexedFaceSetNode(Geometry).FdTexCoordIndex;
       TexCoords := TexCoordsField.Items;
     end else
-    if Geometry is TNodeIndexedTriangleSet then
+    if Geometry is TIndexedTriangleSetNode then
     begin
       Colors := nil; { colorIndex not available, index is used }
-      CoordsField := TNodeIndexedTriangleSet(Geometry).FdIndex;
+      CoordsField := TIndexedTriangleSetNode(Geometry).FdIndex;
       Coords := CoordsField.Items;
       Materials := nil;
       Normals := nil; { normalIndex not available, index is used }
       TexCoordsField := nil; { texCoordIndex not available, index is used }
       TexCoords := nil;
     end else
-    if Geometry is TNodeIndexedTriangleMesh_1 then
+    if Geometry is TIndexedTriangleMeshNode_1 then
     begin
       Colors := nil;
-      CoordsField := TNodeIndexedTriangleMesh_1(Geometry).FdCoordIndex;
+      CoordsField := TIndexedTriangleMeshNode_1(Geometry).FdCoordIndex;
       Coords := CoordsField.Items;
-      Materials := TNodeIndexedTriangleMesh_1(Geometry).FdMaterialIndex.Items;
-      Normals := TNodeIndexedTriangleMesh_1(Geometry).FdNormalIndex.Items;
-      TexCoordsField := TNodeIndexedTriangleMesh_1(Geometry).FdTextureCoordIndex;
+      Materials := TIndexedTriangleMeshNode_1(Geometry).FdMaterialIndex.Items;
+      Normals := TIndexedTriangleMeshNode_1(Geometry).FdNormalIndex.Items;
+      TexCoordsField := TIndexedTriangleMeshNode_1(Geometry).FdTextureCoordIndex;
       TexCoords := TexCoordsField.Items;
     end else
     begin
@@ -1993,10 +1993,10 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Note that SelectedItem is not necessarily correct anymore. Use only
     M1 and M2 pointers after this. }
   function ChangeMaterialInit(
-    out M1: TNodeMaterial_1;
-    out M2: TNodeMaterial): boolean;
+    out M1: TMaterialNode_1;
+    out M2: TMaterialNode): boolean;
   var
-    Shape: TNodeX3DShapeNode;
+    Shape: TAbstractX3DShapeNode;
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
@@ -2034,7 +2034,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
             this indicates that something incorrect was placed in "material"
             field. }
 
-          M2 := TNodeMaterial.Create('', Shape.WWWBasePath);
+          M2 := TMaterialNode.Create('', Shape.WWWBasePath);
           Shape.Material := M2;
           Scene.ChangedAll;
         end else
@@ -2050,8 +2050,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeMaterialDiffuse;
   var
-    M1: TNodeMaterial_1;
-    M2: TNodeMaterial;
+    M1: TMaterialNode_1;
+    M2: TMaterialNode;
     Color: TVector3Single;
   begin
     if not ChangeMaterialInit(M1, M2) then Exit;
@@ -2080,8 +2080,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure ChangeMaterialSpecular;
   var
-    M1: TNodeMaterial_1;
-    M2: TNodeMaterial;
+    M1: TMaterialNode_1;
+    M2: TMaterialNode;
     Color: TVector3Single;
   begin
     if not ChangeMaterialInit(M1, M2) then Exit;
@@ -2239,8 +2239,8 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     '*Fragment shader (*.fs)|*.fs';
   var
     FragmentShaderUrl, VertexShaderUrl: string;
-    ProgramNode: TNodeComposedShader;
-    ShaderPart: TNodeShaderPart;
+    ProgramNode: TComposedShaderNode;
+    ShaderPart: TShaderPartNode;
     ShaderAdder: TShaderAdder;
     I: Integer;
   begin
@@ -2253,17 +2253,17 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       if Window.FileDialog('Open fragment shader file', FragmentShaderUrl, true,
         FS_FileFilters) then
       begin
-        ProgramNode := TNodeComposedShader.Create(
+        ProgramNode := TComposedShaderNode.Create(
           { any name that has a chance to be unique }
           'view3dscene_shader_' + IntToStr(Random(1000)), '');
         ProgramNode.FdLanguage.Value := 'GLSL';
 
-        ShaderPart := TNodeShaderPart.Create('', '');
+        ShaderPart := TShaderPartNode.Create('', '');
         ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'VERTEX';
         ShaderPart.FdUrl.Items.Add(VertexShaderUrl);
 
-        ShaderPart := TNodeShaderPart.Create('', '');
+        ShaderPart := TShaderPartNode.Create('', '');
         ProgramNode.FdParts.Add(ShaderPart);
         ShaderPart.FdType.Value := 'FRAGMENT';
         ShaderPart.FdUrl.Items.Add(FragmentShaderUrl);
@@ -2277,7 +2277,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
           for I := 0 to SceneAnimation.ScenesCount - 1 do
           begin
-            SceneAnimation.Scenes[I].RootNode.EnumerateNodes(TNodeAppearance,
+            SceneAnimation.Scenes[I].RootNode.EnumerateNodes(TAppearanceNode,
               @ShaderAdder.AddShader, false);
           end;
 
@@ -2421,7 +2421,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   var
     ScenesPerTime: Cardinal;
     TimeBegin, TimeEnd: Single;
-    RootNode: TVRMLRootNode;
+    RootNode: TX3DRootNode;
   const
     EqualityEpsilon = 0.0001;
   begin
@@ -2743,7 +2743,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure JumpToViewpoint(Viewpoint: TVRMLViewpointNode);
+  procedure JumpToViewpoint(Viewpoint: TAbstractViewpointNode);
   var
     Pos, Dir, Up, GravityUp: TVector3Single;
   begin
@@ -2772,7 +2772,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     Vis := THumanoidVisualization.Create;
     try
       Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
-      Scene.RootNode.EnumerateNodes(TNodeHAnimHumanoid,
+      Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
         @Vis.VisualizeHumanoid, false);
       MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
         [Vis.HumanoidsProcessed, Vis.JointsProcessed]), taLeft);

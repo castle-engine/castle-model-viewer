@@ -35,7 +35,7 @@ var
 
 { Inits SceneLightsCount. }
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
-  NavigationNode: TNodeNavigationInfo);
+  NavigationNode: TNavigationInfoNode);
 
 var
   LightModelAmbient: TVector3Single;
@@ -47,14 +47,14 @@ implementation
 uses GL, GLU, KambiGLUtils, KambiParameters, V3DSceneFillMode;
 
 procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
-  NavigationNode: TNodeNavigationInfo);
+  NavigationNode: TNavigationInfoNode);
 begin
   if not SceneAnimation.Loaded then
     SceneLightsCount := 0 else
     { If Loaded, then 1st scene exists and has RootNode <> nil
       (that's because loaded animation always has at least one RootNode) }
     SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
-      NodesCount(TNodeX3DLightNode, true);
+      NodesCount(TAbstractX3DLightNode, true);
 end;
 
 procedure LightModelAmbientChanged;
