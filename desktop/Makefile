@@ -3,7 +3,7 @@
 VIEW3DSCENE_ICON := 6_thicker
 ENGINE_ICON := 8_tentacles_moon_polish
 
-ALL_IMAGES := ../../www/htdocs/images/kambi_vrml_game_engine_icon.png \
+ALL_IMAGES := ../../www/htdocs/images/castle_game_engine_icon.png \
               view3dscene.png view3dscene.svg view3dscene.icns
 
 .PHONY: all_images
@@ -16,7 +16,7 @@ all_images: $(ALL_IMAGES)
 # That's because IE on M$, well, you guessed it --- it can't reliably handle
 # PNG transparency anyway. So non-transparent PNG is safer.
 
-../../www/htdocs/images/kambi_vrml_game_engine_icon.png: icon/$(ENGINE_ICON).svg
+../../www/htdocs/images/castle_game_engine_icon.png: icon/$(ENGINE_ICON).svg
 	inkscape --export-width=256 --export-height=256 \
 	  --export-background=#FFFFFF \
 	  --export-background-opacity=1.0 \

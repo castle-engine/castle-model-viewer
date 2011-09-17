@@ -115,176 +115,176 @@
         <UsageCount Value="26"/>
       </Unit12>
       <Unit13>
-        <Filename Value="../kambi_vrml_game_engine/glwindow/glwindow.pas"/>
+        <Filename Value="../castle_game_engine/glwindow/glwindow.pas"/>
         <UnitName Value="GLWindow"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="11"/>
       </Unit13>
       <Unit14>
-        <Filename Value="../kambi_vrml_game_engine/packages/kambi_base.pas"/>
+        <Filename Value="../castle_game_engine/packages/kambi_base.pas"/>
         <UnitName Value="kambi_base"/>
         <CursorPos X="3" Y="10"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit14>
       <Unit15>
-        <Filename Value="../kambi_vrml_game_engine/3d/backgroundbase.pas"/>
+        <Filename Value="../castle_game_engine/3d/backgroundbase.pas"/>
         <UnitName Value="BackgroundBase"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit15>
       <Unit16>
-        <Filename Value="../kambi_vrml_game_engine/glwindow/glwinmessages.pas"/>
+        <Filename Value="../castle_game_engine/glwindow/glwinmessages.pas"/>
         <UnitName Value="GLWinMessages"/>
         <CursorPos X="30" Y="1095"/>
         <TopLine Value="1079"/>
         <UsageCount Value="10"/>
       </Unit16>
       <Unit17>
-        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlfields.pas"/>
+        <Filename Value="../castle_game_engine/vrml/vrmlfields.pas"/>
         <UnitName Value="VRMLFields"/>
         <CursorPos X="60" Y="219"/>
         <TopLine Value="196"/>
         <UsageCount Value="10"/>
       </Unit17>
       <Unit18>
-        <Filename Value="../kambi_vrml_game_engine/base/kambilog.pas"/>
+        <Filename Value="../castle_game_engine/base/kambilog.pas"/>
         <UnitName Value="KambiLog"/>
         <CursorPos X="50" Y="120"/>
         <TopLine Value="75"/>
         <UsageCount Value="11"/>
       </Unit18>
       <Unit19>
-        <Filename Value="../kambi_vrml_game_engine/packages/unix/kambi_glwindow.pas"/>
+        <Filename Value="../castle_game_engine/packages/unix/kambi_glwindow.pas"/>
         <UnitName Value="kambi_glwindow"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit19>
       <Unit20>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglanimation.pas"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/vrmlglanimation.pas"/>
         <UnitName Value="VRMLGLAnimation"/>
         <CursorPos X="1" Y="854"/>
         <TopLine Value="831"/>
         <UsageCount Value="10"/>
       </Unit20>
       <Unit21>
-        <Filename Value="../kambi_vrml_game_engine/vrml/x3d_grouping.inc"/>
+        <Filename Value="../castle_game_engine/vrml/x3d_grouping.inc"/>
         <CursorPos X="42" Y="254"/>
         <TopLine Value="245"/>
         <UsageCount Value="10"/>
       </Unit21>
       <Unit22>
-        <Filename Value="../kambi_vrml_game_engine/base/templates/objectslist_3.inc"/>
+        <Filename Value="../castle_game_engine/base/templates/objectslist_3.inc"/>
         <CursorPos X="1" Y="208"/>
         <TopLine Value="185"/>
         <UsageCount Value="10"/>
       </Unit22>
       <Unit23>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglscene.pas"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/vrmlglscene.pas"/>
         <UnitName Value="VRMLGLScene"/>
         <CursorPos X="1" Y="3155"/>
         <TopLine Value="3142"/>
         <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
-        <Filename Value="../kambi_vrml_game_engine/vrml/x3dxmltovrml.pas"/>
+        <Filename Value="../castle_game_engine/vrml/x3dxmltovrml.pas"/>
         <UnitName Value="X3DXmlToVRML"/>
         <CursorPos X="1" Y="259"/>
         <TopLine Value="230"/>
         <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
-        <Filename Value="../kambi_vrml_game_engine/base/kambidynlib.pas"/>
+        <Filename Value="../castle_game_engine/base/kambidynlib.pas"/>
         <UnitName Value="KambiDynLib"/>
         <CursorPos X="32" Y="200"/>
         <TopLine Value="186"/>
         <UsageCount Value="10"/>
       </Unit25>
       <Unit26>
-        <Filename Value="../kambi_vrml_game_engine/base/kambiutils.pas"/>
+        <Filename Value="../castle_game_engine/base/kambiutils.pas"/>
         <UnitName Value="KambiUtils"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit26>
       <Unit27>
-        <Filename Value="../kambi_vrml_game_engine/base/kambistringutils.pas"/>
+        <Filename Value="../castle_game_engine/base/kambistringutils.pas"/>
         <UnitName Value="KambiStringUtils"/>
         <CursorPos X="23" Y="608"/>
         <TopLine Value="594"/>
         <UsageCount Value="10"/>
       </Unit27>
       <Unit28>
-        <Filename Value="../kambi_vrml_game_engine/opengl/opengltypes.inc"/>
+        <Filename Value="../castle_game_engine/opengl/opengltypes.inc"/>
         <CursorPos X="25" Y="348"/>
         <TopLine Value="334"/>
         <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
-        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlnodes.pas"/>
+        <Filename Value="../castle_game_engine/vrml/vrmlnodes.pas"/>
         <UnitName Value="VRMLNodes"/>
         <CursorPos X="1" Y="7179"/>
         <TopLine Value="7165"/>
         <UsageCount Value="10"/>
       </Unit29>
       <Unit30>
-        <Filename Value="../kambi_vrml_game_engine/glwindow/glsoundmenu.pas"/>
+        <Filename Value="../castle_game_engine/glwindow/glsoundmenu.pas"/>
         <UnitName Value="GLSoundMenu"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
-        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlscene.pas"/>
+        <Filename Value="../castle_game_engine/vrml/vrmlscene.pas"/>
         <UnitName Value="VRMLScene"/>
         <CursorPos X="40" Y="2288"/>
         <TopLine Value="2269"/>
         <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
-        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlnodes_triangulating.inc"/>
+        <Filename Value="../castle_game_engine/vrml/vrmlnodes_triangulating.inc"/>
         <CursorPos X="43" Y="482"/>
         <TopLine Value="474"/>
         <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
-        <Filename Value="../kambi_vrml_game_engine/vrml/vrmlshape.pas"/>
+        <Filename Value="../castle_game_engine/vrml/vrmlshape.pas"/>
         <UnitName Value="VRMLShape"/>
         <CursorPos X="23" Y="855"/>
         <TopLine Value="841"/>
         <UsageCount Value="10"/>
       </Unit33>
       <Unit34>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit34>
       <Unit35>
-        <Filename Value="../kambi_vrml_game_engine/opengl/glimages.pas"/>
+        <Filename Value="../castle_game_engine/opengl/glimages.pas"/>
         <UnitName Value="GLImages"/>
         <CursorPos X="1" Y="1696"/>
         <TopLine Value="1683"/>
         <UsageCount Value="10"/>
       </Unit35>
       <Unit36>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlglrenderer.pas"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/vrmlglrenderer.pas"/>
         <UnitName Value="VRMLGLRenderer"/>
         <CursorPos X="45" Y="4303"/>
         <TopLine Value="4298"/>
         <UsageCount Value="10"/>
       </Unit36>
       <Unit37>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/vrmlbumpmappingrenderer.inc"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/vrmlbumpmappingrenderer.inc"/>
         <CursorPos X="53" Y="587"/>
         <TopLine Value="576"/>
         <UsageCount Value="10"/>
       </Unit37>
       <Unit38>
-        <Filename Value="../kambi_vrml_game_engine/vrml/opengl/object3dopengl.pas"/>
+        <Filename Value="../castle_game_engine/vrml/opengl/object3dopengl.pas"/>
         <UnitName Value="Object3dOpenGL"/>
         <CursorPos X="91" Y="166"/>
         <TopLine Value="152"/>
@@ -301,7 +301,7 @@
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <IncludeFiles Value="../kambi_vrml_game_engine/src/base"/>
+      <IncludeFiles Value="../castle_game_engine/src/base"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -338,7 +338,7 @@
   <Debugging>
     <BreakPoints Count="1">
       <Item1>
-        <Source Value="../kambi_vrml_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
+        <Source Value="../castle_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
         <Line Value="0"/>
       </Item1>
     </BreakPoints>

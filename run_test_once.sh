@@ -265,7 +265,7 @@ do_compare_screenshot ()
 # and compare them with other (e.g. older) view3dscene version.
 # Uses --screenshot to capture, and image_compare to compare
 # (compile and put on $PATH this:
-# ../kambi_vrml_game_engine/examples/images/image_compare.lpr).
+# ../castle_game_engine/examples/images_videos/image_compare.lpr).
 #
 # This tests screenshot generation goes Ok,
 # and checks for any regressions in the renderer.

@@ -32,8 +32,8 @@
   If you want to find out how to use "Kambi VRML game engine",
   this isn't the best place to study. Look instead at simple examples
   in engine sources, like
-    ../kambi_vrml_game_engine/examples/vrml/simplest_vrml_browser.lpr
-    ../kambi_vrml_game_engine/examples/vrml/scene_manager_demos.lpr
+    ../castle_game_engine/examples/vrml/simplest_vrml_browser.lpr
+    ../castle_game_engine/examples/vrml/scene_manager_demos.lpr
 
   Basic components of this program:
   - use LoadVRMLSequence to load any format to VRML scene.

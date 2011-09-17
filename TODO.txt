@@ -16,7 +16,7 @@ Others:
 - Transform to using Lazarus form, with some OpenGL component wrapping
   GtkGLExt inside.
 
-  This is started in ../kambi_vrml_game_engine/examples/lazarus/vrml_browser/
+  This is started in ../castle_game_engine/examples/lazarus/vrml_browser/
 
   Depends on making Lazarus OpenGL component good, which isn't the case
   yet --- it stutters (e.g. when mouse look), it doesn't have all the

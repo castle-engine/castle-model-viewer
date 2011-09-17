@@ -14,11 +14,11 @@ set -eu
 # - view3dscene and tovrmlx3d binaries compiled (either in current dir,
 #   or on the $PATH, see run_test_once.sh)
 # - stringoper binary compiled and available on $PATH
-#   (stringoper comes from ../kambi_vrml_game_engine/examples/tools/stringoper.lpr)
+#   (stringoper comes from ../castle_game_engine/examples/tools/stringoper.lpr)
 # Some optional tests require also:
 # - image_compare binary compiled and available on $PATH,
 #   only if you uncomment the "screenshot comparison" test in run_test_once.sh
-#   (image_compare comes from ../kambi_vrml_game_engine/examples/images_videos/image_compare.lpr)
+#   (image_compare comes from ../castle_game_engine/examples/images_videos/image_compare.lpr)
 # - xmllint for basic XML validation (should be included in any
 #   popular Linux distribution).
 # - for some optional comparisons (regression checking), it's useful
