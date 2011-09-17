@@ -24,6 +24,12 @@
   in view3dscene menu. }
 unit V3DSceneScreenEffects;
 
+{ Define "Gamma 1 / 2.2" and "Gamma 1 / 4" effects.
+  I'm still not sure if they are useful, but at the same time
+  there's often a desire to try them... So let's keep them under
+  ifdef for now. }
+{$define GAMMA_DARKEN_EFFECTS}
+
 interface
 
 uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
@@ -38,7 +44,7 @@ type
       at the beginning (otherwise it just cancels any other effect)
   }
   TScreenEffect = (seVisualizeDepth, seGrayscale, seEdgeDetect,
-    seGamma22, seGamma4, seGamma1_22, seGamma1_4,
+    seGamma22, seGamma4, {$ifdef GAMMA_DARKEN_EFFECTS} seGamma1_22, seGamma1_4, {$endif}
     seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
@@ -111,7 +117,7 @@ const
        '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
        '}';
      NeedsDepth: false),
-    (Name: 'Gamma 2.2';
+    (Name: 'Gamma 2.2 (Brighten)';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
        'uniform sampler2DRect screen;' +NL+
@@ -121,7 +127,7 @@ const
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
        '}';
      NeedsDepth: false),
-    (Name: 'Gamma 4.0';
+    (Name: 'Gamma 4.0 (Brighten More)';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
        'uniform sampler2DRect screen;' +NL+
@@ -131,7 +137,18 @@ const
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
        '}';
      NeedsDepth: false),
-    (Name: 'Gamma 1 / 2.2';
+    {$ifdef GAMMA_DARKEN_EFFECTS}
+    (Name: 'Gamma 1 / 1.5 (Darken)';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(15.0/10.0, 15.0/10.0, 15.0/10.0));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Gamma 1 / 2.2 (Darken More)';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
        'uniform sampler2DRect screen;' +NL+
@@ -141,16 +158,7 @@ const
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(22.0/10.0, 22.0/10.0, 22.0/10.0));' +NL+
        '}';
      NeedsDepth: false),
-    (Name: 'Gamma 1 / 4.0';
-     Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(4.0, 4.0, 4.0));' +NL+
-       '}';
-     NeedsDepth: false),
+    {$endif GAMMA_DARKEN_EFFECTS}
     (Name: 'Flashlight (Nice Headlight)';
      Code:
        '#extension GL_ARB_texture_rectangle : enable' +nl+
