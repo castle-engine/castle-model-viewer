@@ -38,7 +38,8 @@ type
       at the beginning (otherwise it just cancels any other effect)
   }
   TScreenEffect = (seVisualizeDepth, seGrayscale, seEdgeDetect,
-    seGamma22, seGamma4, seRoundHeadLight, seNegative);
+    seGamma22, seGamma4, seGamma1_22, seGamma1_4,
+    seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
   private
@@ -128,6 +129,26 @@ const
        '{' +NL+
        '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Gamma 1 / 2.2';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(22.0/10.0, 22.0/10.0, 22.0/10.0));' +NL+
+       '}';
+     NeedsDepth: false),
+    (Name: 'Gamma 1 / 4.0';
+     Code:
+       '#extension GL_ARB_texture_rectangle : enable' +nl+
+       'uniform sampler2DRect screen;' +NL+
+       'void main (void)' +NL+
+       '{' +NL+
+       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(4.0, 4.0, 4.0));' +NL+
        '}';
      NeedsDepth: false),
     (Name: 'Flashlight (Nice Headlight)';
