@@ -32,13 +32,13 @@ type
   { Screen effects predefined in view3dscene.
     The order below matters: that's the order in which they will be applied.
     Some findings:
-    - seNegative looks best after at least seGamma22, seGamma4
+    - seNegative looks best after at least seGamma*
     - seEdgeDetect looks best before gamma correction (including seRoundHeadLight)
     - seVisualizeDepth overrides color, so it's sensible to place it
       at the beginning (otherwise it just cancels any other effect)
   }
   TScreenEffect = (seVisualizeDepth, seGrayscale, seEdgeDetect,
-    seGamma22, seGamma4, seGamma1_22, seGamma1_4,
+    seGammaBrighten, seGammaBrightenMore, seGammaDarken, seGammaDarkenMore,
     seRoundHeadLight, seNegative);
 
   TScreenEffects = class(TUIControl)
