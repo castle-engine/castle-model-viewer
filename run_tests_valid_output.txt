@@ -688,15 +688,15 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (l
 ---- Reading again ../demo_models/nurbs/nurbs_weights.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/prototypes/extern_proto_built_in_kings_head.wrl
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl"
+tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl"
 tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
 ---- Reading again ../demo_models/prototypes/extern_proto_built_in_kings_head.wrl
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl"
+tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl"
 tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl"
+tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl"
 tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/vrmlengine/trunk/demo_models/prototypes/not_existing.wrl"
+tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl": Unable to open file "/home/michalis/sources/castle-engine/trunk/demo_models/prototypes/not_existing.wrl"
 tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
 ---- Reading ../demo_models/prototypes/extern_proto_routes.wrl
 ---- Reading again ../demo_models/prototypes/extern_proto_routes.wrl
