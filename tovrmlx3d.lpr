@@ -14,7 +14,7 @@
 }
 
 { Simple converter to VRML/X3D from various other 3D formats.
-  See [http://vrmlengine.sourceforge.net/view3dscene.php#section_converting].
+  See [http://castle-engine.sourceforge.net/view3dscene.php#section_converting].
 
   Reads a 3D model from the filename given as command-line parameter
   ('-' means stdin), and outputs model as VRML/X3D to stdout.
@@ -67,7 +67,7 @@ begin
            '                        Note that this works sensibly only for VRML 2.0' +NL+
            '                        (not for older Inventor/VRML 1.0).' +NL+
            NL+
-           SVrmlEngineProgramHelpSuffix('tovrmlx3d', Version, true));
+           SCastleEngineProgramHelpSuffix('tovrmlx3d', Version, true));
          ProgramBreak;
        end;
     1: begin
@@ -97,7 +97,7 @@ begin
 
   Node := LoadVRML(FileName, true);
   try
-    SaveVRML(Node, StdOutStream, 'tovrmlx3d, http://vrmlengine.sourceforge.net/view3dscene.php#section_converting',
+    SaveVRML(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
       ExtractFileName(FileName), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
 end.

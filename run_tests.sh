@@ -4,7 +4,7 @@ set -eu
 # Run view3dscene / tovrmlx3d tests on 3D models inside ../demo_models/
 # (and some other dirs, see lower).
 # You can checkout demo_models from SVN, or download and unpack
-# from [http://vrmlengine.sourceforge.net/demo_models.php],
+# from [http://castle-engine.sourceforge.net/demo_models.php],
 # such that it's a sibling of view3dscene.
 # This is designed to work with any 3D models, so feel free to use this
 # on your own private 3D models (add "test_dir" call lower,

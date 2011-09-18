@@ -21,7 +21,7 @@
 }
 
 { view3dscene, a VRML/X3D browser and general 3D model viewer.
-  See [http://vrmlengine.sourceforge.net/view3dscene.php] for user
+  See [http://castle-engine.sourceforge.net/view3dscene.php] for user
   documentation.
 
   The actual name of this program is "Kambi VRML game engine
@@ -1367,7 +1367,7 @@ begin
 end;
 
 const
-  SaveGenerator = 'view3dscene, http://vrmlengine.sourceforge.net/view3dscene.php';
+  SaveGenerator = 'view3dscene, http://castle-engine.sourceforge.net/view3dscene.php';
 
 { Load model from ASceneFileName ('-' means stdin),
   do SceneChanges, and write it as VRML/X3D to stdout.
@@ -3009,7 +3009,7 @@ begin
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
-           '[http://vrmlengine.sourceforge.net/view3dscene.php]' + NL +
+           '[http://castle-engine.sourceforge.net/view3dscene.php]' + NL +
            NL +
            'Compiled with ' + SCompilerDescription +'.');
        end;
@@ -3794,7 +3794,7 @@ const
            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
            NL+
-           SVrmlEngineProgramHelpSuffix(DisplayProgramName, Version, true));
+           SCastleEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
         end;
     6 : begin

@@ -136,7 +136,7 @@
 
   <!-- Collada, Inventor, other mime types just invented by Kambi.
        If there's any official agreement what mime types to use for them,
-       please report to Kambi ([http://vrmlengine.sourceforge.net/] author),
+       please report to Kambi ([http://castle-engine.sourceforge.net/] author),
        and this file will be adjusted to specify standard mime values.
   -->
 
@@ -170,7 +170,7 @@
   </mime-type>
 
   <!-- Kanim is my format, see
-       [http://vrmlengine.sourceforge.net/kanim_format.php],
+       [http://castle-engine.sourceforge.net/kanim_format.php],
        so I can invent any mime type I want here... -->
 
   <mime-type type="application/x-kanim">
