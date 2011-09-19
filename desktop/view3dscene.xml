@@ -175,7 +175,7 @@
 
   <mime-type type="application/x-kanim">
     <sub-class-of type="text/xml"/>
-    <comment>Kambi VRML engine animation</comment>
+    <comment>Castle Game Engine animation</comment>
     <glob pattern="*.kanim"/>
   </mime-type>
 </mime-info>

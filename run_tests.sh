@@ -96,5 +96,5 @@ test_dir ../rift/data/
 # files that should be correct.
 test_dir ../www/htdocs/
 
-# Extreme test on all models within vrmlengine repository
+# Extreme test on all models within repository
 # test_dir ../
