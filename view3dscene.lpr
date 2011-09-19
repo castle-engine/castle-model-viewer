@@ -24,12 +24,12 @@
   See [http://castle-engine.sourceforge.net/view3dscene.php] for user
   documentation.
 
-  The actual name of this program is "Kambi VRML game engine
+  The actual name of this program is "Castle Game Engine
   swiss army knife" :) This program shows and uses a lot
   of our engine features. It's basically a giant GUI to load everything,
   and tweak every option from the menu and toolbar.
 
-  If you want to find out how to use "Kambi VRML game engine",
+  If you want to find out how to use "Castle Game Engine",
   this isn't the best place to study. Look instead at simple examples
   in engine sources, like
     ../castle_game_engine/examples/vrml/simplest_vrml_browser.lpr
