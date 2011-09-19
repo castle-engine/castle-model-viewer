@@ -3728,7 +3728,7 @@ const
            'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
            'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
            'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
-           'You can also convert models in other formats to VRML.' +NL+
+           'You can also convert models in other formats to VRML/X3D.' +NL+
            NL+
            'Call as' +NL+
            '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
