@@ -1641,30 +1641,30 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_1.x3dv
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 290: Expected node type or DEF or USE, got "}"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 292: Expected node type or DEF or USE, got "}"
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_1.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 290: Expected node type or DEF or USE, got "}"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 292: Expected node type or DEF or USE, got "}"
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_2.x3dv
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 303: Expected node type, got "{"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 305: Expected node type, got "{"
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_2.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 303: Expected node type, got "{"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 305: Expected node type, got "{"
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_3.x3dv
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 296: Expected name, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 298: Expected name, got "["
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_3.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 296: Expected name, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 298: Expected name, got "["
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_4.x3dv
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 308: Expected node type or DEF or USE, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 310: Expected node type or DEF or USE, got "["
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_4.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 308: Expected node type or DEF or USE, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 310: Expected node type or DEF or USE, got "["
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_5.x3dv
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 309: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 311: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_5.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 309: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 311: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
 ---- Reading ../demo_models/x3d/warnings/route_warnings.x3dv
 tovrmlx3d: VRML/X3D warning: Route source node name "InvalidNodeName" not found
 tovrmlx3d: VRML/X3D warning: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
