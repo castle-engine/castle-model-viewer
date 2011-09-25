@@ -1042,8 +1042,9 @@ procedure LoadClearScene; forward;
   problem with passing pointers to global variables
   (ASceneFileName is a pointer) as local vars.
 
-  If UseInitialNavigationType then we will use and reset
-  InitialNavigationType. This should be @false if you're only loading
+  If UseInitialVars then we will use and reset
+  InitialNavigationType and InitialViewpoint*.
+  This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNodes: TX3DNodeList;
@@ -1056,7 +1057,7 @@ procedure LoadSceneCore(
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   InitializeCamera: boolean;
 
-  UseInitialNavigationType: boolean = true);
+  UseInitialVars: boolean = true);
 
   procedure ScaleAll(A: TSingleList; const Value: Single);
   var
@@ -1079,6 +1080,10 @@ begin
     if AnimationTimeSpeedWhenLoading <> 1.0 then
       ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
 
+    { set InitialViewpoint* before creating the TVRMLScenes, so before
+      doing SceneAnimation.Load }
+    SetInitialViewpoint(SceneAnimation, UseInitialVars);
+
     SceneAnimation.Load(RootNodes, true, ATimes, ScenesPerTime, EqualityEpsilon);
     SceneAnimation.TimeLoop := TimeLoop;
     SceneAnimation.TimeBackwards := TimeBackwards;
@@ -1097,7 +1102,7 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    if UseInitialNavigationType then
+    if UseInitialVars then
     begin
       ForceNavigationType := InitialNavigationType;
       InitialNavigationType := '';
@@ -1301,7 +1306,7 @@ end;
   This loads a scene directly from TX3DNode, and assumes that
   LoadSceneCore will not fail. }
 procedure LoadSimpleScene(Node: TX3DNode;
-  UseInitialNavigationType: boolean = true);
+  UseInitialVars: boolean = true);
 var
   RootNodes: TX3DNodeList;
   Times: TSingleList;
@@ -1327,7 +1332,7 @@ begin
       EqualityEpsilon,
       TimeLoop, TimeBackwards,
       '', [], 1.0, true,
-      UseInitialNavigationType);
+      UseInitialVars);
   finally
     FreeAndNil(RootNodes);
     FreeAndNil(Times);
@@ -3764,6 +3769,7 @@ const
            '                        (not for older Inventor/VRML 1.0).' +NL+
            '  --write-to-vrml       Obsolete shortcut for "--write --write-encoding=classic"' +NL+
            CamerasOptionsHelp +NL+
+           '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
            VRMLNodesDetailOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
@@ -3859,6 +3865,7 @@ begin
   Window.ParseParameters(StandardParseOptions);
   SoundEngine.ParseParameters;
   CamerasParseParameters;
+  ViewpointsParseParameters;
   VRMLNodesDetailOptionsParse;
   Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : filename to load }

@@ -26,9 +26,7 @@ unit V3DSceneViewpoints;
 interface
 
 uses VectorMath, VRMLNodes, GLWindow, KambiUtils, Classes, KambiClassUtils,
-  VRMLScene;
-
-{$define read_interface}
+  VRMLScene, VRMLGLAnimation;
 
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you
@@ -100,13 +98,16 @@ type
 var
   Viewpoints: TMenuViewpoints;
 
-{$undef read_interface}
+{ Parse --viewpoint command-line option, if exists. }
+procedure ViewpointsParseParameters;
+
+{ Apply --viewpoint command-line option to the next loaded scenes. }
+procedure SetInitialViewpoint(SceneAnimation: TVRMLGLAnimation;
+  const EnableNonStandardValue: boolean);
 
 implementation
 
-uses SysUtils, KambiStringUtils;
-
-{$define read_implementation}
+uses SysUtils, KambiStringUtils, KambiParameters;
 
 function SForCaption(const S: string): string;
 begin
@@ -319,6 +320,52 @@ begin
       if TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]).Viewpoint = Viewpoint then
         Exit(TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]));
   Result := nil;
+end;
+
+{ command-line options ------------------------------------------------------- }
+
+var
+  UseInitialViewpoint: boolean = false;
+  InitialViewpointIndex: Integer;
+  InitialViewpointName: string;
+
+procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
+  const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
+begin
+  Assert(OptionNum = 0);
+  UseInitialViewpoint := true;
+  InitialViewpointIndex := 0;
+  InitialViewpointName := '';
+
+  { calculate InitialViewpoint* }
+  try
+    InitialViewpointIndex := StrToInt(Argument);
+  except on EConvertError do
+    InitialViewpointName := Argument;
+  end;
+end;
+
+procedure ViewpointsParseParameters;
+const
+  Options: array[0..0]of TOption =
+  ((Short:#0; Long:'viewpoint'; Argument: oaRequired));
+begin
+  Parameters.Parse(Options, @OptionProc, nil, true);
+end;
+
+procedure SetInitialViewpoint(SceneAnimation: TVRMLGLAnimation;
+  const EnableNonStandardValue: boolean);
+begin
+  if EnableNonStandardValue and UseInitialViewpoint then
+  begin
+    UseInitialViewpoint := false;
+    SceneAnimation.InitialViewpointIndex := InitialViewpointIndex;
+    SceneAnimation.InitialViewpointName := InitialViewpointName;
+  end else
+  begin
+    SceneAnimation.InitialViewpointIndex := 0;
+    SceneAnimation.InitialViewpointName := '';
+  end;
 end;
 
 initialization
