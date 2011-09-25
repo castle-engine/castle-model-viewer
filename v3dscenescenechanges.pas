@@ -99,7 +99,7 @@ end;
 
 class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
 begin
-  (Node as TShapeHintsNode).FdShapeType.Value := SHTYPE_UNKNOWN;
+  (Node as TShapeHintsNode_1).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
 class procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TX3DNode);
@@ -169,7 +169,7 @@ end;
 
 class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
 begin
-  (Node as TShapeHintsNode).FdFaceType.Value := FACETYPE_UNKNOWN;
+  (Node as TShapeHintsNode_1).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
 class procedure TSceneChangesDo.NoConvex_IFS(node: TX3DNode);
@@ -216,12 +216,12 @@ begin
     Note that for VRML >= 2.0, Normal nodes were already removed by
     NoNormal_IFS (in more intelligent way). }
   RemoveNodeClass(Node, TNormalNode, false);
-  RemoveNodeClass(Node, TNormalBindingNode, false);
+  RemoveNodeClass(Node, TNormalBindingNode_1, false);
 end;
 
 procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
 begin
-  Node.EnumerateNodes(TShapeHintsNode,
+  Node.EnumerateNodes(TShapeHintsNode_1,
     @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
   Node.EnumerateNodes(TAbstractComposedGeometryNode,
     @TSceneChangesDo(nil).NoSolid_X3DComposedGeometry, false);
@@ -253,9 +253,9 @@ end;
 
 procedure SceneChange_NoConvexFaces(Node: TX3DRootNode);
 var
-  SH: TShapeHintsNode;
+  SH: TShapeHintsNode_1;
 begin
-  Node.EnumerateNodes(TShapeHintsNode,
+  Node.EnumerateNodes(TShapeHintsNode_1,
     @TSceneChangesDo(nil).NoConvex_ShapeHints, false);
   Node.EnumerateNodes(TIndexedFaceSetNode,
     @TSceneChangesDo(nil).NoConvex_IFS, false);
@@ -264,7 +264,7 @@ begin
 
   if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
   begin
-    SH := TShapeHintsNode.Create('', Node.WWWBasePath);
+    SH := TShapeHintsNode_1.Create('', Node.WWWBasePath);
     SH.FdFaceType.Value := FACETYPE_UNKNOWN;
     Node.FdChildren.Add(0, SH);
   end;
