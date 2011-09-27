@@ -3952,7 +3952,7 @@ begin
           SoundEngine.EnableSaveToConfig := false;
         end;
 
-        Window.SetDemoOptions(K_None, #0, true);
+        Window.FpsShowOnCaption := true;
 
         if ShadowsPossibleWanted then
         begin
