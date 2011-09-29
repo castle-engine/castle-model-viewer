@@ -16,7 +16,7 @@ SVG icon for ugly Windows exe.)
 
   Note that main icon has MainIcon identifier, not AppIcon.
   Although [http://freepascal.org/docs-html/prog/progse61.html] suggests using AppIcon,
-  I saw some programs using MAINICON, and my GLWindow in WinAPI backend also loads icon
+  I saw some programs using MAINICON, and my CastleWindow in WinAPI backend also loads icon
   from MAINICON name. Ultimately, it doesn't seem to matter to Windows (it grabs
   the first ico available in file?).
 
