@@ -66,14 +66,14 @@ program view3dscene;
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
 
-uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
+uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  KambiParameters, ProgressUnit, Cameras,
-  KambiStringUtils, KambiFilesUtils, KambiTimeUtils,
-  KambiWarnings, KambiLog, ProgressConsole, DateUtils, Frustum,
+  CastleParameters, ProgressUnit, Cameras,
+  CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
+  CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
   { OpenGL related units: }
-  GL, GLWindow, KambiGLUtils, OpenGLBmpFonts,
+  GL, GLWindow, CastleGLUtils, OpenGLBmpFonts,
   GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
@@ -81,7 +81,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   VRMLNodes, X3DLoad, VRMLGLScene, VRMLTriangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLGLAnimation, VRMLGLBackground,
-  VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, KambiSceneManager,
+  VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,

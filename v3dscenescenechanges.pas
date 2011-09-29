@@ -25,7 +25,7 @@ unit V3DSceneSceneChanges;
 
 interface
 
-uses VRMLScene, VRMLNodes, KambiUtils, VRMLGLAnimation;
+uses VRMLScene, VRMLNodes, CastleUtils, VRMLGLAnimation;
 
 type
   { When adding new item to TSceneChange you can also consider adding

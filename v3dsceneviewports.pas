@@ -25,7 +25,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses KambiSceneManager, GLWindow, Cameras;
+uses CastleSceneManager, GLWindow, Cameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
@@ -66,7 +66,7 @@ procedure ViewportsDraw;
 
 implementation
 
-uses VectorMath, SysUtils, KambiUtils, GL, UIControls;
+uses VectorMath, SysUtils, CastleUtils, GL, UIControls;
 
 { TBackground ---------------------------------------------------------------- }
 

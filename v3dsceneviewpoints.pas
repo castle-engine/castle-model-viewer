@@ -25,7 +25,7 @@ unit V3DSceneViewpoints;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, KambiUtils, Classes, KambiClassUtils,
+uses VectorMath, VRMLNodes, GLWindow, CastleUtils, Classes, CastleClassUtils,
   VRMLScene, VRMLGLAnimation;
 
 { Return S with newlines replaced with spaces and trimmed to
@@ -107,7 +107,7 @@ procedure SetInitialViewpoint(SceneAnimation: T3DPrecalculatedAnimation;
 
 implementation
 
-uses SysUtils, KambiStringUtils, KambiParameters;
+uses SysUtils, CastleStringUtils, CastleParameters;
 
 function SForCaption(const S: string): string;
 begin

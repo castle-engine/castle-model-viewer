@@ -26,7 +26,7 @@ unit V3DSceneScreenEffects;
 
 interface
 
-uses Classes, KambiUtils, UIControls, GLWindow, GLShaders;
+uses Classes, CastleUtils, UIControls, GLWindow, GLShaders;
 
 type
   { Screen effects predefined in view3dscene.
@@ -65,7 +65,7 @@ var
 
 implementation
 
-uses SysUtils, KambiGLUtils, KambiWarnings;
+uses SysUtils, CastleGLUtils, CastleWarnings;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record

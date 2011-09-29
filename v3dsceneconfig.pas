@@ -26,7 +26,7 @@ unit V3DSceneConfig;
 
 interface
 
-uses KambiUtils, KambiXMLConfig, ALSoundEngine;
+uses CastleUtils, CastleXMLConfig, ALSoundEngine;
 
 var
   { User config file.
@@ -36,7 +36,7 @@ var
 
 implementation
 
-uses SysUtils, KambiFilesUtils;
+uses SysUtils, CastleFilesUtils;
 
 { initialization / finalization --------------------------------------------- }
 

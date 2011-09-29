@@ -25,7 +25,7 @@ unit V3DSceneOctreeVisualize;
 
 interface
 
-uses KambiOctree, VRMLGLAnimation, GLWindow;
+uses CastleOctree, VRMLGLAnimation, GLWindow;
 
 type
   TOctreeDisplay = object
@@ -61,7 +61,7 @@ function OctreeDisplayStatus: string;
 
 implementation
 
-uses GL, VectorMath, KambiGLUtils, VRMLShape, SysUtils;
+uses GL, VectorMath, CastleGLUtils, VRMLShape, SysUtils;
 
 { TOctreeDisplay ------------------------------------------------------------- }
 

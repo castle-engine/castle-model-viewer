@@ -28,7 +28,7 @@ unit V3DSceneLights;
 
 interface
 
-uses VectorMath, SysUtils, VRMLGLAnimation, KambiUtils, VRMLNodes;
+uses VectorMath, SysUtils, VRMLGLAnimation, CastleUtils, VRMLNodes;
 
 var
   SceneLightsCount: Cardinal;
@@ -44,7 +44,7 @@ procedure LightModelAmbientChanged;
 
 implementation
 
-uses GL, GLU, KambiGLUtils, KambiParameters, V3DSceneFillMode;
+uses GL, GLU, CastleGLUtils, CastleParameters, V3DSceneFillMode;
 
 procedure SceneInitLights(SceneAnimation: T3DPrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);

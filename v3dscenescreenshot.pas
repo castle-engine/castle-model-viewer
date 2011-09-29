@@ -25,8 +25,8 @@ unit V3DSceneScreenShot;
 
 interface
 
-uses KambiUtils, Classes, KambiClassUtils, KambiTimeUtils,
-  FGL {$ifdef VER2_2}, FGLObjectList22 {$endif}, KambiParameters;
+uses CastleUtils, Classes, CastleClassUtils, CastleTimeUtils,
+  FGL {$ifdef VER2_2}, FGLObjectList22 {$endif}, CastleParameters;
 
 type
   EInvalidScreenShotFileName = class(EInvalidParams);
@@ -107,8 +107,8 @@ function MakingScreenShot: boolean;
 
 implementation
 
-uses SysUtils, KambiStringUtils, ProgressUnit, KambiFilesUtils,
-  KambiWarnings, Videos;
+uses SysUtils, CastleStringUtils, ProgressUnit, CastleFilesUtils,
+  CastleWarnings, Videos;
 
 function MakingScreenShot: boolean;
 begin

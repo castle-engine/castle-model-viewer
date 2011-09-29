@@ -29,8 +29,8 @@
 
 program tovrmlx3d;
 
-uses SysUtils, KambiUtils, KambiClassUtils, VRMLNodes, X3DLoad,
-  KambiParameters, V3DSceneVersion, KambiWarnings, KambiFilesUtils;
+uses SysUtils, CastleUtils, CastleClassUtils, VRMLNodes, X3DLoad,
+  CastleParameters, V3DSceneVersion, CastleWarnings, CastleFilesUtils;
 
 var
   Encoding: TX3DEncoding = xeClassic;

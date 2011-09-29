@@ -30,7 +30,7 @@ type
 
 implementation
 
-uses SysUtils, KambiUtils;
+uses SysUtils, CastleUtils;
 
 constructor TSceneWarnings.Create;
 begin

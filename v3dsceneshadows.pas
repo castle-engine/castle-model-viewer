@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses GLWindow, VRMLGLScene, Base3D, VectorMath, KambiSceneManager;
+uses GLWindow, VRMLGLScene, Base3D, VectorMath, CastleSceneManager;
 
 type
   { Takes care of settingshadow volume properties, and modifies a little
@@ -45,7 +45,7 @@ procedure ViewportShadowsProperties(Viewport: TKamAbstractViewport);
 
 implementation
 
-uses SysUtils, V3DSceneConfig, GL, KambiGLUtils, V3DSceneFillMode;
+uses SysUtils, V3DSceneConfig, GL, CastleGLUtils, V3DSceneFillMode;
 
 procedure ShadowsGLOpen;
 begin

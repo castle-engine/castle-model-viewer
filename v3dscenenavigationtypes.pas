@@ -25,8 +25,8 @@ unit V3DSceneNavigationTypes;
 
 interface
 
-uses SysUtils, KambiUtils, GLWindow, Cameras, VectorMath,
-  GL, GLU, KambiGLUtils, KambiSceneManager, Classes, UIControls,
+uses SysUtils, CastleUtils, GLWindow, Cameras, VectorMath,
+  GL, GLU, CastleGLUtils, CastleSceneManager, Classes, UIControls,
   GLControls;
 
 { Call this once on created SceneManager.
@@ -78,7 +78,7 @@ type
 
 implementation
 
-uses KambiParameters, KambiClassUtils, Images, GLImages, V3DSceneImages;
+uses CastleParameters, CastleClassUtils, Images, GLImages, V3DSceneImages;
 
 var
   ImageExamine_TooltipDL: TGLuint;
