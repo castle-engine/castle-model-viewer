@@ -55,7 +55,7 @@ var
   OctreeVisibleShapesDisplay: TOctreeDisplay;
   OctreeCollidableShapesDisplay: TOctreeDisplay;
 
-procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
+procedure OctreeDisplay(SceneAnimation: T3DPrecalculatedAnimation);
 
 function OctreeDisplayStatus: string;
 
@@ -114,7 +114,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
+procedure OctreeDisplay(SceneAnimation: T3DPrecalculatedAnimation);
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
     OctreeDisplayDepth: integer);
@@ -138,7 +138,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
 
   procedure DisplayOctreeTrianglesDepth(OctreeDisplayDepth: integer);
   var
-    SI: TVRMLShapeTreeIterator;
+    SI: TShapeTreeIterator;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -151,7 +151,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      SI := TShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
       try
         while SI.GetNext do
           if SI.Current.OctreeTriangles <> nil then
@@ -187,7 +187,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
 
   procedure DisplayOctreeTrianglesWhole;
   var
-    SI: TVRMLShapeTreeIterator;
+    SI: TShapeTreeIterator;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -200,7 +200,7 @@ procedure OctreeDisplay(SceneAnimation: TVRMLGLAnimation);
     if (SceneAnimation <> nil) and
        (SceneAnimation.ScenesCount <> 0) then
     begin
-      SI := TVRMLShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      SI := TShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
       try
         while SI.GetNext do
           if SI.Current.OctreeTriangles <> nil then

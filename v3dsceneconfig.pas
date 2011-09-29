@@ -32,7 +32,7 @@ var
   { User config file.
     Will be created (and FileName set) in initialization,
     will be flushed and freed in finalization. }
-  ConfigFile: TKamXMLConfig;
+  ConfigFile: TCastleConfig;
 
 implementation
 
@@ -53,7 +53,7 @@ initialization
     - ParamStr(0) is useless for upx executables. }
   OnGetApplicationName := {$ifdef FPC_OBJFPC} @ {$endif} MyGetApplicationName;
 
-  ConfigFile := TKamXMLConfig.Create(nil);
+  ConfigFile := TCastleConfig.Create(nil);
   ConfigFile.FileName := UserConfigFile('.conf');
   { SoundEngine.LoadFromConfig must be before SoundEngine.ParseParameters,
     that may change Enable by --no-sound. }

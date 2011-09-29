@@ -34,7 +34,7 @@ var
   SceneLightsCount: Cardinal;
 
 { Inits SceneLightsCount. }
-procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
+procedure SceneInitLights(SceneAnimation: T3DPrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);
 
 var
@@ -46,7 +46,7 @@ implementation
 
 uses GL, GLU, KambiGLUtils, KambiParameters, V3DSceneFillMode;
 
-procedure SceneInitLights(SceneAnimation: TVRMLGLAnimation;
+procedure SceneInitLights(SceneAnimation: T3DPrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);
 begin
   if not SceneAnimation.Loaded then

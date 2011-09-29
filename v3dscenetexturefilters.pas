@@ -56,16 +56,16 @@ const
   ( 'Modulate (texture * light)',
     'Replace (texture color overrides light)' );
 
-procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
+procedure InitTextureFilters(SceneAnimation: T3DPrecalculatedAnimation);
 
 function TextureMinFilter: TTextureMinFilter;
-procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: T3DPrecalculatedAnimation);
 
 function TextureMagFilter: TTextureMagFilter;
-procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: T3DPrecalculatedAnimation);
 
 function TextureModeRGB: TTextureMode;
-procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: T3DPrecalculatedAnimation);
 
 procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
 procedure MenuAppendTextureMagFilters(M: TMenu; BaseIntData: Cardinal);
@@ -92,7 +92,7 @@ var
   FTextureMagFilter: TTextureMagFilter;
   FTextureModeRGB: TTextureMode;
 
-procedure InitTextureFilters(SceneAnimation: TVRMLGLAnimation);
+procedure InitTextureFilters(SceneAnimation: T3DPrecalculatedAnimation);
 begin
  SetTextureMinFilter(tminLinearMipmapLinear, SceneAnimation);
  SetTextureMagFilter(tmagLinear, SceneAnimation);
@@ -102,7 +102,7 @@ end;
 function TextureMinFilter: TTextureMinFilter;
 begin Result := FTextureMinFilter end;
 
-procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: T3DPrecalculatedAnimation);
 begin
  FTextureMinFilter := value;
  SceneAnimation.Attributes.TextureMinFilter := TextureMinFilterToGL[Value];
@@ -111,7 +111,7 @@ end;
 function TextureMagFilter: TTextureMagFilter;
 begin Result := FTextureMagFilter end;
 
-procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: T3DPrecalculatedAnimation);
 begin
  FTextureMagFilter := value;
  SceneAnimation.Attributes.TextureMagFilter := TextureMagFilterToGL[Value];
@@ -120,7 +120,7 @@ end;
 function TextureModeRGB: TTextureMode;
 begin Result := FTextureModeRGB end;
 
-procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TVRMLGLAnimation);
+procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: T3DPrecalculatedAnimation);
 begin
  FTextureModeRGB := value;
  SceneAnimation.Attributes.TextureModeRGB := TextureModeRGBToGL[Value];

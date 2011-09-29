@@ -31,7 +31,7 @@ uses SysUtils, KambiUtils, GLWindow, Cameras, VectorMath,
 
 { Call this once on created SceneManager.
   This will take care of using proper SceneManager.Camera. }
-procedure InitCameras(SceneManager: TKamSceneManager);
+procedure InitCameras(SceneManager: TCastleSceneManager);
 
 const
   CameraNames: array [TCameraNavigationType] of string =
@@ -39,7 +39,7 @@ const
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
-  CameraButtons: array [TCameraNavigationType] of TKamGLButton;
+  CameraButtons: array [TCameraNavigationType] of TCastleButton;
 
 procedure UpdateCameraNavigationTypeUI;
 
@@ -65,7 +65,7 @@ var
   Camera: TUniversalCamera;
 
 type
-  TNavigationTypeButton = class(TKamGLButton)
+  TNavigationTypeButton = class(TCastleButton)
   public
     NavigationType: TCameraNavigationType;
     constructor Create(AOwner: TComponent;
@@ -96,7 +96,7 @@ begin
       CameraButtons[NT].Pressed := NT = Camera.NavigationType;
 end;
 
-procedure InitCameras(SceneManager: TKamSceneManager);
+procedure InitCameras(SceneManager: TCastleSceneManager);
 begin
   { init SceneManager.Camera }
   SceneManager.Camera := Camera;

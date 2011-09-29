@@ -21,7 +21,7 @@
 }
 
 { Simple unit that allows to incrementally display raytracer result
-  in TGLWindow window. }
+  in TCastleWindowBase window. }
 
 unit V3DSceneRaytrace;
 
@@ -36,9 +36,9 @@ const
   DEF_NON_PRIMARY_SAMPLES_COUNT = 4;
 
 { Ray-tracer. }
-procedure RaytraceToWin(Window: TGLWindow;
+procedure RaytraceToWin(Window: TCastleWindowBase;
   BaseLights: TLightInstancesList;
-  Scene: TVRMLScene;
+  Scene: T3DSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
@@ -52,9 +52,9 @@ uses VRMLRayTracer, GLWinModes, KambiGLUtils, Images, SysUtils, KambiUtils,
   GLWinMessages, GLImages;
 
 type
-  { callbacks data. Callbacki TGLWindow moga osiagnac to Data przez
+  { callbacks data. Callbacki TCastleWindowBase moga osiagnac to Data przez
     PCallData(Window.Userdata), callback RowMadeNotify dostaje Window
-    in Data (wiec musi zrobic PCallData(TGLWindow(Data).UserData) ) }
+    in Data (wiec musi zrobic PCallData(TCastleWindowBase(Data).UserData) ) }
   TCallData = record
     { Image to na poczatku SaveScreen sceny wyrenderowanej OpenGLem
       i raytracer stopniowo go zapisuje. Musimy pamietac w tym obrazku
@@ -82,7 +82,7 @@ end;
 { -------------------------------------------------------------------------
   Window calbacks AFTER rendering (when Image is ready) }
 
-procedure DrawRaytraced(Window: TGLWindow);
+procedure DrawRaytraced(Window: TCastleWindowBase);
 begin
  {zrob na poczatku clear na wypadek gdyby user zresizowal okienko - wtedy
   dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka }
@@ -96,7 +96,7 @@ end;
   Remember to NOT trust Window.Width/Height here - they don't have to
   be equal to Image.Width/Height here, user could already resize our window) }
 
-procedure DrawRaytracing(Window: TGLWindow);
+procedure DrawRaytracing(Window: TCastleWindowBase);
 var D: PCallData;
 begin
  {this DrawRaytracing callback will be called only when user requested
@@ -104,7 +104,7 @@ begin
   our window using window borders or temporary covered our window
   with other window)}
 
- {switch our drawing to the back buffer. We have to do it because TGLWindow
+ {switch our drawing to the back buffer. We have to do it because TCastleWindowBase
   will call SwapBuffers after calling OnDraw (and it's good) but we changed
   glDrawBuffer to GL_FRONT for drawing in RowsMadeNotifier.
   We could use more elegant solution : switch glDrawBuffer to GL_FRONT
@@ -130,13 +130,13 @@ begin
 end;
 
 procedure PixelsMadeNotify(PixelsMadeCount: Cardinal; Data: Pointer);
-{ przekazane tu data to musi byc Window: TGLWindow, a jego UserData musi
+{ przekazane tu data to musi byc Window: TCastleWindowBase, a jego UserData musi
   byc wskaznikiem PCallData }
 const ROWS_SHOW_COUNT = 5;
 var D: PCallData;
     RowsMadeCount: Cardinal;
 begin
- D := PCallData(TGLWindow(Data).UserData);
+ D := PCallData(TCastleWindowBase(Data).UserData);
 
  { obchodzi nas tylko RowsMadeCount, ignorujemy ten callback gdy PixelsMadeCount
    nie oznacza ze wlasnie skonczylismy caly wiersz }
@@ -144,7 +144,7 @@ begin
  RowsMadeCount := PixelsMadeCount div D^.Image.Width;
  D^.RowsMadeCount := RowsMadeCount;
 
- TGLWindow(Data).Caption := CaptionBegin +
+ TCastleWindowBase(Data).Caption := CaptionBegin +
    Format(' working %d%%',[Round(100*RowsMadeCount/D^.Image.Height)]);
 
  { zeby szybkosc rysowania wierszy nie obnizala znaczaco szybkosci renderingu
@@ -163,7 +163,7 @@ end;
 
 { menu things ---------------------------------------------------------------- }
 
-procedure MenuCommand(Window: TGLWindow; Item: TMenuItem);
+procedure MenuCommand(Window: TCastleWindowBase; Item: TMenuItem);
 var
   D: PCallData;
   SaveAsFilename: string;
@@ -221,9 +221,9 @@ end;
 
 { ----------------------------------------------------------------------------- }
 
-procedure RaytraceToWin(Window: TGLWindow;
+procedure RaytraceToWin(Window: TCastleWindowBase;
   BaseLights: TLightInstancesList;
-  Scene: TVRMLScene;
+  Scene: T3DSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;

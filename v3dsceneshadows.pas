@@ -8,7 +8,7 @@ type
   { Takes care of settingshadow volume properties, and modifies a little
     shadow volume rendering to work nicely with all view3dscene
     configurations (bump mapping, fill modes etc.) }
-  TV3DShadowsSceneManager = class(TKamSceneManager)
+  TV3DShadowsSceneManager = class(TCastleSceneManager)
   protected
     procedure Render3D(const Params: TRenderParams); override;
   end;
@@ -63,7 +63,7 @@ begin
   Viewport.ShadowVolumesDraw := DrawShadowVolumes;
 end;
 
-procedure Render3DShadowsBegin(Scene: TVRMLGLScene);
+procedure Render3DShadowsBegin(Scene: T3DScene);
 begin
   { Thanks to using PureGeometryShadowedColor, shadow is visible
     even when Attributes.PureGeometry. Note: no need to push current
@@ -73,7 +73,7 @@ begin
     glColorv(PureGeometryShadowedColor);
 end;
 
-procedure Render3DNoShadowsBegin(Scene: TVRMLGLScene);
+procedure Render3DNoShadowsBegin(Scene: T3DScene);
 begin
   if Scene.Attributes.PureGeometry then
     glColorv(PureGeometryColor);

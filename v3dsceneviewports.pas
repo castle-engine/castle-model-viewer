@@ -44,15 +44,15 @@ var
   Viewports: array [0..2] of TKamViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TGLUIWindow; SceneManager: TKamSceneManager);
+  Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
 { Copy all camera settings from Source.Camera to Target.Camera.
   If CreateIfNeeded then Target will be created if @nil (otherwise
   it will be left as @nil). }
 procedure AssignCamera(Target, Source: TKamAbstractViewport;
-  SceneManager: TKamSceneManager; const CreateIfNeeded: boolean);
+  SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
 
-procedure ResizeViewports(Window: TGLUIWindow; SceneManager: TKamSceneManager);
+procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
 { Copy NavigationType to (existing) viewports cameras. }
 procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
@@ -97,7 +97,7 @@ var
   Background: TBackground;
 
 procedure AssignCamera(Target, Source: TKamAbstractViewport;
-  SceneManager: TKamSceneManager; const CreateIfNeeded: boolean);
+  SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
 var
   Pos, Dir, Up, GravityUp: TVector3Single;
 begin
@@ -123,7 +123,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TGLUIWindow; SceneManager: TKamSceneManager);
+  Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
   procedure AddViewport(Viewport: TKamViewport);
   begin
@@ -192,7 +192,7 @@ begin
   end;
 end;
 
-procedure ResizeViewports(Window: TGLUIWindow; SceneManager: TKamSceneManager);
+procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 var
   W, H: Cardinal;
 begin

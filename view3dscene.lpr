@@ -44,15 +44,15 @@
     as VRML scene, actually VRML animation),
     optimization (vbo, OpenGL renderer cache inside VRML renderer),
     functionality (like automatic normals generation based on creaseAngle).
-  - render scene using TVRMLGLScene (actually TVRMLGLAnimation
-    and TVRMLGLScene is inside)
-  - use Cameras and TGLUIWindow to let user navigate
+  - render scene using T3DScene (actually T3DPrecalculatedAnimation
+    and T3DScene is inside)
+  - use Cameras and TCastleWindowCustom to let user navigate
     over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
-  - build TVRMLTriangleOctree to allow collision detection for
+  - build TTriangleOctree to allow collision detection for
     Walk camera and to allow raytracer
-  - build TVRMLShapeOctree to allow frustum culling using
-    octree by TVRMLGLScene
+  - build TShapeOctree to allow frustum culling using
+    octree by T3DScene
   - use VRMLRayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
   - allow some kind of object picking with mouse left button
@@ -91,7 +91,7 @@ uses KambiUtils, SysUtils, VectorMath, Boxes3D, Classes, KambiClassUtils,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion;
 
 var
-  Window: TGLUIWindow;
+  Window: TCastleWindowCustom;
 
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
@@ -101,7 +101,7 @@ var
   { Initialized in Open, finalized in Close. }
   StatusFont: TGLBitmapFont;
 
-  RecentMenu: TGLRecentFiles;
+  RecentMenu: TCastleRecentFiles;
 
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
@@ -118,13 +118,13 @@ var
     lifetime of this program, i.e. when I load new scene (from "Open"
     menu item) I DO NOT free and create new SceneAnimation object.
     Instead I'm only freeing and creating underlying scenes
-    (by Close / Load of TVRMLGLAnimation).
+    (by Close / Load of T3DPrecalculatedAnimation).
     This way I'm preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
-  SceneAnimation: TVRMLGLAnimation;
+  SceneAnimation: T3DPrecalculatedAnimation;
   SceneFilename: string;
 
-  SelectedItem: PVRMLTriangle;
+  SelectedItem: PTriangle;
   { SelectedPoint* always lies on SelectedItem item,
     and it's meaningless when SelectedItem = nil.
     World is in world coords,
@@ -133,7 +133,7 @@ var
   { SelectedShape is always SelectedItem^.Shape.
     Except in GeometryChanged, when SelectedItem may be already freed,
     and then SelectedShape variable is useful to compare with OnlyShapeChanged. }
-  SelectedShape: TVRMLShape;
+  SelectedShape: TShape;
 
   { Set to non-nil by CreateMainMenu. }
   MenuSelectedOctreeStat: TMenuItem;
@@ -167,10 +167,10 @@ var
   { If WarningsButton.Exists is allowed. If false, then WarningsButton.Exists
     should be false, regardless of warnings count. }
   WarningsButtonEnabled: boolean = true;
-  WarningsButton: TKamGLButton;
+  WarningsButton: TCastleButton;
 
   ToolbarPanel: TKamPanel;
-  CollisionsButton: TKamGLButton;
+  CollisionsButton: TCastleButton;
 
   AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
   AnimationTimePlaying: boolean = true;
@@ -189,10 +189,10 @@ var
 type
   THelper = class
     class procedure OpenRecent(const FileName: string);
-    class procedure GeometryChanged(Scene: TVRMLScene;
+    class procedure GeometryChanged(Scene: T3DSceneCore;
       const SomeLocalGeometryChanged: boolean;
-      OnlyShapeChanged: TVRMLShape);
-    class procedure ViewpointsChanged(Scene: TVRMLScene);
+      OnlyShapeChanged: TShape);
+    class procedure ViewpointsChanged(Scene: T3DSceneCore);
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
@@ -308,7 +308,7 @@ end;
   nil if not (although our SceneAnimation tries to always stay loaded).
   We use it for VRML/X3D events, and all other stuff where
   a single scene is needed. }
-function Scene: TVRMLGLScene;
+function Scene: T3DScene;
 begin
   if SceneAnimation.Loaded then
     Result := SceneAnimation.Scenes[0] else
@@ -356,7 +356,7 @@ end;
   to SceneAnimation.Collides = true next), but it will be destroyed on next
   rebuild of octree (when we will just destroy old and not recreate new).
 }
-function SceneOctreeCollisions: TVRMLBaseTrianglesOctree;
+function SceneOctreeCollisions: TBaseTrianglesOctree;
 begin
   if (SceneAnimation <> nil) and
      (Scene <> nil) and
@@ -365,7 +365,7 @@ begin
     Result := nil;
 end;
 
-function SceneOctreeRendering: TVRMLShapeOctree;
+function SceneOctreeRendering: TShapeOctree;
 begin
   if (SceneAnimation <> nil) and
      (Scene <> nil) and
@@ -568,9 +568,9 @@ end;
 var
   StatusText: TStatusText;
 
-{ TGLWindow callbacks --------------------------------------------------------- }
+{ TCastleWindowBase callbacks --------------------------------------------------------- }
 
-procedure Open(Window: TGLWindow);
+procedure Open(Window: TCastleWindowBase);
 begin
  statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
@@ -589,7 +589,7 @@ begin
  AntiAliasingEnable;
 end;
 
-procedure Close(Window: TGLWindow);
+procedure Close(Window: TCastleWindowBase);
 begin
   ShadowsGLClose;
   FreeAndNil(statusFont);
@@ -784,7 +784,7 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure MouseDown(Window: TGLWindow; Button: TMouseButton);
+procedure MouseDown(Window: TCastleWindowBase; Button: TMouseButton);
 begin
   if (Button = mbRight) and
      { Support selecting item by right button click only in Walk mode.
@@ -802,7 +802,7 @@ begin
     { calculate SelectedPointLocal }
     if SelectedItem <> nil then
     begin
-      SelectedShape := TVRMLShape(SelectedItem^.Shape);
+      SelectedShape := TShape(SelectedItem^.Shape);
       try
         SelectedPointLocal := MatrixMultPoint(
           SelectedItem^.State.InvertedTransform, SelectedPointWorld);
@@ -851,7 +851,7 @@ begin
     Result := ptPerspective;
 end;
 
-class procedure THelper.ViewpointsChanged(Scene: TVRMLScene);
+class procedure THelper.ViewpointsChanged(Scene: T3DSceneCore);
 begin
   Viewpoints.Recalculate(Scene);
 end;
@@ -936,7 +936,7 @@ procedure SceneOctreeFree;
 begin
   if Scene <> nil then
   begin
-    { Since we destroy our PVRMLTriangles, make sure Scene
+    { Since we destroy our PTriangles, make sure Scene
       doesn't hold a reference to it.
 
       Note: PointingDeviceClear will automatically update current cursor
@@ -993,7 +993,7 @@ var
   I: Integer;
   Value: boolean;
 begin
-  { Always disable ProcessEvents for TVRMLGLAnimation consisting of many models. }
+  { Always disable ProcessEvents for T3DPrecalculatedAnimation consisting of many models. }
   Value := ProcessEventsWanted and (SceneAnimation.ScenesCount = 1);
 
   for I := 0 to SceneAnimation.ScenesCount - 1 do
@@ -1080,7 +1080,7 @@ begin
     if AnimationTimeSpeedWhenLoading <> 1.0 then
       ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
 
-    { set InitialViewpoint* before creating the TVRMLScenes, so before
+    { set InitialViewpoint* before creating the T3DSceneCores, so before
       doing SceneAnimation.Load }
     SetInitialViewpoint(SceneAnimation, UseInitialVars);
 
@@ -1396,15 +1396,15 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
-class procedure THelper.GeometryChanged(Scene: TVRMLScene;
+class procedure THelper.GeometryChanged(Scene: T3DSceneCore;
   const SomeLocalGeometryChanged: boolean;
-  OnlyShapeChanged: TVRMLShape);
+  OnlyShapeChanged: TShape);
 begin
   if SomeLocalGeometryChanged then
   begin
     if (OnlyShapeChanged = nil) or
        (OnlyShapeChanged = SelectedShape) then
-      { Our PVRMLTriangle pointer is possibly invalid now. }
+      { Our PTriangle pointer is possibly invalid now. }
       Unselect;
   end else
   if SelectedItem <> nil then
@@ -1561,7 +1561,7 @@ end;
 
 procedure UpdateStatusToolbarVisible; forward;
 
-procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
+procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -1695,7 +1695,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M1: TMaterialNode_1;
     M2: TMaterialNode;
-    SelectedShape: TVRMLShape;
+    SelectedShape: TShape;
     SelectedGeometry: TAbstractGeometryNode;
     Tex: TAbstractTextureNode;
   begin
@@ -1704,7 +1704,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       s := 'Nothing selected.';
     end else
     begin
-      SelectedShape := TVRMLShape(SelectedItem^.Shape);
+      SelectedShape := TShape(SelectedItem^.Shape);
       SelectedGeometry := SelectedShape.Geometry;
       s := Format(
            'Selected point %s from triangle %s (triangle id: %s).' +nl+
@@ -1807,7 +1807,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
   procedure SelectedShowLightsInformation;
   var
     i: integer;
-    ShadowingItem: PVRMLTriangle;
+    ShadowingItem: PTriangle;
     S: string;
     Lights: TLightInstancesList;
     C: Integer;
@@ -1839,7 +1839,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
          begin
           s += Format('no, this light is blocked by triangle %s from shape %s.',
             [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
-              TVRMLShape(ShadowingItem^.Shape).NiceName ])
+              TShape(ShadowingItem^.Shape).NiceName ])
          end else
           s += 'yes, no object blocks this light, it shines on selected point.';
         end;
@@ -1865,7 +1865,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      Scene.RemoveShapeGeometry(TVRMLShape(SelectedItem^.Shape));
+      Scene.RemoveShapeGeometry(TShape(SelectedItem^.Shape));
     end;
   end;
 
@@ -1915,7 +1915,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    Geometry := TVRMLShape(SelectedItem^.Shape).OriginalGeometry;
+    Geometry := TShape(SelectedItem^.Shape).OriginalGeometry;
 
     if Geometry is TIndexedFaceSetNode_1 then
     begin
@@ -2327,7 +2327,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
-    { Below is a little expanded version of TGLWindow.SaveScreenDialog.
+    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that it turn causes FBO rendering (as we need alpha channel in color buffer). }
     if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
@@ -2486,10 +2486,10 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
         'Precalculating animation');
 
       { Otherwise, current time is huge and it doesn't work reliably
-        with division inside TVRMLGLAnimation.SceneFromTime.
+        with division inside T3DPrecalculatedAnimation.SceneFromTime.
         Do it *before* setting MainScene, as even setting MainScene
-        may cause TVRMLGLAnimation.VisibleChangeNotification, which
-        already requires TVRMLGLAnimation.SceneFromTime. }
+        may cause T3DPrecalculatedAnimation.VisibleChangeNotification, which
+        already requires T3DPrecalculatedAnimation.SceneFromTime. }
       SceneAnimation.ResetTimeAtLoad;
 
       { Closing the scene freed SceneManager.MainScene (it's set to nil
@@ -2508,14 +2508,14 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure SelectedShapeOctreeStat;
   var
-    Shape: TVRMLShape;
+    Shape: TShape;
   begin
     if SelectedItem = nil then
     begin
       MessageOk(Window, 'Nothing selected.', taLeft);
     end else
     begin
-      Shape := TVRMLShape(SelectedItem^.Shape);
+      Shape := TShape(SelectedItem^.Shape);
       if Shape.OctreeTriangles = nil then
         MessageOk(Window, 'No collision octree was initialized for this shape.', taLeft) else
       begin
@@ -2650,7 +2650,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       PackData: TPackNotAlignedData;
       Image: TGrayscaleImage;
     begin
-      { Just like TGLWindow.SaveScreen, we have to force redisplay now
+      { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
@@ -2696,7 +2696,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
 
   procedure MergeCloseVertexes;
   var
-    Shape: TVRMLShape;
+    Shape: TShape;
     Coord: TMFVec3f;
     MergeDistance: Single;
     MergedCount: Cardinal;
@@ -2704,7 +2704,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
     { TODO: for now, we work with OriginalGeometry and OriginalState.
       So it doesn't work on Cone, Cylinder etc. that are converted
       to IndexedFaceSet in Proxy. Reason: well, Coord.Changed
-      makes TVRMLScene.ChangedShapeFields which releases the very Coordinate
+      makes T3DSceneCore.ChangedShapeFields which releases the very Coordinate
       node and fields that were changed... }
 
     if SceneAnimation.ScenesCount > 1 then
@@ -2723,7 +2723,7 @@ procedure MenuCommand(Window: TGLWindow; MenuItem: TMenuItem);
       Exit;
     end;
 
-    Shape := TVRMLShape(SelectedItem^.Shape);
+    Shape := TShape(SelectedItem^.Shape);
 
     if not Shape.OriginalGeometry.Coord(Shape.OriginalState, Coord) then
     begin
@@ -2980,7 +2980,7 @@ begin
   123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
-  126: (Window as TGLUIWindow).SwapFullScreen;
+  126: (Window as TCastleWindowCustom).SwapFullScreen;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
 
@@ -3481,7 +3481,7 @@ end;
 { toolbar -------------------------------------------------------------------- }
 
 var
-  OpenButton: TKamGLButton;
+  OpenButton: TCastleButton;
 
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
@@ -3527,7 +3527,7 @@ begin
   StatusText := TStatusText.Create(Application);
   Window.Controls.Insert(0, StatusText);
 
-  OpenButton := TKamGLButton.Create(Application);
+  OpenButton := TCastleButton.Create(Application);
   OpenButton.Caption := 'Open';
   OpenButton.OnClick := @THelper(nil).OpenButtonClick;
   OpenButton.Image := V3DSceneImages.Open;
@@ -3535,7 +3535,7 @@ begin
   OpenButton.MinImageHeight := MinImageHeight;
   Window.Controls.Insert(0, OpenButton);
 
-  CollisionsButton := TKamGLButton.Create(Application);
+  CollisionsButton := TCastleButton.Create(Application);
   CollisionsButton.Caption := 'Collisions';
   CollisionsButton.OnClick := @THelper(nil).CollisionsButtonClick;
   CollisionsButton.MinImageHeight := MinImageHeight;
@@ -3545,7 +3545,7 @@ begin
     CollisionsButton.Pressed := true { default value };
   Window.Controls.Insert(0, CollisionsButton);
 
-  WarningsButton := TKamGLButton.Create(Application);
+  WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
@@ -3576,7 +3576,7 @@ begin
   UpdateStatusToolbarVisible;
 end;
 
-procedure Resize(Window: TGLWindow);
+procedure Resize(Window: TCastleWindowBase);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
   ButtonsMargin = 8; {< between buttons }
@@ -3657,7 +3657,7 @@ end;
 
 { initializing GL context --------------------------------------------------- }
 
-procedure MultiSamplingOff(Window: TGLWindow; const FailureMessage: string);
+procedure MultiSamplingOff(Window: TCastleWindowBase; const FailureMessage: string);
 begin
   AntiAliasing := 0;
   if AntiAliasingMenu[AntiAliasing] <> nil then
@@ -3665,7 +3665,7 @@ begin
   Writeln(FailureMessage);
 end;
 
-procedure StencilOff(Window: TGLWindow; const FailureMessage: string);
+procedure StencilOff(Window: TCastleWindowBase; const FailureMessage: string);
 begin
   ShadowsPossibleCurrently := false;
   Writeln(FailureMessage);
@@ -3792,7 +3792,7 @@ const
            '                        generally makes method one step better.' +NL+
            SoundEngine.ParseParametersHelp + NL+
            NL+
-           TGLWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
+           TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
@@ -3859,7 +3859,7 @@ const
   end;
 
 begin
-  Window := TGLUIWindow.Create(Application);
+  Window := TCastleWindowCustom.Create(Application);
 
   { parse parameters }
   Window.ParseParameters(StandardParseOptions);
@@ -3911,7 +3911,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to initial empty values }
-    SceneAnimation := TVRMLGLAnimation.Create(nil);
+    SceneAnimation := T3DPrecalculatedAnimation.Create(nil);
     try
       SceneAnimation.TryFirstSceneDynamic := true;
       AttributesLoadFromConfig(SceneAnimation.Attributes);
@@ -3920,7 +3920,7 @@ begin
       InitCameras(SceneManager);
       InitTextureFilters(SceneAnimation);
 
-      RecentMenu := TGLRecentFiles.Create(nil);
+      RecentMenu := TCastleRecentFiles.Create(nil);
       RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
       RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
