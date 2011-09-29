@@ -25,7 +25,7 @@ unit V3DSceneOctreeVisualize;
 
 interface
 
-uses CastleOctree, VRMLGLAnimation, GLWindow;
+uses CastleOctree, VRMLGLAnimation, CastleWindow;
 
 type
   TOctreeDisplay = object

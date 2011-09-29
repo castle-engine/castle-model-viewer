@@ -27,7 +27,7 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses GL, GLU, GLExt, GLWindow, VectorMath, VRMLNodes,
+uses GL, GLU, GLExt, CastleWindow, VectorMath, VRMLNodes,
   CastleFilesUtils, CastleStringUtils, VRMLScene;
 
 const
@@ -48,8 +48,8 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 
 implementation
 
-uses VRMLRayTracer, GLWinModes, CastleGLUtils, Images, SysUtils, CastleUtils,
-  GLWinMessages, GLImages;
+uses VRMLRayTracer, CastleWindowModes, CastleGLUtils, Images, SysUtils, CastleUtils,
+  CastleMessages, GLImages;
 
 type
   { callbacks data. Callbacki TCastleWindowBase moga osiagnac to Data przez

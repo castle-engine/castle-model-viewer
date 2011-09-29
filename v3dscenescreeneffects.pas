@@ -26,7 +26,7 @@ unit V3DSceneScreenEffects;
 
 interface
 
-uses Classes, CastleUtils, UIControls, GLWindow, GLShaders;
+uses Classes, CastleUtils, UIControls, CastleWindow, GLShaders;
 
 type
   { Screen effects predefined in view3dscene.

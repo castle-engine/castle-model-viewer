@@ -73,8 +73,8 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
   { OpenGL related units: }
-  GL, GLWindow, CastleGLUtils, OpenGLBmpFonts,
-  GLWinMessages, GLProgress, GLWindowRecentFiles, GLImages,
+  GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
+  CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
@@ -578,8 +578,8 @@ begin
    that fog interpolation has to be corrected for perspective. }
  glHint(GL_FOG_HINT, GL_NICEST);
 
- GLProgressInterface.Window := Window;
- Progress.UserInterface := GLProgressInterface;
+ WindowProgressInterface.Window := Window;
+ Progress.UserInterface := WindowProgressInterface;
 
  BGColorChanged;
 
@@ -884,7 +884,7 @@ begin
   WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
   WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
   { When window is closed, width/height may be incorrect (even negative,
-    because of GLWindowDefaultSize). Do not call EventResize then.
+    because of WindowDefaultSize). Do not call EventResize then.
     May happen when you used --write, and some warning occurs. }
   if not Window.Closed then
     Window.EventResize; { update WarningsButton.Left }
@@ -3927,7 +3927,7 @@ begin
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
-        GLWinMessagesTheme := GLWinMessagesTheme_TypicalGUI;
+        MessagesTheme := MessagesTheme_TypicalGUI;
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;

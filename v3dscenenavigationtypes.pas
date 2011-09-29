@@ -25,7 +25,7 @@ unit V3DSceneNavigationTypes;
 
 interface
 
-uses SysUtils, CastleUtils, GLWindow, Cameras, VectorMath,
+uses SysUtils, CastleUtils, CastleWindow, Cameras, VectorMath,
   GL, GLU, CastleGLUtils, CastleSceneManager, Classes, UIControls,
   GLControls;
 

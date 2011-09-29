@@ -2,7 +2,7 @@ unit V3DSceneAntiAliasing;
 
 interface
 
-uses GLAntiAliasing, GLWindow;
+uses GLAntiAliasing, CastleWindow;
 
 var
   AntiAliasingMenu: array [TAntiAliasingRange] of TMenuItemRadio;

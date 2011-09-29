@@ -25,7 +25,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleSceneManager, GLWindow, Cameras;
+uses CastleSceneManager, CastleWindow, Cameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);

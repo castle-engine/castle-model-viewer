@@ -25,7 +25,7 @@ unit V3DSceneViewpoints;
 
 interface
 
-uses VectorMath, VRMLNodes, GLWindow, CastleUtils, Classes, CastleClassUtils,
+uses VectorMath, VRMLNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
   VRMLScene, VRMLGLAnimation;
 
 { Return S with newlines replaced with spaces and trimmed to
