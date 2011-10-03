@@ -753,24 +753,32 @@ tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
 tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
 ---- Reading again ../demo_models/prototypes/warnings/proto_invalid_is.wrl
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
 tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
 tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
 tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
 ---- Reading ../demo_models/prototypes/warnings/proto_invalid_nest.wrl
 tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
 ---- Reading again ../demo_models/prototypes/warnings/proto_invalid_nest.wrl
 tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Unknown X3D node type "Leg"
+tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
 ---- Reading ../demo_models/rendered_texture/chess.x3dv
 ---- Reading again ../demo_models/rendered_texture/chess.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -917,6 +925,9 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D node type "Leg"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_maps/projected_spotlight.x3dv
 ---- Reading again ../demo_models/shadow_maps/projected_spotlight.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shadow_maps/projected_spotlight_temp_speed_test.x3dv
+---- Reading again ../demo_models/shadow_maps/projected_spotlight_temp_speed_test.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_maps/shadow_bias.x3dv
 ---- Reading again ../demo_models/shadow_maps/shadow_bias.x3dv
@@ -1341,14 +1352,18 @@ Header on output is #VRML V2.0 utf8
 ---- Reading again ../demo_models/vrml_2/warnings/normal_index_wrong.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/warnings/not_allowed_children.wrl
+tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
 ---- Reading again ../demo_models/vrml_2/warnings/not_allowed_children.wrl
+tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
+tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
 tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
 ---- Reading ../demo_models/vrml_2/warnings/not_enough_coords.wrl
@@ -1636,10 +1651,14 @@ tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
 tovrmlx3d: VRML/X3D warning: Exported node name "KingsEye" not found
 tovrmlx3d: VRML/X3D warning: Exported node name "PosInterpBlah" not found
 ---- Reading ../demo_models/x3d/warnings/invalid_container_field_on_use.x3d
+tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 ---- Reading again ../demo_models/x3d/warnings/invalid_container_field_on_use.x3d
+tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
+tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
 ---- Reading ../demo_models/x3d/warnings/invalid_statement_omitted_1.x3dv
 tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 292: Expected node type or DEF or USE, got "}"
 ---- Reading again ../demo_models/x3d/warnings/invalid_statement_omitted_1.x3dv
