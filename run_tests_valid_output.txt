@@ -328,35 +328,35 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/fog/vrml_1/fog_points.wrl
 ---- Reading again ../demo_models/fog/vrml_1/fog_points.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kambi_script/ball_game.x3dv
----- Reading again ../demo_models/kambi_script/ball_game.x3dv
+---- Reading ../demo_models/castle_script/ball_game.x3dv
+---- Reading again ../demo_models/castle_script/ball_game.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/change_script.x3dv
----- Reading again ../demo_models/kambi_script/change_script.x3dv
+---- Reading ../demo_models/castle_script/change_script.x3dv
+---- Reading again ../demo_models/castle_script/change_script.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/edit_texture.x3dv
----- Reading again ../demo_models/kambi_script/edit_texture.x3dv
+---- Reading ../demo_models/castle_script/edit_texture.x3dv
+---- Reading again ../demo_models/castle_script/edit_texture.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/particles.x3dv
----- Reading again ../demo_models/kambi_script/particles.x3dv
+---- Reading ../demo_models/castle_script/particles.x3dv
+---- Reading again ../demo_models/castle_script/particles.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/rotations.x3dv
----- Reading again ../demo_models/kambi_script/rotations.x3dv
+---- Reading ../demo_models/castle_script/rotations.x3dv
+---- Reading again ../demo_models/castle_script/rotations.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/script_inside_prototype.wrl
----- Reading again ../demo_models/kambi_script/script_inside_prototype.wrl
+---- Reading ../demo_models/castle_script/script_inside_prototype.wrl
+---- Reading again ../demo_models/castle_script/script_inside_prototype.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/simple_tests.x3dv
----- Reading again ../demo_models/kambi_script/simple_tests.x3dv
+---- Reading ../demo_models/castle_script/simple_tests.x3dv
+---- Reading again ../demo_models/castle_script/simple_tests.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/simple_tests_cdata.x3d
----- Reading again ../demo_models/kambi_script/simple_tests_cdata.x3d
+---- Reading ../demo_models/castle_script/simple_tests_cdata.x3d
+---- Reading again ../demo_models/castle_script/simple_tests_cdata.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/texture_transform.x3dv
----- Reading again ../demo_models/kambi_script/texture_transform.x3dv
+---- Reading ../demo_models/castle_script/texture_transform.x3dv
+---- Reading again ../demo_models/castle_script/texture_transform.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kambi_script/warnings/kambi_script_warnings.x3dv
----- Reading again ../demo_models/kambi_script/warnings/kambi_script_warnings.x3dv
+---- Reading ../demo_models/castle_script/warnings/castle_script_warnings.x3dv
+---- Reading again ../demo_models/castle_script/warnings/castle_script_warnings.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/kanim/cube_opening/cube_opening_1.wrl
 ---- Reading again ../demo_models/kanim/cube_opening/cube_opening_1.wrl
