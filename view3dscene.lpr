@@ -172,7 +172,7 @@ var
   ToolbarPanel: TKamPanel;
   CollisionsButton: TCastleButton;
 
-  AnimationTimeSpeedWhenLoading: TKamTime = 1.0;
+  AnimationTimeSpeedWhenLoading: TFloatTime = 1.0;
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
 
@@ -1471,7 +1471,7 @@ procedure MakeAllScreenShots(ReadBuffer: TGLenum);
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
-  OldTime: TKamTime;
+  OldTime: TFloatTime;
   Image: TRGBImage;
 begin
   { Save global things that we change, to restore them later.
@@ -2380,7 +2380,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ScreenShotToVideo;
   var
-    TimeBegin, TimeStep: TKamTime;
+    TimeBegin, TimeStep: TFloatTime;
     FramesCount: Cardinal;
     FileNamePattern: string;
     Range: TRangeScreenShot;

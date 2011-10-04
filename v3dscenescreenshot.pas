@@ -46,7 +46,7 @@ type
     FileNamePattern: string;
 
     function Count: Cardinal; virtual; abstract;
-    function UseTime(const Index: Integer): TKamTime; virtual; abstract;
+    function UseTime(const Index: Integer): TFloatTime; virtual; abstract;
     function UseFileName(const Index: Integer): string; virtual; abstract;
 
     { Call BeginCapture, EndCapture around saving all images for this
@@ -62,10 +62,10 @@ type
   end;
 
   TSingleScreenShot = class(TScreenShot)
-    Time: TKamTime;
+    Time: TFloatTime;
 
     function Count: Cardinal; override;
-    function UseTime(const Index: Integer): TKamTime; override;
+    function UseTime(const Index: Integer): TFloatTime; override;
     function UseFileName(const Index: Integer): string; override;
   end;
 
@@ -76,11 +76,11 @@ type
     TemporaryImagesPattern: string;
     TemporaryImagesCounter: Cardinal;
   public
-    TimeBegin, TimeStep: TKamTime;
+    TimeBegin, TimeStep: TFloatTime;
     FramesCount: Cardinal;
 
     function Count: Cardinal; override;
-    function UseTime(const Index: Integer): TKamTime; override;
+    function UseTime(const Index: Integer): TFloatTime; override;
     function UseFileName(const Index: Integer): string; override;
 
     { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
@@ -142,7 +142,7 @@ begin
   Result := 1;
 end;
 
-function TSingleScreenShot.UseTime(const Index: Integer): TKamTime;
+function TSingleScreenShot.UseTime(const Index: Integer): TFloatTime;
 begin
   Result := Time;
 end;
@@ -159,7 +159,7 @@ begin
   Result := FramesCount;
 end;
 
-function TRangeScreenShot.UseTime(const Index: Integer): TKamTime;
+function TRangeScreenShot.UseTime(const Index: Integer): TFloatTime;
 begin
   Result := TimeBegin + Index * TimeStep;
 end;
