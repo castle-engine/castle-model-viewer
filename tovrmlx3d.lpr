@@ -29,7 +29,7 @@
 
 program tovrmlx3d;
 
-uses SysUtils, CastleUtils, CastleClassUtils, VRMLNodes, X3DLoad,
+uses SysUtils, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
   CastleParameters, V3DSceneVersion, CastleWarnings, CastleFilesUtils;
 
 var

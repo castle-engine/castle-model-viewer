@@ -2,7 +2,7 @@ unit V3DSceneFillMode;
 
 interface
 
-uses Scene, CastleWindow, VectorMath;
+uses CastleScene, CastleWindow, VectorMath;
 
 type
   TFillMode = 0..8;

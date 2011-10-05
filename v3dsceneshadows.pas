@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses CastleWindow, Scene, Base3D, VectorMath, CastleSceneManager;
+uses CastleWindow, CastleScene, Base3D, VectorMath, CastleSceneManager;
 
 type
   { Takes care of settingshadow volume properties, and modifies a little

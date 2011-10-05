@@ -36,13 +36,13 @@
     ../castle_game_engine/examples/vrml/scene_manager_demos.lpr
 
   Basic components of this program:
-  - use LoadVRMLSequence to load any format to VRML scene.
-    This converts any known (to our engine) 3D model format to VRML.
-    This convertion doesn't lose anything because VRML is able to
+  - use LoadVRMLSequence to load any format to VRML/X3D scene.
+    This converts any known (to our engine) 3D model format to VRML/X3D.
+    This convertion doesn't lose anything because VRML/X3D is able to
     express everything that is implemented in other 3D formats readers.
     And we gain the simplicity of this program (we just treat everything
-    as VRML scene, actually VRML animation),
-    optimization (vbo, OpenGL renderer cache inside VRML renderer),
+    as VRML/X3D scene, actually VRML/X3D precalculated animation),
+    optimization (vbo, OpenGL renderer cache inside VRML/X3D renderer),
     functionality (like automatic normals generation based on creaseAngle).
   - render scene using T3DScene (actually T3DPrecalculatedAnimation
     and T3DScene is inside)
@@ -78,8 +78,8 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
-  X3DNodes, X3DLoad, Scene, Triangle,
-  SceneCore, X3DNodesDetailOptions,
+  X3DNodes, X3DLoad, CastleScene, Triangle,
+  CastleSceneCore, X3DNodesDetailOptions,
   X3DCameraUtils, PrecalculatedAnimation, Background,
   GLRenderer, Shape, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }

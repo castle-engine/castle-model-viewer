@@ -28,7 +28,7 @@ unit V3DSceneRaytrace;
 interface
 
 uses GL, GLU, GLExt, CastleWindow, VectorMath, X3DNodes,
-  CastleFilesUtils, CastleStringUtils, SceneCore;
+  CastleFilesUtils, CastleStringUtils, CastleSceneCore;
 
 const
   DEF_RAYTRACE_DEPTH = 3;
