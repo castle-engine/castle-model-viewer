@@ -61,7 +61,7 @@ function OctreeDisplayStatus: string;
 
 implementation
 
-uses GL, VectorMath, CastleGLUtils, VRMLShape, SysUtils;
+uses GL, VectorMath, CastleGLUtils, Shape, SysUtils;
 
 { TOctreeDisplay ------------------------------------------------------------- }
 

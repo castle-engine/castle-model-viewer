@@ -78,10 +78,10 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   VRMLFields, VRMLShapeOctree,
-  VRMLNodes, X3DLoad, VRMLGLScene, VRMLTriangle,
+  VRMLNodes, X3DLoad, Scene, Triangle,
   VRMLScene, VRMLNodesDetailOptions,
   VRMLCameraUtils, VRMLGLAnimation, VRMLGLBackground,
-  VRMLGLRenderer, VRMLShape, RenderingCameraUnit, VRMLShadowMaps, CastleSceneManager,
+  VRMLGLRenderer, Shape, RenderingCameraUnit, VRMLShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
