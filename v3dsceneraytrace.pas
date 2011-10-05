@@ -27,8 +27,8 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses GL, GLU, GLExt, CastleWindow, VectorMath, VRMLNodes,
-  CastleFilesUtils, CastleStringUtils, VRMLScene;
+uses GL, GLU, GLExt, CastleWindow, VectorMath, X3DNodes,
+  CastleFilesUtils, CastleStringUtils, SceneCore;
 
 const
   DEF_RAYTRACE_DEPTH = 3;
@@ -48,7 +48,7 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 
 implementation
 
-uses VRMLRayTracer, WindowModes, CastleGLUtils, Images, SysUtils, CastleUtils,
+uses RayTracer, WindowModes, CastleGLUtils, Images, SysUtils, CastleUtils,
   CastleMessages, GLImages;
 
 type

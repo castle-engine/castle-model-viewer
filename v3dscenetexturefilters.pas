@@ -30,8 +30,8 @@ unit V3DSceneTextureFilters;
 
 interface
 
-uses GL, GLU, GLExt, CastleUtils, VectorMath, VRMLNodes,
-  VRMLGLAnimation, CastleGLUtils, CastleWindow;
+uses GL, GLU, GLExt, CastleUtils, VectorMath, X3DNodes,
+  PrecalculatedAnimation, CastleGLUtils, CastleWindow;
 
 type
   TTextureMinFilter = (tminNearest, tminLinear, tminNearestMipmapNearest,

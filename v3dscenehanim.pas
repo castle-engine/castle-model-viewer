@@ -26,7 +26,7 @@ unit V3DSceneHAnim;
 
 interface
 
-uses VRMLNodes;
+uses X3DNodes;
 
 type
   THumanoidVisualization = class

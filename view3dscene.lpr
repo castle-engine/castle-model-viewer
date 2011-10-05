@@ -53,7 +53,7 @@
     Walk camera and to allow raytracer
   - build TShapeOctree to allow frustum culling using
     octree by T3DScene
-  - use VRMLRayTracer embedded in RaytraceToWindow module to allow
+  - use RayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
   - allow some kind of object picking with mouse left button
     (for VRML sensors) and right button (to select for editing).
@@ -77,11 +77,11 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
-  VRMLFields, VRMLShapeOctree,
-  VRMLNodes, X3DLoad, Scene, Triangle,
-  VRMLScene, VRMLNodesDetailOptions,
-  VRMLCameraUtils, VRMLGLAnimation, VRMLGLBackground,
-  VRMLGLRenderer, Shape, RenderingCameraUnit, VRMLShadowMaps, CastleSceneManager,
+  X3DFields, ShapeOctree,
+  X3DNodes, X3DLoad, Scene, Triangle,
+  SceneCore, X3DNodesDetailOptions,
+  X3DCameraUtils, PrecalculatedAnimation, Background,
+  GLRenderer, Shape, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -216,7 +216,7 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
-    function Background: TVRMLGLBackground; override;
+    function Background: TBackground; override;
   end;
 
   TV3DViewport = class(TV3DShadowsViewport)
@@ -229,7 +229,7 @@ type
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
-    function Background: TVRMLGLBackground; override;
+    function Background: TBackground; override;
   end;
 
 var
@@ -266,7 +266,7 @@ end;
 var
   DisableBackground: Cardinal;
 
-function TV3DSceneManager.Background: TVRMLGLBackground;
+function TV3DSceneManager.Background: TBackground;
 begin
   if DisableBackground <> 0 then
     Result := nil else
@@ -295,7 +295,7 @@ begin
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
 end;
 
-function TV3DViewport.Background: TVRMLGLBackground;
+function TV3DViewport.Background: TBackground;
 begin
   if DisableBackground <> 0 then
     Result := nil else
@@ -3770,7 +3770,7 @@ const
            '  --write-to-vrml       Obsolete shortcut for "--write --write-encoding=classic"' +NL+
            CamerasOptionsHelp +NL+
            '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
-           VRMLNodesDetailOptionsHelp +NL+
+           X3DNodesDetailOptionsHelp +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3866,7 +3866,7 @@ begin
   SoundEngine.ParseParameters;
   CamerasParseParameters;
   ViewpointsParseParameters;
-  VRMLNodesDetailOptionsParse;
+  X3DNodesDetailOptionsParse;
   Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : filename to load }
   if Parameters.High > 1 then
