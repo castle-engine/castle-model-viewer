@@ -75,7 +75,7 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
-  GLAntiAliasing, GLVersionUnit, GLCubeMap, GLControls, GLShaders,
+  GLAntiAliasing, GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
   X3DNodes, X3DLoad, CastleScene, Triangle,
@@ -169,7 +169,7 @@ var
   WarningsButtonEnabled: boolean = true;
   WarningsButton: TCastleButton;
 
-  ToolbarPanel: TKamPanel;
+  ToolbarPanel: TCastlePanel;
   CollisionsButton: TCastleButton;
 
   AnimationTimeSpeedWhenLoading: TFloatTime = 1.0;
@@ -3519,7 +3519,7 @@ var
 const
   MinImageHeight = 22;
 begin
-  ToolbarPanel := TKamPanel.Create(Application);
+  ToolbarPanel := TCastlePanel.Create(Application);
   ToolbarPanel.Opacity := 0.8;
   ToolbarPanel.VerticalSeparators.Count := 2;
   Window.Controls.Insert(0, ToolbarPanel);

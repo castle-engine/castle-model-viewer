@@ -27,7 +27,7 @@ interface
 
 uses SysUtils, CastleUtils, CastleWindow, Cameras, VectorMath,
   GL, GLU, CastleGLUtils, CastleSceneManager, Classes, UIControls,
-  GLControls;
+  CastleControls;
 
 { Call this once on created SceneManager.
   This will take care of using proper SceneManager.Camera. }
