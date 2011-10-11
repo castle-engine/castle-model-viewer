@@ -2790,7 +2790,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     const ForceConvertingToX3D: boolean);
   var
     ProposedSaveName, Extension, FileFilters: string;
-    SaveVersion: TVRMLVersion;
+    SaveVersion: TX3DVersion;
     Convertion: boolean;
   begin
     SaveVersion := SaveVRMLVersion(Scene.RootNode);
