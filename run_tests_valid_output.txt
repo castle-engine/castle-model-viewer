@@ -583,11 +583,11 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/navigation/billboards_with_shadow.x3dv
 ---- Reading again ../demo_models/navigation/billboards_with_shadow.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/navigation/kambi_extensions/viewpoint_up_down_fields.wrl
----- Reading again ../demo_models/navigation/kambi_extensions/viewpoint_up_down_fields.wrl
+---- Reading ../demo_models/navigation/castle_extensions/viewpoint_up_down_fields.wrl
+---- Reading again ../demo_models/navigation/castle_extensions/viewpoint_up_down_fields.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/navigation/kambi_extensions/viewpoints_tests.wrl
----- Reading again ../demo_models/navigation/kambi_extensions/viewpoints_tests.wrl
+---- Reading ../demo_models/navigation/castle_extensions/viewpoints_tests.wrl
+---- Reading again ../demo_models/navigation/castle_extensions/viewpoints_tests.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/lod_test.x3dv
 ---- Reading again ../demo_models/navigation/lod_test.x3dv
@@ -1219,14 +1219,14 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Reading again ../demo_models/vrml_1/isa_fields_extensions.wrl
 tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named '')
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/kambi_extensions/inline_not_separate.wrl
----- Reading again ../demo_models/vrml_1/kambi_extensions/inline_not_separate.wrl
+---- Reading ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/kambi_extensions/kambi_triangulation.wrl
----- Reading again ../demo_models/vrml_1/kambi_extensions/kambi_triangulation.wrl
+---- Reading ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/kambi_extensions/multi_root.wrl
----- Reading again ../demo_models/vrml_1/kambi_extensions/multi_root.wrl
+---- Reading ../demo_models/vrml_1/castle_extensions/multi_root.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/multi_root.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/kings_head.wrl
 ---- Reading again ../demo_models/vrml_1/kings_head.wrl
@@ -1300,23 +1300,23 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Reading ../demo_models/vrml_2/inline_test.wrl
 ---- Reading again ../demo_models/vrml_2/inline_test.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/inline_load_control_test_1.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/inline_load_control_test_1.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/inline_load_control_test_2.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/inline_load_control_test_2.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/kambi_triangulation.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/kambi_triangulation.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/kambi_triangulation_for_screenshot.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/kambi_triangulation_for_screenshot.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/logger_nodes.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/logger_nodes.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/kambi_extensions/various_blend_modes.wrl
----- Reading again ../demo_models/vrml_2/kambi_extensions/various_blend_modes.wrl
+---- Reading ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/kings_head.wrl
 ---- Reading again ../demo_models/vrml_2/kings_head.wrl
@@ -1559,23 +1559,23 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Reading ../demo_models/x3d/inline_url_change.x3dv
 ---- Reading again ../demo_models/x3d/inline_url_change.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/alpha_channel.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/alpha_channel.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/event_utils_logger_test.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/event_utils_logger_test.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/logger.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/logger.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/logger.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/logger.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/octree_props.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/octree_props.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/octree_props.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/octree_props.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/teapot_avalon.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/teapot_avalon.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/kambi_extensions/teapot_simple.x3dv
----- Reading again ../demo_models/x3d/kambi_extensions/teapot_simple.x3dv
+---- Reading ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/kings_head.x3dv
 ---- Reading again ../demo_models/x3d/kings_head.x3dv
