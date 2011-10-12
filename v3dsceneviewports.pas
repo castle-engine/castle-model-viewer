@@ -104,7 +104,7 @@ begin
   if Target.Camera = nil then
   begin
     if CreateIfNeeded then
-      Target.Camera := Target.CreateDefaultCamera(Target) else
+      Target.Camera := Target.CreateDefaultCamera else
       Exit;
   end;
 
