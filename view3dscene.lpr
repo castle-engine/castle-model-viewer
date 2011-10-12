@@ -1446,7 +1446,7 @@ begin
   finally FreeAndNil(S) end;
 end;
 
-procedure AttributesLoadFromConfig(Attributes: TX3DRenderingAttributes);
+procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
 begin
   Attributes.LineWidth := ConfigFile.GetFloat('video_options/line_width',
     DefaultLineWidth);
@@ -1454,7 +1454,7 @@ begin
     DefaultPointSize);
 end;
 
-procedure AttributesSaveToConfig(Attributes: TX3DRenderingAttributes);
+procedure AttributesSaveToConfig(Attributes: TRenderingAttributes);
 begin
   ConfigFile.SetDeleteFloat('video_options/line_width',
     Attributes.LineWidth, DefaultLineWidth);
