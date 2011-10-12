@@ -13,7 +13,7 @@ type
     procedure Render3D(const Params: TRenderParams); override;
   end;
 
-  TV3DShadowsViewport = class(TKamViewport)
+  TV3DShadowsViewport = class(TCastleViewport)
   protected
     procedure Render3D(const Params: TRenderParams); override;
   end;
@@ -41,7 +41,7 @@ var
 procedure ShadowsGLOpen;
 procedure ShadowsGLClose;
 
-procedure ViewportShadowsProperties(Viewport: TKamAbstractViewport);
+procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 
 implementation
 
@@ -56,7 +56,7 @@ procedure ShadowsGLClose;
 begin
 end;
 
-procedure ViewportShadowsProperties(Viewport: TKamAbstractViewport);
+procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 begin
   Viewport.ShadowVolumesPossible := ShadowsPossibleCurrently;
   Viewport.ShadowVolumes := ShadowsOn;

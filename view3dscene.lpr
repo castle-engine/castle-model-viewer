@@ -235,7 +235,7 @@ type
 var
   SceneManager: TV3DSceneManager;
 
-procedure ViewportProperties(Viewport: TKamAbstractViewport);
+procedure ViewportProperties(Viewport: TCastleAbstractViewport);
 begin
   ViewportShadowsProperties(Viewport);
   Viewport.BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
@@ -699,9 +699,9 @@ end;
 
 procedure TV3DSceneManager.RenderFromView3D(const Params: TRenderParams);
 begin
-  { Although TKamAbstractViewport is ready for MainScene = nil case,
+  { Although TCastleAbstractViewport is ready for MainScene = nil case,
     this RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TKamAbstractViewport
+    but better to secure for this case, since any TCastleAbstractViewport
     should always work with MainScene = nil. }
   if MainScene = nil then Exit;
 
@@ -746,9 +746,9 @@ end;
 
 procedure TV3DViewport.RenderFromView3D(const Params: TRenderParams);
 begin
-  { Although TKamAbstractViewport is ready for MainScene = nil case,
+  { Although TCastleAbstractViewport is ready for MainScene = nil case,
     this RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TKamAbstractViewport
+    but better to secure for this case, since any TCastleAbstractViewport
     should always work with MainScene = nil. }
   if GetMainScene = nil then Exit;
 
@@ -1446,7 +1446,7 @@ begin
   finally FreeAndNil(S) end;
 end;
 
-procedure AttributesLoadFromConfig(Attributes: TVRMLRenderingAttributes);
+procedure AttributesLoadFromConfig(Attributes: TX3DRenderingAttributes);
 begin
   Attributes.LineWidth := ConfigFile.GetFloat('video_options/line_width',
     DefaultLineWidth);
@@ -1454,7 +1454,7 @@ begin
     DefaultPointSize);
 end;
 
-procedure AttributesSaveToConfig(Attributes: TVRMLRenderingAttributes);
+procedure AttributesSaveToConfig(Attributes: TX3DRenderingAttributes);
 begin
   ConfigFile.SetDeleteFloat('video_options/line_width',
     Attributes.LineWidth, DefaultLineWidth);
@@ -2191,7 +2191,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     Writeln(S);
   end;
 
-  procedure WritelnCameraSettings(const Version: TVRMLCameraVersion;
+  procedure WritelnCameraSettings(const Version: TX3DCameraVersion;
     const Xml: boolean);
   var
     Pos, Dir, Up, GravityUp: TVector3Single;
@@ -2452,7 +2452,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
         with state from current Time. This includes
         TimeDependentNodeHandler state like IsActive, etc., but also
         the rest of VRML graph (e.g. if some events change some geometry
-        or materials). While LoadFromVRMLEvents takes care to call
+        or materials). While LoadFromEvents takes care to call
         SceneAnimation.ResetTime, this only resets time-dependent nodes and routes
         and the like, but it cannot at the same time deactivate-and-then-activate
         time-dependent nodes in the same timestamp (so e.g. TimeSensor just
@@ -2467,21 +2467,21 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
         So I just treat it silently as non-fixable in view3dscene,
         you have to load model with ProcessEvents = initially false
-        to safely do LoadFromVRMLEvents. }
+        to safely do LoadFromEvents. }
 
       { Extract RootNode. OwnsFirstRootNode set to false, to avoid
         freeing it when current animation is closed (which is done implicitly
-        at the beginning of LoadFromVRMLEvents). }
+        at the beginning of LoadFromEvents). }
       SceneAnimation.OwnsFirstRootNode := false;
       RootNode := Scene.RootNode;
 
-      { Using LoadFromVRMLEvents will also Close the previous scene.
+      { Using LoadFromEvents will also Close the previous scene.
         Before doing this, we must always free our octrees
         (as Scene keeps references to our octrees). }
       SceneOctreeFree;
 
-      { Root node will be owned by LoadFromVRMLEvents, so it will be freed }
-      SceneAnimation.LoadFromVRMLEvents(RootNode, true,
+      { Root node will be owned by LoadFromEvents, so it will be freed }
+      SceneAnimation.LoadFromEvents(RootNode, true,
         TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
         'Precalculating animation');
 

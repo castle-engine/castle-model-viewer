@@ -29,7 +29,7 @@ uses CastleSceneManager, CastleWindow, Cameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
-  TViewportClass = class of TKamViewport;
+  TViewportClass = class of TCastleViewport;
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
   ('_1 Viewport',
@@ -41,7 +41,7 @@ var
   ViewportsConfig: TViewportsConfig;
 
   { Custom viewports. Also SceneManager is the first viewport. }
-  Viewports: array [0..2] of TKamViewport;
+  Viewports: array [0..2] of TCastleViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
   Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
@@ -49,7 +49,7 @@ procedure SetViewportsConfig(const Value: TViewportsConfig;
 { Copy all camera settings from Source.Camera to Target.Camera.
   If CreateIfNeeded then Target will be created if @nil (otherwise
   it will be left as @nil). }
-procedure AssignCamera(Target, Source: TKamAbstractViewport;
+procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
 
 procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
@@ -96,7 +96,7 @@ end;
 var
   Background: TBackground;
 
-procedure AssignCamera(Target, Source: TKamAbstractViewport;
+procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
 var
   Pos, Dir, Up, GravityUp: TVector3Single;
@@ -125,7 +125,7 @@ end;
 procedure SetViewportsConfig(const Value: TViewportsConfig;
   Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
-  procedure AddViewport(Viewport: TKamViewport);
+  procedure AddViewport(Viewport: TCastleViewport);
   begin
     Viewport.SceneManager := SceneManager;
     Viewport.FullSize := false;

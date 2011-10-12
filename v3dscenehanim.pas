@@ -73,7 +73,7 @@ var
   FontStyle: TFontStyleNode;
   I: Integer;
   JointTransform: TTransformNode;
-  CenterRoute: TVRMLRoute;
+  CenterRoute: TX3DRoute;
 const
   MatName = 'HumanoidJointVisualizeMat';
 begin
@@ -114,7 +114,7 @@ begin
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.AddItem(JointTransform);
 
-      CenterRoute := TVRMLRoute.Create;
+      CenterRoute := TX3DRoute.Create;
       CenterRoute.SetSourceDirectly(Joint.FdCenter);
       CenterRoute.SetDestinationDirectly(JointTransform.FdTranslation);
       HumanoidNode.Routes.Add(CenterRoute);

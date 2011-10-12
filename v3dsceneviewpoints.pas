@@ -73,7 +73,7 @@ type
     AddViewpointGroups: TX3DNodeList;
 
     procedure AddViewpoint(
-      Node: TX3DNode; StateStack: TVRMLGraphTraverseStateStack;
+      Node: TX3DNode; StateStack: TX3DGraphTraverseStateStack;
       ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
     function GetBoundViewpoint: TMenuItemViewpoint;
     procedure SetBoundViewpoint(const Value: TMenuItemViewpoint);
@@ -133,7 +133,7 @@ const
   MaxMenuItems = 20;
 
 procedure TMenuViewpoints.AddViewpoint(
-  Node: TX3DNode; StateStack: TVRMLGraphTraverseStateStack;
+  Node: TX3DNode; StateStack: TX3DGraphTraverseStateStack;
   ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
 
   { Nice menu item caption for TAbstractViewpointNode or TViewpointGroupNode }
