@@ -39,7 +39,7 @@ type
 
     Note that in some moments (when we process some events),
     the @link(Viewpoint) instance may no longer be valid:
-    we can get T3DSceneCore.ViewpointStack.OnBoundChanged
+    we can get TCastleSceneCore.ViewpointStack.OnBoundChanged
     when other viewpoint nodes are already freed. }
   TMenuItemViewpoint = class(TMenuItemRadio)
   private
@@ -90,7 +90,7 @@ type
     { Recalculate menu contents.
       Special value Scene = @nil means no scene is loaded, so no
       viewpoint nodes exist. }
-    procedure Recalculate(Scene: T3DSceneCore);
+    procedure Recalculate(Scene: TCastleSceneCore);
 
     function ItemOf(Viewpoint: TAbstractViewpointNode): TMenuItemViewpoint;
   end;
@@ -102,7 +102,7 @@ var
 procedure ViewpointsParseParameters;
 
 { Apply --viewpoint command-line option to the next loaded scenes. }
-procedure SetInitialViewpoint(SceneAnimation: T3DPrecalculatedAnimation;
+procedure SetInitialViewpoint(SceneAnimation: TCastlePrecalculatedAnimation;
   const EnableNonStandardValue: boolean);
 
 implementation
@@ -260,7 +260,7 @@ begin
   end;
 end;
 
-procedure TMenuViewpoints.Recalculate(Scene: T3DSceneCore);
+procedure TMenuViewpoints.Recalculate(Scene: TCastleSceneCore);
 begin
   MenuUpdateBegin;
   EntriesDeleteAll;
@@ -353,7 +353,7 @@ begin
   Parameters.Parse(Options, @OptionProc, nil, true);
 end;
 
-procedure SetInitialViewpoint(SceneAnimation: T3DPrecalculatedAnimation;
+procedure SetInitialViewpoint(SceneAnimation: TCastlePrecalculatedAnimation;
   const EnableNonStandardValue: boolean);
 begin
   if EnableNonStandardValue and UseInitialViewpoint then

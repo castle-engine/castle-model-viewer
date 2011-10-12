@@ -63,7 +63,7 @@ begin
   Viewport.ShadowVolumesDraw := DrawShadowVolumes;
 end;
 
-procedure Render3DShadowsBegin(Scene: T3DScene);
+procedure Render3DShadowsBegin(Scene: TCastleScene);
 begin
   { Thanks to using PureGeometryShadowedColor, shadow is visible
     even when Attributes.PureGeometry. Note: no need to push current
@@ -73,7 +73,7 @@ begin
     glColorv(PureGeometryShadowedColor);
 end;
 
-procedure Render3DNoShadowsBegin(Scene: T3DScene);
+procedure Render3DNoShadowsBegin(Scene: TCastleScene);
 begin
   if Scene.Attributes.PureGeometry then
     glColorv(PureGeometryColor);

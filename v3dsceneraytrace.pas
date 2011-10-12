@@ -38,7 +38,7 @@ const
 { Ray-tracer. }
 procedure RaytraceToWin(Window: TCastleWindowBase;
   BaseLights: TLightInstancesList;
-  Scene: T3DSceneCore;
+  Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
@@ -223,7 +223,7 @@ end;
 
 procedure RaytraceToWin(Window: TCastleWindowBase;
   BaseLights: TLightInstancesList;
-  Scene: T3DSceneCore;
+  Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;

@@ -48,9 +48,9 @@ const
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3Single; Scene: T3DScene);
+  const ObserverPos: TVector3Single; Scene: TCastleScene);
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4Single; Scene: T3DScene);
+  const ObserverPos: TVector4Single; Scene: TCastleScene);
 
 implementation
 
@@ -76,13 +76,13 @@ begin
 end;
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3Single; Scene: T3DScene);
+  const ObserverPos: TVector3Single; Scene: TCastleScene);
 begin
   RenderSilhouetteBorderEdges(Vector4Single(ObserverPos, 1), Scene);
 end;
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4Single; Scene: T3DScene);
+  const ObserverPos: TVector4Single; Scene: TCastleScene);
 begin
   glPushAttrib(GL_ENABLE_BIT);
     { Draw BorderEdges first, with thicker width. And draw all without depth

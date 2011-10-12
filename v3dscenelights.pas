@@ -34,7 +34,7 @@ var
   SceneLightsCount: Cardinal;
 
 { Inits SceneLightsCount. }
-procedure SceneInitLights(SceneAnimation: T3DPrecalculatedAnimation;
+procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);
 
 var
@@ -46,7 +46,7 @@ implementation
 
 uses GL, GLU, CastleGLUtils, CastleParameters, V3DSceneFillMode;
 
-procedure SceneInitLights(SceneAnimation: T3DPrecalculatedAnimation;
+procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);
 begin
   if not SceneAnimation.Loaded then

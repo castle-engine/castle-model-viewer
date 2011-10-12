@@ -42,12 +42,12 @@ type
   TSceneChanges = set of TSceneChange;
 
 { Transforms scene root node as appropriate.
-  When you use this on a T3DSceneCore class, remember to surround
-  by T3DSceneCore.BeforeNodesFree and T3DSceneCore.ChangedAll. }
+  When you use this on a TCastleSceneCore class, remember to surround
+  by TCastleSceneCore.BeforeNodesFree and TCastleSceneCore.ChangedAll. }
 procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
 
 { Transforms all scenes inside the animation as appropriate. }
-procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: T3DPrecalculatedAnimation);
+procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TCastlePrecalculatedAnimation);
 
 implementation
 
@@ -289,7 +289,7 @@ begin
       SCFunctions[SC](Node);
 end;
 
-procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: T3DPrecalculatedAnimation);
+procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TCastlePrecalculatedAnimation);
 var
   I: Integer;
 begin

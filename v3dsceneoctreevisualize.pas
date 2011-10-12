@@ -55,7 +55,7 @@ var
   OctreeVisibleShapesDisplay: TOctreeDisplay;
   OctreeCollidableShapesDisplay: TOctreeDisplay;
 
-procedure OctreeDisplay(SceneAnimation: T3DPrecalculatedAnimation);
+procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
 
 function OctreeDisplayStatus: string;
 
@@ -114,7 +114,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure OctreeDisplay(SceneAnimation: T3DPrecalculatedAnimation);
+procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
     OctreeDisplayDepth: integer);

@@ -44,15 +44,15 @@
     as VRML/X3D scene, actually VRML/X3D precalculated animation),
     optimization (vbo, OpenGL renderer cache inside VRML/X3D renderer),
     functionality (like automatic normals generation based on creaseAngle).
-  - render scene using T3DScene (actually T3DPrecalculatedAnimation
-    and T3DScene is inside)
+  - render scene using TCastleScene (actually TCastlePrecalculatedAnimation
+    and TCastleScene is inside)
   - use Cameras and TCastleWindowCustom to let user navigate
     over the scene using various navigation modes
     (Examine, Walk) and with optional gravity
   - build TTriangleOctree to allow collision detection for
     Walk camera and to allow raytracer
   - build TShapeOctree to allow frustum culling using
-    octree by T3DScene
+    octree by TCastleScene
   - use RayTracer embedded in RaytraceToWindow module to allow
     viewing raytraced image
   - allow some kind of object picking with mouse left button
@@ -118,10 +118,10 @@ var
     lifetime of this program, i.e. when I load new scene (from "Open"
     menu item) I DO NOT free and create new SceneAnimation object.
     Instead I'm only freeing and creating underlying scenes
-    (by Close / Load of T3DPrecalculatedAnimation).
+    (by Close / Load of TCastlePrecalculatedAnimation).
     This way I'm preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
-  SceneAnimation: T3DPrecalculatedAnimation;
+  SceneAnimation: TCastlePrecalculatedAnimation;
   SceneFilename: string;
 
   SelectedItem: PTriangle;
@@ -189,10 +189,10 @@ var
 type
   THelper = class
     class procedure OpenRecent(const FileName: string);
-    class procedure GeometryChanged(Scene: T3DSceneCore;
+    class procedure GeometryChanged(Scene: TCastleSceneCore;
       const SomeLocalGeometryChanged: boolean;
       OnlyShapeChanged: TShape);
-    class procedure ViewpointsChanged(Scene: T3DSceneCore);
+    class procedure ViewpointsChanged(Scene: TCastleSceneCore);
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
@@ -308,7 +308,7 @@ end;
   nil if not (although our SceneAnimation tries to always stay loaded).
   We use it for VRML/X3D events, and all other stuff where
   a single scene is needed. }
-function Scene: T3DScene;
+function Scene: TCastleScene;
 begin
   if SceneAnimation.Loaded then
     Result := SceneAnimation.Scenes[0] else
@@ -851,7 +851,7 @@ begin
     Result := ptPerspective;
 end;
 
-class procedure THelper.ViewpointsChanged(Scene: T3DSceneCore);
+class procedure THelper.ViewpointsChanged(Scene: TCastleSceneCore);
 begin
   Viewpoints.Recalculate(Scene);
 end;
@@ -993,7 +993,7 @@ var
   I: Integer;
   Value: boolean;
 begin
-  { Always disable ProcessEvents for T3DPrecalculatedAnimation consisting of many models. }
+  { Always disable ProcessEvents for TCastlePrecalculatedAnimation consisting of many models. }
   Value := ProcessEventsWanted and (SceneAnimation.ScenesCount = 1);
 
   for I := 0 to SceneAnimation.ScenesCount - 1 do
@@ -1080,7 +1080,7 @@ begin
     if AnimationTimeSpeedWhenLoading <> 1.0 then
       ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
 
-    { set InitialViewpoint* before creating the T3DSceneCores, so before
+    { set InitialViewpoint* before creating the TCastleSceneCores, so before
       doing SceneAnimation.Load }
     SetInitialViewpoint(SceneAnimation, UseInitialVars);
 
@@ -1396,7 +1396,7 @@ begin
   LoadScene(FileName, [], 0.0, true);
 end;
 
-class procedure THelper.GeometryChanged(Scene: T3DSceneCore;
+class procedure THelper.GeometryChanged(Scene: TCastleSceneCore;
   const SomeLocalGeometryChanged: boolean;
   OnlyShapeChanged: TShape);
 begin
@@ -2486,10 +2486,10 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
         'Precalculating animation');
 
       { Otherwise, current time is huge and it doesn't work reliably
-        with division inside T3DPrecalculatedAnimation.SceneFromTime.
+        with division inside TCastlePrecalculatedAnimation.SceneFromTime.
         Do it *before* setting MainScene, as even setting MainScene
-        may cause T3DPrecalculatedAnimation.VisibleChangeNotification, which
-        already requires T3DPrecalculatedAnimation.SceneFromTime. }
+        may cause TCastlePrecalculatedAnimation.VisibleChangeNotification, which
+        already requires TCastlePrecalculatedAnimation.SceneFromTime. }
       SceneAnimation.ResetTimeAtLoad;
 
       { Closing the scene freed SceneManager.MainScene (it's set to nil
@@ -2704,7 +2704,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     { TODO: for now, we work with OriginalGeometry and OriginalState.
       So it doesn't work on Cone, Cylinder etc. that are converted
       to IndexedFaceSet in Proxy. Reason: well, Coord.Changed
-      makes T3DSceneCore.ChangedShapeFields which releases the very Coordinate
+      makes TCastleSceneCore.ChangedShapeFields which releases the very Coordinate
       node and fields that were changed... }
 
     if SceneAnimation.ScenesCount > 1 then
@@ -3911,7 +3911,7 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to initial empty values }
-    SceneAnimation := T3DPrecalculatedAnimation.Create(nil);
+    SceneAnimation := TCastlePrecalculatedAnimation.Create(nil);
     try
       SceneAnimation.TryFirstSceneDynamic := true;
       AttributesLoadFromConfig(SceneAnimation.Attributes);
