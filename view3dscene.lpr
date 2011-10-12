@@ -2878,12 +2878,12 @@ begin
   41: AssignGLSLShader;
 
   51: Scene.CameraTransition(Camera,
-        DefaultVRMLCameraPosition[1],
+        DefaultVRMLCameraPosition[cvVrml1_Inventor],
         DefaultVRMLCameraDirection,
         DefaultVRMLCameraUp,
         DefaultVRMLGravityUp);
   52: Scene.CameraTransition(Camera,
-        DefaultVRMLCameraPosition[2],
+        DefaultVRMLCameraPosition[cvVrml2_X3d],
         DefaultVRMLCameraDirection,
         DefaultVRMLCameraUp,
         DefaultVRMLGravityUp);
@@ -2936,9 +2936,9 @@ begin
 
   105: PrintRayhunterCommand;
 
-  106: WritelnCameraSettings(1, false);
-  107: WritelnCameraSettings(2, false);
-  108: WritelnCameraSettings(2, true);
+  106: WritelnCameraSettings(cvVrml1_Inventor, false);
+  107: WritelnCameraSettings(cvVrml2_X3d, false);
+  108: WritelnCameraSettings(cvVrml2_X3d, true);
 
 { Only for debugging:
          Writeln(
