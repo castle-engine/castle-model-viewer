@@ -36,7 +36,7 @@
     ../castle_game_engine/examples/vrml/scene_manager_demos.lpr
 
   Basic components of this program:
-  - use LoadVRMLSequence to load any format to VRML/X3D scene.
+  - use Load3DSequence to load any format to VRML/X3D scene.
     This converts any known (to our engine) 3D model format to VRML/X3D.
     This convertion doesn't lose anything because VRML/X3D is able to
     express everything that is implemented in other 3D formats readers.
@@ -1183,7 +1183,7 @@ begin
     Writeln(ErrOutput, 'view3dscene: ', S);
 end;
 
-{ This loads the scene from file (using LoadVRMLSequence) and
+{ This loads the scene from file (using Load3DSequence) and
   then inits our scene variables by LoadSceneCore.
 
   If it fails, it tries to preserve current scene
@@ -1234,7 +1234,7 @@ begin
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif CATCH_EXCEPTIONS}
-        LoadVRMLSequence(ASceneFileName, true,
+        Load3DSequence(ASceneFileName, true,
           RootNodes, Times, ScenesPerTime, EqualityEpsilon,
           TimeLoop, TimeBackwards);
       {$ifdef CATCH_EXCEPTIONS}
@@ -1361,14 +1361,14 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML and then auto-generate
     xxx_scene.inc file to load VRML scene from a simple string. }
-  LoadSimpleScene(LoadVRMLClassicFromString({$I clear_scene.inc}, ''), false);
+  LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), false);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(LoadVRMLClassicFromString({$I welcome_scene.inc}, ''));
+  LoadSimpleScene(LoadX3DClassicFromString({$I welcome_scene.inc}, ''));
 end;
 
 const
@@ -1383,10 +1383,10 @@ procedure WriteModel(const ASceneFileName: string;
 var
   Node: TX3DRootNode;
 begin
-  Node := LoadVRML(ASceneFileName, true);
+  Node := Load3D(ASceneFileName, true);
   try
     ChangeNode(SceneChanges, Node);
-    SaveVRML(Node, StdOutStream, SaveGenerator,
+    Save3D(Node, StdOutStream, SaveGenerator,
       ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
   finally FreeAndNil(Node) end;
 end;
@@ -2793,8 +2793,8 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     SaveVersion: TX3DVersion;
     Convertion: boolean;
   begin
-    SaveVersion := SaveVRMLVersion(Scene.RootNode);
-    Convertion := SaveVRMLWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
+    SaveVersion := Save3DVersion(Scene.RootNode);
+    Convertion := Save3DWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
 
     if SceneAnimation.ScenesCount > 1 then
       if Convertion then
@@ -2813,7 +2813,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       if Convertion then
         Scene.BeforeNodesFree;
 
-      SaveVRML(Scene.RootNode, ProposedSaveName,
+      Save3D(Scene.RootNode, ProposedSaveName,
         SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding,
         ForceConvertingToX3D);
 
@@ -3639,7 +3639,7 @@ var
 begin
   S := ExtractFilePath(SceneFilename);
   if Window.FileDialog('Open file', s, true,
-    LoadVRMLSequence_FileFilters) then
+    Load3DSequence_FileFilters) then
     LoadScene(s, [], 0.0, true);
 end;
 

@@ -95,9 +95,9 @@ begin
 
   OnWarning := @OnWarningWrite;
 
-  Node := LoadVRML(FileName, true);
+  Node := Load3D(FileName, true);
   try
-    SaveVRML(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
+    Save3D(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
       ExtractFileName(FileName), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
 end.
