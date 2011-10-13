@@ -1156,6 +1156,15 @@ tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the fiel
 ---- Reading ../demo_models/vrml_1/castle.wrl
 ---- Reading again ../demo_models/vrml_1/castle.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/vrml_1/castle_extensions/multi_root.wrl
+---- Reading again ../demo_models/vrml_1/castle_extensions/multi_root.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/castle_with_lights.wrl
 ---- Reading again ../demo_models/vrml_1/castle_with_lights.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -1219,15 +1228,6 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Reading again ../demo_models/vrml_1/isa_fields_extensions.wrl
 tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named '')
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
----- Reading again ../demo_models/vrml_1/castle_extensions/inline_not_separate.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
----- Reading again ../demo_models/vrml_1/castle_extensions/kambi_triangulation.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/vrml_1/castle_extensions/multi_root.wrl
----- Reading again ../demo_models/vrml_1/castle_extensions/multi_root.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/vrml_1/kings_head.wrl
 ---- Reading again ../demo_models/vrml_1/kings_head.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -1260,6 +1260,24 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/castle.wrl
 ---- Reading again ../demo_models/vrml_2/castle.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
+---- Reading again ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/castle_with_lights.wrl
 ---- Reading again ../demo_models/vrml_2/castle_with_lights.wrl
@@ -1299,24 +1317,6 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/inline_test.wrl
 ---- Reading again ../demo_models/vrml_2/inline_test.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_1.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/inline_load_control_test_2.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/kambi_triangulation_for_screenshot.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/kings_head.wrl
 ---- Reading again ../demo_models/vrml_2/kings_head.wrl
@@ -1501,6 +1501,24 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Reading ../demo_models/x3d/axis_simple.x3d
 ---- Reading again ../demo_models/x3d/axis_simple.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/logger.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/logger.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/octree_props.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/octree_props.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
+---- Reading again ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/castle_static_group_ortho_view.x3dv
 ---- Reading again ../demo_models/x3d/castle_static_group_ortho_view.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1558,24 +1576,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/inline_url_change.x3dv
 ---- Reading again ../demo_models/x3d/inline_url_change.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/alpha_channel.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/event_utils_logger_test.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/logger.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/logger.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/octree_props.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/octree_props.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/teapot_avalon.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
----- Reading again ../demo_models/x3d/castle_extensions/teapot_simple.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/kings_head.x3dv
 ---- Reading again ../demo_models/x3d/kings_head.x3dv
