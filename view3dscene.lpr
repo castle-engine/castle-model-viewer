@@ -2197,7 +2197,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     Pos, Dir, Up, GravityUp: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
-    Writeln(MakeVRMLCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
+    Writeln(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
@@ -2878,15 +2878,15 @@ begin
   41: AssignGLSLShader;
 
   51: Scene.CameraTransition(Camera,
-        DefaultVRMLCameraPosition[cvVrml1_Inventor],
-        DefaultVRMLCameraDirection,
-        DefaultVRMLCameraUp,
-        DefaultVRMLGravityUp);
+        DefaultX3DCameraPosition[cvVrml1_Inventor],
+        DefaultX3DCameraDirection,
+        DefaultX3DCameraUp,
+        DefaultX3DGravityUp);
   52: Scene.CameraTransition(Camera,
-        DefaultVRMLCameraPosition[cvVrml2_X3d],
-        DefaultVRMLCameraDirection,
-        DefaultVRMLCameraUp,
-        DefaultVRMLGravityUp);
+        DefaultX3DCameraPosition[cvVrml2_X3d],
+        DefaultX3DCameraDirection,
+        DefaultX3DCameraUp,
+        DefaultX3DGravityUp);
 
   53: SetViewpointForWholeScene(2, 1, false, true);
   54: SetViewpointForWholeScene(2, 1, true , true);
