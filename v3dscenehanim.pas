@@ -112,17 +112,17 @@ begin
 
       JointTransform := TTransformNode.Create('', HumanoidNode.WWWBasePath);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
-      HumanoidNode.FdSkin.AddItem(JointTransform);
+      HumanoidNode.FdSkin.Add(JointTransform);
 
       CenterRoute := TX3DRoute.Create;
       CenterRoute.SetSourceDirectly(Joint.FdCenter);
       CenterRoute.SetDestinationDirectly(JointTransform.FdTranslation);
       HumanoidNode.Routes.Add(CenterRoute);
 
-      JointTransform.FdChildren.AddItem(SphereShape);
+      JointTransform.FdChildren.Add(SphereShape);
 
       TextShape := TShapeNode.Create('', HumanoidNode.WWWBasePath);
-      JointTransform.FdChildren.AddItem(TextShape);
+      JointTransform.FdChildren.Add(TextShape);
 
       TextGeometry := TTextNode.Create('', HumanoidNode.WWWBasePath);
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
