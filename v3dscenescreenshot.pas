@@ -32,7 +32,7 @@ type
   EInvalidScreenShotFileName = class(EInvalidParams);
 
   { One screenshot, that is one --screenshot or --screenshot-range option
-    occurence.
+    occurrence.
 
     Count describes how many actual image screen shots we have to do
     for this TScreenShot instance. For each Index between 0 and Count - 1,
