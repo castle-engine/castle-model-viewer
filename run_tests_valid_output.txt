@@ -256,6 +256,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/compositing_shaders/terrain_noise_animated.x3dv
 ---- Reading again ../demo_models/compositing_shaders/terrain_noise_animated.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/texture_coord_generate.x3dv
+---- Reading again ../demo_models/compositing_shaders/texture_coord_generate.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/texture_effect.x3dv
 ---- Reading again ../demo_models/compositing_shaders/texture_effect.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
