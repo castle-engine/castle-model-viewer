@@ -875,6 +875,12 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Reading ../demo_models/shaders/fake_fresnel.x3dv
 ---- Reading again ../demo_models/shaders/fake_fresnel.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shaders/geometry_shader.x3dv
+---- Reading again ../demo_models/shaders/geometry_shader.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shaders/geometry_shader_fun_smoothing.x3dv
+---- Reading again ../demo_models/shaders/geometry_shader_fun_smoothing.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shaders/headlight_shaders_final.x3dv
 ---- Reading again ../demo_models/shaders/headlight_shaders_final.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
