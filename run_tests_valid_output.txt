@@ -220,6 +220,15 @@ tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float value
 tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are avilable
 tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are avilable
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
+---- Reading ../demo_models/compositing_shaders/cellular_texturing.x3dv
+---- Reading again ../demo_models/compositing_shaders/cellular_texturing.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/cellular_texturing_mirror_fun.x3dv
+---- Reading again ../demo_models/compositing_shaders/cellular_texturing_mirror_fun.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/cellular_texturing_title.x3dv
+---- Reading again ../demo_models/compositing_shaders/cellular_texturing_title.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/composed_shader_using_plugs.x3dv
 ---- Reading again ../demo_models/compositing_shaders/composed_shader_using_plugs.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -231,6 +240,12 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/fresnel_and_toon.x3dv
 ---- Reading again ../demo_models/compositing_shaders/fresnel_and_toon.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/geometry_shader_effects.x3dv
+---- Reading again ../demo_models/compositing_shaders/geometry_shader_effects.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/geometry_shader_simple.x3dv
+---- Reading again ../demo_models/compositing_shaders/geometry_shader_simple.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/grass_final.x3dv
 ---- Reading again ../demo_models/compositing_shaders/grass_final.x3dv
