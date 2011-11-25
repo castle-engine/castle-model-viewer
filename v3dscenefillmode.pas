@@ -2,7 +2,7 @@ unit V3DSceneFillMode;
 
 interface
 
-uses CastleScene, CastleWindow, VectorMath;
+uses CastleScene, CastleWindow, GLRenderer, VectorMath;
 
 type
   TFillMode = 0..8;
@@ -10,27 +10,27 @@ type
 const
   FillModes: array [TFillMode] of record
     Name: string;
-    PureGeometry: boolean;
+    Mode: TRenderingMode;
     WireframeEffect: TWireframeEffect;
     WireframeColor: TVector3Single;
     BackgroundWireframe: boolean;
   end =
-  { group setting with similar PureGeometry together, as changing PureGeometry
-    is costly (rebuild of scene display lists), while changing
-    WireframeEffect is generally not costly. }
-  ( (Name: 'Normal'                               ; PureGeometry: false; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
-    (Name: 'Wireframe'                            ; PureGeometry: false; WireframeEffect: weWireframeOnly ; WireframeColor: (0, 0, 0); BackgroundWireframe: true ; ),
-    (Name: 'Solid Wireframe'                      ; PureGeometry: false; WireframeEffect: weSolidWireframe; WireframeColor: (1, 1, 1); BackgroundWireframe: false; ),
-    (Name: 'Normal with Silhouette'               ; PureGeometry: false; WireframeEffect: weSilhouette    ; WireframeColor: (1, 1, 1); BackgroundWireframe: false; ),
+  ( (Name: 'Normal'                               ; Mode: rmFull        ; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
+    (Name: 'Wireframe'                            ; Mode: rmFull        ; WireframeEffect: weWireframeOnly ; WireframeColor: (0, 0, 0); BackgroundWireframe: true ; ),
+    (Name: 'Solid Wireframe'                      ; Mode: rmFull        ; WireframeEffect: weSolidWireframe; WireframeColor: (1, 1, 1); BackgroundWireframe: false; ),
+    (Name: 'Normal with Silhouette'               ; Mode: rmFull        ; WireframeEffect: weSilhouette    ; WireframeColor: (1, 1, 1); BackgroundWireframe: false; ),
 
-    (Name: 'Solid Shape'                          ; PureGeometry: true ; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
-    (Name: 'Wireframe (Single Color)'             ; PureGeometry: true ; WireframeEffect: weWireframeOnly ; WireframeColor: (1, 1, 1); BackgroundWireframe: true ; ),
-    (Name: 'Solid Wireframe (Single Color)'       ; PureGeometry: true ; WireframeEffect: weSolidWireframe; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
-    (Name: 'Normal with Silhouette (Single Color)'; PureGeometry: true ; WireframeEffect: weSilhouette    ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
+    (Name: 'Solid Shape'                          ; Mode: rmPureGeometry; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
+    (Name: 'Wireframe (Single Color)'             ; Mode: rmPureGeometry; WireframeEffect: weWireframeOnly ; WireframeColor: (1, 1, 1); BackgroundWireframe: true ; ),
+    (Name: 'Solid Wireframe (Single Color)'       ; Mode: rmPureGeometry; WireframeEffect: weSolidWireframe; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
+    (Name: 'Normal with Silhouette (Single Color)'; Mode: rmPureGeometry; WireframeEffect: weSilhouette    ; WireframeColor: (0, 0, 0); BackgroundWireframe: false; ),
 
     (Name: 'Silhouette and Border Edges'          ;
-      { PureGeometry, WireframeEffect, WireframeColor don't matter for this }
-      PureGeometry: false; WireframeEffect: weNormal        ; WireframeColor: (0, 0, 0);
+      { Mode, WireframeEffect, WireframeColor don't matter here,
+        we will not call normal T3DScene.Render in this case. }
+      Mode: rmFull;
+      WireframeEffect: weNormal;
+      WireframeColor: (0, 0, 0);
       BackgroundWireframe: false)
   );
 

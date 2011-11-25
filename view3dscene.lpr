@@ -2311,7 +2311,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     begin
       SceneAnimation.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
       SceneAnimation.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
-      SceneAnimation.Attributes.PureGeometry    := FillModes[FillMode].PureGeometry;
+      SceneAnimation.Attributes.Mode            := FillModes[FillMode].Mode;
     end;
   end;
 

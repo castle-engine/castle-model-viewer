@@ -2,7 +2,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses CastleWindow, CastleScene, Base3D, VectorMath, CastleSceneManager;
+uses CastleWindow, CastleScene, Base3D, VectorMath, CastleSceneManager, GLRenderer;
 
 type
   { Takes care of settingshadow volume properties, and modifies a little
@@ -66,16 +66,16 @@ end;
 procedure Render3DShadowsBegin(Scene: TCastleScene);
 begin
   { Thanks to using PureGeometryShadowedColor, shadow is visible
-    even when Attributes.PureGeometry. Note: no need to push current
-    glColor value, VRML renderer doesn't preserve state anyway
+    even when rmPureGeometry is used. Note: no need to push current
+    glColor value, renderer doesn't preserve state anyway
     and caller is prepared to deal with it. }
-  if Scene.Attributes.PureGeometry then
+  if Scene.Attributes.Mode = rmPureGeometry then
     glColorv(PureGeometryShadowedColor);
 end;
 
 procedure Render3DNoShadowsBegin(Scene: TCastleScene);
 begin
-  if Scene.Attributes.PureGeometry then
+  if Scene.Attributes.Mode = rmPureGeometry then
     glColorv(PureGeometryColor);
 end;
 
