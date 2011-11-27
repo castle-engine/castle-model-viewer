@@ -2859,8 +2859,8 @@ begin
   42: VisualizeHumanoids;
 
   3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
-  3510..3519: SceneAnimation.Attributes.PercentageCloserFiltering :=
-    TPercentageCloserFiltering(Ord(MenuItem.IntData) - 3510);
+  3510..3519: SceneAnimation.Attributes.ShadowSampling :=
+    TShadowSampling(Ord(MenuItem.IntData) - 3510);
   3520: with SceneAnimation.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
   3530:
     begin
@@ -2870,7 +2870,6 @@ begin
         SceneAnimation.ShadowMapsDefaultSize := C;
       end;
     end;
-  3540: with SceneAnimation.Attributes do VarianceShadowMaps := not VarianceShadowMaps;
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
@@ -3269,14 +3268,12 @@ begin
    M2 := TMenu.Create('Shadow Maps');
      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
      M2.Append(TMenuSeparator.Create);
-     M2.AppendRadioGroup(PCFNames, 3510,
-       Ord(SceneAnimation.Attributes.PercentageCloserFiltering), true);
+     M2.AppendRadioGroup(ShadowSamplingNames, 3510,
+       Ord(SceneAnimation.Attributes.ShadowSampling), true);
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.Attributes.VisualizeDepthMap, true));
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItemChecked.Create('Variance Shadow Maps (Experimental)', 3540, SceneAnimation.Attributes.VarianceShadowMaps, true));
      M.Append(M2);
    MenuShadowVolumes := TMenu.Create('Shadow Volumes');
      MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
