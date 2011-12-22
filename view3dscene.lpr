@@ -71,12 +71,12 @@ uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   CastleParameters, ProgressUnit, Cameras,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls,
+  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
   GLAntiAliasing, GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
-  { VRML (and possibly OpenGL) related units: }
+  { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
   X3DNodes, X3DLoad, CastleScene, Triangle,
   CastleSceneCore, X3DNodesDetailOptions,
