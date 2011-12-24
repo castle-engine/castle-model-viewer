@@ -2777,12 +2777,16 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     Vis := THumanoidVisualization.Create;
     try
       Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
-      Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
-        @Vis.VisualizeHumanoid, false);
-      MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
-        [Vis.HumanoidsProcessed, Vis.JointsProcessed]), taLeft);
-      if Vis.HumanoidsProcessed <> 0 then
-        Scene.ChangedAll;
+      if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
+        Vis.JointVisualizationSize, taLeft) then
+      begin
+        Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
+          @Vis.VisualizeHumanoid, false);
+        MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
+          [Vis.HumanoidsProcessed, Vis.JointsProcessed]), taLeft);
+        if Vis.HumanoidsProcessed <> 0 then
+          Scene.ChangedAll;
+      end;
     finally FreeAndNil(Vis) end;
   end;
 
