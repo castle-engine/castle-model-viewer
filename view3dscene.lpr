@@ -3431,7 +3431,7 @@ begin
    M.Append(TMenuItem.Create(
      'Simply Assign GLSL Shader to All Objects ...', 41));
    M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Add Humanoids Joints Visualization', 42));
+   M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
    Result.Append(M);
  M := TMenu.Create('_Console');
    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
