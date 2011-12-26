@@ -2840,7 +2840,11 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     if MessageInputQuery(Window,
       'Set approximate FPS (Frames Per Second) limit.' +NL+
       NL+
-      'Smaller values give OS and CPU some rest, to run other applications or conserve laptop battery. Special value 0 means "do not limit FPS".',
+      'Smaller values give OS and CPU some rest, to run other applications or conserve laptop battery. Your monitor has a fixed refresh rate anyway, so limiting FPS doesn''t necessarily mean worse visuals (unless you set it to some really small value).' +NL+
+      NL+
+      'This is only an approximation of desired FPS. Usually it''s quite precise, but on some systems some values may be actually capped by monitor refresh rate.' +NL+
+      NL+
+      'Special value 0 means "do not limit FPS".',
       F, taLeft, FloatToNiceStr(F)) then
       Application.LimitFPS := Max(F, 0.0);
   end;
