@@ -2832,6 +2832,19 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure SetLimitFPS;
+  var
+    F: Single;
+  begin
+    F := Application.LimitFPS;
+    if MessageInputQuery(Window,
+      'Set approximate FPS (Frames Per Second) limit.' +NL+
+      NL+
+      'Smaller values give OS and CPU some rest, to run other applications or conserve laptop battery. Special value 0 means "do not limit FPS".',
+      F, taLeft, FloatToNiceStr(F)) then
+      Application.LimitFPS := Max(F, 0.0);
+  end;
+
 var
   C: Cardinal;
 begin
@@ -3112,6 +3125,8 @@ begin
   810..850: SoundEngine.Device :=
     SoundEngine.Devices[MenuItem.IntData - 810].Name;
 
+  2000: SetLimitFPS;
+
   1100..1199: SetTextureMinFilter(
     TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
   1200..1299: SetTextureMagFilter(
@@ -3241,7 +3256,9 @@ begin
      M2.Append(TMenuSeparator.Create);
      M2.Append(TMenuItem.Create('Point Size ...', 182));
      M2.Append(TMenuItem.Create('Line Width ...', 530));
-     M2.Append(TMenuItem.Create('Default Background Color ...',    84));
+     M2.Append(TMenuItem.Create('Default Background Color ...', 84));
+     M2.Append(TMenuSeparator.Create);
+     M2.Append(TMenuItem.Create('Frames Per Second Limit ...', 2000));
      M.Append(M2);
    NextRecentMenuItem := TMenuSeparator.Create;
    M.Append(NextRecentMenuItem);

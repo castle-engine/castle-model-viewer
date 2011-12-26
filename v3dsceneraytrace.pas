@@ -349,7 +349,7 @@ begin
       Window.Caption := CaptionBegin+ ' done';
       Window.OnDraw := @DrawRaytraced;
       Window.MainMenu := AfterRTMainMenu;
-      repeat Application.ProcessMessage(true) until CallData.UserWantsToQuit;
+      repeat Application.ProcessMessage(true, true) until CallData.UserWantsToQuit;
 
     except on BreakRaytracing do ; end;
   finally

@@ -36,7 +36,7 @@ var
 
 implementation
 
-uses SysUtils, CastleFilesUtils;
+uses SysUtils, CastleFilesUtils, CastleWindow;
 
 { initialization / finalization --------------------------------------------- }
 
@@ -58,9 +58,13 @@ initialization
   { SoundEngine.LoadFromConfig must be before SoundEngine.ParseParameters,
     that may change Enable by --no-sound. }
   SoundEngine.LoadFromConfig(ConfigFile);
+  Application.LimitFPS := ConfigFile.GetFloat('video_options/limit_fps',
+    DefaultLimitFPS);
 finalization
   if ConfigFile <> nil then
   begin
+    ConfigFile.SetDeleteFloat('video_options/limit_fps',
+      Application.LimitFPS, DefaultLimitFPS);
     SoundEngine.SaveToConfig(ConfigFile);
     ConfigFile.Flush;
     FreeAndNil(ConfigFile);
