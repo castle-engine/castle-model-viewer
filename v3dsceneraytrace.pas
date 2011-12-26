@@ -278,7 +278,7 @@ begin
     SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT, false,
       {$ifdef FPC_OBJFPC} @ {$endif} DrawRaytracing,
       {$ifdef FPC_OBJFPC} @ {$endif} Resize2D,
-      {$ifdef FPC_OBJFPC} @ {$endif} NoClose, false);
+      {$ifdef FPC_OBJFPC} @ {$endif} NoClose);
 
     Window.UserData := @CallData;
     Window.MainMenu := WhileRTMainMenu;
