@@ -24,16 +24,15 @@
   See [http://castle-engine.sourceforge.net/view3dscene.php] for user
   documentation.
 
-  The actual name of this program is "Castle Game Engine
-  swiss army knife" :) This program shows and uses a lot
-  of our engine features. It's basically a giant GUI to load everything,
+  The real name of this program is "Castle Game Engine swiss army knife" :)
+  This program shows and uses a lot of our engine features.
+  It's basically a giant GUI to load everything,
   and tweak every option from the menu and toolbar.
 
   If you want to find out how to use "Castle Game Engine",
-  this isn't the best place to study. Look instead at simple examples
-  in engine sources, like
-    ../castle_game_engine/examples/vrml/simplest_vrml_browser.lpr
-    ../castle_game_engine/examples/vrml/scene_manager_demos.lpr
+  the view3dscene source code isn't the best place to study.
+  Look instead at simple examples in engine sources, like
+  ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
 
   Basic components of this program:
   - use Load3DSequence to load any format to VRML/X3D scene.
@@ -51,13 +50,12 @@
     (Examine, Walk) and with optional gravity
   - build TTriangleOctree to allow collision detection for
     Walk camera and to allow raytracer
-  - build TShapeOctree to allow frustum culling using
-    octree by TCastleScene
-  - use RayTracer embedded in RaytraceToWindow module to allow
+  - build TShapeOctree to allow frustum culling using octree by TCastleScene
+  - use RayTracer embedded in V3DSceneRaytrace unit to allow
     viewing raytraced image
   - allow some kind of object picking with mouse left button
-    (for VRML sensors) and right button (to select for editing).
-    This uses simple one-primary-ray casting.
+    (for VRML/X3D sensors) and right button (to select for editing).
+    This simply casts a ray from a camera.
 }
 
 program view3dscene;
@@ -551,7 +549,7 @@ begin
     if not AnimationTimePlaying then
       S += ' (paused)';
     if not ProcessEventsWanted then
-      S += ' (paused, not processing VRML events)';
+      S += ' (paused, not processing VRML/X3D events)';
     strs.Append(S);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1006,7 +1004,7 @@ procedure LoadClearScene; forward;
   Pass here ACameraRadius = 0.0 to say that CameraRadius should be
   somehow calculated (guessed) based on loaded Scene data.
 
-  Camera settings for scene are inited from VRML defaults and
+  Camera settings for scene are inited from VRML/X3D defaults and
   from camera node in scene.
 
   Exceptions: if this function will raise any exception you should assume
@@ -1028,7 +1026,7 @@ procedure LoadClearScene; forward;
 
   Note that there is one "scene global variable" that will
   not be completely handled by this procedure:
-  SceneWarnings. During this procedure some VRML warnings may
+  SceneWarnings. During this procedure some warnings may
   occur and be appended to SceneWarnings. You have to take care
   about the rest of issues with the SceneWarnings, like clearing
   them before calling LoadSceneCore.
@@ -1145,7 +1143,7 @@ begin
       SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
       SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
 
-      { Regardless of ProcessEvents, we may change the vrml graph,
+      { Regardless of ProcessEvents, we may change the nodes graph,
         e.g. by Edit->Material->...
         This is now ensured by TryFirstSceneDynamic. }
       Assert(SceneAnimation.Scenes[I].Static = (SceneAnimation.ScenesCount <> 1));
@@ -1221,7 +1219,7 @@ begin
   Times := TSingleList.Create;
   try
     { We have to clear SceneWarnings here (not later)
-      to catch also all warnings raised during parsing the VRML file.
+      to catch also all warnings raised during parsing of the file.
       This causes a potential problem: if loading the scene will fail,
       we should restore the old warnings (if the old scene will be
       preserved) or clear them (if the clear scene will be loaded
@@ -1290,7 +1288,7 @@ begin
       RecentMenu.Add(ASceneFileName);
 
     { We call PrepareResources to make SceneAnimation.PrepareResources to gather
-      VRML warnings (because some warnings, e.g. invalid texture filename,
+      warnings (because some warnings, e.g. invalid texture filename,
       are reported only from SceneAnimation.PrepareResources).
       Also, this allows us to show first PrepareResources with progress bar. }
     PrepareResources(true);
@@ -1344,7 +1342,7 @@ end;
   "scene global variables" to some non-null values. }
 procedure LoadClearScene;
 begin
-  { As a clear scene, I'm simply loading an empty VRML file.
+  { As a clear scene, I'm simply loading an empty 3D model.
     This way everything seems normal: SceneAnimation is Loaded,
     FirstScene is available and FirstScene.RootNode is non-nil.
 
@@ -1359,8 +1357,8 @@ begin
 
     I'm not constructing here RootNode in code (i.e. Pascal).
     This would allow a fast implementation, but it's easier for me to
-    design scene in pure VRML and then auto-generate
-    xxx_scene.inc file to load VRML scene from a simple string. }
+    design scene in pure VRML/X3D and then auto-generate
+    xxx_scene.inc file to load scene from a simple string. }
   LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), false);
 end;
 
@@ -1653,7 +1651,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       'leads to noticeably "jagged" animations.' +nl+
       nl+
       '- For interactive animations (played and calculated from a single ' +
-      'VRML / X3D file, e.g. by VRML interpolators) this is perfect, ' +
+      'VRML / X3D file, e.g. by interpolators) this is perfect, ' +
       'animation always remains smooth.' +nl+
       nl+
       'New "on display" playing speed:',
@@ -1681,7 +1679,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       'this playing speed much, the animation will remain smooth.' +nl+
       nl+
       '- For interactive animations (played and calculated from a single ' +
-      'VRML / X3D file, e.g. by VRML interpolators) this has no effect, ' +
+      'VRML / X3D file, e.g. by interpolators) this has no effect, ' +
       'as no frames are precalculated at loading. Use "on display" playing speed ' +
       'instead.' +nl+
       nl+
@@ -1762,12 +1760,12 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       S += nl+ nl;
       if SelectedItem^.State.ShapeNode <> nil then
       begin
-        { This is VRML 2.0 node }
+        { This is VRML 2.0 / X3D node }
         M2 := SelectedItem^.State.ShapeNode.Material;
         if M2 <> nil then
         begin
           S += Format(
-                 'Material (VRML >= 2.0):' +nl+
+                 'Material (VRML 2.0 / X3D):' +nl+
                  '  name : %s' +nl+
                  '  ambientIntensity : %s' +nl+
                  '  diffuseColor : %s' +nl+
@@ -1786,7 +1784,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       begin
         M1 := SelectedItem^.State.LastNodes.Material;
         S += Format(
-            'Material (VRML <= 1.0):' +nl+
+            'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
             '  ambientColor[0] : %s' +nl+
             '  diffuseColor[0] : %s' +nl+
@@ -1980,7 +1978,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       Scene.ChangedField(CoordsField);
 
       { Texture coordinates, if not empty, have always (both in VRML 1.0
-        and VRML 2.0 IndexedFaceSet nodes, and in IndexedTriangleMesh
+        and VRML 2.0 / X3D IndexedFaceSet nodes, and in IndexedTriangleMesh
         from Inventor) the same ordering as coordIndex.
         So we can remove equivalent texture coords in the same manner
         as we removed coords. }
@@ -2141,7 +2139,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     if MessageInputQuery(Window,
       'Input node name to be removed. You can use wildcards (* and ?) in ' +
       'the expression below to match many node names. The input is ' +
-      'case sensitive (like all VRML).',
+      'case sensitive (like all VRML/X3D).',
       Wildcard, taLeft) then
     begin
       SceneAnimation.BeforeNodesFree;
@@ -2207,7 +2205,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     begin
       Writeln(Format(
         '# ----------------------------------------' +nl+
-        '# BoundingBox %s expressed in VRML:' +nl+
+        '# BoundingBox %s:' +nl+
         '# Version for VRML 1.0' +nl+
         'DEF BoundingBox Separator {' +nl+
         '  Translation {' +nl+
@@ -2293,7 +2291,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
             FreeAndNil(ProgramNode);
             MessageOK(Window, 'No shaders added.' +NL+
               'Hint: this feature adds shaders to Apperance.shaders field. ' +
-              'So it requires VRML >= 2.0 models with Appearance nodes present, ' +
+              'So it requires VRML 2.0 / X3D models with Appearance nodes present, ' +
               'otherwise nothing will be added.',
               taLeft);
           end;
@@ -2422,7 +2420,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
           end;
   end;
 
-  procedure PrecalculateAnimationFromVRMLEvents;
+  procedure PrecalculateAnimationFromEvents;
   var
     ScenesPerTime: Cardinal;
     TimeBegin, TimeEnd: Single;
@@ -2440,7 +2438,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     TimeEnd := 10;
     ScenesPerTime := 25;
 
-    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
+    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
          nl+
          'World BEGIN time of recording:', TimeBegin, taLeft) and
        MessageInputQuery(Window,
@@ -2451,14 +2449,14 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       { Note: there's an inherent problem here since RootNode starts
         with state from current Time. This includes
         TimeDependentNodeHandler state like IsActive, etc., but also
-        the rest of VRML graph (e.g. if some events change some geometry
+        the rest of VRML/X3D graph (e.g. if some events change some geometry
         or materials). While LoadFromEvents takes care to call
         SceneAnimation.ResetTime, this only resets time-dependent nodes and routes
         and the like, but it cannot at the same time deactivate-and-then-activate
         time-dependent nodes in the same timestamp (so e.g. TimeSensor just
         remains active, if it was active currently and is determined to be
         active during animation, without a pair of Active.Send(false) +
-        Active.Send(true)). And it cannot revert whole VRML graph state.
+        Active.Send(true)). And it cannot revert whole VRML/X3D graph state.
 
         This is inherent to the fact that we take current RootNode,
         not the loaded one, so it cannot really be fixed --- we would have
@@ -3077,7 +3075,7 @@ begin
          UpdateProcessEvents;
        end;
 
-  225: PrecalculateAnimationFromVRMLEvents;
+  225: PrecalculateAnimationFromEvents;
 
   300: JumpToViewpoint((MenuItem as TMenuItemViewpoint).Viewpoint);
 
