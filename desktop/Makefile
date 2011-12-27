@@ -4,6 +4,7 @@ VIEW3DSCENE_ICON := 6_thicker
 ENGINE_ICON := 8_tentacles_moon_polish
 
 ALL_IMAGES := ../../www/htdocs/images/castle_game_engine_icon.png \
+              ../../www/htdocs/images/main_link_size/castle_game_engine_icon.png \
               view3dscene.png view3dscene.svg view3dscene.icns
 
 .PHONY: all_images
@@ -19,6 +20,12 @@ all_images: $(ALL_IMAGES)
 ../../www/htdocs/images/castle_game_engine_icon.png: icon/$(ENGINE_ICON).svg
 	inkscape --export-width=256 --export-height=256 \
 	  --export-background=#FFFFFF \
+	  --export-background-opacity=1.0 \
+	  $< --export-png=$@
+
+../../www/htdocs/images/main_link_size/castle_game_engine_icon.png: icon/$(ENGINE_ICON).svg
+	inkscape --export-width=256 --export-height=256 \
+	  --export-background=#efdfae \
 	  --export-background-opacity=1.0 \
 	  $< --export-png=$@
 
