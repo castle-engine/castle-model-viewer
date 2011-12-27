@@ -1,40 +1,18 @@
 # See INSTALL file for some comments about installing desktop data.
 
-VIEW3DSCENE_ICON := 6_thicker
-ENGINE_ICON := 8_tentacles_moon_polish
+VIEW3DSCENE_ICON := ../../www/logo/6_thicker.svg
 
-ALL_IMAGES := ../../www/htdocs/images/castle_game_engine_icon.png \
-              ../../www/htdocs/images/main_link_size/castle_game_engine_icon.png \
-              view3dscene.png view3dscene.svg view3dscene.icns
+ALL_IMAGES := view3dscene.png view3dscene.svg view3dscene.icns
 
 .PHONY: all_images
 all_images: $(ALL_IMAGES)
 
-# We generate PNG versions from SVG and put them in our SVN repo,
-# to not require user to have inkscape just to install our icons.
-#
-# Note that for WWW engine icon, we generate non-transparent PNG file.
-# That's because IE on M$, well, you guessed it --- it can't reliably handle
-# PNG transparency anyway. So non-transparent PNG is safer.
-
-../../www/htdocs/images/castle_game_engine_icon.png: icon/$(ENGINE_ICON).svg
-	inkscape --export-width=256 --export-height=256 \
-	  --export-background=#FFFFFF \
-	  --export-background-opacity=1.0 \
-	  $< --export-png=$@
-
-../../www/htdocs/images/main_link_size/castle_game_engine_icon.png: icon/$(ENGINE_ICON).svg
-	inkscape --export-width=256 --export-height=256 \
-	  --export-background=#efdfae \
-	  --export-background-opacity=1.0 \
-	  $< --export-png=$@
-
-# Copy $(VIEW3DSCENE_ICON) to nice names, in svg and (48x48) png.
-view3dscene.svg: icon/$(VIEW3DSCENE_ICON).svg
+# Copy/convert $(VIEW3DSCENE_ICON) to nice names, in svg and (48x48) png.
+view3dscene.svg: $(VIEW3DSCENE_ICON)
 	cp -f $< $@
 
-view3dscene.png: icon/$(VIEW3DSCENE_ICON).svg
+view3dscene.png: $(VIEW3DSCENE_ICON)
 	inkscape --export-width=48 --export-height=48 $< --export-png=$@
 
-view3dscene.icns: icon/$(VIEW3DSCENE_ICON).svg
+view3dscene.icns: $(VIEW3DSCENE_ICON)
 	../../scripts/svg_to_icns.sh $< $@
