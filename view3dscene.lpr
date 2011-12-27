@@ -2438,7 +2438,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     TimeEnd := 10;
     ScenesPerTime := 25;
 
-    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation. This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
+    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation.' + ' This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
          nl+
          'World BEGIN time of recording:', TimeBegin, taLeft) and
        MessageInputQuery(Window,
