@@ -20,7 +20,8 @@ set -eu
 #   only if you uncomment the "screenshot comparison" test in run_test_once.sh
 #   (image_compare comes from ../castle_game_engine/examples/images_videos/image_compare.lpr)
 # - xmllint for basic XML validation (should be included in any
-#   popular Linux distribution).
+#   popular Linux distribution; on Debian (and maybe derivatives),
+#   xmllint may be found in package libxml2-utils, see "dpkg -S xmllint").
 # - for some optional comparisons (regression checking), it's useful
 #   to have alternative view3dscene / tovrmlx3d binaries installed.
 #   For example, if you test view3dscene from SVN, you may also install last
