@@ -2,6 +2,6 @@
 unit V3DSceneVersion;
 interface
 const
-  Version = '3.10.1';
+  Version = '3.11.0';
 implementation
 end.
