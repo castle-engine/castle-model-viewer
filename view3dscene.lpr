@@ -4014,10 +4014,3 @@ begin
     FreeAndNil(SceneManager);
   end;
 end.
-
-{
-  Local Variables:
-  kam-compile-release-command-unix:    "./compile.sh && mv -fv view3dscene     tovrmlx3d     ~/bin/"
-  kam-compile-release-command-windows: "./compile.sh && mv -fv view3dscene.exe tovrmlx3d.exe c:\\\\bin\\\\"
-  End:
-}
