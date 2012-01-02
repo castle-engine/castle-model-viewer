@@ -13,5 +13,5 @@ cd ../castle_game_engine/
 # Force rebuilding CastleWindow unit with proper backend.
 make clean-window
 
-fpc -dRELEASE "${CASTLE_FPC_OPTIONS:-}" @castle-fpc.cfg ../view3dscene/view3dscene.lpr
-fpc -dRELEASE "${CASTLE_FPC_OPTIONS:-}" @castle-fpc.cfg ../view3dscene/tovrmlx3d.lpr
+fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/view3dscene.lpr
+fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/tovrmlx3d.lpr
