@@ -178,7 +178,7 @@ procedure TNavigationTypeButton.DrawTooltip;
       Vector4Single(TooltipInsideColor, 255),
       Vector4Single(TooltipBorderColor, 255));
 
-    SetWindowPos(X1 + ImageMargin, Y1 + ImageMargin);
+    SetWindowPos(TGLint(X1 + ImageMargin), TGLint(Y1 + ImageMargin));
     glCallList(ImageDrawDisplayList);
 
     ArrowMiddleX := Left + Width div 2;
