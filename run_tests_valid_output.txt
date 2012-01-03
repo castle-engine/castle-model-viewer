@@ -2134,6 +2134,9 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Reading ../demo_models/vrml_2/empty_with_background.wrl
 ---- Reading again ../demo_models/vrml_2/empty_with_background.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/vrml_2/extrusion_concave_cap.wrl
+---- Reading again ../demo_models/vrml_2/extrusion_concave_cap.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/indexed_line_set.wrl
 ---- Reading again ../demo_models/vrml_2/indexed_line_set.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
