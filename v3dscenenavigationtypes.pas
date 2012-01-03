@@ -227,7 +227,7 @@ procedure TNavigationTypeButton.DrawTooltip;
       Font.PrintStringsBox(StringList, 0,
         Vector4Single(TooltipInsideColor, 255),
         Vector4Single(TooltipBorderColor, 255),
-        Vector4Single(TooltipTextColor,  255), nil, 5, 1, 1);
+        Vector4Single(TooltipTextColor,  255), nil, 5);
     finally FreeAndNil(StringList) end;
   end;
 

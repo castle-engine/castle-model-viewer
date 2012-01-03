@@ -579,7 +579,7 @@ begin
     glEnable(GL_BLEND);
 
       StatusFont.PrintStringsBox(Strs, 0,
-        InsideColor, BorderColor, TextColor, nil, BoxPixelMargin, 1, 1);
+        InsideColor, BorderColor, TextColor, nil, BoxPixelMargin);
 
       if StrsHighlight <> nil then
       begin
