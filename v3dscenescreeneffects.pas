@@ -99,17 +99,7 @@ const
        '}';
      NeedsDepth: false),
     (Name: 'Edge Detect';
-     Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  vec4 left   = texture2DRect(screen, vec2(gl_TexCoord[0].s - 1.0, gl_TexCoord[0].t));' +NL+
-       '  vec4 right  = texture2DRect(screen, vec2(gl_TexCoord[0].s + 1.0, gl_TexCoord[0].t));' +NL+
-       '  vec4 top    = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t + 1.0));' +NL+
-       '  vec4 bottom = texture2DRect(screen, vec2(gl_TexCoord[0].s, gl_TexCoord[0].t - 1.0));' +NL+
-       '  gl_FragColor = (abs(left - right) + abs(top - bottom)) / 2.0;' +NL+
-       '}';
+     Code: {$I screen_effects_edge_detect.glsl.inc};
      NeedsDepth: false),
     (Name: 'Gamma 2.2 (Brighten)';
      Code:
@@ -152,32 +142,7 @@ const
        '}';
      NeedsDepth: false),
     (Name: 'Flashlight (Nice Headlight)';
-     Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
-       'uniform sampler2DRect screen_depth;' +NL+
-       'uniform int screen_width;' +NL+
-       'uniform int screen_height;' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
-       '  float dist = distance(gl_TexCoord[0].st, vec2(screen_width, screen_height) / 2.0);' +NL+
-       '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' +NL+
-       '  vec2 middle_pos = vec2(float(screen_width), float(screen_height)) / 2.0;' +NL+
-       '  float middle_depth = (' +NL+
-       '      texture2DRect(screen_depth, middle_pos).r +' +NL+
-       '      texture2DRect(screen_depth, middle_pos / 2.0).r +' +NL+
-       '      texture2DRect(screen_depth, 3.0 * middle_pos / 2.0).r +' +NL+
-       '      texture2DRect(screen_depth, vec2(middle_pos.x / 2.0, 3.0 * middle_pos.y / 2.0)).r +' +NL+
-       '      texture2DRect(screen_depth, vec2(3.0 * middle_pos.x / 2.0, middle_pos.y / 2.0)).r' +NL+
-       '    ) / 5.0;' +NL+
-       '  middle_depth = 1.0 - pow(middle_depth, 20.0);' +NL+
-       '  radius_out = mix(radius_out / 3.0, radius_out, middle_depth);' +NL+
-       '  /* The magnificent Radeon fglrx crap refuses to correctly do "* 0.8" below */' +NL+
-       '  float radius_in = 4.0 * radius_out / 5.0;' +NL+
-       '  float p = mix(1.0 / 4.0, 1.0, smoothstep(radius_in, radius_out, dist));' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(p, p, p));' +NL+
-       '}';
+     Code: {$I screen_effects_flashlight.glsl.inc};
      NeedsDepth: true),
     (Name: 'Negative';
      Code:
