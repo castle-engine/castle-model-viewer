@@ -30,9 +30,9 @@ uses VectorMath, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
 
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you
-  want to use some user-supplied string (e.g. in VRML
+  want to use some user-supplied string (e.g. in VRML/X3D
   SFString field) in your UI (e.g. as menu or window caption). }
-function SForCaption(const S: string): string;
+function SForCaption(const S: string; const Limit: Cardinal = 50): string;
 
 type
   { Menu item referring to a viewpoint.
@@ -109,11 +109,11 @@ implementation
 
 uses SysUtils, CastleStringUtils, CastleParameters;
 
-function SForCaption(const S: string): string;
+function SForCaption(const S: string; const Limit: Cardinal): string;
 begin
   Result := SCompressWhiteSpace(S);
-  if Length(Result) > 50 then
-    Result := Copy(Result, 1, 50) + '...';
+  if Length(Result) > Limit then
+    Result := Copy(Result, 1, Limit - 3) + '...';
 end;
 
 function TMenuViewpointGroup.FindGroup(

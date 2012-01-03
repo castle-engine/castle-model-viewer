@@ -64,7 +64,7 @@ program view3dscene;
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
 
-uses CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
+uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
   CastleParameters, ProgressUnit, Cameras,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
@@ -428,9 +428,17 @@ var
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
+  InsideColor       : TVector4f = (0, 0, 0, 0.7);
+  BorderColor       : TVector4f = (0, 1, 0, 1);
+  TextColor         : TVector4f = (1, 1, 0, 1);
+  { pixel size of spaces in status box }
+  BoxPixelMargin = 5;
+  BonusVerticalSpace = 0;
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
+  var
+    MaxLineChars: Cardinal;
 
     function DescribeSensor(Sensor: TX3DNode): string;
     var
@@ -463,7 +471,7 @@ const
         end;
       end;
 
-      Result := SForCaption(Result);
+      Result := SForCaption(Result, MaxLineChars);
     end;
 
   var
@@ -479,38 +487,47 @@ const
         Over := nil;
       Active := Scene.PointingDeviceActiveSensors;
 
-      { Display sensors active but not over.
-        We do not just list all active sensors in the 1st pass,
-        because we prefer to list active sensors in the (more stable) order
-        they have on Over list. See also g3l_stapes_dbg.wrl testcase. }
-      for I := 0 to Active.Count - 1 do
-        if (Over = nil) or
-           (Over.IndexOf(Active[I]) = -1) then
-          Strs.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
+      if (Active.Count <> 0) or
+         ((Over <> nil) and
+          (Over.Count <> 0)) then
+      begin
+        MaxLineChars := Max(10,
+          Floor((Window.Width - BoxPixelMargin * 2) / StatusFont.TextWidth('W')));
 
-      { Display sensors over which the mouse hovers (and enabled).
-        Highlight active sensors on the list. }
-      if Over <> nil then
-        for I := 0 to Over.Count - 1 do
-          if Over.Enabled(I) then
-          begin
-            S := DescribeSensor(Over[I]);
-            if Active.IndexOf(Over[I]) <> -1 then
-              S := HighlightBegin + S + HighlightEnd;
-            Strs.Append(S);
-          end;
+        { Display sensors active but not over.
+          We do not just list all active sensors in the 1st pass,
+          because we prefer to list active sensors in the (more stable) order
+          they have on Over list. See also g3l_stapes_dbg.wrl testcase. }
+        for I := 0 to Active.Count - 1 do
+          if (Over = nil) or
+             (Over.IndexOf(Active[I]) = -1) then
+            Strs.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
 
-      { Note that sensors that are "active and over" are undistinguishable
-        from "active and not over".
-        This means that a tiny bit of information is lost
-        (because you are not *always* over an active sensor, so this way
-        you don't know if you're over or not over an active sensor).
-        But it's not really useful information in practice, and hiding it
-        makes the sensors status look much cleaner. }
+        { Display sensors over which the mouse hovers (and enabled).
+          Highlight active sensors on the list. }
+        if Over <> nil then
+          for I := 0 to Over.Count - 1 do
+            if Over.Enabled(I) then
+            begin
+              S := DescribeSensor(Over[I]);
+              if Active.IndexOf(Over[I]) <> -1 then
+                S := HighlightBegin + S + HighlightEnd;
+              Strs.Append(S);
+            end;
+
+        { Note that sensors that are "active and over" are undistinguishable
+          from "active and not over".
+          This means that a tiny bit of information is lost
+          (because you are not *always* over an active sensor, so this way
+          you don't know if you're over or not over an active sensor).
+          But it's not really useful information in practice, and hiding it
+          makes the sensors status look much cleaner. }
+
+        { a blank line, separating from the rest of status, if needed }
+        if Strs.Count <> 0 then
+          Strs.Append('');
+      end;
     end;
-
-    if Strs.Count <> 0 then
-      Strs.Append(''); { a blank line, separating from the rest of status }
   end;
 
   function CurrentAboveHeight: string;
@@ -524,13 +541,6 @@ const
       Result := FloatToNiceStr(Camera.Walk.AboveHeight);
   end;
 
-const
-  InsideColor       : TVector4f = (0, 0, 0, 0.7);
-  BorderColor       : TVector4f = (0, 1, 0, 1);
-  TextColor         : TVector4f = (1, 1, 0, 1);
-  { pixel size of spaces in status box }
-  BoxPixelMargin = 5;
-  BonusVerticalSpace = 0;
 var
   s: string;
 begin
