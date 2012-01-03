@@ -423,12 +423,8 @@ begin
 end;
 
 procedure TStatusText.Draw;
-const
-  StatusInsideCol: TVector4f = (0, 0, 0, 0.7);
-  StatusBorderCol: TVector4f = (0, 1, 0, 1);
-  StatusTextCol  : TVector4f = (1, 1, 0, 1);
 var
-  strs: TStringList;
+  Strs, StrsHighlight: TStringList;
 
   { Describe pointing-device sensors (under the mouse, and also active
     one (if any)). }
@@ -472,16 +468,32 @@ var
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
+      if Scene.PointingDeviceActiveSensors.Count <> 0 then
+      begin
+        { StrsHighlight are only needed for displaying active sensors,
+          so only create them now, to not waste time otherwise. }
+        StrsHighlight := TStringList.Create;
+        for I := 0 to Scene.PointingDeviceActiveSensors.Count - 1 do
+        begin
+          StrsHighlight.Append(DescribeSensor(Scene.PointingDeviceActiveSensors[I]));
+          Strs.Append(''); { leave empty space in Strs, to display StrsHighlight over }
+        end;
+      end;
+
       if Scene.PointingDeviceOverItem <> nil then
       begin
         Sensors := Scene.PointingDeviceSensors;
         for I := 0 to Sensors.Count - 1 do
-          if Sensors.Enabled(I) then
-            Strs.Append('Over enabled sensor: ' + DescribeSensor(Sensors[I]));
+          if Sensors.Enabled(I) and
+             { For sensors that are active, do not show them for 2nd time as "over".
+               This means that a tiny bit of information is lost
+               (because you are not *always* over an active sensor, so this way
+               you don't know if you're over or not over an active sensor).
+               But it's not really useful information in practice, and hiding it
+               makes the sensors status look much cleaner. }
+             (Scene.PointingDeviceActiveSensors.IndexOf(Sensors[I]) = -1) then
+            Strs.Append(DescribeSensor(Sensors[I]));
       end;
-      for I := 0 to Scene.PointingDeviceActiveSensors.Count - 1 do
-        Strs.Append('Active sensor: ' +
-          DescribeSensor(Scene.PointingDeviceActiveSensors[I]));
     end;
 
     if Strs.Count <> 0 then
@@ -499,6 +511,14 @@ var
       Result := FloatToNiceStr(Camera.Walk.AboveHeight);
   end;
 
+const
+  InsideColor       : TVector4f = (0, 0, 0, 0.7);
+  BorderColor       : TVector4f = (0, 1, 0, 1);
+  TextColor         : TVector4f = (1, 1, 0, 1);
+  TextHighlightColor: TVector4f = (1, 1, 1, 1);
+  { pixel size of spaces in status box }
+  BoxPixelMargin = 5;
+  BonusVerticalSpace = 0;
 var
   s: string;
 begin
@@ -507,7 +527,8 @@ begin
   glLoadIdentity;
   glTranslatef(5, 5, 0);
 
-  strs := TStringList.Create;
+  StrsHighlight := nil; { will be created on demand }
+  Strs := TStringList.Create;
   try
     DescribeSensors;
 
@@ -555,12 +576,24 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-      statusFont.printStringsBox(strs, 0,
-        StatusInsideCol, StatusBorderCol, StatusTextCol,
-        nil, 5, 1, 1);
+      StatusFont.PrintStringsBox(Strs, 0,
+        InsideColor, BorderColor, TextColor, nil, BoxPixelMargin, 1, 1);
+
+      if StrsHighlight <> nil then
+      begin
+        glColorv(TextHighlightColor);
+        { We could also use here different font than StatusFont.
+          But I couldn't really find better one... }
+        StatusFont.PrintStrings(StrsHighlight, 0,
+          BoxPixelMargin, BoxPixelMargin + StatusFont.Descend +
+          (Strs.Count - StrsHighlight.Count) * (StatusFont.RowHeight + BonusVerticalSpace));
+      end;
 
     glDisable(GL_BLEND);
-  finally strs.Free end;
+  finally
+    FreeAndNil(Strs);
+    FreeAndNil(StrsHighlight);
+  end;
 end;
 
 var
@@ -570,7 +603,7 @@ var
 
 procedure Open(Window: TCastleWindowBase);
 begin
- statusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
+ StatusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
 
  { We want to be able to render any scene --- so we have to be prepared
    that fog interpolation has to be corrected for perspective. }
@@ -590,7 +623,7 @@ end;
 procedure Close(Window: TCastleWindowBase);
 begin
   ShadowsGLClose;
-  FreeAndNil(statusFont);
+  FreeAndNil(StatusFont);
 
   Progress.UserInterface := ProgressNullInterface;
 end;
