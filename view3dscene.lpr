@@ -424,10 +424,12 @@ end;
 
 procedure TStatusText.Draw;
 var
-  Strs, StrsHighlight: TStringList;
+  Strs: TStringList;
+const
+  HighlightBegin = '<font color="#ffffff">';
+  HighlightEnd = '</font>';
 
-  { Describe pointing-device sensors (under the mouse, and also active
-    one (if any)). }
+  { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
 
     function DescribeSensor(Sensor: TX3DNode): string;
@@ -465,37 +467,46 @@ var
     end;
 
   var
-    Sensors: TPointingDeviceSensorList;
+    Over: TPointingDeviceSensorList;
+    Active: TX3DNodeList;
     I: Integer;
+    S: string;
   begin
     if SceneAnimation.ScenesCount = 1 then
     begin
-      if Scene.PointingDeviceActiveSensors.Count <> 0 then
-      begin
-        { StrsHighlight are only needed for displaying active sensors,
-          so only create them now, to not waste time otherwise. }
-        StrsHighlight := TStringList.Create;
-        for I := 0 to Scene.PointingDeviceActiveSensors.Count - 1 do
-        begin
-          StrsHighlight.Append(DescribeSensor(Scene.PointingDeviceActiveSensors[I]));
-          Strs.Append(''); { leave empty space in Strs, to display StrsHighlight over }
-        end;
-      end;
-
       if Scene.PointingDeviceOverItem <> nil then
-      begin
-        Sensors := Scene.PointingDeviceSensors;
-        for I := 0 to Sensors.Count - 1 do
-          if Sensors.Enabled(I) and
-             { For sensors that are active, do not show them for 2nd time as "over".
-               This means that a tiny bit of information is lost
-               (because you are not *always* over an active sensor, so this way
-               you don't know if you're over or not over an active sensor).
-               But it's not really useful information in practice, and hiding it
-               makes the sensors status look much cleaner. }
-             (Scene.PointingDeviceActiveSensors.IndexOf(Sensors[I]) = -1) then
-            Strs.Append(DescribeSensor(Sensors[I]));
-      end;
+        Over := Scene.PointingDeviceSensors else
+        Over := nil;
+      Active := Scene.PointingDeviceActiveSensors;
+
+      { Display sensors active but not over.
+        We do not just list all active sensors in the 1st pass,
+        because we prefer to list active sensors in the (more stable) order
+        they have on Over list. See also g3l_stapes_dbg.wrl testcase. }
+      for I := 0 to Active.Count - 1 do
+        if (Over = nil) or
+           (Over.IndexOf(Active[I]) = -1) then
+          Strs.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
+
+      { Display sensors over which the mouse hovers (and enabled).
+        Highlight active sensors on the list. }
+      if Over <> nil then
+        for I := 0 to Over.Count - 1 do
+          if Over.Enabled(I) then
+          begin
+            S := DescribeSensor(Over[I]);
+            if Active.IndexOf(Over[I]) <> -1 then
+              S := HighlightBegin + S + HighlightEnd;
+            Strs.Append(S);
+          end;
+
+      { Note that sensors that are "active and over" are undistinguishable
+        from "active and not over".
+        This means that a tiny bit of information is lost
+        (because you are not *always* over an active sensor, so this way
+        you don't know if you're over or not over an active sensor).
+        But it's not really useful information in practice, and hiding it
+        makes the sensors status look much cleaner. }
     end;
 
     if Strs.Count <> 0 then
@@ -517,7 +528,6 @@ const
   InsideColor       : TVector4f = (0, 0, 0, 0.7);
   BorderColor       : TVector4f = (0, 1, 0, 1);
   TextColor         : TVector4f = (1, 1, 0, 1);
-  TextHighlightColor: TVector4f = (1, 1, 1, 1);
   { pixel size of spaces in status box }
   BoxPixelMargin = 5;
   BonusVerticalSpace = 0;
@@ -529,7 +539,6 @@ begin
   glLoadIdentity;
   glTranslatef(5, 5, 0);
 
-  StrsHighlight := nil; { will be created on demand }
   Strs := TStringList.Create;
   try
     DescribeSensors;
@@ -581,20 +590,9 @@ begin
       StatusFont.PrintStringsBox(Strs, true, 0,
         InsideColor, BorderColor, TextColor, BoxPixelMargin);
 
-      if StrsHighlight <> nil then
-      begin
-        glColorv(TextHighlightColor);
-        { We could also use here different font than StatusFont.
-          But I couldn't really find better one... }
-        StatusFont.PrintStrings(StrsHighlight, true, 0,
-          BoxPixelMargin, BoxPixelMargin + StatusFont.Descend +
-          (Strs.Count - StrsHighlight.Count) * (StatusFont.RowHeight + BonusVerticalSpace));
-      end;
-
     glDisable(GL_BLEND);
   finally
     FreeAndNil(Strs);
-    FreeAndNil(StrsHighlight);
   end;
 end;
 
