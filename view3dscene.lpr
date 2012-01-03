@@ -578,7 +578,7 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-      StatusFont.PrintStringsBox(Strs, 0,
+      StatusFont.PrintStringsBox(Strs, true, 0,
         InsideColor, BorderColor, TextColor, BoxPixelMargin);
 
       if StrsHighlight <> nil then
@@ -586,7 +586,7 @@ begin
         glColorv(TextHighlightColor);
         { We could also use here different font than StatusFont.
           But I couldn't really find better one... }
-        StatusFont.PrintStrings(StrsHighlight, 0,
+        StatusFont.PrintStrings(StrsHighlight, true, 0,
           BoxPixelMargin, BoxPixelMargin + StatusFont.Descend +
           (Strs.Count - StrsHighlight.Count) * (StatusFont.RowHeight + BonusVerticalSpace));
       end;

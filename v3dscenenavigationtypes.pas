@@ -224,7 +224,7 @@ procedure TNavigationTypeButton.DrawTooltip;
       AddStrArrayToStrings(Strings, StringList);
 
       glTranslatef(Left, Bottom - StringList.Count * Font.RowHeight, 0);
-      Font.PrintStringsBox(StringList, 0,
+      Font.PrintStringsBox(StringList, false, 0,
         Vector4Single(TooltipInsideColor, 255),
         Vector4Single(TooltipBorderColor, 255),
         Vector4Single(TooltipTextColor,  255), 5);
