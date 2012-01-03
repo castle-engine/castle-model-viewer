@@ -432,34 +432,36 @@ var
 
     function DescribeSensor(Sensor: TX3DNode): string;
     var
-      Desc: string;
+      Description: string;
+      Anchor: TAnchorNode;
       J: Integer;
     begin
       Result := Format('%s', [Sensor.NiceName]);
 
       if Sensor is TAbstractPointingDeviceSensorNode then
-        Desc := TAbstractPointingDeviceSensorNode(Sensor).FdDescription.Value else
+      begin
+        { use description instead, if any provided }
+        Description := Trim(TAbstractPointingDeviceSensorNode(Sensor).FdDescription.Value);
+        if Description <> '' then
+          Result := Description;
+      end else
       if Sensor is TAnchorNode then
       begin
-        Desc := TAnchorNode(Sensor).FdDescription.Value;
-        for J := 0 to TAnchorNode(Sensor).FdUrl.Count - 1 do
+        Anchor := TAnchorNode(Sensor);
+        { use description instead, if any provided }
+        Description := Trim(Anchor.FdDescription.Value);
+        if Description <> '' then
+          Result := Description;
+        if Anchor.FdUrl.Count <> 0 then
         begin
-          if J = 0 then
-          begin
-            if Desc <> '' then Desc += ' ';
-            Desc += '[';
-          end else
-            Desc += ', ';
-          Desc += TAnchorNode(Sensor).FdUrl.Items[J];
+          Result += ' [' + Anchor.FdUrl.Items[0];
+          for J := 1 to Anchor.FdUrl.Count - 1 do
+            Result += ', ' + Anchor.FdUrl.Items[J];
+          Result += ']';
         end;
-        if TAnchorNode(Sensor).FdUrl.Count <> 0 then
-          Desc += ']';
-      end else
-        Desc := '';
+      end;
 
-      Desc := SForCaption(Desc);
-      if Desc <> '' then
-        Result += ' ' + Desc;
+      Result := SForCaption(Result);
     end;
 
   var
