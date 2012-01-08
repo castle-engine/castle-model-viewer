@@ -3655,7 +3655,7 @@ begin
 
   NextLeft := ToolbarMargin;
 
-  if ToolbarPanel.GetExists then
+  if ToolbarPanel.Exists then
   begin
     ToolbarPanel.Left := 0;
     ToolbarPanel.Width := Window.Width;
