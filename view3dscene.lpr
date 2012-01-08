@@ -732,9 +732,9 @@ end;
 procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
 begin
   inherited;
-  { RenderVisualizations are opaque, so they should be renderer here
+  { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes. }
-  if not Params.Transparent then
+  if (not Params.Transparent) and (not Params.ShadowVolumesReceivers) then
     RenderVisualizations;
 end;
 
@@ -779,9 +779,9 @@ end;
 procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
   inherited;
-  { RenderVisualizations are opaque, so they should be renderer here
+  { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes. }
-  if not Params.Transparent then
+  if (not Params.Transparent) and (not Params.ShadowVolumesReceivers) then
     RenderVisualizations;
 end;
 
