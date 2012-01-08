@@ -162,7 +162,7 @@ var
     animation would play). }
   ProcessEventsWanted: boolean = true;
 
-  { If WarningsButton.Exists is allowed. If false, then WarningsButton.Exists
+  { If WarningsButton.GetExists is allowed. If false, then WarningsButton.Exists
     should be false, regardless of warnings count. }
   WarningsButtonEnabled: boolean = true;
   WarningsButton: TCastleButton;
@@ -417,7 +417,7 @@ type
 
 function TStatusText.DrawStyle: TUIControlDrawStyle;
 begin
-  if Exists then
+  if GetExists then
     Result := ds2D else
     Result := dsNone;
 end;
@@ -544,7 +544,7 @@ const
 var
   s: string;
 begin
-  if not Exists then Exit;
+  if not GetExists then Exit;
 
   glLoadIdentity;
   glTranslatef(5, 5, 0);
@@ -3655,7 +3655,7 @@ begin
 
   NextLeft := ToolbarMargin;
 
-  if ToolbarPanel.Exists then
+  if ToolbarPanel.GetExists then
   begin
     ToolbarPanel.Left := 0;
     ToolbarPanel.Width := Window.Width;
