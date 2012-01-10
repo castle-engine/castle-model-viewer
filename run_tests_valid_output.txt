@@ -1111,6 +1111,21 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/cube_environment_mapping/cubemap_visualize_mipmaps.x3dv
 ---- Reading again ../demo_models/cube_environment_mapping/cubemap_visualize_mipmaps.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/event_utilities/boolean_filter.x3dv
+---- Reading again ../demo_models/event_utilities/boolean_filter.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/event_utilities/integer_trigger.x3dv
+---- Reading again ../demo_models/event_utilities/integer_trigger.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/event_utilities/sequencer_bool_test.x3dv
+---- Reading again ../demo_models/event_utilities/sequencer_bool_test.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/event_utilities/sequencer_int_test.x3dv
+---- Reading again ../demo_models/event_utilities/sequencer_int_test.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/event_utilities/toggler.x3dv
+---- Reading again ../demo_models/event_utilities/toggler.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/fog/fog_animate_transform.x3dv
 ---- Reading again ../demo_models/fog/fog_animate_transform.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2371,9 +2386,6 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Reading ../demo_models/x3d/empty_with_background_ortho.x3dv
 ---- Reading again ../demo_models/x3d/empty_with_background_ortho.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/event_utils.x3dv
----- Reading again ../demo_models/x3d/event_utils.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/extrusion.x3dv
 ---- Reading again ../demo_models/x3d/extrusion.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2425,15 +2437,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/routes_loop.x3dv
 ---- Reading again ../demo_models/x3d/routes_loop.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/sequencer_bool_test.x3dv
----- Reading again ../demo_models/x3d/sequencer_bool_test.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/sequencer_int_test.x3dv
----- Reading again ../demo_models/x3d/sequencer_int_test.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/x3d/toggler.x3dv
----- Reading again ../demo_models/x3d/toggler.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/triangle_quad_sets.x3dv
 ---- Reading again ../demo_models/x3d/triangle_quad_sets.x3dv
