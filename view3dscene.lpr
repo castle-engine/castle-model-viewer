@@ -66,7 +66,7 @@ program view3dscene;
 
 uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  CastleParameters, ProgressUnit, Cameras,
+  CastleParameters, ProgressUnit, Cameras, CastleOpenDocument,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors,
@@ -3075,10 +3075,12 @@ begin
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
-           '[http://castle-engine.sourceforge.net/view3dscene.php]' + NL +
+           '[' + View3dsceneURL + ']' + NL +
            NL +
            'Compiled with ' + SCompilerDescription +'.');
        end;
+  132: if not OpenURL(View3dsceneURL) then
+         Window.MessageOk('Cannot execute WWW browser.', mtError);
 
   171: SelectedShowInformation;
   172: SelectedShowLightsInformation;
@@ -3537,6 +3539,7 @@ begin
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('OpenGL Information',                 173));
    M.Append(TMenuSeparator.Create);
+   M.Append(TMenuItem.Create('Visit view3dscene website',          132));
    M.Append(TMenuItem.Create('About view3dscene',                  131));
    Result.Append(M);
 end;
