@@ -233,9 +233,7 @@ begin
 
   if SingleMovieFile and Success then
   begin
-    Executable := PathFileSearch(
-      {$ifdef MSWINDOWS} 'ffmpeg.exe' {$endif}
-      {$ifdef UNIX} 'ffmpeg' {$endif});
+    Executable := PathFileSearch('ffmpeg'  + ExeExtension);
 
     if Executable = '' then
     begin
