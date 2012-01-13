@@ -174,11 +174,6 @@ var
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
 
-  { These are set by Draw right after rendering a SceneAnimation frame. }
-  LastRender_RenderedShapesCount: Cardinal;
-  LastRender_BoxesOcclusionQueriedCount: Cardinal;
-  LastRender_VisibleShapesCount: Cardinal;
-
 { Helper class ---------------------------------------------------------------
 
   Some callbacks here must be methods (procedure of class),
@@ -543,8 +538,11 @@ const
 
 var
   s: string;
+  Statistics: TRenderStatistics;
 begin
   if not GetExists then Exit;
+
+  Statistics := SceneManager.Statistics;
 
   glLoadIdentity;
   glTranslatef(5, 5, 0);
@@ -577,11 +575,11 @@ begin
 
     if SceneAnimation.Attributes.UseOcclusionQuery or
        SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
-      S := Format(' (+ %d boxes to occl query)', [LastRender_BoxesOcclusionQueriedCount]) else
+      S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
       S := '';
     strs.Append(Format('Rendered Shapes : %d%s of %d ',
-      [ LastRender_RenderedShapesCount, S,
-        LastRender_VisibleShapesCount ]) + OctreeDisplayStatus);
+      [ Statistics.ShapesRendered, S,
+        Statistics.ShapesVisible ]) + OctreeDisplayStatus);
 
     if SceneAnimation.TimeAtLoad = 0.0 then
       S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
@@ -756,9 +754,6 @@ begin
   begin
     inherited;
     { inherited will call Render3D that will call RenderVisualizations }
-    LastRender_RenderedShapesCount := MainScene.LastRender_RenderedShapesCount;
-    LastRender_BoxesOcclusionQueriedCount := MainScene.LastRender_BoxesOcclusionQueriedCount;
-    LastRender_VisibleShapesCount  := MainScene.LastRender_VisibleShapesCount;
   end;
 end;
 
@@ -801,7 +796,6 @@ begin
   begin
     inherited;
     { inherited will call Render3D that will call RenderVisualizations }
-    { Custom viewports don't set LastRender_* }
   end;
 end;
 
