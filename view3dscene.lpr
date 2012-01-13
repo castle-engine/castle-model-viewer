@@ -3080,7 +3080,7 @@ begin
            'Compiled with ' + SCompilerDescription +'.');
        end;
   132: if not OpenURL(View3dsceneURL) then
-         Window.MessageOk('Cannot execute WWW browser.', mtError);
+         Window.MessageOk(SCannotOpenURL, mtError);
 
   171: SelectedShowInformation;
   172: SelectedShowLightsInformation;
