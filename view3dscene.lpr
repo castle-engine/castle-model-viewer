@@ -564,7 +564,7 @@ begin
           VectorToNiceStr(Camera.Walk.Up) ]));
       strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
         [ Camera.Walk.MoveSpeed,
-          Camera.Walk.CameraPreferredHeight,
+          Camera.Walk.PreferredHeight,
           CurrentAboveHeight ]));
     end;
 
