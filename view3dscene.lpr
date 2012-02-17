@@ -539,6 +539,7 @@ const
 var
   s: string;
   Statistics: TRenderStatistics;
+  Pos, Dir, Up: TVector3Single;
 begin
   if not GetExists then Exit;
 
@@ -556,12 +557,12 @@ begin
       S += ' (octree resources released)';
     strs.Append(S); }
 
+    Camera.GetView(Pos, Dir, Up);
+    strs.Append(Format('Camera: pos %s, dir %s, up %s',
+      [ VectorToNiceStr(Pos), VectorToNiceStr(Dir), VectorToNiceStr(Up) ]));
+
     if Camera.NavigationClass = ncWalk then
     begin
-      strs.Append(Format('Camera: pos %s, dir %s, up %s',
-        [ VectorToNiceStr(Camera.Walk.Position),
-          VectorToNiceStr(Camera.Walk.Direction),
-          VectorToNiceStr(Camera.Walk.Up) ]));
       strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
         [ Camera.Walk.MoveSpeed,
           Camera.Walk.PreferredHeight,
