@@ -264,7 +264,7 @@ begin
 
   if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
   begin
-    SH := TShapeHintsNode_1.Create('', Node.WWWBasePath);
+    SH := TShapeHintsNode_1.Create('', Node.BaseUrl);
     SH.FdFaceType.Value := FACETYPE_UNKNOWN;
     Node.FdChildren.Add(0, SH);
   end;

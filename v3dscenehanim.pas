@@ -90,16 +90,16 @@ begin
     All joint visualizations share the same sphere Shape.
     This way they also share the same material, useful for view3dscene
     "Edit Material" menu item. }
-  SphereShape := TShapeNode.Create('', HumanoidNode.WWWBasePath);
+  SphereShape := TShapeNode.Create('', HumanoidNode.BaseUrl);
 
-  SphereGeometry := TSphereNode.Create('', HumanoidNode.WWWBasePath);
+  SphereGeometry := TSphereNode.Create('', HumanoidNode.BaseUrl);
   SphereGeometry.FdRadius.Value := JointVisualizationSize / 2;
   SphereShape.FdGeometry.Value := SphereGeometry;
 
-  SphereAppearance := TAppearanceNode.Create('', HumanoidNode.WWWBasePath);
+  SphereAppearance := TAppearanceNode.Create('', HumanoidNode.BaseUrl);
   SphereShape.FdAppearance.Value := SphereAppearance;
 
-  SphereMaterial := TMaterialNode.Create(MatName, HumanoidNode.WWWBasePath);
+  SphereMaterial := TMaterialNode.Create(MatName, HumanoidNode.BaseUrl);
   SphereMaterial.FdTransparency.Value := 0.3;
   SphereAppearance.FdMaterial.Value := SphereMaterial;
 
@@ -110,7 +110,7 @@ begin
       Joint := THAnimJointNode(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointTransform := TTransformNode.Create('', HumanoidNode.WWWBasePath);
+      JointTransform := TTransformNode.Create('', HumanoidNode.BaseUrl);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.Add(JointTransform);
 
@@ -121,14 +121,14 @@ begin
 
       JointTransform.FdChildren.Add(SphereShape);
 
-      TextShape := TShapeNode.Create('', HumanoidNode.WWWBasePath);
+      TextShape := TShapeNode.Create('', HumanoidNode.BaseUrl);
       JointTransform.FdChildren.Add(TextShape);
 
-      TextGeometry := TTextNode.Create('', HumanoidNode.WWWBasePath);
+      TextGeometry := TTextNode.Create('', HumanoidNode.BaseUrl);
       TextGeometry.FdString.Items.Add(Joint.FdName.Value);
       TextShape.FdGeometry.Value := TextGeometry;
 
-      FontStyle := TFontStyleNode.Create('', HumanoidNode.WWWBasePath);
+      FontStyle := TFontStyleNode.Create('', HumanoidNode.BaseUrl);
       FontStyle.FdSize.Value := JointVisualizationSize;
       TextGeometry.FdFontStyle.Value := FontStyle;
     end;

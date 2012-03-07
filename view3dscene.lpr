@@ -2075,7 +2075,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
             this indicates that something incorrect was placed in "material"
             field. }
 
-          M2 := TMaterialNode.Create('', Shape.WWWBasePath);
+          M2 := TMaterialNode.Create('', Shape.BaseUrl);
           Shape.Material := M2;
           Scene.ChangedAll;
         end else
