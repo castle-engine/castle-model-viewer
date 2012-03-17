@@ -194,6 +194,7 @@ type
     class procedure NavigationTypeButtonClick(Sender: TObject);
     class procedure OpenButtonClick(Sender: TObject);
     class procedure CollisionsButtonClick(Sender: TObject);
+    class procedure ScreenshotButtonClick(Sender: TObject);
   end;
 
 { SceneManager and viewport ------------------------------------------------ }
@@ -1597,6 +1598,69 @@ end;
 
 procedure UpdateStatusToolbarVisible; forward;
 
+procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
+var
+  ScreenShotName: string;
+  Image: TImage;
+  ReadBuffer: TGLenum;
+  Fbo: TGLRenderToTexture;
+  ImageClass: TImageClass;
+begin
+  if SceneFileName <> '' then
+    ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
+    ScreenShotName := 'view3dscene_screen_%d.png';
+  ScreenShotName := FileNameAutoInc(ScreenShotName);
+  { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
+    Expanded, to allow Transparency: boolean parameter,
+    that it turn causes FBO rendering (as we need alpha channel in color buffer). }
+  if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+  begin
+    Assert(Window.DoubleBuffer); { view3dscene always has double buffer }
+
+    if Transparency then
+    begin
+      Fbo := TGLRenderToTexture.Create(Window.Width, Window.Height);
+      Fbo.Buffer := tbNone;
+      Fbo.ColorBufferAlpha := true;
+      Fbo.GLContextOpen;
+      Fbo.RenderBegin;
+      ReadBuffer := Fbo.ColorBuffer;
+      ImageClass := TRGBAlphaImage;
+      Inc(DisableBackground);
+
+      if glGetInteger(GL_ALPHA_BITS) = 0 then
+        { In case FBO is not available, and main context doesn't have alpha
+          bits either. }
+        OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
+    end else
+    begin
+      ReadBuffer := GL_BACK;
+      ImageClass := TRGBImage;
+    end;
+
+    try
+      Window.EventBeforeDraw;
+      Window.EventDraw;
+      Image := SaveScreen_noflush(ImageClass,
+        0, 0, Window.Width, Window.Height, ReadBuffer);
+      try
+        try
+          SaveImage(Image, ScreenShotName);
+        except
+          on E: Exception do Window.MessageOK('Unable to save screen: ' + E.Message, mtError);
+        end;
+      finally FreeAndNil(Image) end;
+    finally
+      if Transparency then
+      begin
+        Fbo.RenderEnd;
+        FreeAndNil(Fbo);
+        Dec(DisableBackground);
+      end;
+    end;
+  end;
+end;
+
 procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
@@ -2348,69 +2412,6 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       SceneAnimation.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
       SceneAnimation.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
       SceneAnimation.Attributes.Mode            := FillModes[FillMode].Mode;
-    end;
-  end;
-
-  procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
-  var
-    ScreenShotName: string;
-    Image: TImage;
-    ReadBuffer: TGLenum;
-    Fbo: TGLRenderToTexture;
-    ImageClass: TImageClass;
-  begin
-    if SceneFileName <> '' then
-      ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
-      ScreenShotName := 'view3dscene_screen_%d.png';
-    ScreenShotName := FileNameAutoInc(ScreenShotName);
-    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
-      Expanded, to allow Transparency: boolean parameter,
-      that it turn causes FBO rendering (as we need alpha channel in color buffer). }
-    if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
-    begin
-      Assert(Window.DoubleBuffer); { view3dscene always has double buffer }
-
-      if Transparency then
-      begin
-        Fbo := TGLRenderToTexture.Create(Window.Width, Window.Height);
-        Fbo.Buffer := tbNone;
-        Fbo.ColorBufferAlpha := true;
-        Fbo.GLContextOpen;
-        Fbo.RenderBegin;
-        ReadBuffer := Fbo.ColorBuffer;
-        ImageClass := TRGBAlphaImage;
-        Inc(DisableBackground);
-
-        if glGetInteger(GL_ALPHA_BITS) = 0 then
-          { In case FBO is not available, and main context doesn't have alpha
-            bits either. }
-          OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
-      end else
-      begin
-        ReadBuffer := GL_BACK;
-        ImageClass := TRGBImage;
-      end;
-
-      try
-        Window.EventBeforeDraw;
-        Window.EventDraw;
-        Image := SaveScreen_noflush(ImageClass,
-          0, 0, Window.Width, Window.Height, ReadBuffer);
-        try
-          try
-            SaveImage(Image, ScreenShotName);
-          except
-            on E: Exception do Window.MessageOK('Unable to save screen: ' + E.Message, mtError);
-          end;
-        finally FreeAndNil(Image) end;
-      finally
-        if Transparency then
-        begin
-          Fbo.RenderEnd;
-          FreeAndNil(Fbo);
-          Dec(DisableBackground);
-        end;
-      end;
     end;
   end;
 
@@ -3542,7 +3543,7 @@ end;
 { toolbar -------------------------------------------------------------------- }
 
 var
-  OpenButton: TCastleButton;
+  OpenButton, ScreenshotButton: TCastleButton;
 
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
@@ -3557,6 +3558,7 @@ begin
     ToolbarPanel.Exists := Vis;
     OpenButton.Exists := Vis;
     CollisionsButton.Exists := Vis;
+    ScreenshotButton.Exists := Vis;
 
     { Note that WarningsButton ignores the Vis.
       This is by design --- always signal warnings. }
@@ -3605,6 +3607,14 @@ begin
     CollisionsButton.Pressed := SceneAnimation.Collides else
     CollisionsButton.Pressed := true { default value };
   Window.Controls.Insert(0, CollisionsButton);
+
+  ScreenshotButton := TCastleButton.Create(Application);
+  ScreenshotButton.Caption := 'Screenshot';
+  ScreenshotButton.OnClick := @THelper(nil).ScreenshotButtonClick;
+  ScreenshotButton.Image := V3DSceneImages.Screenshot;
+  ScreenshotButton.ImageAlphaTest := true;
+  ScreenshotButton.MinImageHeight := MinImageHeight;
+  Window.Controls.Insert(0, ScreenShotButton);
 
   WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
@@ -3685,6 +3695,10 @@ begin
     CollisionsButton.Left := NextLeft;
     CollisionsButton.Bottom := ButtonsBottom;
     NextLeft += CollisionsButton.Width + ButtonsMargin;
+
+    ScreenshotButton.Left := NextLeft;
+    ScreenshotButton.Bottom := ButtonsBottom;
+    NextLeft += ScreenshotButton.Width + ButtonsMargin;
   end;
 
   WarningsButton.Left := Max(NextLeft,
@@ -3714,6 +3728,11 @@ end;
 class procedure THelper.CollisionsButtonClick(Sender: TObject);
 begin
   SetCollisions(not SceneAnimation.Collides, true);
+end;
+
+class procedure THelper.ScreenshotButtonClick(Sender: TObject);
+begin
+  ScreenShotImage('Screenshot to Image', false);
 end;
 
 { initializing GL context --------------------------------------------------- }

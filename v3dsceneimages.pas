@@ -25,6 +25,9 @@ var
   Open: TRGBAlphaImage;
 
 var
+  Screenshot: TRGBAlphaImage;
+
+var
   Examine_tooltip: TRGBImage;
 
 var
@@ -50,6 +53,8 @@ initialization
   Move(FlyPixels, Fly.RawPixels^, SizeOf(FlyPixels));
   Open := TRGBAlphaImage.Create(OpenWidth, OpenHeight);
   Move(OpenPixels, Open.RawPixels^, SizeOf(OpenPixels));
+  Screenshot := TRGBAlphaImage.Create(ScreenshotWidth, ScreenshotHeight);
+  Move(ScreenshotPixels, Screenshot.RawPixels^, SizeOf(ScreenshotPixels));
   Examine_tooltip := TRGBImage.Create(Examine_tooltipWidth, Examine_tooltipHeight);
   Move(Examine_tooltipPixels, Examine_tooltip.RawPixels^, SizeOf(Examine_tooltipPixels));
   Walk_fly_tooltip := TRGBImage.Create(Walk_fly_tooltipWidth, Walk_fly_tooltipHeight);
@@ -60,6 +65,7 @@ finalization
   FreeAndNil(Walk);
   FreeAndNil(Fly);
   FreeAndNil(Open);
+  FreeAndNil(Screenshot);
   FreeAndNil(Examine_tooltip);
   FreeAndNil(Walk_fly_tooltip);
 end.
