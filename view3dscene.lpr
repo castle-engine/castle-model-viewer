@@ -675,7 +675,7 @@ begin
 
     OctreeDisplay(SceneAnimation);
 
-    if showBBox and (not MakingScreenShot) then
+    if ShowBBox and (not MakingScreenShot) then
     begin
       { Display current bounding box only if there's a chance that it's
         different than whole animation BoundingBox --- this requires that animation
@@ -698,7 +698,7 @@ begin
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
     if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
-     DrawFrustum(ShowFrustumAlwaysVisible);
+      DrawFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
     begin
@@ -1501,6 +1501,22 @@ end;
 
 { make screen shots ---------------------------------------------------------- }
 
+function DrawAndSaveScreen(ImageClass: TImageClass; ReadBuffer: TGLenum): TImage;
+{const
+  ControlsOnScreenshot = false;}
+begin
+{  if ControlsOnScreenshot then
+  begin
+    Window.EventDraw;
+  end else}
+  begin
+    ViewportsDraw;
+    SceneManager.Draw;
+  end;
+  Result := SaveScreen_NoFlush(ImageClass,
+    0, 0, Window.Width, Window.Height, ReadBuffer);
+end;
+
 { This performs all screenshot takes, as specified in ScreenShotsList.
   It is used both for batch mode screenshots (--screenshot, --screenshot-range)
   and interactive (menu items about screenshots) operation. }
@@ -1509,7 +1525,7 @@ var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
   OldTime: TFloatTime;
-  Image: TRGBImage;
+  Image: TImage;
 begin
   { Save global things that we change, to restore them later.
     This isn't needed for batch mode screenshots, but it doesn't hurt
@@ -1534,10 +1550,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
-          ViewportsDraw;
-          SceneManager.Draw;
-          glFlush();
-          Image := SaveScreen_NoFlush(0, 0, Window.Width, Window.Height, ReadBuffer);
+          Image := DrawAndSaveScreen(TRGBImage, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseFileName(J));
           finally FreeAndNil(Image) end;
@@ -1640,9 +1653,7 @@ begin
 
     try
       Window.EventBeforeDraw;
-      Window.EventDraw;
-      Image := SaveScreen_noflush(ImageClass,
-        0, 0, Window.Width, Window.Height, ReadBuffer);
+      Image := DrawAndSaveScreen(ImageClass, ReadBuffer);
       try
         try
           SaveImage(Image, ScreenShotName);
