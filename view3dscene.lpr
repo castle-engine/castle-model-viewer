@@ -664,7 +664,7 @@ procedure RenderVisualizations;
   end;
 
 begin
-  if RenderingCamera.Target = rtScreen then
+  if (RenderingCamera.Target = rtScreen) and (not MakingScreenShot) then
   begin
     { Visualization below depends on DEPTH_TEST enabled
       (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
@@ -675,7 +675,7 @@ begin
 
     OctreeDisplay(SceneAnimation);
 
-    if ShowBBox and (not MakingScreenShot) then
+    if ShowBBox then
     begin
       { Display current bounding box only if there's a chance that it's
         different than whole animation BoundingBox --- this requires that animation
