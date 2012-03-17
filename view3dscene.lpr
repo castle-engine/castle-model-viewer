@@ -1589,26 +1589,6 @@ end;
 const
   DisplayProgramName = 'view3dscene';
 
-type
-  TShaderAdder = class
-    ProgramNode: TComposedShaderNode;
-    Added: boolean;
-    procedure AddShader(Node: TX3DNode);
-  end;
-
-procedure TShaderAdder.AddShader(Node: TX3DNode);
-var
-  ShadersField: TMFNode;
-begin
-  ShadersField := (Node as TAppearanceNode).FdShaders;
-  if not ((ShadersField.Count = 1) and (ShadersField.Items[0] = ProgramNode)) then
-  begin
-    ShadersField.Clear;
-    ShadersField.Add(ProgramNode);
-    Added := true;
-  end;
-end;
-
 procedure UpdateStatusToolbarVisible; forward;
 
 procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
@@ -2345,74 +2325,6 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure AssignGLSLShader;
-  const
-    VS_FileFilters =
-    'All files|*|' +
-    '*Vertex shader (*.vs)|*.vs';
-    FS_FileFilters =
-    'All files|*|' +
-    '*Fragment shader (*.fs)|*.fs';
-  var
-    FragmentShaderUrl, VertexShaderUrl: string;
-    ProgramNode: TComposedShaderNode;
-    ShaderPart: TShaderPartNode;
-    ShaderAdder: TShaderAdder;
-    I: Integer;
-  begin
-    VertexShaderUrl := '';
-    if Window.FileDialog('Open vertex shader file', VertexShaderUrl, true,
-      VS_FileFilters) then
-    begin
-      { We guess that FragmentShaderUrl will be in the same dir as vertex shader }
-      FragmentShaderUrl := ExtractFilePath(VertexShaderUrl);
-      if Window.FileDialog('Open fragment shader file', FragmentShaderUrl, true,
-        FS_FileFilters) then
-      begin
-        ProgramNode := TComposedShaderNode.Create(
-          { any name that has a chance to be unique }
-          'view3dscene_shader_' + IntToStr(Random(1000)), '');
-        ProgramNode.FdLanguage.Value := 'GLSL';
-
-        ShaderPart := TShaderPartNode.Create('', '');
-        ProgramNode.FdParts.Add(ShaderPart);
-        ShaderPart.FdType.Value := 'VERTEX';
-        ShaderPart.FdUrl.Items.Add(VertexShaderUrl);
-
-        ShaderPart := TShaderPartNode.Create('', '');
-        ProgramNode.FdParts.Add(ShaderPart);
-        ShaderPart.FdType.Value := 'FRAGMENT';
-        ShaderPart.FdUrl.Items.Add(FragmentShaderUrl);
-
-        ShaderAdder := TShaderAdder.Create;
-        try
-          ShaderAdder.ProgramNode := ProgramNode;
-          ShaderAdder.Added := false;
-
-          SceneAnimation.BeforeNodesFree; { AddShader may remove old shader nodes }
-
-          for I := 0 to SceneAnimation.ScenesCount - 1 do
-          begin
-            SceneAnimation.Scenes[I].RootNode.EnumerateNodes(TAppearanceNode,
-              @ShaderAdder.AddShader, false);
-          end;
-
-          SceneAnimation.ChangedAll;
-
-          if not ShaderAdder.Added then
-          begin
-            FreeAndNil(ProgramNode);
-            MessageOK(Window, 'No shaders added.' +NL+
-              'Hint: this feature adds shaders to Apperance.shaders field. ' +
-              'So it requires VRML 2.0 / X3D models with Appearance nodes present, ' +
-              'otherwise nothing will be added.',
-              taLeft);
-          end;
-        finally FreeAndNil(ShaderAdder); end;
-      end;
-    end;
-  end;
-
   procedure SetFillMode(Value: TFillMode);
   begin
     FillMode := Value;
@@ -2942,8 +2854,6 @@ begin
 
   36: RemoveSelectedGeometry;
   37: RemoveSelectedFace;
-
-  41: AssignGLSLShader;
 
   51: Scene.CameraTransition(Camera,
         DefaultX3DCameraPosition[cvVrml1_Inventor],
@@ -3498,9 +3408,6 @@ begin
      'non-solid (disables any backface culling)', 32));
    M.Append(TMenuItem.Create('Mark All Faces as '+
      'non-convex (forces faces to be triangulated carefully)', 33));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create(
-     'Simply Assign GLSL Shader to All Objects ...', 41));
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
    Result.Append(M);
