@@ -235,6 +235,9 @@
 ---- Reading ../castle/data/items/bow/model_final.wrl
 ---- Reading again ../castle/data/items/bow/model_final.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/items/bow/ready.wrl
+---- Reading again ../castle/data/items/bow/ready.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle/data/items/key/image.wrl
 ---- Reading again ../castle/data/items/key/image.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -280,14 +283,14 @@
 ---- Reading ../castle/data/items/sword/attack_header.wrl
 ---- Reading again ../castle/data/items/sword/attack_header.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/items/sword/equipped.wrl
----- Reading again ../castle/data/items/sword/equipped.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle/data/items/sword/image.wrl
 ---- Reading again ../castle/data/items/sword/image.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle/data/items/sword/model.wrl
 ---- Reading again ../castle/data/items/sword/model.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/items/sword/ready.wrl
+---- Reading again ../castle/data/items/sword/ready.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle/data/levels/cages/cages.wrl
 ---- Reading again ../castle/data/levels/cages/cages.wrl
