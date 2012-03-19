@@ -1643,6 +1643,36 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Reading ../demo_models/screen_effects/screen_effects.x3dv
 ---- Reading again ../demo_models/screen_effects/screen_effects.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/deranged_house.wrl
+---- Reading again ../demo_models/sensors_environmental/deranged_house.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/deranged_house_door.wrl
+---- Reading again ../demo_models/sensors_environmental/deranged_house_door.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/deranged_house_final.x3dv
+---- Reading again ../demo_models/sensors_environmental/deranged_house_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/follow_camera_by_proximity_sensor.x3dv
+---- Reading again ../demo_models/sensors_environmental/follow_camera_by_proximity_sensor.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/looping_script.x3dv
+---- Reading again ../demo_models/sensors_environmental/looping_script.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/proximity_sensor_center_animated.x3dv
+---- Reading again ../demo_models/sensors_environmental/proximity_sensor_center_animated.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/proximity_sensor_orientation.x3dv
+---- Reading again ../demo_models/sensors_environmental/proximity_sensor_orientation.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/proximity_sensor_transformed.x3dv
+---- Reading again ../demo_models/sensors_environmental/proximity_sensor_transformed.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/visibility_sensor.x3dv
+---- Reading again ../demo_models/sensors_environmental/visibility_sensor.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/sensors_environmental/visibility_sensor_geometry.x3d
+---- Reading again ../demo_models/sensors_environmental/visibility_sensor_geometry.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/sensors_key/key_sensor.x3dv
 ---- Reading again ../demo_models/sensors_key/key_sensor.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1672,30 +1702,6 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/sensors_pointing_device/touch_sensor_tests.x3dv
 ---- Reading again ../demo_models/sensors_pointing_device/touch_sensor_tests.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/deranged_house.wrl
----- Reading again ../demo_models/sensors_proximity/deranged_house.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/deranged_house_door.wrl
----- Reading again ../demo_models/sensors_proximity/deranged_house_door.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/deranged_house_final.x3dv
----- Reading again ../demo_models/sensors_proximity/deranged_house_final.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/follow_camera_by_proximity_sensor.x3dv
----- Reading again ../demo_models/sensors_proximity/follow_camera_by_proximity_sensor.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/looping_script.x3dv
----- Reading again ../demo_models/sensors_proximity/looping_script.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/proximity_sensor_center_animated.x3dv
----- Reading again ../demo_models/sensors_proximity/proximity_sensor_center_animated.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/proximity_sensor_orientation.x3dv
----- Reading again ../demo_models/sensors_proximity/proximity_sensor_orientation.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/sensors_proximity/proximity_sensor_transformed.x3dv
----- Reading again ../demo_models/sensors_proximity/proximity_sensor_transformed.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shaders/attributes.x3dv
 ---- Reading again ../demo_models/shaders/attributes.x3dv
@@ -1777,6 +1783,9 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_maps/simple_shadow_map_teapots.x3dv
 ---- Reading again ../demo_models/shadow_maps/simple_shadow_map_teapots.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shadow_maps/soft_shadow_poisson_sampling/soft_shadow_poisson_sampling.x3dv
+---- Reading again ../demo_models/shadow_maps/soft_shadow_poisson_sampling/soft_shadow_poisson_sampling.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_maps/sunny_street/oaktree.wrl
 ---- Reading again ../demo_models/shadow_maps/sunny_street/oaktree.wrl
