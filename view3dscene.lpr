@@ -3018,10 +3018,6 @@ begin
          UpdateCameraNavigationTypeUI;
        end;
   205: ChangeMoveSpeed;
-  210: begin
-         Camera.IgnoreAllInputs := not Camera.IgnoreAllInputs;
-         UpdateCameraNavigationTypeUI;
-       end;
 
   220: begin
          AnimationTimePlaying := not AnimationTimePlaying;
