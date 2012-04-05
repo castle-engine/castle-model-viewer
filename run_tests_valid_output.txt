@@ -652,18 +652,18 @@
 ---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/compiled_script_tests.x3dv
 ---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/compiled_script_tests.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling.wrl
----- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling_final.wrl
----- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_rendering_processing/models/raptor_1.wrl
----- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/raptor_1.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_rendering_processing/models/raptor_2.wrl
----- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/raptor_2.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling.x3d
+---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling_final.x3dv
+---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/fog_culling_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/raptor_1.x3d
+---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/raptor_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/raptor_2.x3d
+---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/raptor_2.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/teapot.x3dv
 ---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/teapot.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1237,12 +1237,12 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/kanim/gus/gus_3_final.wrl
 ---- Reading again ../demo_models/kanim/gus/gus_3_final.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/raptor_1.wrl
----- Reading again ../demo_models/kanim/raptor_1.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/raptor_2.wrl
----- Reading again ../demo_models/kanim/raptor_2.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/kanim/raptor_1.x3d
+---- Reading again ../demo_models/kanim/raptor_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/kanim/raptor_2.x3d
+---- Reading again ../demo_models/kanim/raptor_2.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/kanim/rotate_1.wrl
 ---- Reading again ../demo_models/kanim/rotate_1.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2575,9 +2575,9 @@ tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories lis
 ---- Reading ../lets_take_a_walk/data/vrml/base_b_proc.wrl
 ---- Reading again ../lets_take_a_walk/data/vrml/base_b_proc.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../lets_take_a_walk/data/vrml/rat.wrl
----- Reading again ../lets_take_a_walk/data/vrml/rat.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../lets_take_a_walk/data/vrml/rat.x3d
+---- Reading again ../lets_take_a_walk/data/vrml/rat.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../lets_take_a_walk/data/vrml/tnt.wrl
 ---- Reading again ../lets_take_a_walk/data/vrml/tnt.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
