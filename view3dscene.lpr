@@ -69,7 +69,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   CastleParameters, ProgressUnit, Cameras, CastleOpenDocument,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors,
+  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors, KeysMouse,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
@@ -823,15 +823,8 @@ const
 
 procedure MouseDown(Window: TCastleWindowBase; Button: TMouseButton);
 begin
-  if (Button = mbRight) and
-     { Support selecting item by right button click only in Walk mode.
-
-       In Examine mode, it would collide with zooming in / out,
-       making  user select item on each zoom in / out by dragging
-       right mouse button. Mouse clicks start dragging, so don't do
-       anything here (not even a warning about SNavigationClassWalkNeeded,
-       since it would only interfere with navigation). }
-     (Camera.NavigationClass <> ncExamine) then
+  { Support selecting item by ctrl + right button click. }
+  if (Button = mbRight) and (mkCtrl in Window.Pressed.Modifiers) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
