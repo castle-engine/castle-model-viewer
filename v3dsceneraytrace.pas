@@ -62,7 +62,7 @@ type
       innego okienka a potem wroci do nas to chcemy umiec odmalowac sobie
       cale okienko = czesciowy wynik raytracera + czesciowa resztka oryginalnego
       renderingu przy pomocy OpenGLa. To jest wykorzystywane w DrawRaytracing. }
-    Image: TImage;
+    Image: TCastleImage;
     { RowMadeNotify bedzie uaktualnialo ta zmienna. }
     RowsMadeCount: integer;
     { KeyDown, zarowno w czasie raytracingu jak i juz po jego zakonczeniu,

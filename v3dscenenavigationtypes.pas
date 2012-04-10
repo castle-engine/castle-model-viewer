@@ -159,7 +159,7 @@ end;
 
 procedure TNavigationTypeButton.DrawTooltip;
 
-  procedure DoDraw(Image: TImage; ImageDrawDisplayList: TGLuint);
+  procedure DoDraw(Image: TCastleImage; ImageDrawDisplayList: TGLuint);
   const
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;

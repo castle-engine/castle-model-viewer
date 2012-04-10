@@ -1498,7 +1498,7 @@ end;
 
 { make screen shots ---------------------------------------------------------- }
 
-function DrawAndSaveScreen(ImageClass: TImageClass; ReadBuffer: TGLenum): TImage;
+function DrawAndSaveScreen(ImageClass: TCastleImageClass; ReadBuffer: TGLenum): TCastleImage;
 {const
   ControlsOnScreenshot = false;}
 begin
@@ -1522,7 +1522,7 @@ var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
   OldTime: TFloatTime;
-  Image: TImage;
+  Image: TCastleImage;
 begin
   { Save global things that we change, to restore them later.
     This isn't needed for batch mode screenshots, but it doesn't hurt
@@ -1591,10 +1591,10 @@ procedure UpdateStatusToolbarVisible; forward;
 procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
 var
   ScreenShotName: string;
-  Image: TImage;
+  Image: TCastleImage;
   ReadBuffer: TGLenum;
   Fbo: TGLRenderToTexture;
-  ImageClass: TImageClass;
+  ImageClass: TCastleImageClass;
 begin
   if SceneFileName <> '' then
     ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
