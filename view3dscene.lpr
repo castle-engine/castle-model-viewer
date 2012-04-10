@@ -733,8 +733,10 @@ procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
 begin
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
-    to correctly mix with partially transparent 3D scenes. }
-  if (not Params.Transparent) and (not Params.ShadowVolumesReceivers) then
+    to correctly mix with partially transparent 3D scenes.
+    Render as ShadowVolumesReceivers=true to make selected triangle
+    drawn last (on top), to be clearly and always visible. }
+  if (not Params.Transparent) and Params.ShadowVolumesReceivers then
     RenderVisualizations;
 end;
 
@@ -777,8 +779,10 @@ procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
-    to correctly mix with partially transparent 3D scenes. }
-  if (not Params.Transparent) and (not Params.ShadowVolumesReceivers) then
+    to correctly mix with partially transparent 3D scenes.
+    Render as ShadowVolumesReceivers=true to make selected triangle
+    drawn last (on top), to be clearly and always visible. }
+  if (not Params.Transparent) and Params.ShadowVolumesReceivers then
     RenderVisualizations;
 end;
 
