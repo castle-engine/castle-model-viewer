@@ -40,7 +40,8 @@ const
 var
   ViewportsConfig: TViewportsConfig;
 
-  { Custom viewports. Also SceneManager is the first viewport. }
+  { Custom viewports. Remember that also SceneManager acts as the first viewport,
+    @italic(not listed here). }
   Viewports: array [0..2] of TCastleViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;

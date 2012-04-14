@@ -26,7 +26,8 @@ unit V3DSceneScreenEffects;
 
 interface
 
-uses Classes, CastleUtils, UIControls, CastleWindow, GLShaders;
+uses Classes, CastleUtils, UIControls, CastleWindow, GLShaders,
+  CastleSceneManager;
 
 type
   { Screen effects predefined in view3dscene.
@@ -162,6 +163,13 @@ var
 begin
   inherited;
   Menu := TMenu.Create('Screen Effects');
+
+  { add built-in screen effects }
+  Menu.Append(TMenuItemChecked.Create('Screen Space Ambient Occlusion',
+    340, DefaultScreenSpaceAmbientOcclusion, true));
+  Menu.Append(TMenuSeparator.Create);
+
+  { add custom screen effects handled in this unit }
   for SE := Low(SE) to High(SE) do
   begin
     MenuItems[SE] := TMenuItemChecked.Create(

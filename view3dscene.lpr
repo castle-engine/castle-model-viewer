@@ -2806,6 +2806,17 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       Application.LimitFPS := Max(F, 0.0);
   end;
 
+  procedure SwitchScreenSpaceAmbientOcclusion;
+  var
+    I: Integer;
+  begin
+    with SceneManager do
+      ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
+    for I := Low(Viewports) to High(Viewports) do
+      with Viewports[I] do
+        ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
+  end;
+
 var
   C: Cardinal;
 begin
@@ -3034,6 +3045,7 @@ begin
 
   300: JumpToViewpoint((MenuItem as TMenuItemViewpoint).Viewpoint);
 
+  340: SwitchScreenSpaceAmbientOcclusion;
   350..370:
     begin
       ScreenEffects.ActiveEffectsRecalculate;
