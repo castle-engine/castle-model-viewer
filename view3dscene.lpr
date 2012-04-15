@@ -3077,7 +3077,7 @@ begin
   555: ScreenShotToCubeMapDDS;
   560: ScreenShotDepthToImage;
 
-  600..649: AntiAliasing := MenuItem.IntData - 600;
+  600..649: AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
 
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
@@ -3662,7 +3662,7 @@ end;
 
 procedure MultiSamplingOff(Window: TCastleWindowBase; const FailureMessage: string);
 begin
-  AntiAliasing := 0;
+  AntiAliasing := aaNone;
   if AntiAliasingMenu[AntiAliasing] <> nil then
     AntiAliasingMenu[AntiAliasing].Checked := true;
   Writeln(FailureMessage);
@@ -3838,10 +3838,8 @@ const
           LogShaders := true;
         end;
     13: begin
-          { for proper menu display, we have to keep AntiAliasing
-            within 0..MaxAntiAliasing range (although GLAntiAliasing
-            unit accepts any cardinal value). }
-          AntiAliasing := Clamped(StrToInt(Argument), 0, MaxAntiAliasing);
+          AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
+            Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
           if AntiAliasingMenu[AntiAliasing] <> nil then
             AntiAliasingMenu[AntiAliasing].Checked := true;
         end;
@@ -3968,7 +3966,7 @@ begin
         end;
         Assert(ShadowsPossibleCurrently = ShadowsPossibleWanted);
 
-        Window.MultiSampling := AntiAliasingGlwMultiSampling;
+        Window.MultiSampling := AntiAliasingGLMultiSampling;
 
         OpenContext;
 
