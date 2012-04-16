@@ -190,7 +190,8 @@ begin
         try
           Shaders[SE] := TGLSLProgram.Create;
           Shaders[SE].AttachFragmentShader(ScreenEffectsInfo[SE].Code);
-          Shaders[SE].AttachFragmentShader(ScreenEffectLibrary(ScreenEffectsInfo[SE].NeedsDepth));
+          Shaders[SE].AttachFragmentShader(ScreenEffectLibrary(ScreenEffectsInfo[SE].NeedsDepth,
+            Container.MultiSampling));
           Shaders[SE].Link(true);
           Shaders[SE].UniformNotFoundAction := uaIgnore;
         except
