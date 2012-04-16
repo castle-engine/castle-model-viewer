@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses SysUtils, CastleGLUtils, CastleWarnings;
+uses SysUtils, CastleGLUtils, CastleWarnings, GLRenderer;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
@@ -76,23 +76,21 @@ const
   end = (
     (Name: 'Visualize Depth';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       '/* Do not use screen_depth as sampler2DRectShadow with shadow2DRect[Proj],' +NL+
-       '   instead just treat it as luminance texture. */' +NL+
-       'uniform sampler2DRect screen_depth;' +NL+
+       'ivec2 screen_position();' +NL+
+       'float screen_get_depth(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen_depth, gl_TexCoord[0].st);' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(20.0, 20.0, 20.0));' +NL+
+       '  float d = pow(screen_get_depth(screen_position()), 20.0);' +NL+
+       '  gl_FragColor = vec4(d, d, d, 1.0);' +NL+
        '}';
      NeedsDepth: true),
     (Name: 'Grayscale';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  /* Use integer (in 256 range) grayscale weights, to avoid crappy fglrx bugs with float consts */' +NL+
        '  gl_FragColor.r = (gl_FragColor.r * 54.0 + gl_FragColor.g * 183.0 + gl_FragColor.b * 19.0) / 256.0;' +NL+
        '  gl_FragColor.g = gl_FragColor.r;' +NL+
@@ -104,41 +102,41 @@ const
      NeedsDepth: false),
     (Name: 'Gamma 2.2 (Brighten)';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
        '}';
      NeedsDepth: false),
     (Name: 'Gamma 4.0 (Brighten More)';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
        '}';
      NeedsDepth: false),
     (Name: 'Gamma 1 / 1.5 (Darken)';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(15.0/10.0, 15.0/10.0, 15.0/10.0));' +NL+
        '}';
      NeedsDepth: false),
     (Name: 'Gamma 1 / 2.2 (Darken More)';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(22.0/10.0, 22.0/10.0, 22.0/10.0));' +NL+
        '}';
      NeedsDepth: false),
@@ -147,11 +145,11 @@ const
      NeedsDepth: true),
     (Name: 'Negative';
      Code:
-       '#extension GL_ARB_texture_rectangle : enable' +nl+
-       'uniform sampler2DRect screen;' +NL+
+       'ivec2 screen_position();' +NL+
+       'vec4 screen_get_color(ivec2 position);' +NL+
        'void main (void)' +NL+
        '{' +NL+
-       '  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' +NL+
+       '  gl_FragColor = screen_get_color(screen_position());' +NL+
        '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
        '}';
      NeedsDepth: false)
@@ -192,6 +190,7 @@ begin
         try
           Shaders[SE] := TGLSLProgram.Create;
           Shaders[SE].AttachFragmentShader(ScreenEffectsInfo[SE].Code);
+          Shaders[SE].AttachFragmentShader(ScreenEffectLibrary(ScreenEffectsInfo[SE].NeedsDepth));
           Shaders[SE].Link(true);
           Shaders[SE].UniformNotFoundAction := uaIgnore;
         except

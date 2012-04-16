@@ -1,20 +1,24 @@
-#extension GL_ARB_texture_rectangle : enable
-uniform sampler2DRect screen;
-uniform sampler2DRect screen_depth;
+int screen_x();
+int screen_y();
+vec4 screen_get_color(ivec2 position);
+float screen_get_depth(ivec2 position);
+ivec2 screen_position();
+
 uniform int screen_width;
 uniform int screen_height;
+
 void main (void)
 {
-  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);
-  float dist = distance(gl_TexCoord[0].st, vec2(screen_width, screen_height) / 2.0);
+  gl_FragColor = screen_get_color(screen_position());
+  float dist = distance(vec2(screen_position()), vec2(screen_width, screen_height) / 2.0);
   float radius_out = min(float(screen_width), float(screen_height)) / 2.0;
-  vec2 middle_pos = vec2(float(screen_width), float(screen_height)) / 2.0;
+  ivec2 middle_pos = ivec2(screen_width, screen_height) / 2;
   float middle_depth = (
-      texture2DRect(screen_depth, middle_pos).r +
-      texture2DRect(screen_depth, middle_pos / 2.0).r +
-      texture2DRect(screen_depth, 3.0 * middle_pos / 2.0).r +
-      texture2DRect(screen_depth, vec2(middle_pos.x / 2.0, 3.0 * middle_pos.y / 2.0)).r +
-      texture2DRect(screen_depth, vec2(3.0 * middle_pos.x / 2.0, middle_pos.y / 2.0)).r
+      screen_get_depth(middle_pos) +
+      screen_get_depth(middle_pos / 2) +
+      screen_get_depth(3 * middle_pos / 2) +
+      screen_get_depth(ivec2(middle_pos.x / 2, 3 * middle_pos.y / 2)) +
+      screen_get_depth(ivec2(3 * middle_pos.x / 2, middle_pos.y / 2))
     ) / 5.0;
   middle_depth = 1.0 - pow(middle_depth, 20.0);
   radius_out = mix(radius_out / 3.0, radius_out, middle_depth);

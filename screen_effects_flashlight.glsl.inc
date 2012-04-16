@@ -1,22 +1,26 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "flashlight.glsl" }
-'#extension GL_ARB_texture_rectangle : enable' + LineEnding + 
-'uniform sampler2DRect screen;' + LineEnding + 
-'uniform sampler2DRect screen_depth;' + LineEnding + 
+'int screen_x();' + LineEnding + 
+'int screen_y();' + LineEnding + 
+'vec4 screen_get_color(ivec2 position);' + LineEnding + 
+'float screen_get_depth(ivec2 position);' + LineEnding + 
+'ivec2 screen_position();' + LineEnding + 
+'' + LineEnding + 
 'uniform int screen_width;' + LineEnding + 
 'uniform int screen_height;' + LineEnding + 
+'' + LineEnding + 
 'void main (void)' + LineEnding + 
 '{' + LineEnding + 
-'  gl_FragColor = texture2DRect(screen, gl_TexCoord[0].st);' + LineEnding + 
-'  float dist = distance(gl_TexCoord[0].st, vec2(screen_width, screen_height) / 2.0);' + LineEnding + 
+'  gl_FragColor = screen_get_color(screen_position());' + LineEnding + 
+'  float dist = distance(vec2(screen_position()), vec2(screen_width, screen_height) / 2.0);' + LineEnding + 
 '  float radius_out = min(float(screen_width), float(screen_height)) / 2.0;' + LineEnding + 
-'  vec2 middle_pos = vec2(float(screen_width), float(screen_height)) / 2.0;' + LineEnding + 
+'  ivec2 middle_pos = ivec2(screen_width, screen_height) / 2;' + LineEnding + 
 '  float middle_depth = (' + LineEnding + 
-'      texture2DRect(screen_depth, middle_pos).r +' + LineEnding + 
-'      texture2DRect(screen_depth, middle_pos / 2.0).r +' + LineEnding + 
-'      texture2DRect(screen_depth, 3.0 * middle_pos / 2.0).r +' + LineEnding + 
-'      texture2DRect(screen_depth, vec2(middle_pos.x / 2.0, 3.0 * middle_pos.y / 2.0)).r +' + LineEnding + 
-'      texture2DRect(screen_depth, vec2(3.0 * middle_pos.x / 2.0, middle_pos.y / 2.0)).r' + LineEnding + 
+'      screen_get_depth(middle_pos) +' + LineEnding + 
+'      screen_get_depth(middle_pos / 2) +' + LineEnding + 
+'      screen_get_depth(3 * middle_pos / 2) +' + LineEnding + 
+'      screen_get_depth(ivec2(middle_pos.x / 2, 3 * middle_pos.y / 2)) +' + LineEnding + 
+'      screen_get_depth(ivec2(3 * middle_pos.x / 2, middle_pos.y / 2))' + LineEnding + 
 '    ) / 5.0;' + LineEnding + 
 '  middle_depth = 1.0 - pow(middle_depth, 20.0);' + LineEnding + 
 '  radius_out = mix(radius_out / 3.0, radius_out, middle_depth);' + LineEnding + 
