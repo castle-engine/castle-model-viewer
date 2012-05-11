@@ -26,7 +26,7 @@ unit V3DSceneScreenShot;
 interface
 
 uses CastleUtils, Classes, CastleClassUtils, CastleTimeUtils,
-  FGL {$ifdef VER2_2}, FGLObjectList22 {$endif}, CastleParameters;
+  FGL, CastleParameters;
 
 type
   EInvalidScreenShotFileName = class(EInvalidParams);
