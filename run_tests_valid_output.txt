@@ -787,6 +787,15 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/src/x3d/teapot/teapot.wrl
 ---- Reading again ../castle_game_engine/src/x3d/teapot/teapot.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/tests/data/extrusion_empty_spine.x3dv
+---- Reading again ../castle_game_engine/tests/data/extrusion_empty_spine.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/tests/data/extrusion_empty_spine_concave.x3dv
+---- Reading again ../castle_game_engine/tests/data/extrusion_empty_spine_concave.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/tests/data/extrusion_empty_spine_smooth.x3dv
+---- Reading again ../castle_game_engine/tests/data/extrusion_empty_spine_smooth.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/tests/data/key_sensor_2.x3dv
 ---- Reading again ../castle_game_engine/tests/data/key_sensor_2.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1065,6 +1074,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/shinto_shrine/rhan_shrine.x3d
 ---- Reading again ../demo_models/compositing_shaders/shinto_shrine/rhan_shrine.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/compositing_shaders/store_linear_distance_in_red_color.x3dv
+---- Reading again ../demo_models/compositing_shaders/store_linear_distance_in_red_color.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/terrain.x3dv
 ---- Reading again ../demo_models/compositing_shaders/terrain.x3dv
@@ -1407,6 +1419,12 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/movie_texture/movie_texture_tests.wrl
 ---- Reading again ../demo_models/movie_texture/movie_texture_tests.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/avatar_climb_stairs.x3dv
+---- Reading again ../demo_models/navigation/avatar_climb_stairs.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/avatar_climb_stairs_geometry.x3d
+---- Reading again ../demo_models/navigation/avatar_climb_stairs_geometry.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/billboards.x3dv
 ---- Reading again ../demo_models/navigation/billboards.x3dv
