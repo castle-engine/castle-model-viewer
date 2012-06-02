@@ -3957,7 +3957,7 @@ begin
 
         if ShadowsPossibleWanted then
         begin
-          Window.StencilBufferBits := 8;
+          Window.StencilBits := 8;
           { Assignment below essentially copies
             ShadowsPossibleWanted to ShadowsPossibleCurrently.
             ShadowsPossibleCurrently may be eventually turned to @false
