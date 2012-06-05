@@ -35,7 +35,7 @@ procedure InitCameras(SceneManager: TCastleSceneManager);
 
 const
   CameraNames: array [TCameraNavigationType] of string =
-  ('Examine', 'Walk', 'Fly', 'None');
+  ('Examine', 'Planar', 'Walk', 'Fly', 'None');
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
@@ -52,7 +52,7 @@ procedure CamerasParseParameters;
 
 const
   CamerasOptionsHelp =
-  '  --navigation Examine|Walk'+nl+
+  '  --navigation Examine|Walk|Fly...'+nl+
   '                        Set initial navigation style';
 
 var
