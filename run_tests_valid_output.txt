@@ -670,6 +670,24 @@
 ---- Reading ../castle_game_engine/examples/3d_rendering_processing/tools/kanim_to_interpolators_suffix.wrl
 tovrmlx3d: Exception EX3DLexerError : 
 VRML/X3D lexical error at position 21: VRML signature error : unrecognized signature
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base_b.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base_b.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base_b_proc.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base_b_proc.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/rat.x3d
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/rat.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/tnt.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/tnt.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/tree.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/tree.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
 ---- Reading again ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2587,24 +2605,6 @@ tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories lis
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
----- Reading ../lets_take_a_walk/data/vrml/base.wrl
----- Reading again ../lets_take_a_walk/data/vrml/base.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../lets_take_a_walk/data/vrml/base_b_proc.wrl
----- Reading again ../lets_take_a_walk/data/vrml/base_b_proc.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../lets_take_a_walk/data/vrml/rat.x3d
----- Reading again ../lets_take_a_walk/data/vrml/rat.x3d
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../lets_take_a_walk/data/vrml/tnt.wrl
----- Reading again ../lets_take_a_walk/data/vrml/tnt.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../lets_take_a_walk/data/vrml/tree.wrl
----- Reading again ../lets_take_a_walk/data/vrml/tree.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../lets_take_a_walk/devel/vrml/base_b.wrl
----- Reading again ../lets_take_a_walk/devel/vrml/base_b.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../malfunction/data/vrmls/black_hedgehog.wrl
 ---- Reading again ../malfunction/data/vrmls/black_hedgehog.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
