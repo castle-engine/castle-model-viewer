@@ -1710,7 +1710,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
   begin
     Value := SceneAnimation.Attributes.PointSize;
     if MessageInputQuery(Window, 'Change point size:', Value, taLeft) then
-      SceneAnimation.Attributes.PointSize := Value;
+      SceneAnimation.Attributes.PointSize := Max(Value, 0.01);
   end;
 
   procedure ChangeLineWidth;
@@ -1719,7 +1719,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
   begin
     Value := SceneAnimation.Attributes.LineWidth;
     if MessageInputQuery(Window, 'Change line width:', Value, taLeft) then
-      SceneAnimation.Attributes.LineWidth := Value;
+      SceneAnimation.Attributes.LineWidth := Max(Value, 0.01);
   end;
 
   procedure ChangeAnimationTimeSpeed;
