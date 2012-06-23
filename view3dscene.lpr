@@ -66,7 +66,7 @@ program view3dscene;
 
 uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
-  CastleParameters, ProgressUnit, Cameras, CastleOpenDocument,
+  CastleParameters, ProgressUnit, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
   Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors, KeysMouse,
@@ -83,7 +83,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
-  V3DSceneConfig, V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
+  V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion;
@@ -1482,17 +1482,17 @@ end;
 
 procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
 begin
-  Attributes.LineWidth := ConfigFile.GetFloat('video_options/line_width',
+  Attributes.LineWidth := Config.GetFloat('video_options/line_width',
     DefaultLineWidth);
-  Attributes.PointSize := ConfigFile.GetFloat('video_options/point_size',
+  Attributes.PointSize := Config.GetFloat('video_options/point_size',
     DefaultPointSize);
 end;
 
 procedure AttributesSaveToConfig(Attributes: TRenderingAttributes);
 begin
-  ConfigFile.SetDeleteFloat('video_options/line_width',
+  Config.SetDeleteFloat('video_options/line_width',
     Attributes.LineWidth, DefaultLineWidth);
-  ConfigFile.SetDeleteFloat('video_options/point_size',
+  Config.SetDeleteFloat('video_options/point_size',
     Attributes.PointSize, DefaultPointSize);
 end;
 
@@ -3862,6 +3862,17 @@ const
 begin
   Window := TCastleWindowCustom.Create(Application);
 
+  { initialize RecentMenu, before Config.Load }
+  RecentMenu := TCastleRecentFiles.Create(nil);
+  RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
+
+  { initialize SoundEngine, before Config.Load }
+  SoundEngine;
+
+  { load config, before SoundEngine.ParseParameters
+    (that may change Enable by --no-sound). }
+  Config.Load;
+
   { parse parameters }
   Window.ParseParameters(StandardParseOptions);
   SoundEngine.ParseParameters;
@@ -3921,9 +3932,6 @@ begin
       InitCameras(SceneManager);
       InitTextureFilters(SceneAnimation);
 
-      RecentMenu := TCastleRecentFiles.Create(nil);
-      RecentMenu.LoadFromConfig(ConfigFile, 'recent_files');
-      RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
       { init "scene global variables" to non-null values }
       LoadClearScene;
@@ -3984,10 +3992,10 @@ begin
       finally FreeScene end;
 
       AttributesSaveToConfig(SceneAnimation.Attributes);
+
+      Config.Save;
     finally
       FreeAndNil(SceneAnimation);
-      if RecentMenu <> nil then
-        RecentMenu.SaveToConfig(ConfigFile, 'recent_files');
       FreeAndNil(RecentMenu);
     end;
   finally

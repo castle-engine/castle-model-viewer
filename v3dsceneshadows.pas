@@ -45,7 +45,7 @@ procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 
 implementation
 
-uses SysUtils, V3DSceneConfig, GL, CastleGLUtils, V3DSceneFillMode;
+uses SysUtils, CastleConfig, GL, CastleGLUtils, V3DSceneFillMode;
 
 procedure ShadowsGLOpen;
 begin
@@ -105,10 +105,25 @@ begin
   end;
 end;
 
-initialization
-  ShadowsPossibleWanted := ConfigFile.GetValue(
+type
+  TConfigOptions = class
+    class procedure LoadFromConfig(const Config: TCastleConfig);
+    class procedure SaveToConfig(const Config: TCastleConfig);
+  end;
+
+class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
+begin
+  ShadowsPossibleWanted := Config.GetValue(
     'video_options/shadows_possible_wanted', DefaultShadowsPossibleWanted);
-finalization
-  ConfigFile.SetDeleteValue('video_options/shadows_possible_wanted',
+end;
+
+class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
+begin
+  Config.SetDeleteValue('video_options/shadows_possible_wanted',
     ShadowsPossibleWanted, DefaultShadowsPossibleWanted);
+end;
+
+initialization
+  Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
+  Config.OnSave.Add(@TConfigOptions(nil).SaveToConfig);
 end.

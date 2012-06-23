@@ -40,7 +40,7 @@ procedure BGColorChanged;
 
 implementation
 
-uses V3DSceneConfig;
+uses CastleConfig;
 
 procedure BGColorChanged;
 begin
@@ -48,11 +48,25 @@ begin
   glClearColor(BGColor[0], BGColor[1], BGColor[2], 0);
 end;
 
-initialization
-  BGColor := ConfigFile.GetValue(
+type
+  TConfigOptions = class
+    class procedure LoadFromConfig(const Config: TCastleConfig);
+    class procedure SaveToConfig(const Config: TCastleConfig);
+  end;
+
+class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
+begin
+  BGColor := Config.GetValue(
     'video_options/default_background_color', DefaultBGColor);
-finalization
-  if ConfigFile <> nil then
-    ConfigFile.SetDeleteValue('video_options/default_background_color',
-      BGColor, DefaultBGColor);
+end;
+
+class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
+begin
+  Config.SetDeleteValue('video_options/default_background_color',
+    BGColor, DefaultBGColor);
+end;
+
+initialization
+  Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
+  Config.OnSave.Add(@TConfigOptions(nil).SaveToConfig);
 end.

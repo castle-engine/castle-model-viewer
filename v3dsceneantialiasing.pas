@@ -11,7 +11,7 @@ procedure MenuAppendAntiAliasing(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
-uses V3DSceneConfig;
+uses CastleConfig;
 
 procedure MenuAppendAntiAliasing(M: TMenu; BaseIntData: Cardinal);
 var
@@ -32,11 +32,26 @@ begin
   end;
 end;
 
-initialization
-  AntiAliasing := TAntiAliasing(ConfigFile.GetValue(
+type
+  TConfigOptions = class
+    class procedure LoadFromConfig(const Config: TCastleConfig);
+    class procedure SaveToConfig(const Config: TCastleConfig);
+  end;
+
+class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
+begin
+  AntiAliasing := TAntiAliasing(Config.GetValue(
     'video_options/anti_aliasing', Ord(DefaultAntiAliasing)));
-finalization
-  if ConfigFile <> nil then
-    ConfigFile.SetDeleteValue('video_options/anti_aliasing',
-      Ord(AntiAliasing), Ord(DefaultAntiAliasing));
+end;
+
+class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
+begin
+  Config.SetDeleteValue('video_options/anti_aliasing',
+    Ord(AntiAliasing), Ord(DefaultAntiAliasing));
+end;
+
+
+initialization
+  Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
+  Config.OnSave.Add(@TConfigOptions(nil).SaveToConfig);
 end.

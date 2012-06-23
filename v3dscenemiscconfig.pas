@@ -19,22 +19,50 @@ var
 
 implementation
 
-uses V3DSceneConfig;
+uses SysUtils, CastleConfig, CastleWindow;
 
-initialization
-  InitialShowBBox := ConfigFile.GetValue(
+function MyGetApplicationName: string;
+begin
+  Result := 'view3dscene';
+end;
+
+type
+  TConfigOptions = class
+    class procedure LoadFromConfig(const Config: TCastleConfig);
+    class procedure SaveToConfig(const Config: TCastleConfig);
+  end;
+
+class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
+begin
+  InitialShowBBox := Config.GetValue(
     'video_options/initial_show_bbox', DefaultInitialShowBBox);
-  InitialShowStatus := ConfigFile.GetValue(
+  InitialShowStatus := Config.GetValue(
     'video_options/initial_show_status', DefaultInitialShowStatus);
+  Application.LimitFPS := Config.GetFloat('video_options/limit_fps',
+    DefaultLimitFPS);
 
   ShowBBox := InitialShowBBox;
   ShowStatus := InitialShowStatus;
-finalization
-  if ConfigFile <> nil then
-  begin
-    ConfigFile.SetDeleteValue('video_options/initial_show_bbox',
-      InitialShowBBox  , DefaultInitialShowBBox);
-    ConfigFile.SetDeleteValue('video_options/initial_show_status',
-      InitialShowStatus, DefaultInitialShowStatus);
-  end;
+end;
+
+class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
+begin
+  Config.SetDeleteValue('video_options/initial_show_bbox',
+    InitialShowBBox  , DefaultInitialShowBBox);
+  Config.SetDeleteValue('video_options/initial_show_status',
+    InitialShowStatus, DefaultInitialShowStatus);
+  Config.SetDeleteFloat('video_options/limit_fps',
+    Application.LimitFPS, DefaultLimitFPS);
+end;
+
+initialization
+  { This is needed because
+    - I sometimes display ApplicationName for user, and under Windows
+      ParamStr(0) is ugly uppercased.
+    - ParamStr(0) is unsure for Unixes.
+    - ApplicationName is used for Config.FileName by UserConfigFile. }
+  OnGetApplicationName := @MyGetApplicationName;
+
+  Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
+  Config.OnSave.Add(@TConfigOptions(nil).SaveToConfig);
 end.
