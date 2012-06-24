@@ -166,7 +166,7 @@
         <Line Value="0"/>
       </Item1>
     </BreakPoints>
-    <Exceptions Count="7">
+    <Exceptions Count="8">
       <Item1>
         <Name Value="ECodetoolError"/>
       </Item1>
@@ -188,6 +188,9 @@
       <Item7>
         <Name Value="BreakTransformChangeFailed"/>
       </Item7>
+      <Item8>
+        <Name Value="BreakMainLightForShadows"/>
+      </Item8>
     </Exceptions>
   </Debugging>
 </CONFIG>
