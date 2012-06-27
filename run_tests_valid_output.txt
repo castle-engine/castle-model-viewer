@@ -1844,12 +1844,6 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Reading ../demo_models/shadow_maps/twoboxes_shadowmap.x3dv
 ---- Reading again ../demo_models/shadow_maps/twoboxes_shadowmap.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/shadow_volumes/ball_with_tentacles.x3dv
----- Reading again ../demo_models/shadow_volumes/ball_with_tentacles.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/shadow_volumes/ball_with_tentacles_shadow_caster.wrl
----- Reading again ../demo_models/shadow_volumes/ball_with_tentacles_shadow_caster.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_volumes/chopper.x3d
 ---- Reading again ../demo_models/shadow_volumes/chopper.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1865,23 +1859,29 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Reading ../demo_models/shadow_volumes/house3.x3dv
 ---- Reading again ../demo_models/shadow_volumes/house3.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/shadow_volumes/parallels.x3dv
----- Reading again ../demo_models/shadow_volumes/parallels.x3dv
+---- Reading ../demo_models/shadow_volumes/not_manifold/ball_with_tentacles.x3dv
+---- Reading again ../demo_models/shadow_volumes/not_manifold/ball_with_tentacles.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/shadow_volumes/parallels_shadow_caster.wrl
----- Reading again ../demo_models/shadow_volumes/parallels_shadow_caster.wrl
+---- Reading ../demo_models/shadow_volumes/not_manifold/ball_with_tentacles_shadow_caster.wrl
+---- Reading again ../demo_models/shadow_volumes/not_manifold/ball_with_tentacles_shadow_caster.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shadow_volumes/not_manifold/parallels.x3dv
+---- Reading again ../demo_models/shadow_volumes/not_manifold/parallels.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/shadow_volumes/not_manifold/parallels_shadow_caster.wrl
+---- Reading again ../demo_models/shadow_volumes/not_manifold/parallels_shadow_caster.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/shadow_volumes/not_manifold/stonehenge.wrl
+---- Reading again ../demo_models/shadow_volumes/not_manifold/stonehenge.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/shadow_volumes/not_manifold/triangle.x3dv
+---- Reading again ../demo_models/shadow_volumes/not_manifold/triangle.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_volumes/shadows_chopper_and_house.x3dv
 ---- Reading again ../demo_models/shadow_volumes/shadows_chopper_and_house.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shadow_volumes/shadows_dynamic.x3dv
 ---- Reading again ../demo_models/shadow_volumes/shadows_dynamic.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/shadow_volumes/stonehenge.wrl
----- Reading again ../demo_models/shadow_volumes/stonehenge.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/shadow_volumes/triangle.x3dv
----- Reading again ../demo_models/shadow_volumes/triangle.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/sound/sound.wrl
 ---- Reading again ../demo_models/sound/sound.wrl
