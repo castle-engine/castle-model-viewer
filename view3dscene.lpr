@@ -3198,277 +3198,277 @@ var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
 begin
- Result := TMenu.Create('Main menu');
- M := TMenu.Create('_File');
-   M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
-   MenuReopen := TMenuItem.Create('_Reopen',      15);
-   MenuReopen.Enabled := false;
-   M.Append(MenuReopen);
-   M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900, CtrlS));
-   M.Append(TMenuItem.Create('Save As X3D (_classic encoding; converts VRML to X3D) ...', 905));
-   M.Append(TMenuItem.Create('Save As X3D (_XML encoding; converts VRML to X3D) ...', 910));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
-   M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('_Preferences');
-     M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
-       MenuAppendAntiAliasing(M3, 600);
-       M2.Append(M3);
-     M2.Append(TMenuItemChecked.Create('_Shadow Volumes Possible (Restart view3dscene to Apply)',
-       740, ShadowsPossibleWanted, true));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
-       InitialShowBBox, true));
-     M2.Append(TMenuItemChecked.Create('Show Status and Toolbar at Start', 771,
-       InitialShowStatus, true));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItemChecked.Create('Sound', 801, SoundEngine.Enable, true));
-     M3 := TMenu.Create('Sound Device');
-       MenuAppendSoundDevices(M3, 810);
-       M2.Append(M3);
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Point Size ...', 182));
-     M2.Append(TMenuItem.Create('Line Width ...', 530));
-     M2.Append(TMenuItem.Create('Default Background Color ...', 84));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Frames Per Second Limit ...', 2000));
-     M.Append(M2);
-   NextRecentMenuItem := TMenuSeparator.Create;
-   M.Append(NextRecentMenuItem);
-   RecentMenu.NextMenuItem := NextRecentMenuItem;
-   M.Append(TMenuItem.Create('_Exit',             12, CtrlW));
-   Result.Append(M);
- M := TMenu.Create('_View');
-   M.Append(TMenuItemChecked.Create('_Bounding Box Visible',      82, CtrlB,
-     ShowBBox, true));
-   M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
-     ShowStatus, true));
-   M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('_Fill Mode');
-     MenuAppendFillModes(M2, 500);
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Next _Fill Mode', 520, CtrlF));
-     M.Append(M2);
-   M.Append(ScreenEffects.Menu);
-   M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('Shaders');
-     M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
-       4000, Ord(SceneAnimation.Attributes.Shaders), true);
-     M.Append(M2);
-   M2 := TMenu.Create('Bump mapping');
-     M2.AppendRadioGroup(BumpMappingNames, 1400,
-       Ord(SceneAnimation.Attributes.BumpMapping), true);
-     M.Append(M2);
-   M2 := TMenu.Create('Shadow Maps');
-     M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
-     M2.Append(TMenuSeparator.Create);
-     M2.AppendRadioGroup(ShadowSamplingNames, 3510,
-       Ord(SceneAnimation.Attributes.ShadowSampling), true);
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.Attributes.VisualizeDepthMap, true));
-     M2.Append(TMenuSeparator.Create);
-     M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
-     M.Append(M2);
-   MenuShadowVolumes := TMenu.Create('Shadow Volumes');
-     MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
-     MenuShadowVolumes.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
-       ShadowsOn, true));
-     MenuShadowVolumes.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
-       DrawShadowVolumes, true));
-     M.Append(MenuShadowVolumes);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create(
-     '_Lighting Calculation',         91, CtrlL,
-     SceneAnimation.Attributes.Lighting, true));
-   MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
-     (Scene <> nil) and Scene.HeadlightOn, true);
-   M.Append(MenuHeadlight);
-   M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
-     SceneAnimation.Attributes.UseSceneLights, true));
-   M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
-     SceneAnimation.Attributes.EnableTextures, true));
-   M2 := TMenu.Create('Texture Minification Method');
-     MenuAppendTextureMinFilters(M2, 1100);
-     M.Append(M2);
-   M2 := TMenu.Create('Texture Magnification Method');
-     MenuAppendTextureMagFilters(M2, 1200);
-     M.Append(M2);
-   M2 := TMenu.Create('RGB Textures Color Mode');
-     MenuAppendTextureModeRGB(M2, 1600);
-     M.Append(M2);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('Blending',                86,
-     SceneAnimation.Attributes.Blending, true));
-   M2 := TMenu.Create('Blending Source Factor');
-     AppendBlendingFactors(M2, true, 400);
-     M.Append(M2);
-   M2 := TMenu.Create('Blending Destination Factor');
-     AppendBlendingFactors(M2, false, 420);
-     M.Append(M2);
-   M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
-     SceneAnimation.Attributes.BlendingSort, true));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
-     SceneAnimation.Attributes.UseOcclusionQuery, true));
-   M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
-     SceneAnimation.Attributes.UseHierarchicalOcclusionQuery, true));
-   M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
-     SceneAnimation.Attributes.DebugHierOcclusionQueryResults, true));
-   M2 := TMenu.Create('Frustum visualization');
-     M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
-       ShowFrustum, true));
-     M2.Append(TMenuItemChecked.Create('When Showing Frustum, ' +
-       'Show it Over All Other Objects (no depth test)', 180,
-       ShowFrustumAlwaysVisible, true));
-     M.Append(M2);
-   M2 := TMenu.Create('Octree visualization');
-     OctreeTrianglesDisplay.MenuWhole :=
-       TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
-       97, OctreeTrianglesDisplay.Whole, true);
-     M2.Append(OctreeTrianglesDisplay.MenuWhole);
-     M2.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 98, CtrlU));
-     M2.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 99, CtrlD));
-     M2.Append(TMenuSeparator.Create);
-     OctreeVisibleShapesDisplay.MenuWhole :=
-       TMenuItemChecked.Create('Show Whole Visible Shapes Octree',
-       190, OctreeVisibleShapesDisplay.Whole, true);
-     M2.Append(OctreeVisibleShapesDisplay.MenuWhole);
-     M2.Append(TMenuItem.Create('Show _Upper Level of Visible Shapes Octree', 191));
-     M2.Append(TMenuItem.Create('Show _Lower Level of Visible Shapes Octree', 192));
-     M2.Append(TMenuSeparator.Create);
-     OctreeCollidableShapesDisplay.MenuWhole :=
-       TMenuItemChecked.Create('Show Whole Collidable Shapes Octree',
-       195, OctreeCollidableShapesDisplay.Whole, true);
-     M2.Append(OctreeCollidableShapesDisplay.MenuWhole);
-     M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
-     M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
-     M.Append(M2);
-   Result.Append(M);
- M := TMenu.Create('_Navigation');
-   Viewpoints.Recalculate(Scene);
-   M.Append(Viewpoints);
-   M.Append(TMenuSeparator.Create);
-   AppendNavigationTypes(M);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Next Navigation Type', 111, CtrlN));
-   M.Append(TMenuSeparator.Create);
-   M2 := TMenu.Create('Walk and Fly Settings');
-     M2.Append(TMenuItemChecked.Create(
-       '_Use Mouse Look',                       128, CtrlM,
-         Camera.Walk.MouseLook, true));
-     MenuGravity := TMenuItemChecked.Create(
-       '_Gravity',                              201, CtrlG,
-       Camera.Walk.Gravity, true);
-     M2.Append(MenuGravity);
-     MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
-       'Rotate with Respect to Gravity Vector',      202,
-       Camera.Walk.PreferGravityUpForRotations, true);
-     M2.Append(MenuPreferGravityUpForRotations);
-     MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
-       'Move with Respect to Gravity Vector',          203,
-       Camera.Walk.PreferGravityUpForMoving, true);
-     M2.Append(MenuPreferGravityUpForMoving);
-     M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
-     M2.Append(TMenuItem.Create('Change Move Speed...', 205));
-     M.Append(M2);
-   MenuCollisions := TMenuItemChecked.Create(
-     '_Collision Detection and Picking',                123, CtrlC,
-       SceneAnimation.Collides, true);
-   M.Append(MenuCollisions);
-   Result.Append(M);
- M := TMenu.Create('_Animation');
-   MenuAnimationTimePlaying := TMenuItemChecked.Create(
-     '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
-   M.Append(MenuAnimationTimePlaying);
-   M.Append(TMenuItem.Create('Rewind to Beginning', 221));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
-   M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
-   Result.Append(M);
- M := TMenu.Create('_Edit');
-   MenuRemoveSelectedGeometry :=
-     TMenuItem.Create('Remove _Geometry Node (containing selected triangle)', 36);
-   M.Append(MenuRemoveSelectedGeometry);
-   MenuRemoveSelectedFace :=
-     TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
-   M.Append(MenuRemoveSelectedFace);
-   M.Append(TMenuItem.Create(
-     'Remove VRML/X3D Nodes with Name Matching ...', 34));
-   M.Append(TMenuSeparator.Create);
-   MenuMergeCloseVertexes := TMenuItem.Create(
-     'Merge Close Vertexes (of node with selected triangle) ...', 730);
-   M.Append(MenuMergeCloseVertexes);
-   M.Append(TMenuSeparator.Create);
-   MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
-     MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
-     MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
-   M.Append(MenuEditMaterial);
-   M.Append(TMenuSeparator.Create);
-   MenuLightsEditor := TMenuItemChecked.Create('Lights Editor', 725,
-     LightsEditorIsOpen, false);
-   M.Append(MenuLightsEditor);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create(
-     'Remove Normals Info from Scene (forces normals to be calculated)',
-      31));
-   M.Append(TMenuItem.Create('Mark All Shapes as '+
-     'non-solid (disables any backface culling)', 32));
-   M.Append(TMenuItem.Create('Mark All Faces as '+
-     'non-convex (forces faces to be triangulated carefully)', 33));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
-   Result.Append(M);
- M := TMenu.Create('_Console');
-   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
-   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
-   M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
-   M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
-   M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
-   MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
-   M.Append(MenuSelectedOctreeStat);
-   M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
-   Result.Append(M);
- M := TMenu.Create('_Display');
-   M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true, false);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
-     Window.FullScreen, true));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
-   M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
-   M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
-   M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
-   M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
-   M.Append(TMenuItem.Create('Screenshot Depth to Grayscale Image ...', 560));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
-   Result.Append(M);
- M := TMenu.Create('_Help');
-   M.Append(TMenuItem.Create('Scene Information',                  121));
-   M.Append(TMenuItem.Create('Manifold Edges Information',         129));
-   MenuSelectedInfo :=
-     TMenuItem.Create('Selected Object Information',               171);
-   M.Append(MenuSelectedInfo);
-   MenuSelectedLightsInfo :=
-     TMenuItem.Create('Selected Object Lights Information',        172);
-   UpdateSelectedEnabled;
-   M.Append(MenuSelectedLightsInfo);
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('OpenGL Information',                 173));
-   M.Append(TMenuSeparator.Create);
-   M.Append(TMenuItem.Create('Visit view3dscene website',          132));
-   M.Append(TMenuItem.Create('About view3dscene',                  131));
-   Result.Append(M);
+  Result := TMenu.Create('Main menu');
+  M := TMenu.Create('_File');
+    M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
+    MenuReopen := TMenuItem.Create('_Reopen',      15);
+    MenuReopen.Enabled := false;
+    M.Append(MenuReopen);
+    M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900, CtrlS));
+    M.Append(TMenuItem.Create('Save As X3D (_classic encoding; converts VRML to X3D) ...', 905));
+    M.Append(TMenuItem.Create('Save As X3D (_XML encoding; converts VRML to X3D) ...', 910));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
+    M.Append(TMenuSeparator.Create);
+    M2 := TMenu.Create('_Preferences');
+      M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
+        MenuAppendAntiAliasing(M3, 600);
+        M2.Append(M3);
+      M2.Append(TMenuItemChecked.Create('_Shadow Volumes Possible (Restart view3dscene to Apply)',
+        740, ShadowsPossibleWanted, true));
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
+        InitialShowBBox, true));
+      M2.Append(TMenuItemChecked.Create('Show Status and Toolbar at Start', 771,
+        InitialShowStatus, true));
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItemChecked.Create('Sound', 801, SoundEngine.Enable, true));
+      M3 := TMenu.Create('Sound Device');
+        MenuAppendSoundDevices(M3, 810);
+        M2.Append(M3);
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItem.Create('Point Size ...', 182));
+      M2.Append(TMenuItem.Create('Line Width ...', 530));
+      M2.Append(TMenuItem.Create('Default Background Color ...', 84));
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItem.Create('Frames Per Second Limit ...', 2000));
+      M.Append(M2);
+    NextRecentMenuItem := TMenuSeparator.Create;
+    M.Append(NextRecentMenuItem);
+    RecentMenu.NextMenuItem := NextRecentMenuItem;
+    M.Append(TMenuItem.Create('_Exit',             12, CtrlW));
+    Result.Append(M);
+  M := TMenu.Create('_View');
+    M.Append(TMenuItemChecked.Create('_Bounding Box Visible',      82, CtrlB,
+      ShowBBox, true));
+    M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
+      ShowStatus, true));
+    M.Append(TMenuSeparator.Create);
+    M2 := TMenu.Create('_Fill Mode');
+      MenuAppendFillModes(M2, 500);
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItem.Create('Next _Fill Mode', 520, CtrlF));
+      M.Append(M2);
+    M.Append(ScreenEffects.Menu);
+    M.Append(TMenuSeparator.Create);
+    M2 := TMenu.Create('Shaders');
+      M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
+        4000, Ord(SceneAnimation.Attributes.Shaders), true);
+      M.Append(M2);
+    M2 := TMenu.Create('Bump mapping');
+      M2.AppendRadioGroup(BumpMappingNames, 1400,
+        Ord(SceneAnimation.Attributes.BumpMapping), true);
+      M.Append(M2);
+    M2 := TMenu.Create('Shadow Maps');
+      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
+      M2.Append(TMenuSeparator.Create);
+      M2.AppendRadioGroup(ShadowSamplingNames, 3510,
+        Ord(SceneAnimation.Attributes.ShadowSampling), true);
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.Attributes.VisualizeDepthMap, true));
+      M2.Append(TMenuSeparator.Create);
+      M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
+      M.Append(M2);
+    MenuShadowVolumes := TMenu.Create('Shadow Volumes');
+      MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
+      MenuShadowVolumes.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
+        ShadowsOn, true));
+      MenuShadowVolumes.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
+        DrawShadowVolumes, true));
+      M.Append(MenuShadowVolumes);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create(
+      '_Lighting Calculation',         91, CtrlL,
+      SceneAnimation.Attributes.Lighting, true));
+    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
+      (Scene <> nil) and Scene.HeadlightOn, true);
+    M.Append(MenuHeadlight);
+    M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
+      SceneAnimation.Attributes.UseSceneLights, true));
+    M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
+      SceneAnimation.Attributes.EnableTextures, true));
+    M2 := TMenu.Create('Texture Minification Method');
+      MenuAppendTextureMinFilters(M2, 1100);
+      M.Append(M2);
+    M2 := TMenu.Create('Texture Magnification Method');
+      MenuAppendTextureMagFilters(M2, 1200);
+      M.Append(M2);
+    M2 := TMenu.Create('RGB Textures Color Mode');
+      MenuAppendTextureModeRGB(M2, 1600);
+      M.Append(M2);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('Blending',                86,
+      SceneAnimation.Attributes.Blending, true));
+    M2 := TMenu.Create('Blending Source Factor');
+      AppendBlendingFactors(M2, true, 400);
+      M.Append(M2);
+    M2 := TMenu.Create('Blending Destination Factor');
+      AppendBlendingFactors(M2, false, 420);
+      M.Append(M2);
+    M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
+      SceneAnimation.Attributes.BlendingSort, true));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
+      SceneAnimation.Attributes.UseOcclusionQuery, true));
+    M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
+      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery, true));
+    M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
+      SceneAnimation.Attributes.DebugHierOcclusionQueryResults, true));
+    M2 := TMenu.Create('Frustum visualization');
+      M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
+        ShowFrustum, true));
+      M2.Append(TMenuItemChecked.Create('When Showing Frustum, ' +
+        'Show it Over All Other Objects (no depth test)', 180,
+        ShowFrustumAlwaysVisible, true));
+      M.Append(M2);
+    M2 := TMenu.Create('Octree visualization');
+      OctreeTrianglesDisplay.MenuWhole :=
+        TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
+        97, OctreeTrianglesDisplay.Whole, true);
+      M2.Append(OctreeTrianglesDisplay.MenuWhole);
+      M2.Append(TMenuItem.Create('Show _Upper Level of Collisions (Triangle) Octrees', 98, CtrlU));
+      M2.Append(TMenuItem.Create('Show _Lower Level of Collisions (Triangle) Octrees', 99, CtrlD));
+      M2.Append(TMenuSeparator.Create);
+      OctreeVisibleShapesDisplay.MenuWhole :=
+        TMenuItemChecked.Create('Show Whole Visible Shapes Octree',
+        190, OctreeVisibleShapesDisplay.Whole, true);
+      M2.Append(OctreeVisibleShapesDisplay.MenuWhole);
+      M2.Append(TMenuItem.Create('Show _Upper Level of Visible Shapes Octree', 191));
+      M2.Append(TMenuItem.Create('Show _Lower Level of Visible Shapes Octree', 192));
+      M2.Append(TMenuSeparator.Create);
+      OctreeCollidableShapesDisplay.MenuWhole :=
+        TMenuItemChecked.Create('Show Whole Collidable Shapes Octree',
+        195, OctreeCollidableShapesDisplay.Whole, true);
+      M2.Append(OctreeCollidableShapesDisplay.MenuWhole);
+      M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
+      M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
+      M.Append(M2);
+    Result.Append(M);
+  M := TMenu.Create('_Navigation');
+    Viewpoints.Recalculate(Scene);
+    M.Append(Viewpoints);
+    M.Append(TMenuSeparator.Create);
+    AppendNavigationTypes(M);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Next Navigation Type', 111, CtrlN));
+    M.Append(TMenuSeparator.Create);
+    M2 := TMenu.Create('Walk and Fly Settings');
+      M2.Append(TMenuItemChecked.Create(
+        '_Use Mouse Look',                       128, CtrlM,
+          Camera.Walk.MouseLook, true));
+      MenuGravity := TMenuItemChecked.Create(
+        '_Gravity',                              201, CtrlG,
+        Camera.Walk.Gravity, true);
+      M2.Append(MenuGravity);
+      MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
+        'Rotate with Respect to Gravity Vector',      202,
+        Camera.Walk.PreferGravityUpForRotations, true);
+      M2.Append(MenuPreferGravityUpForRotations);
+      MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
+        'Move with Respect to Gravity Vector',          203,
+        Camera.Walk.PreferGravityUpForMoving, true);
+      M2.Append(MenuPreferGravityUpForMoving);
+      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
+      M2.Append(TMenuItem.Create('Change Move Speed...', 205));
+      M.Append(M2);
+    MenuCollisions := TMenuItemChecked.Create(
+      '_Collision Detection and Picking',                123, CtrlC,
+        SceneAnimation.Collides, true);
+    M.Append(MenuCollisions);
+    Result.Append(M);
+  M := TMenu.Create('_Animation');
+    MenuAnimationTimePlaying := TMenuItemChecked.Create(
+      '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
+    M.Append(MenuAnimationTimePlaying);
+    M.Append(TMenuItem.Create('Rewind to Beginning', 221));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
+    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
+    Result.Append(M);
+  M := TMenu.Create('_Edit');
+    MenuRemoveSelectedGeometry :=
+      TMenuItem.Create('Remove _Geometry Node (containing selected triangle)', 36);
+    M.Append(MenuRemoveSelectedGeometry);
+    MenuRemoveSelectedFace :=
+      TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
+    M.Append(MenuRemoveSelectedFace);
+    M.Append(TMenuItem.Create(
+      'Remove VRML/X3D Nodes with Name Matching ...', 34));
+    M.Append(TMenuSeparator.Create);
+    MenuMergeCloseVertexes := TMenuItem.Create(
+      'Merge Close Vertexes (of node with selected triangle) ...', 730);
+    M.Append(MenuMergeCloseVertexes);
+    M.Append(TMenuSeparator.Create);
+    MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
+      MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
+      MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
+    M.Append(MenuEditMaterial);
+    M.Append(TMenuSeparator.Create);
+    MenuLightsEditor := TMenuItemChecked.Create('Lights Editor', 725,
+      LightsEditorIsOpen, false);
+    M.Append(MenuLightsEditor);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create(
+      'Remove Normals Info from Scene (forces normals to be calculated)',
+       31));
+    M.Append(TMenuItem.Create('Mark All Shapes as '+
+      'non-solid (disables any backface culling)', 32));
+    M.Append(TMenuItem.Create('Mark All Faces as '+
+      'non-convex (forces faces to be triangulated carefully)', 33));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
+    Result.Append(M);
+  M := TMenu.Create('_Console');
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
+    M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
+    M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
+    MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
+    M.Append(MenuSelectedOctreeStat);
+    M.Append(TMenuItem.Create('Print Statistics of Rendering Octree (Based on Shapes)', 103));
+    Result.Append(M);
+  M := TMenu.Create('_Display');
+    M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true, false);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
+      Window.FullScreen, true));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
+    M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
+    M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
+    M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
+    M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
+    M.Append(TMenuItem.Create('Screenshot Depth to Grayscale Image ...', 560));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
+    Result.Append(M);
+  M := TMenu.Create('_Help');
+    M.Append(TMenuItem.Create('Scene Information',                  121));
+    M.Append(TMenuItem.Create('Manifold Edges Information',         129));
+    MenuSelectedInfo :=
+      TMenuItem.Create('Selected Object Information',               171);
+    M.Append(MenuSelectedInfo);
+    MenuSelectedLightsInfo :=
+      TMenuItem.Create('Selected Object Lights Information',        172);
+    UpdateSelectedEnabled;
+    M.Append(MenuSelectedLightsInfo);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('OpenGL Information',                 173));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Visit view3dscene website',          132));
+    M.Append(TMenuItem.Create('About view3dscene',                  131));
+    Result.Append(M);
 end;
 
 { toolbar -------------------------------------------------------------------- }
