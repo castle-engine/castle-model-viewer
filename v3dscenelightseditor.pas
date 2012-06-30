@@ -82,7 +82,8 @@ type
     AmbientIntensitySlider: TMenuFloatSlider;
     OnArgument: TMenuBooleanArgument;
     ShadowsArgument: TMenuBooleanArgument;
-    ShadowsMainArgument: TMenuBooleanArgument;
+    ShadowVolumesArgument: TMenuBooleanArgument;
+    ShadowVolumesMainArgument: TMenuBooleanArgument;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
@@ -393,8 +394,9 @@ begin
   AmbientIntensitySlider := TMenuFloatSlider.Create(
     -1, 1, Light.FdAmbientIntensity.Value);
   OnArgument := TMenuBooleanArgument.Create(Light.FdOn.Value);
-  ShadowsArgument := TMenuBooleanArgument.Create(Light.FdKambiShadows.Value);
-  ShadowsMainArgument := TMenuBooleanArgument.Create(
+  ShadowsArgument := TMenuBooleanArgument.Create(Light.FdShadows.Value);
+  ShadowVolumesArgument := TMenuBooleanArgument.Create(Light.FdKambiShadows.Value);
+  ShadowVolumesMainArgument := TMenuBooleanArgument.Create(
     Light.FdKambiShadowsMain.Value);
 
   Items.AddObject('Red', RedColorSlider);
@@ -403,8 +405,9 @@ begin
   Items.AddObject('Intensity', IntensitySlider);
   Items.AddObject('Ambient Intensity', AmbientIntensitySlider);
   Items.AddObject('On', OnArgument);
-  Items.AddObject('Shadow Volumes (Off In Shadows)', ShadowsArgument);
-  Items.AddObject('Shadow Volumes Main (Determines Shadows)', ShadowsMainArgument);
+  Items.AddObject('Shadows (Easy: By Shadow Maps)', ShadowsArgument);
+  Items.AddObject('Shadow Volumes (Off In Shadows)', ShadowVolumesArgument);
+  Items.AddObject('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainArgument);
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -422,12 +425,23 @@ begin
          Light.FdOn.Send(OnArgument.Value);
        end;
     6: begin
+         if (Light is TPointLightNode_1) or
+            (Light is TPointLightNode) then
+         begin
+           MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).', taLeft);
+           Exit;
+         end;
+
          ShadowsArgument.Value := not ShadowsArgument.Value;
-         Light.FdKambiShadows.Send(ShadowsArgument.Value);
+         Light.FdShadows.Send(ShadowsArgument.Value);
        end;
     7: begin
-         ShadowsMainArgument.Value := not ShadowsMainArgument.Value;
-         Light.FdKambiShadowsMain.Send(ShadowsMainArgument.Value);
+         ShadowVolumesArgument.Value := not ShadowVolumesArgument.Value;
+         Light.FdKambiShadows.Send(ShadowVolumesArgument.Value);
+       end;
+    8: begin
+         ShadowVolumesMainArgument.Value := not ShadowVolumesMainArgument.Value;
+         Light.FdKambiShadowsMain.Send(ShadowVolumesMainArgument.Value);
        end;
     else
     if CurrentItem = BackIndex then
