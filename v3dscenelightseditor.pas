@@ -54,13 +54,20 @@ type
 
   TLightsMenu = class(TV3DOnScreenMenu)
   strict private
-    AmbientColorSlider: array[0..2] of TMenuFloatSlider;
+    AmbientColorSlider: array [0..2] of TMenuFloatSlider;
+    { collected lights of the scene }
+    Lights: TX3DNodeList;
+    { seen headlight, if any }
+    Headlight: TAbstractLightNode;
     LightMenu: TLightMenu;
     HeadLightMenu: THeadLightMenu;
     ItemsIndex: Integer;
+    procedure AddLight(Node: TX3DNode);
+    procedure DestructionNotification(Node: TX3DNode);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Click; override;
+    destructor Destroy; override;
     procedure AccessoryValueChanged; override;
   end;
 
@@ -160,7 +167,7 @@ begin
   Window := AWindow;
 
   FreeAndNil(LightsMenu);
-  LightsMenu := TLightsMenu.Create(Application);
+  LightsMenu := TLightsMenu.Create(nil);
   SetCurrentMenu(LightsMenu);
   MenuLightsEditor.Checked := true;
 end;
@@ -170,6 +177,7 @@ begin
   if SceneManager = nil then Exit;
 
   SetCurrentMenu(nil);
+  FreeAndNil(LightsMenu);
 
   SceneManager := nil;
   Window := nil;
@@ -216,19 +224,22 @@ var
 constructor TLightsMenu.Create(AOwner: TComponent);
 var
   I: Integer;
-  LightNode: TAbstractLightNode;
+  Light: TAbstractLightNode;
 begin
   inherited;
+
+  Lights := TX3DNodeList.Create(false);
 
   AmbientColorSlider[0] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[0]);
   AmbientColorSlider[1] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[1]);
   AmbientColorSlider[2] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[2]);
 
-  for I := 0 to SceneManager.MainScene.GlobalLights.Count - 1 do
+  SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
+
+  for I := 0 to Lights.Count - 1 do
   begin
-    LightNode := SceneManager.MainScene.GlobalLights.Items[I].Node;
-    Items.Add(Format('Edit %d: %s "%s"',
-      [I, LightNode.NodeTypeName, LightNode.NodeName]));
+    Light := Lights[I] as TAbstractLightNode;
+    Items.Add(Format('Edit %d: %s', [I, Light.NiceName]));
   end;
   ItemsIndex := Items.Count;
   Items.AddObject('Global Ambient Light Red'  , AmbientColorSlider[0]);
@@ -238,16 +249,75 @@ begin
   Items.Add('Close Lights Editor');
 end;
 
+destructor TLightsMenu.Destroy;
+var
+  I: Integer;
+begin
+  if Lights <> nil then
+  begin
+    for I := 0 to Lights.Count - 1 do
+      Lights[I].DestructionNotifications.Remove(@DestructionNotification);
+  end;
+  if Headlight <> nil then
+    Headlight.DestructionNotifications.Remove(@DestructionNotification);
+
+  FreeAndNil(Lights);
+  inherited;
+end;
+
+procedure TLightsMenu.DestructionNotification(Node: TX3DNode);
+var
+  I: Integer;
+begin
+  { Disconnect our destruction notifications from all other lights.
+    Do not disconnect from Node (that is now freed), since implementation
+    of this node probably iterates now over it's DestructionNotifications list. }
+
+  if Lights <> nil then
+  begin
+    for I := 0 to Lights.Count - 1 do
+      if Node <> Lights[I] then
+        Lights[I].DestructionNotifications.Remove(@DestructionNotification);
+    Lights.Clear;
+  end;
+
+  if (Headlight <> nil) and (Node <> Headlight) then
+    Headlight.DestructionNotifications.Remove(@DestructionNotification);
+  Headlight := nil;
+
+  { At one point I tried here to return to LightsMenu,
+    and do InitializeLightsItems again.
+    But this isn't such good idea, because when we release the scene
+    to load a new one, we currently have empty SceneManager.MainScene
+    or SceneManager.MainScene.RootNode, and we don't see any lights yet.
+    So calling InitializeLightsItems again always fills the list with no lights...
+    And we don't get any notifications when new scene is loaded (no such
+    mechanism in engine now), so we don't show new lights.
+    It's easier to just close lights editor (this also just destroys
+    our instance), and force user to open it again if wanted. }
+
+  LightsEditorClose;
+end;
+
+procedure TLightsMenu.AddLight(Node: TX3DNode);
+begin
+  if Lights.IndexOf(Node) = -1 then
+  begin
+    Lights.Add(Node);
+    Node.DestructionNotifications.Add(@DestructionNotification);
+  end;
+end;
+
 procedure TLightsMenu.Click;
 var
   H: TLightInstance;
-  Node: TAbstractLightNode;
+  Node, NewHeadlight: TAbstractLightNode;
 begin
   inherited;
   if CurrentItem < ItemsIndex then
   begin
     FreeAndNil(LightMenu);
-    Node := SceneManager.MainScene.GlobalLights.Items[CurrentItem].Node;
+    Node := Lights[CurrentItem] as TAbstractLightNode;
     if Node is TSpotLightNode_1 then
       LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
     if Node is TSpotLightNode then
@@ -267,8 +337,17 @@ begin
     if SceneManager.HeadlightInstance(H) then
     begin
       FreeAndNil(HeadLightMenu);
-      HeadLightMenu := THeadLightMenu.Create(Self, H.Node);
+      NewHeadlight := H.Node;
+      HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
       SetCurrentMenu(HeadLightMenu);
+
+      if Headlight <> NewHeadlight then
+      begin
+        if Headlight <> nil then
+          Headlight.DestructionNotifications.Remove(@DestructionNotification);
+        Headlight := NewHeadlight;
+        Headlight.DestructionNotifications.Add(@DestructionNotification);
+      end;
     end else
       MessageOK(Window, 'No headlight in level.' +NL+ NL+
         'You have to turn on headlight first:' +NL+
@@ -410,7 +489,7 @@ var
   Index: Integer;
 begin
   inherited;
-  if Between(CurrentItem, ItemsIndex, ItemsIndex - 2) then
+  if Between(CurrentItem, ItemsIndex, ItemsIndex + 2) then
   begin
     Index := CurrentItem - ItemsIndex;
     Light.FdLocation.Send(Index, PositionSlider[Index].Value);
@@ -607,4 +686,7 @@ begin
   end;
 end;
 
+finalization
+  { free if it exists at the end }
+  FreeAndNil(LightsMenu);
 end.
