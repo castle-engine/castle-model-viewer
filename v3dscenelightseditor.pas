@@ -227,9 +227,9 @@ end;
 const
   { Although X3D allows attenuation[0] (constant) to be < 1, we don't allow it.
     That's because when rendering with fixed-function, it's not honored
-    correctly: X3D spec says to do "1 / max(c1 + c2 * dL + c3 * dL^2, 1)",
-    but fixed-function OpenGL doesn't do it (our shader rendering
-    does it Ok). }
+    correctly: X3D spec says to do "1 / max(c1 + c2 * dL + c3 * dL^2, 1)"
+    (makes sense: never make light brighter by attenuation),
+    but fixed-function OpenGL doesn't do it (our shader rendering does it Ok). }
   AttenuationRange: TBox3D = (Data: ((1, 0, 0), (2, 2, 2)));
 
 { TMenuVector3Sliders -------------------------------------------------------- }
