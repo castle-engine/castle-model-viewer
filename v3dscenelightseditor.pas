@@ -52,9 +52,27 @@ type
   TLightMenu = class;
   THeadLightMenu = class;
 
+  TString3 = array [0..2] of string;
+
+  { Three float sliders to control TVector3Single value. }
+  TMenuVector3Sliders = class(TComponent)
+  strict private
+    Floats: array [0..2] of TMenuFloatSlider;
+    ItemsIndex: Integer;
+  public
+    constructor Create(const AOwner: TComponent;
+      const Range: TBox3D; const AValue: TVector3Single);
+    constructor Create(const AOwner: TComponent;
+      const Min, Max: Single; const AValue: TVector3Single);
+    procedure AddToMenu(const Items: TStringList;
+      const TitleBase, Title0, Title1, Title2: string);
+    function Selected(const CurrentItem: Integer): boolean;
+    function Value: TVector3Single;
+  end;
+
   TLightsMenu = class(TV3DOnScreenMenu)
   strict private
-    AmbientColorSlider: array [0..2] of TMenuFloatSlider;
+    AmbientColorSlider: TMenuVector3Sliders;
     { collected lights of the scene }
     Lights: TX3DNodeList;
     { seen headlight, if any }
@@ -75,9 +93,7 @@ type
   strict private
     Light: TAbstractLightNode;
     BackIndex: Integer;
-    RedColorSlider: TMenuFloatSlider;
-    GreenColorSlider: TMenuFloatSlider;
-    BlueColorSlider: TMenuFloatSlider;
+    ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TMenuFloatSlider;
     AmbientIntensitySlider: TMenuFloatSlider;
     OnArgument: TMenuBooleanArgument;
@@ -94,12 +110,10 @@ type
   TPositionalLightMenu = class(TLightMenu)
   strict private
     Light: TAbstractPositionalLightNode;
-    ItemsIndex: Integer;
-    PositionSlider: array [0..2] of TMenuFloatSlider;
+    PositionSlider, AttenuationSlider: TMenuVector3Sliders;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode); reintroduce;
     procedure AccessoryValueChanged; override;
-    procedure Click; override;
   end;
 
   TSpot1LightMenu = class(TPositionalLightMenu)
@@ -132,9 +146,11 @@ type
   THeadLightMenu = class(TV3DOnScreenMenu)
   strict private
     Headlight: TAbstractLightNode;
+    BackIndex: Integer;
     AmbientIntensitySlider: TMenuFloatSlider;
-    ColorSlider: array[0..2] of TMenuFloatSlider;
+    ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TMenuFloatSlider;
+    AttenuationSlider: TMenuVector3Sliders;
   public
     constructor Create(AOwner: TComponent; AHeadlight: TAbstractLightNode); reintroduce;
     procedure Click; override;
@@ -208,6 +224,57 @@ begin
   end;
 end;
 
+{ TMenuVector3Sliders -------------------------------------------------------- }
+
+constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
+  const Range: TBox3D; const AValue: TVector3Single);
+var
+  I: Integer;
+begin
+  inherited Create(AOwner);
+  for I := 0 to 2 do
+    Floats[I] := TMenuFloatSlider.Create(
+      Range.Data[0, I], Range.Data[1, I], AValue[I]);
+end;
+
+constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
+  const Min, Max: Single; const AValue: TVector3Single);
+begin
+  Create(AOwner,
+    Box3D(Vector3Single(Min, Min, Min), Vector3Single(Max, Max, Max)), AValue);
+end;
+
+procedure TMenuVector3Sliders.AddToMenu(const Items: TStringList;
+  const TitleBase, Title0, Title1, Title2: string);
+var
+  I: Integer;
+  Title: TString3;
+  TitleBaseSpace: string;
+begin
+  ItemsIndex := Items.Count;
+  Title[0] := Title0;
+  Title[1] := Title1;
+  Title[2] := Title2;
+  if TitleBase <> '' then
+    TitleBaseSpace := TitleBase + ' ' else
+    TitleBaseSpace := '';
+  for I := 0 to 2 do
+    Items.AddObject(TitleBaseSpace + Title[I], Floats[I]);
+end;
+
+function TMenuVector3Sliders.Value: TVector3Single;
+var
+  I: Integer;
+begin
+  for I := 0 to 2 do
+    Result[I] := Floats[I].Value;
+end;
+
+function TMenuVector3Sliders.Selected(const CurrentItem: Integer): boolean;
+begin
+  Result := (ItemsIndex <= CurrentItem) and (CurrentItem <= ItemsIndex + 2);
+end;
+
 { TV3DOnScreenMenu ----------------------------------------------------------- }
 
 constructor TV3DOnScreenMenu.Create(AOwner: TComponent);
@@ -231,9 +298,7 @@ begin
 
   Lights := TX3DNodeList.Create(false);
 
-  AmbientColorSlider[0] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[0]);
-  AmbientColorSlider[1] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[1]);
-  AmbientColorSlider[2] := TMenuFloatSlider.Create(0, 1, GlobalAmbientLight[2]);
+  AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, GlobalAmbientLight);
 
   SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
@@ -243,9 +308,7 @@ begin
     Items.Add(Format('Edit %d: %s', [I, Light.NiceName]));
   end;
   ItemsIndex := Items.Count;
-  Items.AddObject('Global Ambient Light Red'  , AmbientColorSlider[0]);
-  Items.AddObject('Global Ambient Light Green', AmbientColorSlider[1]);
-  Items.AddObject('Global Ambient Light Blue' , AmbientColorSlider[2]);
+  AmbientColorSlider.AddToMenu(Items, 'Global Ambient Light', 'Red', 'Green', 'Blue');
   Items.Add('Edit Headlight');
   Items.Add('Close Lights Editor');
 end;
@@ -361,14 +424,11 @@ begin
 end;
 
 procedure TLightsMenu.AccessoryValueChanged;
-var
-  Index: Integer;
 begin
   inherited;
-  if Between(CurrentItem, ItemsIndex, ItemsIndex + 2) then
+  if AmbientColorSlider.Selected(CurrentItem) then
   begin
-    Index := CurrentItem - ItemsIndex;
-    GlobalAmbientLight[Index] := AmbientColorSlider[Index].Value;
+    GlobalAmbientLight := AmbientColorSlider.Value;
 
     { TODO: GlobalAmbientLight just modifies and directly sets OpenGL paramater now.
       Default is equal to OpenGL default.
@@ -387,9 +447,7 @@ begin
 
   Light := ALight;
 
-  RedColorSlider := TMenuFloatSlider.Create(0, 1, Light.FdColor.Value[0]);
-  GreenColorSlider := TMenuFloatSlider.Create(0, 1, Light.FdColor.Value[1]);
-  BlueColorSlider := TMenuFloatSlider.Create(0, 1, Light.FdColor.Value[2]);
+  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.FdColor.Value);
   IntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdIntensity.Value);
   AmbientIntensitySlider := TMenuFloatSlider.Create(
     -1, 1, Light.FdAmbientIntensity.Value);
@@ -399,9 +457,7 @@ begin
   ShadowVolumesMainArgument := TMenuBooleanArgument.Create(
     Light.FdKambiShadowsMain.Value);
 
-  Items.AddObject('Red', RedColorSlider);
-  Items.AddObject('Green', GreenColorSlider);
-  Items.AddObject('Blue', BlueColorSlider);
+  ColorSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
   Items.AddObject('Intensity', IntensitySlider);
   Items.AddObject('Ambient Intensity', AmbientIntensitySlider);
   Items.AddObject('On', OnArgument);
@@ -452,10 +508,9 @@ end;
 procedure TLightMenu.AccessoryValueChanged;
 begin
   inherited;
+  if ColorSlider.Selected(CurrentItem) then
+    Light.FdColor.Send(ColorSlider.Value) else
   case CurrentItem of
-    0: Light.FdColor.Send(0,   RedColorSlider.Value);
-    1: Light.FdColor.Send(1, GreenColorSlider.Value);
-    2: Light.FdColor.Send(2,  BlueColorSlider.Value);
     3: Light.FdIntensity.Send(IntensitySlider.Value);
     4: Light.FdAmbientIntensity.Send(AmbientIntensitySlider.Value);
   end;
@@ -467,7 +522,6 @@ constructor TPositionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractPos
 const
   DefaultSize = 10;
 var
-  I: Integer;
   Box: TBox3D;
   BoxSizes: TVector3Single;
 begin
@@ -487,41 +541,21 @@ begin
     Box.Data[0] := Box.Data[0] - BoxSizes;
     Box.Data[1] := Box.Data[1] + BoxSizes;
   end;
-  for I := 0 to 2 do
-    PositionSlider[I] := TMenuFloatSlider.Create(
-      Box.Data[0, I], Box.Data[1, I], Light.FdLocation.Value[I]);
+  PositionSlider := TMenuVector3Sliders.Create(Self, Box, Light.FdLocation.Value);
 
-  ItemsIndex := Items.Count;
-  Items.AddObject('Position X', PositionSlider[0]);
-  Items.AddObject('Position Y', PositionSlider[1]);
-  Items.AddObject('Position Z', PositionSlider[2]);
-  Items.Add('Attenuation ...');
+  AttenuationSlider := TMenuVector3Sliders.Create(Self, 0, 2, Light.FdAttenuation.Value);
+
+  PositionSlider.AddToMenu(Items, 'Position', 'X', 'Y', 'Z');
+  AttenuationSlider.AddToMenu(Items, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
 end;
 
 procedure TPositionalLightMenu.AccessoryValueChanged;
-var
-  Index: Integer;
 begin
   inherited;
-  if Between(CurrentItem, ItemsIndex, ItemsIndex + 2) then
-  begin
-    Index := CurrentItem - ItemsIndex;
-    Light.FdLocation.Send(Index, PositionSlider[Index].Value);
-  end;
-end;
-
-procedure TPositionalLightMenu.Click;
-var
-  Vector: TVector3Single;
-begin
-  inherited;
-  if CurrentItem = ItemsIndex + 3 then
-  begin
-    Vector := Light.FdAttenuation.Value;
-    if MessageInputQueryVector3Single(Window, 'Change attenuation',
-      Vector, taLeft) then
-      Light.FdAttenuation.Send(Vector);
-  end;
+  if PositionSlider.Selected(CurrentItem) then
+    Light.FdLocation.Send(PositionSlider.Value) else
+  if AttenuationSlider.Selected(CurrentItem) then
+    Light.FdAttenuation.Send(AttenuationSlider.Value);
 end;
 
 { TSpot1LightMenu ------------------------------------------------------- }
@@ -547,7 +581,7 @@ begin
   begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "P" to use current camera''s direction)',
+      '(Input "C" to use current camera''s direction)',
       Vector, taLeft) then
       Light.FdDirection.Send(Vector);
   end else
@@ -588,7 +622,7 @@ begin
   begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "P" to use current camera''s direction)',
+      '(Input "C" to use current camera''s direction)',
       Vector, taLeft) then
       Light.FdDirection.Send(Vector);
   end else
@@ -626,7 +660,7 @@ begin
   begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "c" to use current camera''s direction)',
+      '(Input "C" to use current camera''s direction)',
       Vector, taLeft) then
       Light.FdDirection.Send(Vector);
   end;
@@ -637,66 +671,52 @@ end;
 constructor THeadLightMenu.Create(AOwner: TComponent; AHeadlight: TAbstractLightNode);
 begin
   inherited Create(AOwner);
-
   Headlight := AHeadlight;
 
   AmbientIntensitySlider := TMenuFloatSlider.Create(0, 1, Headlight.FdAmbientIntensity.Value);
+  Items.AddObject('Ambient Intensity', AmbientIntensitySlider);
 
-  ColorSlider[0] := TMenuFloatSlider.Create(0, 1, Headlight.FdColor.Value[0]);
-  ColorSlider[1] := TMenuFloatSlider.Create(0, 1, Headlight.FdColor.Value[1]);
-  ColorSlider[2] := TMenuFloatSlider.Create(0, 1, Headlight.FdColor.Value[2]);
+  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Headlight.FdColor.Value);
+  ColorSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
 
   IntensitySlider := TMenuFloatSlider.Create(0, 1, Headlight.FdIntensity.Value);
+  Items.AddObject('Intensity', IntensitySlider);
 
-  Items.AddObject('Ambient Intensity'  , AmbientIntensitySlider);
+  if Headlight is TAbstractPositionalLightNode then
+  begin
+    { This was a nice message about attenuation for headlight,
+      but we have nowhere to place it now:
+      MessageOk(Window, 'HeadLight is not positional, it is not possible to set attenuation.' +NL+ NL+
+        'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.',
+        taLeft); }
 
-  Items.AddObject('Red'  , ColorSlider[0]);
-  Items.AddObject('Green', ColorSlider[1]);
-  Items.AddObject('Blue' , ColorSlider[2]);
+    AttenuationSlider := TMenuVector3Sliders.Create(Self, 0, 2,
+      TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);
+    AttenuationSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
+  end;
 
-  Items.AddObject('Intensity'  , IntensitySlider);
-
-  Items.Add('Attenuation ...');
-
+  BackIndex := Items.Count;
   Items.Add('Back to Lights Menu');
 end;
 
 procedure THeadLightMenu.Click;
-
-  procedure ChangeAttenuation;
-  var
-    Vector3: TVector3Single;
-  begin
-    if Headlight is TAbstractPositionalLightNode then
-    begin
-      Vector3 := TAbstractPositionalLightNode(Headlight).FdAttenuation.Value;
-      if MessageInputQueryVector3Single(Window, 'Change headlight Attenuation',
-        Vector3, taLeft) then
-        TAbstractPositionalLightNode(Headlight).FdAttenuation.Value := Vector3;
-    end else
-      MessageOk(Window, 'HeadLight is not positional, it is not possible to set attenuation.' +NL+ NL+
-        'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.',
-        taLeft);
-  end;
-
 begin
   inherited;
-  case CurrentItem of
-    0..4: Exit;
-    5: ChangeAttenuation;
-    6: SetCurrentMenu(LightsMenu);
-    else raise EInternalError.Create('Menu item unknown');
-  end;
+  if CurrentItem = BackIndex then
+    SetCurrentMenu(LightsMenu);
 end;
 
 procedure THeadLightMenu.AccessoryValueChanged;
 begin
   inherited;
+  if ColorSlider.Selected(CurrentItem) then
+    Headlight.FdColor.Send(ColorSlider.Value) else
+  if (AttenuationSlider <> nil) and
+      AttenuationSlider.Selected(CurrentItem) then
+    (Headlight as TAbstractPositionalLightNode).FdAttenuation.Send(AttenuationSlider.Value) else
   case CurrentItem of
-    0:    Headlight.FdAmbientIntensity.Value := AmbientIntensitySlider.Value;
-    1..3: Headlight.FdColor.Value[CurrentItem-1] := ColorSlider[CurrentItem-1].Value;
-    4:    Headlight.FdIntensity.Value := IntensitySlider.Value;
-    else Exit;
+    0: Headlight.FdAmbientIntensity.Value := AmbientIntensitySlider.Value;
+    4: Headlight.FdIntensity.Value := IntensitySlider.Value;
   end;
 end;
 
