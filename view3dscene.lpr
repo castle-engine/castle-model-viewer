@@ -3280,7 +3280,7 @@ begin
     M.Append(TMenuItemChecked.Create(
       '_Lighting Calculation',         91, CtrlL,
       SceneAnimation.Attributes.Lighting, true));
-    MenuHeadlight := TMenuItemChecked.Create('_Head Light', 92, CtrlH,
+    MenuHeadlight := TMenuItemChecked.Create('_Headlight', 92, CtrlH,
       (Scene <> nil) and Scene.HeadlightOn, true);
     M.Append(MenuHeadlight);
     M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,

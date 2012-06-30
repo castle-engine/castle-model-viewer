@@ -49,22 +49,25 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-  TOneLightMenu = class;
+  TLightMenu = class;
   THeadLightMenu = class;
 
   TLightsMenu = class(TV3DOnScreenMenu)
-  public
+  strict private
     AmbientColorSlider: array[0..2] of TMenuFloatSlider;
-    OneLightMenu: TOneLightMenu;
+    LightMenu: TLightMenu;
     HeadLightMenu: THeadLightMenu;
+    ItemsIndex: Integer;
+  public
     constructor Create(AOwner: TComponent); override;
     procedure Click; override;
     procedure AccessoryValueChanged; override;
   end;
 
-  TOneLightMenu = class(TV3DOnScreenMenu)
-  public
+  TLightMenu = class(TV3DOnScreenMenu)
+  strict private
     Light: TAbstractLightNode;
+    BackIndex: Integer;
     RedColorSlider: TMenuFloatSlider;
     GreenColorSlider: TMenuFloatSlider;
     BlueColorSlider: TMenuFloatSlider;
@@ -73,24 +76,58 @@ type
     OnArgument: TMenuBooleanArgument;
     ShadowsArgument: TMenuBooleanArgument;
     ShadowsMainArgument: TMenuBooleanArgument;
-    PositionSlider: array [0..2] of TMenuFloatSlider;
+  public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
+    procedure AfterCreate;
     procedure Click; override;
     procedure AccessoryValueChanged; override;
+  end;
 
-    function GetLightLocation: TVector3Single;
-    procedure SetLightLocation(const Value: TVector3Single);
-    property LightLocation: TVector3Single
-      read GetLightLocation write SetLightLocation;
+  TPositionalLightMenu = class(TLightMenu)
+  strict private
+    Light: TAbstractPositionalLightNode;
+    ItemsIndex: Integer;
+    PositionSlider: array [0..2] of TMenuFloatSlider;
+  public
+    constructor Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode); reintroduce;
+    procedure AccessoryValueChanged; override;
+    procedure Click; override;
+  end;
+
+  TSpot1LightMenu = class(TPositionalLightMenu)
+  strict private
+    Light: TSpotLightNode_1;
+    ItemsIndex: Integer;
+  public
+    constructor Create(AOwner: TComponent; ALight: TSpotLightNode_1); reintroduce;
+    procedure Click; override;
+  end;
+
+  TSpotLightMenu = class(TPositionalLightMenu)
+  strict private
+    Light: TSpotLightNode;
+    ItemsIndex: Integer;
+  public
+    constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
+    procedure Click; override;
+  end;
+
+  TDirectionalLightMenu = class(TLightMenu)
+  strict private
+    Light: TAbstractDirectionalLightNode;
+    ItemsIndex: Integer;
+  public
+    constructor Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode); reintroduce;
+    procedure Click; override;
   end;
 
   THeadLightMenu = class(TV3DOnScreenMenu)
-  public
+  strict private
     Headlight: TAbstractLightNode;
     AmbientIntensitySlider: TMenuFloatSlider;
     ColorSlider: array[0..2] of TMenuFloatSlider;
     IntensitySlider: TMenuFloatSlider;
-    SpotArgument: TMenuBooleanArgument;
+  public
     constructor Create(AOwner: TComponent; AHeadlight: TAbstractLightNode); reintroduce;
     procedure Click; override;
     procedure AccessoryValueChanged; override;
@@ -139,6 +176,29 @@ begin
   MenuLightsEditor.Checked := false;
 end;
 
+function MessageInputQueryDirection(
+  Window: TCastleWindowBase; const Title: string;
+  var Value: TVector3Single; TextAlign: TTextAlign): boolean;
+var
+  Pos, Up: TVector3Single;
+  s: string;
+begin
+  Result := false;
+  s := Format('%g %g %g', [Value[0], Value[1], Value[2]]);
+  if MessageInputQuery(Window, Title, s, TextAlign) then
+  begin
+    try
+      if LowerCase(Trim(S)) = 'c' then
+        SceneManager.Camera.GetView(Pos, Value, Up) else
+        Value := Vector3SingleFromStr(s);
+      Result := true;
+    except
+      on E: EConvertError do
+        MessageOK(Window, 'Invalid vector 3 value : ' + E.Message, taLeft);
+    end;
+  end;
+end;
+
 { TV3DOnScreenMenu ----------------------------------------------------------- }
 
 constructor TV3DOnScreenMenu.Create(AOwner: TComponent);
@@ -149,14 +209,6 @@ begin
 end;
 
 { TLightsMenu ------------------------------------------------------- }
-
-{ TODO: GlobalAmbientLight is just a hack now, it is modified and directly set
-  for OpenGL now.
-  Default is equal to OpenGL default.
-  Control of global ambient may be changed
-  to control NavigationInfo.globalAmbient field
-  (InstantReality extension that we may implement too,
-  see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ). }
 
 var
   GlobalAmbientLight: TVector3Single = (0.2, 0.2, 0.2);
@@ -178,6 +230,7 @@ begin
     Items.Add(Format('Edit %d: %s "%s"',
       [I, LightNode.NodeTypeName, LightNode.NodeName]));
   end;
+  ItemsIndex := Items.Count;
   Items.AddObject('Global Ambient Light Red'  , AmbientColorSlider[0]);
   Items.AddObject('Global Ambient Light Green', AmbientColorSlider[1]);
   Items.AddObject('Global Ambient Light Blue' , AmbientColorSlider[2]);
@@ -188,72 +241,71 @@ end;
 procedure TLightsMenu.Click;
 var
   H: TLightInstance;
+  Node: TAbstractLightNode;
 begin
-  case CurrentItem - SceneManager.MainScene.GlobalLights.Count of
-    0, 1, 2: ;
-    3: begin
-         if SceneManager.HeadlightInstance(H) then
-         begin
-           FreeAndNil(HeadLightMenu);
-           HeadLightMenu := THeadLightMenu.Create(Self, H.Node);
-           SetCurrentMenu(HeadLightMenu);
-         end else
-           MessageOK(Window, 'No headlight in level ' +
-             ' (set NavigationInfo.headlight to TRUE to get headlight)', taLeft);
-       end;
-    4: LightsEditorClose;
-    else
-       begin
-         FreeAndNil(OneLightMenu);
-         OneLightMenu := TOneLightMenu.Create(Self,
-           SceneManager.MainScene.GlobalLights.Items[CurrentItem].Node);
-         SetCurrentMenu(OneLightMenu);
-       end;
-  end;
+  inherited;
+  if CurrentItem < ItemsIndex then
+  begin
+    FreeAndNil(LightMenu);
+    Node := SceneManager.MainScene.GlobalLights.Items[CurrentItem].Node;
+    if Node is TSpotLightNode_1 then
+      LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
+    if Node is TSpotLightNode then
+      LightMenu := TSpotLightMenu.Create(Self, TSpotLightNode(Node)) else
+    if Node is TAbstractDirectionalLightNode then
+      LightMenu := TDirectionalLightMenu.Create(Self, TAbstractDirectionalLightNode(Node)) else
+    if Node is TAbstractPositionalLightNode then
+      LightMenu := TPositionalLightMenu.Create(Self, TAbstractPositionalLightNode(Node)) else
+      { fallback on TLightMenu, although currently we just capture all
+        possible descendants with specialized menu types above }
+      LightMenu := TLightMenu.Create(Self, Node);
+    LightMenu.AfterCreate;
+    SetCurrentMenu(LightMenu);
+  end else
+  if CurrentItem = ItemsIndex + 3 then
+  begin
+    if SceneManager.HeadlightInstance(H) then
+    begin
+      FreeAndNil(HeadLightMenu);
+      HeadLightMenu := THeadLightMenu.Create(Self, H.Node);
+      SetCurrentMenu(HeadLightMenu);
+    end else
+      MessageOK(Window, 'No headlight in level.' +NL+ NL+
+        'You have to turn on headlight first:' +NL+
+        '- by menu item "View -> Headlight" (Ctrl+H),' +NL+
+        '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.',
+        taLeft);
+  end else
+  if CurrentItem = ItemsIndex + 4 then
+    LightsEditorClose;
 end;
 
 procedure TLightsMenu.AccessoryValueChanged;
+var
+  Index: Integer;
 begin
-  case CurrentItem - SceneManager.MainScene.GlobalLights.Count of
-    2: GlobalAmbientLight[0] := AmbientColorSlider[0].Value;
-    3: GlobalAmbientLight[1] := AmbientColorSlider[1].Value;
-    4: GlobalAmbientLight[2] := AmbientColorSlider[2].Value;
-    else Exit;
-  end;
+  inherited;
+  if Between(CurrentItem, ItemsIndex, ItemsIndex + 2) then
+  begin
+    Index := CurrentItem - ItemsIndex;
+    GlobalAmbientLight[Index] := AmbientColorSlider[Index].Value;
 
-  glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(GlobalAmbientLight, 1.0));
+    { TODO: GlobalAmbientLight just modifies and directly sets OpenGL paramater now.
+      Default is equal to OpenGL default.
+      This may be changed to control NavigationInfo.globalAmbient field
+      (InstantReality extension that we plan to implement too,
+      see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ). }
+    glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(GlobalAmbientLight, 1.0));
+  end;
 end;
 
-{ TOneLightMenu ---------------------------------------------------------- }
+{ TLightMenu ---------------------------------------------------------- }
 
-constructor TOneLightMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
-const
-  DefaultSize = 10;
-var
-  I: Integer;
-  Box: TBox3D;
-  BoxSizes: TVector3Single;
+constructor TLightMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
 begin
   inherited Create(AOwner);
 
   Light := ALight;
-
-  { determine sensible lights positions.
-    Box doesn't depend on LightLocation, to not change range each time
-    --- but this causes troubles, as LightLocation may not fit within range,
-    which is uncomfortable (works Ok, but not nice for user). }
-  Box := SceneManager.Items.BoundingBox + SceneManager.CameraBox;
-  if Box.IsEmpty then
-    Box := Box3D(Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
-                 Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
-  begin
-    BoxSizes := Box.Sizes;
-    Box.Data[0] := Box.Data[0] - BoxSizes;
-    Box.Data[1] := Box.Data[1] + BoxSizes;
-  end;
-  for I := 0 to 2 do
-    PositionSlider[I] := TMenuFloatSlider.Create(
-      Box.Data[0, I], Box.Data[1, I], LightLocation[I]);
 
   RedColorSlider := TMenuFloatSlider.Create(0, 1, Light.FdColor.Value[0]);
   GreenColorSlider := TMenuFloatSlider.Create(0, 1, Light.FdColor.Value[1]);
@@ -266,9 +318,6 @@ begin
   ShadowsMainArgument := TMenuBooleanArgument.Create(
     Light.FdKambiShadowsMain.Value);
 
-  Items.AddObject('Position X', PositionSlider[0]);
-  Items.AddObject('Position Y', PositionSlider[1]);
-  Items.AddObject('Position Z', PositionSlider[2]);
   Items.AddObject('Red', RedColorSlider);
   Items.AddObject('Green', GreenColorSlider);
   Items.AddObject('Blue', BlueColorSlider);
@@ -277,167 +326,216 @@ begin
   Items.AddObject('On', OnArgument);
   Items.AddObject('Shadow Volumes (Off In Shadows)', ShadowsArgument);
   Items.AddObject('Shadow Volumes Main (Determines Shadows)', ShadowsMainArgument);
-  Items.Add('Point/SpotLight: Attenuation ...');
-  Items.Add('DirectionalLight: Direction ...');
-  Items.Add('SpotLight: Direction ...');
-  Items.Add('SpotLight: Spot Beam Width / Drop Off Rate');
-  Items.Add('SpotLight: Spot Cut Off Angle');
+end;
+
+procedure TLightMenu.AfterCreate;
+begin
+  BackIndex := Items.Count;
   Items.Add('Back to Lights Menu');
 end;
 
-function TOneLightMenu.GetLightLocation: TVector3Single;
+procedure TLightMenu.Click;
 begin
-  if Light is TAbstractPositionalLightNode then
-    Result := TAbstractPositionalLightNode(Light).FdLocation.Value else
-    Result := ZeroVector3Single;
+  inherited;
+  case CurrentItem of
+    5: begin
+         OnArgument.Value := not OnArgument.Value;
+         Light.FdOn.Send(OnArgument.Value);
+       end;
+    6: begin
+         ShadowsArgument.Value := not ShadowsArgument.Value;
+         Light.FdKambiShadows.Send(ShadowsArgument.Value);
+       end;
+    7: begin
+         ShadowsMainArgument.Value := not ShadowsMainArgument.Value;
+         Light.FdKambiShadowsMain.Send(ShadowsMainArgument.Value);
+       end;
+    else
+    if CurrentItem = BackIndex then
+      SetCurrentMenu(LightsMenu);
+  end;
 end;
 
-procedure TOneLightMenu.SetLightLocation(const Value: TVector3Single);
+procedure TLightMenu.AccessoryValueChanged;
 begin
-  if Light is TAbstractPositionalLightNode then
-    TAbstractPositionalLightNode(Light).FdLocation.Value := Value;
+  inherited;
+  case CurrentItem of
+    0: Light.FdColor.Send(0,   RedColorSlider.Value);
+    1: Light.FdColor.Send(1, GreenColorSlider.Value);
+    2: Light.FdColor.Send(2,  BlueColorSlider.Value);
+    3: Light.FdIntensity.Send(IntensitySlider.Value);
+    4: Light.FdAmbientIntensity.Send(AmbientIntensitySlider.Value);
+  end;
 end;
 
-procedure TOneLightMenu.Click;
+{ TPositionalLightMenu ------------------------------------------------------- }
 
-  function MessageInputQueryVector3SingleC(
-    Window: TCastleWindowBase; const Title: string;
-    var Value: TVector3Single; TextAlign: TTextAlign;
-    const OnC: TVector3Single): boolean;
-  var
-    s: string;
+constructor TPositionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode);
+const
+  DefaultSize = 10;
+var
+  I: Integer;
+  Box: TBox3D;
+  BoxSizes: TVector3Single;
+begin
+  inherited Create(AOwner, ALight);
+  Light := ALight;
+
+  { determine sensible lights positions.
+    Box doesn't depend on Light.FdLocation, to not change range each time
+    --- but this causes troubles, as Light.FdLocation may not fit within range,
+    which is uncomfortable (works Ok, but not nice for user). }
+  Box := SceneManager.Items.BoundingBox + SceneManager.CameraBox;
+  if Box.IsEmpty then
+    Box := Box3D(Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
+                 Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
   begin
-    Result := false;
-    s := Format('%g %g %g', [Value[0], Value[1], Value[2]]);
-    if MessageInputQuery(Window, Title, s, TextAlign) then
-    begin
-      try
-        if LowerCase(Trim(S)) = 'c' then
-          Value := OnC else
-          Value := Vector3SingleFromStr(s);
-        Result := true;
-      except
-        on E: EConvertError do
-          MessageOK(Window, 'Invalid vector 3 value : ' + E.Message, taLeft);
-      end;
-    end;
+    BoxSizes := Box.Sizes;
+    Box.Data[0] := Box.Data[0] - BoxSizes;
+    Box.Data[1] := Box.Data[1] + BoxSizes;
   end;
+  for I := 0 to 2 do
+    PositionSlider[I] := TMenuFloatSlider.Create(
+      Box.Data[0, I], Box.Data[1, I], Light.FdLocation.Value[I]);
 
-  function CameraDirection: TVector3Single;
-  var
-    Pos, Up: TVector3Single;
+  ItemsIndex := Items.Count;
+  Items.AddObject('Position X', PositionSlider[0]);
+  Items.AddObject('Position Y', PositionSlider[1]);
+  Items.AddObject('Position Z', PositionSlider[2]);
+  Items.Add('Attenuation ...');
+end;
+
+procedure TPositionalLightMenu.AccessoryValueChanged;
+var
+  Index: Integer;
+begin
+  inherited;
+  if Between(CurrentItem, ItemsIndex, ItemsIndex - 2) then
   begin
-    SceneManager.Camera.GetView(Pos, Result, Up);
+    Index := CurrentItem - ItemsIndex;
+    Light.FdLocation.Send(Index, PositionSlider[Index].Value);
   end;
+end;
 
+procedure TPositionalLightMenu.Click;
+var
+  Vector: TVector3Single;
+begin
+  inherited;
+  if CurrentItem = ItemsIndex + 3 then
+  begin
+    Vector := Light.FdAttenuation.Value;
+    if MessageInputQueryVector3Single(Window, 'Change attenuation',
+      Vector, taLeft) then
+      Light.FdAttenuation.Send(Vector);
+  end;
+end;
+
+{ TSpot1LightMenu ------------------------------------------------------- }
+
+constructor TSpot1LightMenu.Create(AOwner: TComponent; ALight: TSpotLightNode_1);
+begin
+  inherited Create(AOwner, ALight);
+  Light := ALight;
+
+  ItemsIndex := Items.Count;
+  Items.Add('Direction ...');
+  Items.Add('Spot Cut Off Angle ...');
+  Items.Add('Spot Drop Off Rate ...');
+end;
+
+procedure TSpot1LightMenu.Click;
 var
   Vector: TVector3Single;
   Value: Single;
 begin
-  case CurrentItem of
-    0..7: ;
-    8: begin
-         OnArgument.Value := not OnArgument.Value;
-         Light.FdOn.Send(OnArgument.Value);
-       end;
-    9: begin
-         ShadowsArgument.Value := not ShadowsArgument.Value;
-         Light.FdKambiShadows.Send(ShadowsArgument.Value);
-       end;
-    10:begin
-         ShadowsMainArgument.Value := not ShadowsMainArgument.Value;
-         Light.FdKambiShadowsMain.Send(ShadowsMainArgument.Value);
-       end;
-    11:begin
-         if Light is TAbstractPositionalLightNode then
-         begin
-           Vector := TAbstractPositionalLightNode(Light).FdAttenuation.Value;
-           if MessageInputQueryVector3Single(Window, 'Change attenuation',
-             Vector, taLeft) then
-             TAbstractPositionalLightNode(Light).FdAttenuation.Send(Vector);
-         end;
-       end;
-    12:begin
-         if Light is TAbstractDirectionalLightNode then
-         begin
-           Vector := TAbstractDirectionalLightNode(Light).FdDirection.Value;
-           if MessageInputQueryVector3SingleC(Window, 'Change direction' +nl+
-             '(Input "c" to use current camera''s direction)',
-             Vector, taLeft, CameraDirection) then
-             TAbstractDirectionalLightNode(Light).FdDirection.Send(Vector);
-         end;
-       end;
-    13:begin
-         if Light is TSpotLightNode_1 then
-         begin
-           Vector := TSpotLightNode_1(Light).FdDirection.Value;
-           if MessageInputQueryVector3SingleC(Window, 'Change direction' +nl+
-             '(Input "P" to use current camera''s direction)',
-             Vector, taLeft, CameraDirection) then
-             TSpotLightNode_1(Light).FdDirection.Send(Vector);
-         end else
-         if Light is TSpotLightNode then
-         begin
-           Vector := TSpotLightNode(Light).FdDirection.Value;
-           if MessageInputQueryVector3SingleC(Window, 'Change direction' +nl+
-             '(Input "P" to use current camera''s direction)',
-             Vector, taLeft, CameraDirection) then
-             TSpotLightNode(Light).FdDirection.Send(Vector);
-         end;
-       end;
-    14:begin
-         if Light is TSpotLightNode_1 then
-         begin
-           Value := TSpotLightNode_1(Light).FdDropOffRate.Value;
-           if MessageInputQuery(Window, 'Change dropOffRate', Value, taLeft) then
-             TSpotLightNode_1(Light).FdDropOffRate.Send(Value);
-         end else
-         if Light is TSpotLightNode then
-         begin
-           Value := TSpotLightNode(Light).FdBeamWidth.Value;
-           if MessageInputQuery(Window, 'Change beamWidth', Value, taLeft) then
-             TSpotLightNode(Light).FdBeamWidth.Send(Value);
-         end;
-       end;
-    15:begin
-         if Light is TSpotLightNode_1 then
-         begin
-           Value := TSpotLightNode_1(Light).FdCutOffAngle.Value;
-           if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
-             TSpotLightNode_1(Light).FdCutOffAngle.Send(Value);
-         end else
-         if Light is TSpotLightNode then
-         begin
-           Value := TSpotLightNode(Light).FdCutOffAngle.Value;
-           if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
-             TSpotLightNode(Light).FdCutOffAngle.Send(Value);
-         end;
-       end;
-    16:SetCurrentMenu(LightsMenu);
-    else raise EInternalError.Create('Menu item unknown');
+  inherited;
+  if CurrentItem = ItemsIndex then
+  begin
+    Vector := Light.FdDirection.Value;
+    if MessageInputQueryDirection(Window, 'Change direction' +nl+
+      '(Input "P" to use current camera''s direction)',
+      Vector, taLeft) then
+      Light.FdDirection.Send(Vector);
+  end else
+  if CurrentItem = ItemsIndex + 1 then
+  begin
+    Value := Light.FdCutOffAngle.Value;
+    if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
+      Light.FdCutOffAngle.Send(Value);
+  end else
+  if CurrentItem = ItemsIndex + 2 then
+  begin
+    Value := Light.FdDropOffRate.Value;
+    if MessageInputQuery(Window, 'Change dropOffRate', Value, taLeft) then
+      Light.FdDropOffRate.Send(Value);
   end;
 end;
 
-procedure TOneLightMenu.AccessoryValueChanged;
-var
-  Index: Integer;
-  V: TVector3Single;
+{ TSpotLightMenu ------------------------------------------------------- }
+
+constructor TSpotLightMenu.Create(AOwner: TComponent; ALight: TSpotLightNode);
 begin
-  case CurrentItem of
-    0..2:
-      if Light is TAbstractPositionalLightNode then
-      begin
-        Index := CurrentItem;
-        V := TAbstractPositionalLightNode(Light).FdLocation.Value;
-        V[Index] := PositionSlider[Index].Value;
-        TAbstractPositionalLightNode(Light).FdLocation.Send(V);
-      end;
-    3: begin Light.FdColor.Value[0] := RedColorSlider.Value  ; Light.FdColor.Changed; end;
-    4: begin Light.FdColor.Value[1] := GreenColorSlider.Value; Light.FdColor.Changed; end;
-    5: begin Light.FdColor.Value[2] := BlueColorSlider.Value ; Light.FdColor.Changed; end;
-    6: Light.FdIntensity.Send(IntensitySlider.Value);
-    7: Light.FdAmbientIntensity.Send(AmbientIntensitySlider.Value);
-    else Exit;
+  inherited Create(AOwner, ALight);
+  Light := ALight;
+
+  ItemsIndex := Items.Count;
+  Items.Add('Direction ...');
+  Items.Add('Spot Cut Off Angle ...');
+  Items.Add('Spot Beam Width ...');
+end;
+
+procedure TSpotLightMenu.Click;
+var
+  Vector: TVector3Single;
+  Value: Single;
+begin
+  inherited;
+  if CurrentItem = ItemsIndex then
+  begin
+    Vector := Light.FdDirection.Value;
+    if MessageInputQueryDirection(Window, 'Change direction' +nl+
+      '(Input "P" to use current camera''s direction)',
+      Vector, taLeft) then
+      Light.FdDirection.Send(Vector);
+  end else
+  if CurrentItem = ItemsIndex + 1 then
+  begin
+    Value := Light.FdCutOffAngle.Value;
+    if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
+      Light.FdCutOffAngle.Send(Value);
+  end else
+  if CurrentItem = ItemsIndex + 2 then
+  begin
+    Value := Light.FdBeamWidth.Value;
+    if MessageInputQuery(Window, 'Change beamWidth', Value, taLeft) then
+      Light.FdBeamWidth.Send(Value);
+  end;
+end;
+
+{ TDirectionalLightMenu ------------------------------------------------------- }
+
+constructor TDirectionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode);
+begin
+  inherited Create(AOwner, ALight);
+  Light := ALight;
+
+  ItemsIndex := Items.Count;
+  Items.Add('Direction ...');
+end;
+
+procedure TDirectionalLightMenu.Click;
+var
+  Vector: TVector3Single;
+begin
+  inherited;
+  if CurrentItem = ItemsIndex then
+  begin
+    Vector := Light.FdDirection.Value;
+    if MessageInputQueryDirection(Window, 'Change direction' +nl+
+      '(Input "c" to use current camera''s direction)',
+      Vector, taLeft) then
+      Light.FdDirection.Send(Vector);
   end;
 end;
 
@@ -483,10 +581,13 @@ procedure THeadLightMenu.Click;
         Vector3, taLeft) then
         TAbstractPositionalLightNode(Headlight).FdAttenuation.Value := Vector3;
     end else
-      MessageOk(Window, 'Light is not positional, no attenuation');
+      MessageOk(Window, 'HeadLight is not positional, it is not possible to set attenuation.' +NL+ NL+
+        'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.',
+        taLeft);
   end;
 
 begin
+  inherited;
   case CurrentItem of
     0..4: Exit;
     5: ChangeAttenuation;
@@ -497,6 +598,7 @@ end;
 
 procedure THeadLightMenu.AccessoryValueChanged;
 begin
+  inherited;
   case CurrentItem of
     0:    Headlight.FdAmbientIntensity.Value := AmbientIntensitySlider.Value;
     1..3: Headlight.FdColor.Value[CurrentItem-1] := ColorSlider[CurrentItem-1].Value;
