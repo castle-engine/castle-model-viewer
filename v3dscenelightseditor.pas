@@ -224,6 +224,14 @@ begin
   end;
 end;
 
+const
+  { Although X3D allows attenuation[0] (constant) to be < 1, we don't allow it.
+    That's because when rendering with fixed-function, it's not honored
+    correctly: X3D spec says to do "1 / max(c1 + c2 * dL + c3 * dL^2, 1)",
+    but fixed-function OpenGL doesn't do it (our shader rendering
+    does it Ok). }
+  AttenuationRange: TBox3D = (Data: ((1, 0, 0), (2, 2, 2)));
+
 { TMenuVector3Sliders -------------------------------------------------------- }
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
@@ -543,7 +551,8 @@ begin
   end;
   PositionSlider := TMenuVector3Sliders.Create(Self, Box, Light.FdLocation.Value);
 
-  AttenuationSlider := TMenuVector3Sliders.Create(Self, 0, 2, Light.FdAttenuation.Value);
+  AttenuationSlider := TMenuVector3Sliders.Create(Self,
+    AttenuationRange, Light.FdAttenuation.Value);
 
   PositionSlider.AddToMenu(Items, 'Position', 'X', 'Y', 'Z');
   AttenuationSlider.AddToMenu(Items, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
@@ -690,7 +699,7 @@ begin
         'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.',
         taLeft); }
 
-    AttenuationSlider := TMenuVector3Sliders.Create(Self, 0, 2,
+    AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
       TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);
     AttenuationSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
   end;
