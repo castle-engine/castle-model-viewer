@@ -457,8 +457,7 @@ begin
 
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.FdColor.Value);
   IntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdIntensity.Value);
-  AmbientIntensitySlider := TMenuFloatSlider.Create(
-    -1, 1, Light.FdAmbientIntensity.Value);
+  AmbientIntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdAmbientIntensity.Value);
   OnArgument := TMenuBooleanArgument.Create(Light.FdOn.Value);
   ShadowsArgument := TMenuBooleanArgument.Create(Light.FdShadows.Value);
   ShadowVolumesArgument := TMenuBooleanArgument.Create(Light.FdKambiShadows.Value);
