@@ -701,7 +701,7 @@ begin
 
     AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
       TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);
-    AttenuationSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
+    AttenuationSlider.AddToMenu(Items, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
   end;
 
   BackIndex := Items.Count;
