@@ -86,7 +86,8 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
-  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion;
+  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
+  V3DSceneLightsEditor;
 
 var
   Window: TCastleWindowCustom;
@@ -3081,6 +3082,9 @@ begin
 
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
+  725: if LightsEditorIsOpen then
+         LightsEditorClose else
+         LightsEditorOpen(SceneManager, View3DScene.Window);
   730: MergeCloseVertexes;
 
   740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
@@ -3405,6 +3409,10 @@ begin
      MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
      MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
    M.Append(MenuEditMaterial);
+   M.Append(TMenuSeparator.Create);
+   MenuLightsEditor := TMenuItemChecked.Create('Lights Editor', 725,
+     LightsEditorIsOpen, false);
+   M.Append(MenuLightsEditor);
    M.Append(TMenuSeparator.Create);
    M.Append(TMenuItem.Create(
      'Remove Normals Info from Scene (forces normals to be calculated)',
