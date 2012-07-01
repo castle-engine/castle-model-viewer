@@ -123,18 +123,24 @@ type
   strict private
     Light: TSpotLightNode_1;
     ItemsIndex: Integer;
+    CutOffAngleSlider: TMenuFloatSlider;
+    DropOffRateSlider: TMenuFloatSlider;
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode_1); reintroduce;
     procedure Click; override;
+    procedure AccessoryValueChanged; override;
   end;
 
   TSpotLightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode;
     ItemsIndex: Integer;
+    CutOffAngleSlider: TMenuFloatSlider;
+    BeamWidthSlider: TMenuFloatSlider;
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
     procedure Click; override;
+    procedure AccessoryValueChanged; override;
   end;
 
   TDirectionalLightMenu = class(TLightMenu)
@@ -359,7 +365,10 @@ begin
   FreeAndNil(Lights);
 
   if Headlight <> nil then
+  begin
     Headlight.DestructionNotifications.Remove(@DestructionNotification);
+    Headlight := nil;
+  end;
 
   FreeAndNil(LightMenu);
   FreeAndNil(HeadLightMenu);
@@ -601,16 +610,18 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
+  CutOffAngleSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdCutOffAngle.Value);
+  DropOffRateSlider := TMenuFloatSlider.Create(0, 1, Light.FdDropOffRate.Value);
+
   ItemsIndex := Items.Count;
   Items.Add('Direction ...');
-  Items.Add('Spot Cut Off Angle ...');
-  Items.Add('Spot Drop Off Rate ...');
+  Items.AddObject('Cut Off Angle', CutOffAngleSlider);
+  Items.AddObject('Drop Off Rate', DropOffRateSlider);
 end;
 
 procedure TSpot1LightMenu.Click;
 var
   Vector: TVector3Single;
-  Value: Single;
 begin
   inherited;
   if CurrentItem = ItemsIndex then
@@ -620,19 +631,16 @@ begin
       '(Input "C" to use current camera''s direction)',
       Vector, taLeft) then
       Light.FdDirection.Send(Vector);
-  end else
-  if CurrentItem = ItemsIndex + 1 then
-  begin
-    Value := Light.FdCutOffAngle.Value;
-    if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
-      Light.FdCutOffAngle.Send(Value);
-  end else
-  if CurrentItem = ItemsIndex + 2 then
-  begin
-    Value := Light.FdDropOffRate.Value;
-    if MessageInputQuery(Window, 'Change dropOffRate', Value, taLeft) then
-      Light.FdDropOffRate.Send(Value);
   end;
+end;
+
+procedure TSpot1LightMenu.AccessoryValueChanged;
+begin
+  inherited;
+  if CurrentItem = ItemsIndex + 1 then
+    Light.FdCutOffAngle.Send(CutOffAngleSlider.Value) else
+  if CurrentItem = ItemsIndex + 2 then
+    Light.FdDropOffRate.Send(DropOffRateSlider.Value);
 end;
 
 { TSpotLightMenu ------------------------------------------------------- }
@@ -642,16 +650,18 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
+  CutOffAngleSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdCutOffAngle.Value);
+  BeamWidthSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdBeamWidth.Value);
+
   ItemsIndex := Items.Count;
   Items.Add('Direction ...');
-  Items.Add('Spot Cut Off Angle ...');
-  Items.Add('Spot Beam Width ...');
+  Items.AddObject('Cut Off Angle', CutOffAngleSlider);
+  Items.AddObject('Beam Width', BeamWidthSlider);
 end;
 
 procedure TSpotLightMenu.Click;
 var
   Vector: TVector3Single;
-  Value: Single;
 begin
   inherited;
   if CurrentItem = ItemsIndex then
@@ -661,19 +671,16 @@ begin
       '(Input "C" to use current camera''s direction)',
       Vector, taLeft) then
       Light.FdDirection.Send(Vector);
-  end else
-  if CurrentItem = ItemsIndex + 1 then
-  begin
-    Value := Light.FdCutOffAngle.Value;
-    if MessageInputQuery(Window, 'Change cutOffAngle', Value, taLeft) then
-      Light.FdCutOffAngle.Send(Value);
-  end else
-  if CurrentItem = ItemsIndex + 2 then
-  begin
-    Value := Light.FdBeamWidth.Value;
-    if MessageInputQuery(Window, 'Change beamWidth', Value, taLeft) then
-      Light.FdBeamWidth.Send(Value);
   end;
+end;
+
+procedure TSpotLightMenu.AccessoryValueChanged;
+begin
+  inherited;
+  if CurrentItem = ItemsIndex + 1 then
+    Light.FdCutOffAngle.Send(CutOffAngleSlider.Value) else
+  if CurrentItem = ItemsIndex + 2 then
+    Light.FdBeamWidth.Send(BeamWidthSlider.Value);
 end;
 
 { TDirectionalLightMenu ------------------------------------------------------- }
