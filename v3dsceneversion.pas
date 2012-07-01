@@ -4,5 +4,6 @@ interface
 const
   Version = '3.11.0';
   View3dsceneURL = 'http://castle-engine.sourceforge.net/view3dscene.php';
+  DonateURL = 'http://castle-engine.sourceforge.net/donate.php';
 implementation
 end.
