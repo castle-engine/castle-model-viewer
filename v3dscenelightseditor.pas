@@ -87,6 +87,9 @@ type
     procedure Click; override;
     destructor Destroy; override;
     procedure AccessoryValueChanged; override;
+    { Do a partial destruction: remove everything that can have connections
+      to existing scene. }
+    procedure ClearLights;
   end;
 
   TLightMenu = class(TV3DOnScreenMenu)
@@ -197,7 +200,15 @@ begin
   if SceneManager = nil then Exit;
 
   SetCurrentMenu(nil);
-  FreeAndNil(LightsMenu);
+
+  { We don't immediately free here LightsMenu instance, because this is called
+    also by virtual Click (when user chooses "Close Lights Editor" item),
+    and we cannot free ourselves from our own method, as TCastleOnScreenMenu.MouseDown
+    doesn't expect it. So instead leave LightsMenu instance existing,
+    but make sure (for speed) that it's not connected by DestructionNotifications
+    to our scene. }
+  if LightsMenu <> nil then
+    LightsMenu.ClearLights;
 
   SceneManager := nil;
   Window := nil;
@@ -331,6 +342,12 @@ begin
 end;
 
 destructor TLightsMenu.Destroy;
+begin
+  ClearLights;
+  inherited;
+end;
+
+procedure TLightsMenu.ClearLights;
 var
   I: Integer;
 begin
@@ -339,11 +356,13 @@ begin
     for I := 0 to Lights.Count - 1 do
       Lights[I].DestructionNotifications.Remove(@DestructionNotification);
   end;
+  FreeAndNil(Lights);
+
   if Headlight <> nil then
     Headlight.DestructionNotifications.Remove(@DestructionNotification);
 
-  FreeAndNil(Lights);
-  inherited;
+  FreeAndNil(LightMenu);
+  FreeAndNil(HeadLightMenu);
 end;
 
 procedure TLightsMenu.DestructionNotification(Node: TX3DNode);
