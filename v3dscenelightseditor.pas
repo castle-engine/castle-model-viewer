@@ -32,8 +32,8 @@ var
 
 function LightsEditorIsOpen: boolean;
 
-procedure LightsEditorOpen(ASceneManager: TCastleSceneManager;
-  AWindow: TCastleWindowCustom);
+procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
+  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Integer);
 procedure LightsEditorClose;
 
 implementation
@@ -164,6 +164,8 @@ var
     Both @nil when we're closed, never @nil when we're open. }
   SceneManager: TCastleSceneManager;
   Window: TCastleWindowCustom;
+  WindowMarginTop: Integer;
+
   LightsMenu: TLightsMenu;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
@@ -176,12 +178,13 @@ begin
   Result := SceneManager <> nil;
 end;
 
-procedure LightsEditorOpen(ASceneManager: TCastleSceneManager;
-  AWindow: TCastleWindowCustom);
+procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
+  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Integer);
 begin
   if SceneManager = ASceneManager then Exit;
   SceneManager := ASceneManager;
   Window := AWindow;
+  WindowMarginTop := AWindowMarginTop;
 
   FreeAndNil(LightsMenu);
   LightsMenu := TLightsMenu.Create(nil);
@@ -290,6 +293,12 @@ begin
   inherited;
   BackgroundOpacityFocused := 0.3;
   BackgroundOpacityNotFocused := 0.2;
+  PositionRelativeMenuX := prLowerBorder;
+  PositionRelativeMenuY := prHigherBorder;
+  PositionRelativeScreenX := prLowerBorder;
+  PositionRelativeScreenY := prHigherBorder;
+  Position[0] := 20;
+  Position[1] := - WindowMarginTop - 20;
 end;
 
 { TLightsMenu ------------------------------------------------------- }

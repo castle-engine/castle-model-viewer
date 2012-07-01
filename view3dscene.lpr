@@ -3084,7 +3084,7 @@ begin
   720: ChangeMaterialSpecular;
   725: if LightsEditorIsOpen then
          LightsEditorClose else
-         LightsEditorOpen(SceneManager, View3DScene.Window);
+         LightsEditorOpen(SceneManager, View3DScene.Window, ToolbarPanel.Height);
   730: MergeCloseVertexes;
 
   740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
