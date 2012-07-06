@@ -99,7 +99,6 @@ end;
 class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
 begin
   (Node as TElevationGridNode).FdNormal.Value := nil;
-  (Node as TElevationGridNode).FdNormalIndex.Items.Clear;
 end;
 
 class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
