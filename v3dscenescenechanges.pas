@@ -90,11 +90,16 @@ end;
 class procedure TSceneChangesDo.NoNormal_IFS(node: TX3DNode);
 begin
   (Node as TIndexedFaceSetNode).FdNormal.Value := nil;
+  { Note that normalIndex is actually harmless (ignored) when normal = nil
+    for VRML >= 2 nodes.
+    But it serves no purpose, so clear it, to make saved file smaller. }
+  (Node as TIndexedFaceSetNode).FdNormalIndex.Items.Clear;
 end;
 
 class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
 begin
   (Node as TElevationGridNode).FdNormal.Value := nil;
+  (Node as TElevationGridNode).FdNormalIndex.Items.Clear;
 end;
 
 class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
