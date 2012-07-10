@@ -33,6 +33,8 @@
   the view3dscene source code isn't the best place to study.
   Look instead at simple examples in engine sources, like
   ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
+  For an example 3D viewer using Lazarus forms, see
+  ../castle_game_engine/examples/lazarus/model_3d_viewer/
 
   Basic components of this program:
   - use Load3DSequence to load any format to VRML/X3D scene.
