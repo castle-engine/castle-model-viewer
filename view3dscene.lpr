@@ -175,6 +175,8 @@ var
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
 
+  ControlsOnScreenshot: boolean = false;
+
 { Helper class ---------------------------------------------------------------
 
   Some callbacks here must be methods (procedure of class),
@@ -1500,13 +1502,11 @@ end;
 { make screen shots ---------------------------------------------------------- }
 
 function DrawAndSaveScreen(ImageClass: TCastleImageClass; ReadBuffer: TGLenum): TCastleImage;
-{const
-  ControlsOnScreenshot = false;}
 begin
-{  if ControlsOnScreenshot then
+  if ControlsOnScreenshot then
   begin
     Window.EventDraw;
-  end else}
+  end else
   begin
     ViewportsDraw;
     SceneManager.Draw;
@@ -1590,21 +1590,12 @@ const
 procedure UpdateStatusToolbarVisible; forward;
 
 procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
-var
-  ScreenShotName: string;
-  Image: TCastleImage;
-  ReadBuffer: TGLenum;
-  Fbo: TGLRenderToTexture;
-  ImageClass: TCastleImageClass;
-begin
-  if SceneFileName <> '' then
-    ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
-    ScreenShotName := 'view3dscene_screen_%d.png';
-  ScreenShotName := FileNameAutoInc(ScreenShotName);
-  { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
-    Expanded, to allow Transparency: boolean parameter,
-    that it turn causes FBO rendering (as we need alpha channel in color buffer). }
-  if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+
+  function CaptureScreen: TCastleImage;
+  var
+    ReadBuffer: TGLenum;
+    Fbo: TGLRenderToTexture;
+    ImageClass: TCastleImageClass;
   begin
     Assert(Window.DoubleBuffer); { view3dscene always has double buffer }
 
@@ -1631,14 +1622,7 @@ begin
 
     try
       Window.EventBeforeDraw;
-      Image := DrawAndSaveScreen(ImageClass, ReadBuffer);
-      try
-        try
-          SaveImage(Image, ScreenShotName);
-        except
-          on E: Exception do Window.MessageOK('Unable to save screen: ' + E.Message, mtError);
-        end;
-      finally FreeAndNil(Image) end;
+      Result := DrawAndSaveScreen(ImageClass, ReadBuffer);
     finally
       if Transparency then
       begin
@@ -1648,6 +1632,34 @@ begin
       end;
     end;
   end;
+
+var
+  ScreenShotName: string;
+  Image: TCastleImage;
+begin
+  { Note that we capture screen *first*, and ask about where to save it later.
+    That's because in some situations we capture directly from the back buffer,
+    without FBO, and this means that our main window cannot be covered by
+    another window. Capturing right after Window.FileDialog at least under Linux
+    may mean that OpenGL context underneath the dialog is not really updated
+    (so we capture controls (toolbar, lights editor etc.) underneath the dialog). }
+
+  Image := CaptureScreen;
+  try
+    if SceneFileName <> '' then
+      ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
+      ScreenShotName := 'view3dscene_screen_%d.png';
+    ScreenShotName := FileNameAutoInc(ScreenShotName);
+    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
+      Expanded, to allow Transparency: boolean parameter,
+      that it turn causes FBO rendering (as we need alpha channel in color buffer). }
+    if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+    try
+      SaveImage(Image, ScreenShotName);
+    except
+      on E: Exception do Window.MessageOK('Unable to save screen: ' + E.Message, mtError);
+    end;
+  finally FreeAndNil(Image) end;
 end;
 
 procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
@@ -3079,6 +3091,7 @@ begin
   550: ScreenShotToCubeMap;
   555: ScreenShotToCubeMapDDS;
   560: ScreenShotDepthToImage;
+  570: ControlsOnScreenshot := not ControlsOnScreenshot;
 
   600..649: AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
 
@@ -3452,6 +3465,9 @@ begin
     M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
     M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
     M.Append(TMenuItem.Create('Screenshot Depth to Grayscale Image ...', 560));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('Show Controls on Screenshots', 570,
+      ControlsOnScreenshot, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
     Result.Append(M);
