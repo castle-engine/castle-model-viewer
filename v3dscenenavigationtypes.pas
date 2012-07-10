@@ -35,7 +35,9 @@ procedure InitCameras(SceneManager: TCastleSceneManager);
 
 const
   CameraNames: array [TCameraNavigationType] of string =
-  ('Examine', 'Architecture', 'Walk', 'Fly', 'None');
+  ('Examine', 'Architecture (Work in Progress)', 'Walk', 'Fly', 'None');
+  StableNavigationType = [Low(TCameraNavigationType)..High(TCameraNavigationType)]
+    -[ntArchitecture];
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
@@ -91,7 +93,8 @@ begin
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
   for NT := Low(NT) to High(NT) do
-    { check with <> nil, since for ntNone we don't show button now }
+    { check <> nil, since for ntNone and not StableNavigationType
+      we don't show buttons }
     if CameraButtons[NT] <> nil then
       CameraButtons[NT].Pressed := NT = Camera.NavigationType;
 end;

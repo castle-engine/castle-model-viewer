@@ -2964,7 +2964,12 @@ begin
   111: begin
          if Camera.NavigationType = High(TCameraNavigationType) then
            Camera.NavigationType := Low(TCameraNavigationType) else
+         begin
            Camera.NavigationType := Succ(Camera.NavigationType);
+           { skip over navigation types that are not stable }
+           if not (Camera.NavigationType in StableNavigationType) then
+             Camera.NavigationType := Succ(Camera.NavigationType);
+         end;
          ViewportsSetNavigationType(Camera.NavigationType);
          UpdateCameraUI;
        end;
@@ -3581,9 +3586,10 @@ begin
     WarningsButton.Exists := false; { at least initialize Exists }
 
   for NT := Low(NT) to High(NT) do
-    { Don't show button for ntNone navigation type, it's confusing for new user.
+    { Don't show button for ntNone or not StableNavigationType.
+      For ntNone it's confusing for new user.
       The "none" navigation type is visible in menu. }
-    if NT <> ntNone then
+    if (NT <> ntNone) and (NT in StableNavigationType) then
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       CameraButtons[NT].Caption := CameraNames[NT];
@@ -3633,7 +3639,8 @@ begin
     NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     for NT := Low(NT) to High(NT) do
-      { check with <> nil, since for ntNone we don't show button now }
+      { check with <> nil, since for ntNone or not StableNavigationType
+        we don't show button }
       if CameraButtons[NT] <> nil then
       begin
         CameraButtons[NT].Left := NextLeft;
