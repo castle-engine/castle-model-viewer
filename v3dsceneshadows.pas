@@ -19,27 +19,8 @@ type
   end;
 
 var
-  MenuShadowVolumes: TMenu;
-
-const
-  DefaultShadowsPossibleWanted = true;
-
-var
-  { Whether user wants to try next time to initialize
-    ShadowsPossibleCurrently = true.
-    This can change during runtime, but will be applied only on restart. }
-  ShadowsPossibleWanted: boolean = DefaultShadowsPossibleWanted;
-
-  { Whether we managed to initialize OpenGL context with stencil buffer
-    (and set projection to infinity and initialized ShadowVolumeRenderer instance).
-    This can be true only if ShadowsPossibleWanted was initially true. }
-  ShadowsPossibleCurrently: boolean = false;
-
   ShadowsOn: boolean = true;
   DrawShadowVolumes: boolean = false;
-
-procedure ShadowsGLOpen;
-procedure ShadowsGLClose;
 
 procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 
@@ -47,18 +28,8 @@ implementation
 
 uses SysUtils, CastleConfig, GL, CastleGLUtils, V3DSceneFillMode;
 
-procedure ShadowsGLOpen;
-begin
-  MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
-end;
-
-procedure ShadowsGLClose;
-begin
-end;
-
 procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 begin
-  Viewport.ShadowVolumesPossible := ShadowsPossibleCurrently;
   Viewport.ShadowVolumes := ShadowsOn;
   Viewport.ShadowVolumesDraw := DrawShadowVolumes;
 end;
@@ -105,25 +76,4 @@ begin
   end;
 end;
 
-type
-  TConfigOptions = class
-    class procedure LoadFromConfig(const Config: TCastleConfig);
-    class procedure SaveToConfig(const Config: TCastleConfig);
-  end;
-
-class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
-begin
-  ShadowsPossibleWanted := Config.GetValue(
-    'video_options/shadows_possible_wanted', DefaultShadowsPossibleWanted);
-end;
-
-class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
-begin
-  Config.SetDeleteValue('video_options/shadows_possible_wanted',
-    ShadowsPossibleWanted, DefaultShadowsPossibleWanted);
-end;
-
-initialization
-  Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
-  Config.OnSave.Add(@TConfigOptions(nil).SaveToConfig);
 end.

@@ -629,15 +629,12 @@ begin
 
  BGColorChanged;
 
- ShadowsGLOpen;
-
  AntiAliasingGLOpen;
  AntiAliasingEnable;
 end;
 
 procedure Close(Window: TCastleWindowBase);
 begin
-  ShadowsGLClose;
   FreeAndNil(StatusFont);
 
   Progress.UserInterface := ProgressNullInterface;
@@ -3109,7 +3106,6 @@ begin
          LightsEditorOpen(SceneManager, View3DScene.Window, ToolbarPanel.Height);
   730: MergeCloseVertexes;
 
-  740: ShadowsPossibleWanted := not ShadowsPossibleWanted;
   750: ShadowsOn := not ShadowsOn;
   760: DrawShadowVolumes := not DrawShadowVolumes;
 
@@ -3236,8 +3232,6 @@ begin
       M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
         MenuAppendAntiAliasing(M3, 600);
         M2.Append(M3);
-      M2.Append(TMenuItemChecked.Create('_Shadow Volumes Possible (Restart view3dscene to Apply)',
-        740, ShadowsPossibleWanted, true));
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItemChecked.Create('Show Bounding Box at Start', 770,
         InitialShowBBox, true));
@@ -3291,13 +3285,12 @@ begin
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
-    MenuShadowVolumes := TMenu.Create('Shadow Volumes');
-      MenuShadowVolumes.Enabled := ShadowsPossibleCurrently;
-      MenuShadowVolumes.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
+    M2 := TMenu.Create('Shadow Volumes');
+      M2.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
         ShadowsOn, true));
-      MenuShadowVolumes.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
+      M2.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
         DrawShadowVolumes, true));
-      M.Append(MenuShadowVolumes);
+      M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
       '_Lighting Calculation',         91, CtrlL,
@@ -3707,7 +3700,6 @@ end;
 
 procedure StencilOff(Window: TCastleWindowBase; const FailureMessage: string);
 begin
-  ShadowsPossibleCurrently := false;
   Writeln(FailureMessage);
 end;
 
@@ -3999,18 +3991,7 @@ begin
         end;
 
         Window.FpsShowOnCaption := true;
-
-        if ShadowsPossibleWanted then
-        begin
-          Window.StencilBits := 8;
-          { Assignment below essentially copies
-            ShadowsPossibleWanted to ShadowsPossibleCurrently.
-            ShadowsPossibleCurrently may be eventually turned to @false
-            by OpenContext. }
-          ShadowsPossibleCurrently := true;
-        end;
-        Assert(ShadowsPossibleCurrently = ShadowsPossibleWanted);
-
+        Window.StencilBits := 8;
         Window.MultiSampling := AntiAliasingGLMultiSampling;
 
         OpenContext;
