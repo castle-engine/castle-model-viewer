@@ -2710,9 +2710,12 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     if MessageInputQuery(Window, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
       MergeDistance, taLeft, '0.01') then
     begin
-      MergedCount := Coord.Items.MergeCloseVertexes(MergeDistance);
-      if MergedCount <> 0 then
-        Coord.Changed;
+      Inc(DisableAutoDynamicGeometry);
+      try
+        MergedCount := Coord.Items.MergeCloseVertexes(MergeDistance);
+        if MergedCount <> 0 then
+          Coord.Changed;
+      finally Dec(DisableAutoDynamicGeometry) end;
       MessageOK(Window, Format('Merged %d vertexes.', [MergedCount]), taLeft);
     end;
   end;
