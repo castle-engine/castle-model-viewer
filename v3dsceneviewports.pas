@@ -141,11 +141,6 @@ begin
   begin
     OldValue := ViewportsConfig;
     ViewportsConfig := Value;
-    { After a first change of ViewportsConfig,
-      use AlwaysApplyProjection = true, otherwise restoring vc1 would
-      not restore the projection. AlwaysApplyProjection is simply safer for
-      multiple viewports. }
-    SceneManager.AlwaysApplyProjection := true;
     SceneManager.FullSize := ViewportsConfig = vc1;
     if ViewportsConfig = vc1 then
       Window.Controls.Remove(Background) else
