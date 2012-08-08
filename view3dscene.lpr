@@ -1849,6 +1849,12 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
               [VCNotOver, TCNotOver, VCOver, TCOver]);
       end;
 
+      if (SelectedShape.BlenderObjectName <> '') or
+         (SelectedShape.BlenderMeshName <> '') then
+        S += Format(nl +nl+ 'Possibly this 3D model was created by one of the Blender VRML/X3D exporters. The original Blender object is "%s" and Blender mesh is "%s".',
+          [SelectedShape.BlenderObjectName,
+           SelectedShape.BlenderMeshName]);
+
       { calculate Tex }
       Tex := SelectedItem^.State.Texture;
 
