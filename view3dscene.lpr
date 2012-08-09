@@ -1581,6 +1581,40 @@ begin
   finally FreeAndNil(ScreenshotRender) end;
 end;
 
+{ TGamePlaceholdersRemover --------------------------------------------------- }
+
+type
+  TGamePlaceholdersRemover = class
+    Count: Cardinal;
+    procedure Remove(ParentNode: TX3DNode; var Node: TX3DNode);
+  end;
+
+procedure TGamePlaceholdersRemover.Remove(
+  ParentNode: TX3DNode; var Node: TX3DNode);
+begin
+  if (Node.NodeName = 'LevelBox') or (Node.NodeName = 'ME_LevelBox') or
+     (Node.NodeName = 'WaterBox') or
+     IsPrefix('Crea', Node.NodeName) or IsPrefix('OB_Crea', Node.NodeName) or
+     IsPrefix('Item', Node.NodeName) or IsPrefix('OB_Item', Node.NodeName) or
+     IsPrefix('Waypoint', Node.NodeName) or
+     IsPrefix('Sector', Node.NodeName) or
+     { Actually below are special only on specific levels }
+     (Node.NodeName = 'LevelExitBox') or
+     IsPrefix('WerewolfAppear_', Node.NodeName) or
+     (Node.NodeName = 'GateExitBox') or
+     (Node.NodeName = 'Teleport1Box') or
+     (Node.NodeName = 'Teleport2Box') or
+     (Node.NodeName = 'SacrilegeBox') or
+     IsPrefix('SacrilegeGhost_', Node.NodeName) or
+     IsPrefix('SwordGhost_', Node.NodeName) or
+     (Node.NodeName = 'Elevator49DownBox') or
+     (Node.NodeName = 'Elev9a9bPickBox') then
+  begin
+    Node := nil;
+    Inc(Count);
+  end;
+end;
+
 { menu things ------------------------------------------------------------ }
 
 const
@@ -2268,6 +2302,29 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     end;
   end;
 
+  { Remove special "stub" nodes, for castle creatures, items etc.
+    This is purely for testing purposes (to view castle levels
+    in view3dscene), in actual game you want to remove them more intelligently
+    (actually adding creatures, items, etc. at designated places). }
+  procedure RemoveGamePlaceholders;
+  var
+    R: TGamePlaceholdersRemover;
+  begin
+    if SceneAnimation.ScenesCount <> 1 then
+    begin
+      MessageOK(Window, 'This is not possible with a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
+      Exit;
+    end;
+
+    R := TGamePlaceholdersRemover.Create;
+    try
+      SceneAnimation.BeforeNodesFree;
+      SceneAnimation.FirstScene.RootNode.EnumerateReplaceChildren(@R.Remove);
+      SceneAnimation.ChangedAll;
+      MessageOK(Window, Format('Removed %d nodes.', [R.Count]), taLeft);
+    finally FreeAndNil(R) end;
+  end;
+
   procedure PrintRayhunterCommand;
   var
     S: string;
@@ -2865,6 +2922,7 @@ begin
   33: ChangeAnimation([scNoConvexFaces], SceneAnimation);
 
   34: RemoveNodesWithMatchingName;
+  38: RemoveGamePlaceholders;
 
   42: VisualizeHumanoids;
 
@@ -3424,6 +3482,8 @@ begin
     M.Append(MenuRemoveSelectedFace);
     M.Append(TMenuItem.Create(
       'Remove VRML/X3D Nodes with Name Matching ...', 34));
+    M.Append(TMenuItem.Create(
+      'Remove Special Placeholders from "Castle Game Engine" Levels', 38));
     M.Append(TMenuSeparator.Create);
     MenuMergeCloseVertexes := TMenuItem.Create(
       'Merge Close Vertexes (of node with selected triangle) ...', 730);
