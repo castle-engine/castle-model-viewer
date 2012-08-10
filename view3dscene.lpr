@@ -75,7 +75,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
-  GLAntiAliasing, GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
+  GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
   X3DNodes, X3DLoad, CastleScene, Triangle,
@@ -89,11 +89,9 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
-  V3DSceneLightsEditor;
+  V3DSceneLightsEditor, V3DSceneWindow;
 
 var
-  Window: TCastleWindowCustom;
-
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
 
@@ -628,9 +626,6 @@ begin
  Progress.UserInterface := WindowProgressInterface;
 
  BGColorChanged;
-
- AntiAliasingGLOpen;
- AntiAliasingEnable;
 end;
 
 procedure Close(Window: TCastleWindowBase);
@@ -3164,13 +3159,13 @@ begin
   560: ScreenShotDepthToImage;
   570: ControlsOnScreenshot := not ControlsOnScreenshot;
 
-  600..649: AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
+  600..649: Window.AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
 
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
   725: if LightsEditorIsOpen then
          LightsEditorClose else
-         LightsEditorOpen(SceneManager, View3DScene.Window, ToolbarPanel.Height);
+         LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
   730: MergeCloseVertexes;
 
   750: ShadowsOn := not ShadowsOn;
@@ -3200,7 +3195,7 @@ begin
   1600..1699: SetTextureModeRGB(
     TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
-    View3DScene.Window, SceneManager);
+    V3DSceneWindow.Window, SceneManager);
   4000..4010: SceneAnimation.Attributes.Shaders :=
     TShadersRendering(MenuItem.IntData - 4000);
   else raise EInternalError.Create('not impl menu item');
@@ -3727,7 +3722,7 @@ begin
     Window.Width - WarningsButton.Width - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
 
-  ResizeViewports(View3DScene.Window, SceneManager);
+  ResizeViewports(V3DSceneWindow.Window, SceneManager);
 end;
 
 class procedure THelper.OpenButtonClick(Sender: TObject);
@@ -3761,12 +3756,11 @@ end;
   requirements and initialize worse GL context. }
 function RetryOpen(Window: TCastleWindowBase): boolean;
 begin
-  if Window.MultiSampling > 1 then
+  if Window.AntiAliasing <> aaNone then
   begin
-    Window.MultiSampling := 1;
-    AntiAliasing := aaNone;
-    if AntiAliasingMenu[AntiAliasing] <> nil then
-      AntiAliasingMenu[AntiAliasing].Checked := true;
+    Window.AntiAliasing := aaNone;
+    if AntiAliasingMenu[Window.AntiAliasing] <> nil then
+      AntiAliasingMenu[Window.AntiAliasing].Checked := true;
     Writeln('OpenGL context cannot be initialized. Multi-sampling (anti-aliasing) turned off, trying to initialize once again.');
     Result := true;
   end else
@@ -3935,10 +3929,10 @@ const
           LogShaders := true;
         end;
     13: begin
-          AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
+          Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
             Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
-          if AntiAliasingMenu[AntiAliasing] <> nil then
-            AntiAliasingMenu[AntiAliasing].Checked := true;
+          if AntiAliasingMenu[Window.AntiAliasing] <> nil then
+            AntiAliasingMenu[Window.AntiAliasing].Checked := true;
         end;
     14: begin
           ShowBBox := false;
@@ -3967,7 +3961,8 @@ begin
   SoundEngine;
 
   { load config, before SoundEngine.ParseParameters
-    (that may change Enable by --no-sound). }
+    (that may change Enable by --no-sound) and
+    after creating Window (various OnLoad / OnSave may use Window instance). }
   Config.Load;
 
   { parse parameters }
@@ -4029,7 +4024,6 @@ begin
       InitCameras(SceneManager);
       InitTextureFilters(SceneAnimation);
 
-
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
@@ -4060,7 +4054,6 @@ begin
 
         Window.FpsShowOnCaption := true;
         Window.StencilBits := 8;
-        Window.MultiSampling := AntiAliasingGLMultiSampling;
 
         Window.Open(@RetryOpen);
 

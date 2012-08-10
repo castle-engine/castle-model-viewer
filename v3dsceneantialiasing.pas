@@ -2,7 +2,7 @@ unit V3DSceneAntiAliasing;
 
 interface
 
-uses GLAntiAliasing, CastleWindow;
+uses CastleWindow;
 
 var
   AntiAliasingMenu: array [TAntiAliasing] of TMenuItemRadio;
@@ -11,7 +11,7 @@ procedure MenuAppendAntiAliasing(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
-uses CastleConfig;
+uses CastleConfig, V3DSceneWindow;
 
 procedure MenuAppendAntiAliasing(M: TMenu; BaseIntData: Cardinal);
 var
@@ -24,7 +24,7 @@ begin
   begin
     AntiAliasingMenu[AA] := TMenuItemRadio.Create(
       SQuoteMenuEntryCaption(AntiAliasingNames[AA]),
-      BaseIntData + Ord(AA), AA = AntiAliasing, true);
+      BaseIntData + Ord(AA), AA = Window.AntiAliasing, true);
     if RadioGroup = nil then
       RadioGroup := AntiAliasingMenu[AA].Group else
       AntiAliasingMenu[AA].Group := RadioGroup;
@@ -40,16 +40,15 @@ type
 
 class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
 begin
-  AntiAliasing := TAntiAliasing(Config.GetValue(
+  Window.AntiAliasing := TAntiAliasing(Config.GetValue(
     'video_options/anti_aliasing', Ord(DefaultAntiAliasing)));
 end;
 
 class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
   Config.SetDeleteValue('video_options/anti_aliasing',
-    Ord(AntiAliasing), Ord(DefaultAntiAliasing));
+    Ord(Window.AntiAliasing), Ord(DefaultAntiAliasing));
 end;
-
 
 initialization
   Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
