@@ -3757,27 +3757,26 @@ begin
   ScreenShotImage('Screenshot to Image', false);
 end;
 
-{ initializing GL context --------------------------------------------------- }
-
-procedure MultiSamplingOff(Window: TCastleWindowBase; const FailureMessage: string);
-begin
-  AntiAliasing := aaNone;
-  if AntiAliasingMenu[AntiAliasing] <> nil then
-    AntiAliasingMenu[AntiAliasing].Checked := true;
-  Writeln(FailureMessage);
-end;
-
-procedure StencilOff(Window: TCastleWindowBase; const FailureMessage: string);
-begin
-  Writeln(FailureMessage);
-end;
-
-{ Call Window.Open, when anti-aliasing (multi-sampling) and shadows (stencil
-  buffer) are possibly allowed. If EGLContextNotPossible, will try to lower
+{ Try to lower anti-aliasing (multi-sampling) and shadows (stencil buffer)
   requirements and initialize worse GL context. }
-procedure OpenContext;
+function RetryOpen(Window: TCastleWindowBase): boolean;
 begin
-  Window.OpenOptionalMultiSamplingAndStencil(@MultiSamplingOff, @StencilOff);
+  if Window.MultiSampling > 1 then
+  begin
+    Window.MultiSampling := 1;
+    AntiAliasing := aaNone;
+    if AntiAliasingMenu[AntiAliasing] <> nil then
+      AntiAliasingMenu[AntiAliasing].Checked := true;
+    Writeln('OpenGL context cannot be initialized. Multi-sampling (anti-aliasing) turned off, trying to initialize once again.');
+    Result := true;
+  end else
+  if Window.StencilBits > 0 then
+  begin
+    Window.StencilBits := 0;
+    Writeln('OpenGL context cannot be initialized. Stencil buffer (shadow volumes) turned off, trying to initialize once again.');
+    Result := true;
+  end else
+    Result := false;
 end;
 
 { main --------------------------------------------------------------------- }
@@ -4063,7 +4062,7 @@ begin
         Window.StencilBits := 8;
         Window.MultiSampling := AntiAliasingGLMultiSampling;
 
-        OpenContext;
+        Window.Open(@RetryOpen);
 
         if WasParam_SceneFileName then
           LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
