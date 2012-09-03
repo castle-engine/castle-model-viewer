@@ -71,7 +71,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   CastleParameters, ProgressUnit, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
-  Images, CubeMap, DDS, Base3D, ALSoundEngine, UIControls, CastleColors, KeysMouse,
+  Images, CubeMap, DDS, Base3D, CastleSoundEngine, UIControls, CastleColors, KeysMouse,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
