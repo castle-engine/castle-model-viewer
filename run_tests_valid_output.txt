@@ -295,15 +295,18 @@
 ---- Reading ../castle/data/levels/cages/cages.wrl
 ---- Reading again ../castle/data/levels/cages/cages.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/cages/cages_final.wrl
----- Reading again ../castle/data/levels/cages/cages_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/cages/cages_final.x3dv
+---- Reading again ../castle/data/levels/cages/cages_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/cages/cages_gate_exit.wrl
 ---- Reading again ../castle/data/levels/cages/cages_gate_exit.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle/data/levels/cages/cages_processed.wrl
 ---- Reading again ../castle/data/levels/cages/cages_processed.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/cages/thunder.x3dv
+---- Reading again ../castle/data/levels/cages/thunder.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/castle_hall/castle_hall.wrl
 ---- Reading again ../castle/data/levels/castle_hall/castle_hall.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -316,9 +319,9 @@
 ---- Reading ../castle/data/levels/castle_hall/castle_hall_button_pressed.wrl
 ---- Reading again ../castle/data/levels/castle_hall/castle_hall_button_pressed.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/castle_hall/castle_hall_final.wrl
----- Reading again ../castle/data/levels/castle_hall/castle_hall_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/castle_hall/castle_hall_final.x3dv
+---- Reading again ../castle/data/levels/castle_hall/castle_hall_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/castle_hall/castle_hall_processed.wrl
 ---- Reading again ../castle/data/levels/castle_hall/castle_hall_processed.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -361,9 +364,9 @@
 ---- Reading ../castle/data/levels/doom/e1m1/e1m1_blender.wrl
 ---- Reading again ../castle/data/levels/doom/e1m1/e1m1_blender.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/doom/e1m1/e1m1_final.wrl
----- Reading again ../castle/data/levels/doom/e1m1/e1m1_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/doom/e1m1/e1m1_final.x3dv
+---- Reading again ../castle/data/levels/doom/e1m1/e1m1_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/doom/e1m1/elevator4_9.wrl
 ---- Reading again ../castle/data/levels/doom/e1m1/elevator4_9.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -400,8 +403,8 @@
 ---- Reading ../castle/data/levels/fountain/fountain.wrl
 ---- Reading again ../castle/data/levels/fountain/fountain.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle/data/levels/fountain/fountain_final.wrl
----- Reading again ../castle/data/levels/fountain/fountain_final.wrl
+---- Reading ../castle/data/levels/fountain/fountain_final.x3dv
+---- Reading again ../castle/data/levels/fountain/fountain_final.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/fountain/water_stream/fountain1.wrl.gz
 ---- Reading again ../castle/data/levels/fountain/water_stream/fountain1.wrl.gz
@@ -571,9 +574,9 @@
 ---- Reading ../castle/data/levels/gate/gate.wrl
 ---- Reading again ../castle/data/levels/gate/gate.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/gate/gate_final.wrl
----- Reading again ../castle/data/levels/gate/gate_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/gate/gate_final.x3dv
+---- Reading again ../castle/data/levels/gate/gate_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/gate/gate_processed.wrl
 ---- Reading again ../castle/data/levels/gate/gate_processed.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -586,9 +589,9 @@
 ---- Reading ../castle/data/levels/gate_background/gate.wrl
 ---- Reading again ../castle/data/levels/gate_background/gate.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/gate_background/gate_final.wrl
----- Reading again ../castle/data/levels/gate_background/gate_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/gate_background/gate_final.x3dv
+---- Reading again ../castle/data/levels/gate_background/gate_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/gate_background/gate_processed.wrl
 ---- Reading again ../castle/data/levels/gate_background/gate_processed.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -607,21 +610,21 @@
 ---- Reading ../castle/data/levels/hello_world/hello_world.wrl
 ---- Reading again ../castle/data/levels/hello_world/hello_world.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/hello_world/hello_world_final.wrl
----- Reading again ../castle/data/levels/hello_world/hello_world_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/hello_world/hello_world_final.x3dv
+---- Reading again ../castle/data/levels/hello_world/hello_world_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/hello_world_shadow/hello_world_shadow.wrl
 ---- Reading again ../castle/data/levels/hello_world_shadow/hello_world_shadow.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle/data/levels/hello_world_shadow/hello_world_shadow_final.wrl
----- Reading again ../castle/data/levels/hello_world_shadow/hello_world_shadow_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/hello_world_shadow/hello_world_shadow_final.x3dv
+---- Reading again ../castle/data/levels/hello_world_shadow/hello_world_shadow_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/tower/basic_castle.wrl
 ---- Reading again ../castle/data/levels/tower/basic_castle.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/levels/tower/basic_castle_final.wrl
----- Reading again ../castle/data/levels/tower/basic_castle_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/levels/tower/basic_castle_final.x3dv
+---- Reading again ../castle/data/levels/tower/basic_castle_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/levels/tower/elevator.wrl
 ---- Reading again ../castle/data/levels/tower/elevator.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -670,23 +673,26 @@
 ---- Reading ../castle_game_engine/examples/3d_rendering_processing/tools/kanim_to_interpolators_suffix.wrl
 tovrmlx3d: Exception EX3DLexerError : 
 VRML/X3D lexical error at position 21: VRML signature error : unrecognized signature
----- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base.wrl
----- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base_b.wrl
----- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base_b.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/base_b_proc.wrl
----- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/base_b_proc.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/rat.x3d
 ---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/rat.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/tnt.wrl
 ---- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/tnt.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/tree.wrl
----- Reading again ../castle_game_engine/examples/3d_sound_game/data/3d/tree.wrl
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/base.x3dv
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/base.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/base_b.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/base_b.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/base_b_proc.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/base_b_proc.wrl
+---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/thunder.x3dv
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/thunder.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
+---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
 ---- Reading again ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
@@ -1582,6 +1588,9 @@ tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/prototypes/proto_events_test_3.x3dv
 ---- Reading again ../demo_models/prototypes/proto_events_test_3.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/prototypes/proto_inline.x3dv
+---- Reading again ../demo_models/prototypes/proto_inline.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/prototypes/proto_named.wrl
 ---- Reading again ../demo_models/prototypes/proto_named.wrl
