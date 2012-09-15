@@ -576,7 +576,7 @@ begin
     Box doesn't depend on Light.FdLocation, to not change range each time
     --- but this causes troubles, as Light.FdLocation may not fit within range,
     which is uncomfortable (works Ok, but not nice for user). }
-  Box := SceneManager.Items.BoundingBox + SceneManager.CameraBox;
+  Box := SceneManager.Items.BoundingBox;
   if Box.IsEmpty then
     Box := Box3D(Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
                  Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
