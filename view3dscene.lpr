@@ -822,10 +822,10 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure MouseDown(Window: TCastleWindowBase; Button: TMouseButton);
+procedure Press(Window: TCastleWindowBase; const Event: TInputPressRelease);
 begin
   { Support selecting item by ctrl + right button click. }
-  if (Button = mbRight) and (mkCtrl in Window.Pressed.Modifiers) then
+  if Event.IsMouseButton(mbRight) and (mkCtrl in Window.Pressed.Modifiers) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
@@ -4035,7 +4035,7 @@ begin
         Window.OnOpen := @Open;
         Window.OnClose := @Close;
         Window.OnResize := @Resize;
-        Window.OnMouseDown := @MouseDown;
+        Window.OnPress := @Press;
 
         if MakingScreenShot then
         begin
