@@ -1827,6 +1827,8 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     SelectedShape: TShape;
     SelectedGeometry: TAbstractGeometryNode;
     Tex: TAbstractTextureNode;
+    ModelerName: string;
+    ModelerNode: TX3DNode;
   begin
     if SelectedItem = nil then
     begin
@@ -1878,11 +1880,10 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
               [VCNotOver, TCNotOver, VCOver, TCOver]);
       end;
 
-      if (SelectedShape.BlenderObjectName <> '') or
-         (SelectedShape.BlenderMeshName <> '') then
-        S += Format(nl +nl+ 'Possibly this 3D model was created by one of the Blender VRML/X3D exporters. The original Blender object is "%s" and Blender mesh is "%s".',
-          [SelectedShape.BlenderObjectName,
-           SelectedShape.BlenderMeshName]);
+      ModelerName := BlenderShapeName(SelectedShape, ModelerNode);
+      if ModelerName <> '' then
+        S += Format(nl +nl+ 'Possibly this 3D model was created by the Blender exporter. The Blender mesh name (for VRML 1.0) or object name (for X3D / VRML 2.0) is "%s".',
+            [ModelerName]);
 
       { calculate Tex }
       Tex := SelectedItem^.State.Texture;
