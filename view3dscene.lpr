@@ -81,7 +81,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   X3DNodes, X3DLoad, CastleScene, Triangle,
   CastleSceneCore, X3DNodesDetailOptions,
   X3DCameraUtils, PrecalculatedAnimation, Background,
-  GLRenderer, Shape, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
+  GLRenderer, CastleShape, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
