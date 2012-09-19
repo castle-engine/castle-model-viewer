@@ -1828,7 +1828,6 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     SelectedGeometry: TAbstractGeometryNode;
     Tex: TAbstractTextureNode;
     ModelerName: string;
-    ModelerNode: TX3DNode;
   begin
     if SelectedItem = nil then
     begin
@@ -1880,7 +1879,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
               [VCNotOver, TCNotOver, VCOver, TCOver]);
       end;
 
-      ModelerName := BlenderShapeName(SelectedShape, ModelerNode);
+      ModelerName := BlenderShapeName(SelectedShape);
       if ModelerName <> '' then
         S += Format(nl +nl+ 'Possibly this 3D model was created by the Blender exporter. The Blender mesh name (for VRML 1.0) or object name (for X3D / VRML 2.0) is "%s".',
             [ModelerName]);
