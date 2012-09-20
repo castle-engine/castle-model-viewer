@@ -25,7 +25,7 @@ unit V3DSceneSceneChanges;
 
 interface
 
-uses CastleSceneCore, X3DNodes, CastleUtils, PrecalculatedAnimation;
+uses X3DNodes, CastleUtils, PrecalculatedAnimation;
 
 type
   { When adding new item to TSceneChange you can also consider adding
