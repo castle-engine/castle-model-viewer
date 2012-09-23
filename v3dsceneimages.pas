@@ -7,7 +7,7 @@ unit V3DSceneImages;
 
 interface
 
-uses Images;
+uses CastleImages;
 
 var
   Warning_icon: TRGBAlphaImage;

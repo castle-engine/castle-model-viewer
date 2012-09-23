@@ -48,7 +48,7 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 
 implementation
 
-uses RayTracer, WindowModes, CastleGLUtils, Images, SysUtils, CastleUtils,
+uses RayTracer, WindowModes, CastleGLUtils, CastleImages, SysUtils, CastleUtils,
   CastleMessages, GLImages;
 
 type

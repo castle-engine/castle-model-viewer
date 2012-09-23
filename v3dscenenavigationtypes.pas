@@ -80,7 +80,7 @@ type
 
 implementation
 
-uses CastleParameters, CastleClassUtils, Images, GLImages, V3DSceneImages;
+uses CastleParameters, CastleClassUtils, CastleImages, GLImages, V3DSceneImages;
 
 var
   ImageExamine_TooltipGL: TGLImage;
