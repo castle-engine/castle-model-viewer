@@ -162,7 +162,7 @@ end;
 
 procedure TNavigationTypeButton.DrawTooltip;
 
-  procedure DoDraw(Image: TCastleImage; GLImage: TGLImage);
+  procedure DoDraw(GLImage: TGLImage);
   const
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;
@@ -173,9 +173,9 @@ procedure TNavigationTypeButton.DrawTooltip;
     Arrow: array [0..2] of TVector2Single;
   begin
     X1 := WindowBorderMargin;
-    X2 := X1 + 2 * ImageMargin + Image.Width;
+    X2 := X1 + 2 * ImageMargin + GLImage.Width;
     Y2 := Bottom - ButtonBottomMargin;
-    Y1 := Y2 - 2 * ImageMargin - Image.Height;
+    Y1 := Y2 - 2 * ImageMargin - GLImage.Height;
 
     DrawGLBorderedRectangle(X1, Y1, X2, Y2,
       Vector4Single(TooltipInsideColor, 255),
@@ -210,8 +210,8 @@ procedure TNavigationTypeButton.DrawTooltip;
 
 begin
   if NavigationType = ntExamine then
-    DoDraw(Examine_Tooltip, ImageExamine_TooltipGL) else
-    DoDraw(Walk_Fly_Tooltip, ImageWalk_Fly_TooltipGL);
+    DoDraw(ImageExamine_TooltipGL) else
+    DoDraw(ImageWalk_Fly_TooltipGL);
 end;
 
 {$else}
