@@ -83,8 +83,8 @@ implementation
 uses CastleParameters, CastleClassUtils, Images, GLImages, V3DSceneImages;
 
 var
-  ImageExamine_TooltipDL: TGLuint;
-  ImageWalk_Fly_TooltipDL: TGLuint;
+  ImageExamine_TooltipGL: TGLImage;
+  ImageWalk_Fly_TooltipGL: TGLImage;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -162,7 +162,7 @@ end;
 
 procedure TNavigationTypeButton.DrawTooltip;
 
-  procedure DoDraw(Image: TCastleImage; ImageDrawDisplayList: TGLuint);
+  procedure DoDraw(Image: TCastleImage; GLImage: TGLImage);
   const
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;
@@ -182,7 +182,7 @@ procedure TNavigationTypeButton.DrawTooltip;
       Vector4Single(TooltipBorderColor, 255));
 
     SetWindowPos(TGLint(X1 + ImageMargin), TGLint(Y1 + ImageMargin));
-    glCallList(ImageDrawDisplayList);
+    GLImage.Draw;
 
     ArrowMiddleX := Left + Width div 2;
     Arrow[0][0] := ArrowMiddleX - ArrowSize;
@@ -210,8 +210,8 @@ procedure TNavigationTypeButton.DrawTooltip;
 
 begin
   if NavigationType = ntExamine then
-    DoDraw(Examine_Tooltip, ImageExamine_TooltipDL) else
-    DoDraw(Walk_Fly_Tooltip, ImageWalk_Fly_TooltipDL);
+    DoDraw(Examine_Tooltip, ImageExamine_TooltipGL) else
+    DoDraw(Walk_Fly_Tooltip, ImageWalk_Fly_TooltipGL);
 end;
 
 {$else}
@@ -298,10 +298,10 @@ begin
     variables . }
   if NavigationType = ntExamine then
   begin
-    if ImageExamine_TooltipDL = 0 then
-      ImageExamine_TooltipDL := ImageDrawToDisplayList(Examine_Tooltip);
-    if ImageWalk_Fly_TooltipDL = 0 then
-      ImageWalk_Fly_TooltipDL := ImageDrawToDisplayList(Walk_Fly_Tooltip);
+    if ImageExamine_TooltipGL = nil then
+      ImageExamine_TooltipGL := TGLImage.Create(Examine_Tooltip);
+    if ImageWalk_Fly_TooltipGL = nil then
+      ImageWalk_Fly_TooltipGL := TGLImage.Create(Walk_Fly_Tooltip);
   end;
 end;
 
@@ -309,8 +309,8 @@ procedure TNavigationTypeButton.GLContextClose;
 begin
   if NavigationType = ntExamine then
   begin
-    glFreeDisplayList(ImageExamine_TooltipDL);
-    glFreeDisplayList(ImageWalk_Fly_TooltipDL);
+    FreeAndNil(ImageExamine_TooltipGL);
+    FreeAndNil(ImageWalk_Fly_TooltipGL);
   end;
   inherited;
 end;
