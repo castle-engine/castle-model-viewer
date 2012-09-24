@@ -67,7 +67,7 @@ program view3dscene;
 {$endif MSWINDOWS}
 
 uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
-  BFNT_BitstreamVeraSansMono_Bold_m15_Unit,
+  BFNT_BitstreamVeraSansMono_Bold_m15_Unit, CastleTriangles,
   CastleParameters, ProgressUnit, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
