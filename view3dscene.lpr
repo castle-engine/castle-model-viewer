@@ -78,7 +78,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
-  X3DNodes, X3DLoad, CastleScene, Triangle,
+  X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DNodesDetailOptions,
   X3DCameraUtils, PrecalculatedAnimation, Background,
   GLRenderer, CastleShapes, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
