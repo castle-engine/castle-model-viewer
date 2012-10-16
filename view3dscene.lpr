@@ -138,7 +138,7 @@ var
   MenuSelectedOctreeStat: TMenuItem;
   MenuSelectedInfo: TMenuItem;
   MenuSelectedLightsInfo: TMenuItem;
-  MenuRemoveSelectedGeometry: TMenuItem;
+  MenuRemoveSelectedShape: TMenuItem;
   MenuRemoveSelectedFace: TMenuItem;
   MenuEditMaterial: TMenu;
   MenuMergeCloseVertexes: TMenuItem;
@@ -320,8 +320,8 @@ begin
     MenuSelectedOctreeStat.Enabled := SelectedItem <> nil;
   if MenuSelectedLightsInfo <> nil then
     MenuSelectedLightsInfo.Enabled := SelectedItem <> nil;
-  if MenuRemoveSelectedGeometry <> nil then
-    MenuRemoveSelectedGeometry.Enabled := SelectedItem <> nil;
+  if MenuRemoveSelectedShape <> nil then
+    MenuRemoveSelectedShape.Enabled := SelectedItem <> nil;
   if MenuRemoveSelectedFace <> nil then
     MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
   if MenuEditMaterial <> nil then
@@ -1977,7 +1977,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     ShowAndWrite(S);
   end;
 
-  procedure RemoveSelectedGeometry;
+  procedure RemoveSelectedShape;
   begin
     if SceneAnimation.ScenesCount > 1 then
     begin
@@ -1994,7 +1994,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
       ShowAndWrite('Nothing selected.');
     end else
     begin
-      Scene.RemoveShapeGeometry(TShape(SelectedItem^.Shape));
+      Scene.RemoveShape(TShape(SelectedItem^.Shape));
     end;
   end;
 
@@ -2928,7 +2928,7 @@ begin
       end;
     end;
 
-  36: RemoveSelectedGeometry;
+  36: RemoveSelectedShape;
   37: RemoveSelectedFace;
 
   51: Scene.CameraTransition(Camera,
@@ -3463,9 +3463,9 @@ begin
     M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
     Result.Append(M);
   M := TMenu.Create('_Edit');
-    MenuRemoveSelectedGeometry :=
-      TMenuItem.Create('Remove _Geometry Node (containing selected triangle)', 36);
-    M.Append(MenuRemoveSelectedGeometry);
+    MenuRemoveSelectedShape :=
+      TMenuItem.Create('Remove _Shape (containing selected triangle)', 36);
+    M.Append(MenuRemoveSelectedShape);
     MenuRemoveSelectedFace :=
       TMenuItem.Create('Remove _Face (containing selected triangle)', 37);
     M.Append(MenuRemoveSelectedFace);
