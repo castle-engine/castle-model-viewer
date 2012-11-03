@@ -2371,6 +2371,9 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Reading ../demo_models/water/castle_hall_for_water_demo.wrl
 ---- Reading again ../demo_models/water/castle_hall_for_water_demo.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../demo_models/water/caustics/Barna29.x3dv
+---- Reading again ../demo_models/water/caustics/Barna29.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/water/water_no_shaders.x3dv.gz
 ---- Reading again ../demo_models/water/water_no_shaders.x3dv.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
