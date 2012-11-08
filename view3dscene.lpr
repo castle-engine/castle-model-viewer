@@ -2507,10 +2507,10 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
         'Precalculating animation');
 
       { Otherwise, current time is huge and it doesn't work reliably
-        with division inside TCastlePrecalculatedAnimation.SceneFromTime.
+        with division inside TCastlePrecalculatedAnimation.Scene.
         Do it *before* setting MainScene, as even setting MainScene
         may cause TCastlePrecalculatedAnimation.VisibleChangeNotification, which
-        already requires TCastlePrecalculatedAnimation.SceneFromTime. }
+        already requires TCastlePrecalculatedAnimation.Scene. }
       SceneAnimation.ResetTimeAtLoad;
 
       { Closing the scene freed SceneManager.MainScene (it's set to nil
