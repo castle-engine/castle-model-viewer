@@ -73,9 +73,72 @@
 ---- Reading ../castle/data/creatures/ball_missile/ball_missile_s.wrl
 ---- Reading again ../castle/data/creatures/ball_missile/ball_missile_s.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle/data/creatures/barrel/barrel.wrl
----- Reading again ../castle/data/creatures/barrel/barrel.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle/data/creatures/barrel/die_0001.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0006.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0011.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0016.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0021.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0026.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0031.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0036.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0041.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0041.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0046.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0046.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0051.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0051.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0056.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0056.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0061.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0061.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0066.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0066.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0071.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0071.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0076.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0076.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0081.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0081.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0086.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0086.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0091.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0091.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0096.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0096.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/die_0100.x3d.gz
+---- Reading again ../castle/data/creatures/barrel/die_0100.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle/data/creatures/barrel/idle.x3d
+---- Reading again ../castle/data/creatures/barrel/idle.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle/data/creatures/ghost/ghost_attack_2.wrl
 ---- Reading again ../castle/data/creatures/ghost/ghost_attack_2.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
@@ -790,6 +853,105 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/radiance_transfer/models/towers_with_prt.wrl.gz
 ---- Reading again ../castle_game_engine/examples/radiance_transfer/models/towers_with_prt.wrl.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/base.x3d
+---- Reading again ../castle_game_engine/examples/resource_animations/data/base.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/attack_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0033.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/die_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/hurt_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0033.x3d.gz
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/shadow_fields/models/humanoid_stand.wrl
 ---- Reading again ../castle_game_engine/examples/shadow_fields/models/humanoid_stand.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1246,33 +1408,6 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/kanim/fog_2.wrl
 ---- Reading again ../demo_models/kanim/fog_2.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kanim/gus/gus-vrml97_1.wrl
----- Reading again ../demo_models/kanim/gus/gus-vrml97_1.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kanim/gus/gus-vrml97_2.wrl
----- Reading again ../demo_models/kanim/gus/gus-vrml97_2.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kanim/gus/gus-vrml97_3.wrl
----- Reading again ../demo_models/kanim/gus/gus-vrml97_3.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/kanim/gus/gus_1.wrl
----- Reading again ../demo_models/kanim/gus/gus_1.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/gus/gus_1_final.wrl
----- Reading again ../demo_models/kanim/gus/gus_1_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/gus/gus_2.wrl
----- Reading again ../demo_models/kanim/gus/gus_2.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/gus/gus_2_final.wrl
----- Reading again ../demo_models/kanim/gus/gus_2_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/gus/gus_3.wrl
----- Reading again ../demo_models/kanim/gus/gus_3.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../demo_models/kanim/gus/gus_3_final.wrl
----- Reading again ../demo_models/kanim/gus/gus_3_final.wrl
----- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
 ---- Reading ../demo_models/kanim/raptor_1.x3d
 ---- Reading again ../demo_models/kanim/raptor_1.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
