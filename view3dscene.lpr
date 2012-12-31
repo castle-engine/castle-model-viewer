@@ -1480,17 +1480,17 @@ end;
 procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
 begin
   Attributes.LineWidth := Config.GetFloat('video_options/line_width',
-    DefaultLineWidth);
+    Attributes.DefaultLineWidth);
   Attributes.PointSize := Config.GetFloat('video_options/point_size',
-    DefaultPointSize);
+    Attributes.DefaultPointSize);
 end;
 
 procedure AttributesSaveToConfig(Attributes: TRenderingAttributes);
 begin
   Config.SetDeleteFloat('video_options/line_width',
-    Attributes.LineWidth, DefaultLineWidth);
+    Attributes.LineWidth, Attributes.DefaultLineWidth);
   Config.SetDeleteFloat('video_options/point_size',
-    Attributes.PointSize, DefaultPointSize);
+    Attributes.PointSize, Attributes.DefaultPointSize);
 end;
 
 { make screen shots ---------------------------------------------------------- }
@@ -3230,8 +3230,8 @@ function CreateMainMenu: TMenu;
          ((not Source) and BlendingFactors[I].ForDestination) then
       begin
         if Source then
-          IsDefault := BlendingFactors[I].Value = DefaultBlendingSourceFactor else
-          IsDefault := BlendingFactors[I].Value = DefaultBlendingDestinationFactor;
+          IsDefault := BlendingFactors[I].Value = TSceneRenderingAttributes.DefaultBlendingSourceFactor else
+          IsDefault := BlendingFactors[I].Value = TSceneRenderingAttributes.DefaultBlendingDestinationFactor;
         Caption := SQuoteMenuEntryCaption(BlendingFactors[I].Name);
         if IsDefault then
           Caption += ' (Default)';
