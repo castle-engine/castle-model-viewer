@@ -733,7 +733,7 @@
 ---- Reading ../castle_game_engine/examples/3d_rendering_processing/models/teapot.x3dv
 ---- Reading again ../castle_game_engine/examples/3d_rendering_processing/models/teapot.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle_game_engine/examples/3d_rendering_processing/tools/kanim_to_interpolators_suffix.wrl
+---- Reading ../castle_game_engine/examples/3d_rendering_processing/tools/kanim_to_interpolators_suffix.x3dv
 tovrmlx3d: Exception EX3DLexerError : 
 VRML/X3D lexical error at position 21: VRML signature error : unrecognized signature
 ---- Reading ../castle_game_engine/examples/3d_sound_game/data/3d/rat.x3d
@@ -951,6 +951,24 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0033.x3d.gz
 ---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_kanim/walk_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/attack.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/attack.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/die.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/die.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/hurt.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/hurt.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/idle.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/idle.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/walk.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_multiple_x3d/walk.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/resource_animations/data/knight_single_x3d/knight.x3dv
+---- Reading again ../castle_game_engine/examples/resource_animations/data/knight_single_x3d/knight.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/shadow_fields/models/humanoid_stand.wrl
 ---- Reading again ../castle_game_engine/examples/shadow_fields/models/humanoid_stand.wrl
