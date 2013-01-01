@@ -68,13 +68,13 @@ program view3dscene;
 
 uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit, CastleTriangles,
-  CastleParameters, ProgressUnit, Cameras, CastleOpenDocument, CastleConfig,
+  CastleParameters, CastleProgress, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
   CastleImages, CubeMap, DDS, Base3D, CastleSoundEngine, UIControls, CastleColors, KeysMouse,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
-  CastleMessages, CastleProgress, CastleRecentFiles, GLImages,
+  CastleMessages, CastleWindowProgress, CastleRecentFiles, GLImages,
   GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
