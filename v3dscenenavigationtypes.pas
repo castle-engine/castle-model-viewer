@@ -178,8 +178,8 @@ procedure TNavigationTypeButton.DrawTooltip;
     Y1 := Y2 - 2 * ImageMargin - GLImage.Height;
 
     DrawGLBorderedRectangle(X1, Y1, X2, Y2,
-      Vector4Single(TooltipInsideColor, 255),
-      Vector4Single(TooltipBorderColor, 255));
+      Vector4Single(Theme.TooltipInsideColor, 255),
+      Vector4Single(Theme.TooltipBorderColor, 255));
 
     SetWindowPos(TGLint(X1 + ImageMargin), TGLint(Y1 + ImageMargin));
     GLImage.Draw;
@@ -192,14 +192,14 @@ procedure TNavigationTypeButton.DrawTooltip;
     Arrow[2][0] := ArrowMiddleX;
     Arrow[2][1] := Y2 + ArrowSize;
 
-    glColorv(TooltipInsideColor);
+    glColorv(Theme.TooltipInsideColor);
     glBegin(GL_TRIANGLES);
       glVertexv(Arrow[0]);
       glVertexv(Arrow[1]);
       glVertexv(Arrow[2]);
     glEnd;
 
-    glColorv(TooltipBorderColor);
+    glColorv(Theme.TooltipBorderColor);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
       glVertexv(Arrow[0]);
@@ -228,9 +228,9 @@ procedure TNavigationTypeButton.DrawTooltip;
 
       glTranslatef(Left, Bottom - StringList.Count * Font.RowHeight, 0);
       Font.PrintStringsBox(StringList, false, 0,
-        Vector4Single(TooltipInsideColor, 255),
-        Vector4Single(TooltipBorderColor, 255),
-        Vector4Single(TooltipTextColor,  255), 5);
+        Vector4Single(Theme.TooltipInsideColor, 255),
+        Vector4Single(Theme.TooltipBorderColor, 255),
+        Vector4Single(Theme.TooltipTextColor,  255), 5);
     finally FreeAndNil(StringList) end;
   end;
 
