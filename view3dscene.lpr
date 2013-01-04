@@ -67,13 +67,13 @@ program view3dscene;
 {$endif MSWINDOWS}
 
 uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
-  BFNT_BitstreamVeraSansMono_Bold_m15_Unit, CastleTriangles,
+  CastleBitmapFont_BVSansMono_Bold_m15, CastleTriangles,
   CastleParameters, CastleProgress, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, ProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CubeMap, DDS, Castle3D, CastleSoundEngine, UIControls, CastleColors, CastleKeysMouse,
   { OpenGL related units: }
-  GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
+  GL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
   CastleMessages, CastleWindowProgress, CastleRecentFiles, GLImages,
   GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML/X3D (and possibly OpenGL) related units: }
@@ -616,7 +616,7 @@ var
 
 procedure Open(Window: TCastleWindowBase);
 begin
- StatusFont := TGLBitmapFont.Create(@BFNT_BitstreamVeraSansMono_Bold_m15);
+ StatusFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
 
  { We want to be able to render any scene --- so we have to be prepared
    that fog interpolation has to be corrected for perspective. }
