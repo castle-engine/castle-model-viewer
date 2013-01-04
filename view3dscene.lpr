@@ -66,12 +66,12 @@ program view3dscene;
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
 
-uses Math, CastleUtils, SysUtils, CastleVectors, Boxes3D, Classes, CastleClassUtils,
+uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit, CastleTriangles,
   CastleParameters, CastleProgress, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
-  CastleWarnings, CastleLog, ProgressConsole, DateUtils, Frustum,
-  CastleImages, CubeMap, DDS, Base3D, CastleSoundEngine, UIControls, CastleColors, CastleKeysMouse,
+  CastleWarnings, CastleLog, ProgressConsole, DateUtils, CastleFrustum,
+  CastleImages, CubeMap, DDS, Castle3D, CastleSoundEngine, UIControls, CastleColors, CastleKeysMouse,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, OpenGLBmpFonts,
   CastleMessages, CastleWindowProgress, CastleRecentFiles, GLImages,

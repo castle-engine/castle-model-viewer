@@ -38,7 +38,7 @@ procedure LightsEditorClose;
 
 implementation
 
-uses SysUtils, CastleVectors, Classes, X3DNodes, OnScreenMenu, Boxes3D,
+uses SysUtils, CastleVectors, Classes, X3DNodes, OnScreenMenu, CastleBoxes,
   CastleMessages, CastleUtils, GL, CastleGLUtils;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
