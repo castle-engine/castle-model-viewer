@@ -74,7 +74,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleImages, CubeMap, DDS, Castle3D, CastleSoundEngine, UIControls, CastleColors, CastleKeysMouse,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
-  CastleMessages, CastleWindowProgress, CastleRecentFiles, GLImages,
+  CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, GLImages,
   GLVersionUnit, GLCubeMap, CastleControls, GLShaders,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, ShapeOctree,
@@ -100,7 +100,7 @@ var
   { Initialized in Open, finalized in Close. }
   StatusFont: TGLBitmapFont;
 
-  RecentMenu: TCastleRecentFiles;
+  RecentMenu: TWindowRecentFiles;
 
   { These are so-called "scene global variables".
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
@@ -3948,7 +3948,7 @@ begin
   Window := TCastleWindowCustom.Create(Application);
 
   { initialize RecentMenu, before Config.Load }
-  RecentMenu := TCastleRecentFiles.Create(nil);
+  RecentMenu := TWindowRecentFiles.Create(nil);
   RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
   { initialize SoundEngine, before Config.Load }
