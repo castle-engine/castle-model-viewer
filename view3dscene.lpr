@@ -66,7 +66,7 @@ program view3dscene;
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
 
-uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils,
+uses Math, CastleUtils, SysUtils, CastleVectors, Boxes3D, Classes, CastleClassUtils,
   BFNT_BitstreamVeraSansMono_Bold_m15_Unit, CastleTriangles,
   CastleParameters, CastleProgress, Cameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
@@ -81,7 +81,7 @@ uses Math, CastleUtils, SysUtils, VectorMath, Boxes3D, Classes, CastleClassUtils
   X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DNodesDetailOptions,
   X3DCameraUtils, PrecalculatedAnimation, Background,
-  GLRenderer, CastleShapes, RenderingCameraUnit, X3DShadowMaps, CastleSceneManager,
+  GLRenderer, CastleShapes, CastleRenderingCamera, X3DShadowMaps, CastleSceneManager,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,

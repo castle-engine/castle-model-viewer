@@ -26,7 +26,7 @@ unit V3DSceneBGColors;
 
 interface
 
-uses GL, GLU, VectorMath;
+uses GL, GLU, CastleVectors;
 
 const
   DefaultBGColor: TVector3Single = (0, 0, 0);

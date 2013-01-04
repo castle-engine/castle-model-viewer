@@ -30,7 +30,7 @@ unit V3DSceneTextureFilters;
 
 interface
 
-uses GL, GLU, GLExt, CastleUtils, VectorMath, X3DNodes,
+uses GL, GLU, GLExt, CastleUtils, CastleVectors, X3DNodes,
   PrecalculatedAnimation, CastleGLUtils, CastleWindow;
 
 type

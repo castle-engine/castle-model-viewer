@@ -67,7 +67,7 @@ procedure ViewportsDraw;
 
 implementation
 
-uses VectorMath, SysUtils, CastleUtils, GL, UIControls;
+uses CastleVectors, SysUtils, CastleUtils, GL, UIControls;
 
 { TBackground ---------------------------------------------------------------- }
 

@@ -27,7 +27,7 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses GL, GLU, GLExt, CastleWindow, VectorMath, X3DNodes,
+uses GL, GLU, GLExt, CastleWindow, CastleVectors, X3DNodes,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore;
 
 const
