@@ -832,6 +832,111 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/fixed_camera_game/data/locations/home/scene_final.wrl
 ---- Reading again ../castle_game_engine/examples/fixed_camera_game/data/locations/home/scene_final.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/example_level/example_level.x3d
+---- Reading again ../castle_game_engine/examples/fps_game/data/example_level/example_level.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/example_level/example_level_final.x3dv
+---- Reading again ../castle_game_engine/examples/fps_game/data/example_level/example_level_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/item_medkit/medkit.x3d
+---- Reading again ../castle_game_engine/examples/fps_game/data/item_medkit/medkit.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/die_0033.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/die_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/hurt_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0001.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0006.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0011.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0016.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0021.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0026.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0031.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0033.x3d.gz
+---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/radiance_transfer/models/chinchilla.wrl.gz
 ---- Reading again ../castle_game_engine/examples/radiance_transfer/models/chinchilla.wrl.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
