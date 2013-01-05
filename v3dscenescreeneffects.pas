@@ -26,7 +26,7 @@ unit V3DSceneScreenEffects;
 
 interface
 
-uses Classes, CastleUtils, UIControls, CastleWindow, GLShaders,
+uses Classes, CastleUtils, CastleUIControls, CastleWindow, CastleGLShaders,
   CastleSceneManager;
 
 type
@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses SysUtils, CastleGLUtils, CastleWarnings, GLRenderer;
+uses SysUtils, CastleGLUtils, CastleWarnings, CastleRenderer;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record

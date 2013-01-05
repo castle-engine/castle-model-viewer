@@ -25,7 +25,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleSceneManager, CastleWindow, Cameras;
+uses CastleSceneManager, CastleWindow, CastleCameras;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
@@ -67,7 +67,7 @@ procedure ViewportsDraw;
 
 implementation
 
-uses CastleVectors, SysUtils, CastleUtils, GL, UIControls;
+uses CastleVectors, SysUtils, CastleUtils, GL, CastleUIControls;
 
 { TBackground ---------------------------------------------------------------- }
 

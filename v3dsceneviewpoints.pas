@@ -26,7 +26,7 @@ unit V3DSceneViewpoints;
 interface
 
 uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
-  CastleSceneCore, PrecalculatedAnimation;
+  CastleSceneCore, CastlePrecalculatedAnimation;
 
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you

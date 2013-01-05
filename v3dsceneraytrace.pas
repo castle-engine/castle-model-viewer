@@ -48,8 +48,8 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 
 implementation
 
-uses RayTracer, WindowModes, CastleGLUtils, CastleImages, SysUtils, CastleUtils,
-  CastleMessages, GLImages;
+uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
+  CastleUtils, CastleMessages, CastleGLImages;
 
 type
   { callbacks data. Callbacki TCastleWindowBase moga osiagnac to Data przez

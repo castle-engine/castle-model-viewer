@@ -25,8 +25,8 @@ unit V3DSceneNavigationTypes;
 
 interface
 
-uses SysUtils, CastleUtils, CastleWindow, Cameras, CastleVectors,
-  GL, GLU, CastleGLUtils, CastleSceneManager, Classes, UIControls,
+uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
+  GL, GLU, CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
   CastleControls;
 
 { Call this once on created SceneManager.
@@ -80,7 +80,7 @@ type
 
 implementation
 
-uses CastleParameters, CastleClassUtils, CastleImages, GLImages, V3DSceneImages;
+uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages, V3DSceneImages;
 
 var
   ImageExamine_TooltipGL: TGLImage;

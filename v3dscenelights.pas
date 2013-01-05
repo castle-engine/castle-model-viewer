@@ -28,7 +28,7 @@ unit V3DSceneLights;
 
 interface
 
-uses CastleVectors, SysUtils, PrecalculatedAnimation, CastleUtils, X3DNodes;
+uses CastleVectors, SysUtils, CastlePrecalculatedAnimation, CastleUtils, X3DNodes;
 
 var
   SceneLightsCount: Cardinal;
