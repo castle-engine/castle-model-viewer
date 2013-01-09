@@ -177,7 +177,7 @@ procedure TNavigationTypeButton.DrawTooltip;
     Y2 := Bottom - ButtonBottomMargin;
     Y1 := Y2 - 2 * ImageMargin - GLImage.Height;
 
-    DrawGLBorderedRectangle(X1, Y1, X2, Y2,
+    GLRectangleWithBorder(X1, Y1, X2, Y2,
       Vector4Single(Theme.TooltipInsideColor, 255),
       Vector4Single(Theme.TooltipBorderColor, 255));
 
