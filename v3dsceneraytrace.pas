@@ -43,8 +43,7 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
-  const SceneBGColor: TVector3Single;
-  FogNode: TFogNode);
+  const SceneBGColor: TVector3Single);
 
 implementation
 
@@ -228,8 +227,7 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
-  const SceneBGColor: TVector3Single;
-  FogNode: TFogNode);
+  const SceneBGColor: TVector3Single);
 var SavedMode: TGLMode;
     CallData: TCallData;
 
@@ -301,7 +299,7 @@ begin
             begin
               RayTracer := TClassicRayTracer.Create;
               TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
-              TClassicRayTracer(RayTracer).FogNode := FogNode;
+              TClassicRayTracer(RayTracer).FogNode := Scene.FogStack.Top;
               TClassicRayTracer(RayTracer).BaseLights := BaseLights;
             end;
           rtkPathTracer:

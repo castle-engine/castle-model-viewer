@@ -270,7 +270,7 @@ begin
   if (Scene <> nil) and
      (Scene.RootNode <> nil) then
   begin
-    SceneBoundViewpoint := Scene.ViewpointStack.Top as TAbstractViewpointNode;
+    SceneBoundViewpoint := Scene.ViewpointStack.Top;
     AddViewpointGroups := TX3DNodeList.Create(false);
 
     Scene.RootNode.Traverse(TAbstractViewpointNode, @AddViewpoint);

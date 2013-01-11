@@ -862,14 +862,14 @@ end;
 function NavigationNode: TNavigationInfoNode;
 begin
   if Scene <> nil then
-    Result := Scene.NavigationInfoStack.Top as TNavigationInfoNode else
+    Result := Scene.NavigationInfoStack.Top else
     Result := nil;
 end;
 
 function ViewpointNode: TAbstractViewpointNode;
 begin
   if Scene <> nil then
-    Result := Scene.ViewpointStack.Top as TAbstractViewpointNode else
+    Result := Scene.ViewpointStack.Top else
     Result := nil;
 end;
 
@@ -892,7 +892,7 @@ class procedure THelper.BoundViewpointChanged(Sender: TObject);
 var
   V: TAbstractViewpointNode;
 begin
-  V := SceneManager.MainScene.ViewpointStack.Top as TAbstractViewpointNode;
+  V := SceneManager.MainScene.ViewpointStack.Top;
   Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
 end;
 
@@ -2712,8 +2712,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
     RaytraceToWin(Window, SceneManager.BaseLights, Scene,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
-      SceneManager.OrthoViewDimensions, BGColor,
-      Scene.FogNode);
+      SceneManager.OrthoViewDimensions, BGColor);
   end;
 
   procedure MergeCloseVertexes;
