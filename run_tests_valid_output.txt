@@ -757,15 +757,6 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
 ---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
----- Reading ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
----- Reading again ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_final.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_processed.wrl
----- Reading again ../castle_game_engine/examples/bump_mapping/data/levels/fountain/fountain_processed.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../castle_game_engine/examples/bump_mapping/normalization_cube_display.wrl
----- Reading again ../castle_game_engine/examples/bump_mapping/normalization_cube_display.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/dynamic_ambient_occlusion/models/chinchilla_02k.wrl.gz
 ---- Reading again ../castle_game_engine/examples/dynamic_ambient_occlusion/models/chinchilla_02k.wrl.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -838,8 +829,17 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/fps_game/data/example_level/example_level_final.x3dv
 ---- Reading again ../castle_game_engine/examples/fps_game/data/example_level/example_level_final.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/example_level/water.x3d
+---- Reading again ../castle_game_engine/examples/fps_game/data/example_level/water.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/fps_game/data/item_medkit/medkit.x3d
 ---- Reading again ../castle_game_engine/examples/fps_game/data/item_medkit/medkit.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/item_shooting_eye/base.x3d
+---- Reading again ../castle_game_engine/examples/fps_game/data/item_shooting_eye/base.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/fps_game/data/item_shooting_eye/ready.x3d
+---- Reading again ../castle_game_engine/examples/fps_game/data/item_shooting_eye/ready.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0001.x3d.gz
 ---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/attack_0001.x3d.gz
@@ -1236,6 +1236,12 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/bump_mapping/cloth/cloth_anim.wrl.gz
 ---- Reading again ../demo_models/bump_mapping/cloth/cloth_anim.wrl.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/bump_mapping/fountain_level/fountain_final.wrl
+---- Reading again ../demo_models/bump_mapping/fountain_level/fountain_final.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/bump_mapping/fountain_level/fountain_processed.wrl
+---- Reading again ../demo_models/bump_mapping/fountain_level/fountain_processed.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/bump_mapping/many_light_sources.x3d
 ---- Reading again ../demo_models/bump_mapping/many_light_sources.x3d
