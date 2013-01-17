@@ -3169,8 +3169,8 @@ begin
          LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
   730: MergeCloseVertexes;
 
-  750: ShadowsOn := not ShadowsOn;
-  760: DrawShadowVolumes := not DrawShadowVolumes;
+  750: ShadowVolumes := not ShadowVolumes;
+  760: ShadowVolumesDraw := not ShadowVolumesDraw;
 
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
@@ -3350,9 +3350,9 @@ begin
       M.Append(M2);
     M2 := TMenu.Create('Shadow Volumes');
       M2.Append(TMenuItemChecked.Create('Enable (Requires Light With shadowVolumesMain)', 750,
-        ShadowsOn, true));
+        ShadowVolumes, true));
       M2.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
-        DrawShadowVolumes, true));
+        ShadowVolumesDraw, true));
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
