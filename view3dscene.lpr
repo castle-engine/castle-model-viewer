@@ -1587,12 +1587,19 @@ type
 
 procedure TGamePlaceholdersRemover.Remove(
   ParentNode: TX3DNode; var Node: TX3DNode);
+
+  function IsPlaceholder(const Prefix: string): boolean;
+  begin
+    Result := IsPrefix(Prefix, Node.NodeName) or
+              IsPrefix('OB_' + Prefix, Node.NodeName);
+  end;
+
 begin
-  if (Node.NodeName = 'CasMoveLimit') or (Node.NodeName = 'ME_CasMoveLimit') or
-     (Node.NodeName = 'CasWater') or
-     IsPrefix('CasRes', Node.NodeName) or IsPrefix('OB_CasRes', Node.NodeName) or
-     IsPrefix('CasWaypoint', Node.NodeName) or
-     IsPrefix('CasSector', Node.NodeName) or
+  if IsPlaceholder('CasMoveLimit') or
+     IsPlaceholder('CasWater') or
+     IsPlaceholder('CasRes') or
+     IsPlaceholder('CasWaypoint') or
+     IsPlaceholder('CasSector') or
      { Below are special only on specific castle1 levels, see GameLevelSpecific.
        For historical reasons, they don't use 'Cas' prefix. }
      (Node.NodeName = 'LevelExitBox') or
