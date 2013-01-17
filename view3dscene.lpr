@@ -3349,7 +3349,7 @@ begin
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
     M2 := TMenu.Create('Shadow Volumes');
-      M2.Append(TMenuItemChecked.Create('Enable (Requires Light With kambiShadowsMain)', 750,
+      M2.Append(TMenuItemChecked.Create('Enable (Requires Light With shadowVolumesMain)', 750,
         ShadowsOn, true));
       M2.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
         DrawShadowVolumes, true));

@@ -497,9 +497,9 @@ begin
   AmbientIntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdAmbientIntensity.Value);
   OnArgument := TMenuBooleanArgument.Create(Light.FdOn.Value);
   ShadowsArgument := TMenuBooleanArgument.Create(Light.FdShadows.Value);
-  ShadowVolumesArgument := TMenuBooleanArgument.Create(Light.FdKambiShadows.Value);
+  ShadowVolumesArgument := TMenuBooleanArgument.Create(Light.FdShadowVolumes.Value);
   ShadowVolumesMainArgument := TMenuBooleanArgument.Create(
-    Light.FdKambiShadowsMain.Value);
+    Light.FdShadowVolumesMain.Value);
 
   ColorSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
   Items.AddObject('Intensity', IntensitySlider);
@@ -537,11 +537,11 @@ begin
        end;
     7: begin
          ShadowVolumesArgument.Value := not ShadowVolumesArgument.Value;
-         Light.FdKambiShadows.Send(ShadowVolumesArgument.Value);
+         Light.FdShadowVolumes.Send(ShadowVolumesArgument.Value);
        end;
     8: begin
          ShadowVolumesMainArgument.Value := not ShadowVolumesMainArgument.Value;
-         Light.FdKambiShadowsMain.Send(ShadowVolumesMainArgument.Value);
+         Light.FdShadowVolumesMain.Send(ShadowVolumesMainArgument.Value);
        end;
     else
     if CurrentItem = BackIndex then
