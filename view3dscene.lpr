@@ -403,7 +403,6 @@ begin
   end;
 end;
 
-function ProjectionType: TProjectionType; forward;
 function ViewpointNode: TAbstractViewpointNode; forward;
 
 { TStatusText ---------------------------------------------------------------- }
@@ -433,7 +432,6 @@ const
   TextColor         : TVector4f = (1, 1, 0, 1);
   { pixel size of spaces in status box }
   BoxPixelMargin = 5;
-  BonusVerticalSpace = 0;
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
@@ -871,16 +869,6 @@ begin
   if Scene <> nil then
     Result := Scene.ViewpointStack.Top else
     Result := nil;
-end;
-
-function ProjectionType: TProjectionType;
-var
-  Viewpoint: TAbstractViewpointNode;
-begin
-  Viewpoint := ViewpointNode;
-  if Viewpoint <> nil then
-    Result := Viewpoint.ProjectionType else
-    Result := ptPerspective;
 end;
 
 class procedure THelper.ViewpointsChanged(Scene: TCastleSceneCore);
