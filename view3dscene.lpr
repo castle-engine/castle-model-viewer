@@ -3589,10 +3589,10 @@ begin
   ToolbarPanel := TCastlePanel.Create(Application);
   ToolbarPanel.Opacity := 0.8;
   ToolbarPanel.VerticalSeparators.Count := 2;
-  Window.Controls.Insert(0, ToolbarPanel);
+  Window.Controls.InsertFront(ToolbarPanel);
 
   StatusText := TStatusText.Create(Application);
-  Window.Controls.Insert(0, StatusText);
+  Window.Controls.InsertFront(StatusText);
 
   OpenButton := TCastleButton.Create(Application);
   OpenButton.Caption := 'Open';
@@ -3600,7 +3600,7 @@ begin
   OpenButton.Image := V3DSceneImages.Open;
   OpenButton.ImageAlphaTest := true;
   OpenButton.MinImageHeight := MinImageHeight;
-  Window.Controls.Insert(0, OpenButton);
+  Window.Controls.InsertFront(OpenButton);
 
   CollisionsButton := TCastleButton.Create(Application);
   CollisionsButton.Caption := 'Collisions';
@@ -3610,7 +3610,7 @@ begin
   if SceneAnimation <> nil then
     CollisionsButton.Pressed := SceneAnimation.Collides else
     CollisionsButton.Pressed := true { default value };
-  Window.Controls.Insert(0, CollisionsButton);
+  Window.Controls.InsertFront(CollisionsButton);
 
   ScreenshotButton := TCastleButton.Create(Application);
   ScreenshotButton.Caption := 'Screenshot';
@@ -3618,14 +3618,14 @@ begin
   ScreenshotButton.Image := V3DSceneImages.Screenshot;
   ScreenshotButton.ImageAlphaTest := true;
   ScreenshotButton.MinImageHeight := MinImageHeight;
-  Window.Controls.Insert(0, ScreenShotButton);
+  Window.Controls.InsertFront(ScreenShotButton);
 
   WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
   WarningsButton.MinImageHeight := MinImageHeight;
-  Window.Controls.Insert(0, WarningsButton);
+  Window.Controls.InsertFront(WarningsButton);
 
   if SceneWarnings <> nil then
     UpdateWarningsButton else
@@ -3642,7 +3642,7 @@ begin
       CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
-      Window.Controls.Insert(0, CameraButtons[NT]);
+      Window.Controls.InsertFront(CameraButtons[NT]);
     end;
 
   CameraButtons[ntExamine].Image := V3DSceneImages.Examine;
