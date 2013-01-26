@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="7"/>
+    <Version Value="9"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
@@ -10,14 +10,16 @@
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
-      <ProjectVersion Value=""/>
       <Language Value=""/>
       <CharSet Value=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -42,11 +44,14 @@
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="55" Y="3136"/>
-        <TopLine Value="3129"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
+        <WindowIndex Value="1"/>
+        <TopLine Value="480"/>
+        <CursorPos X="64" Y="494"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="welcome_scene.inc"/>
@@ -87,8 +92,8 @@
         <Filename Value="texturefilters.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TextureFilters"/>
-        <CursorPos X="5" Y="29"/>
         <TopLine Value="15"/>
+        <CursorPos X="5" Y="29"/>
         <UsageCount Value="26"/>
       </Unit8>
       <Unit9>
@@ -106,24 +111,20 @@
         <IsPartOfProject Value="True"/>
         <UsageCount Value="26"/>
       </Unit11>
-      <Unit12>
-        <Filename Value="v3dscenelights.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="V3DSceneLights"/>
-        <CursorPos X="38" Y="114"/>
-        <TopLine Value="96"/>
-        <UsageCount Value="26"/>
-      </Unit12>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="view3dscene.lpr"/>
         <Caret Line="3173" Column="26" TopLine="3165"/>
       </Position1>
+      <Position2>
+        <Filename Value="view3dscene.lpr"/>
+        <Caret Line="1934" Column="55" TopLine="1897"/>
+      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="11"/>
     <SearchPaths>
       <IncludeFiles Value="../castle_game_engine/src/base"/>
     </SearchPaths>
@@ -131,7 +132,6 @@
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
         <CStyleMacros Value="True"/>
-        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -145,12 +145,6 @@
         <OptimizationLevel Value="0"/>
       </Optimizations>
     </CodeGeneration>
-    <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="True"/>
-        <UseHeaptrc Value="True"/>
-      </Debugging>
-    </Linking>
     <Other>
       <Verbosity>
         <ShowHints Value="False"/>
@@ -162,11 +156,14 @@
   <Debugging>
     <BreakPoints Count="1">
       <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsGlobal"/>
+        <WatchKind Value="wpkWrite"/>
         <Source Value="../castle_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
         <Line Value="0"/>
       </Item1>
     </BreakPoints>
-    <Exceptions Count="8">
+    <Exceptions Count="9">
       <Item1>
         <Name Value="ECodetoolError"/>
       </Item1>
@@ -191,6 +188,10 @@
       <Item8>
         <Name Value="BreakMainLightForShadows"/>
       </Item8>
+      <Item9>
+        <Name Value="BreakUsesTexture"/>
+      </Item9>
     </Exceptions>
   </Debugging>
+  <EditorMacros Count="0"/>
 </CONFIG>
