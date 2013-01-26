@@ -13,8 +13,8 @@
    viewBox="0 0 1.5176403 4.056"
    id="svg2464"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
-   sodipodi:docname="6_thicker.svg"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="view3dscene.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <metadata
@@ -92,8 +92,8 @@
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
-     inkscape:window-height="705"
-     inkscape:window-width="1020"
+     inkscape:window-height="961"
+     inkscape:window-width="1280"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      guidetolerance="10.0"
@@ -104,15 +104,16 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="19.94773"
-     inkscape:cy="29.221073"
-     inkscape:window-x="4"
-     inkscape:window-y="33"
+     inkscape:zoom="11.313708"
+     inkscape:cx="18.538974"
+     inkscape:cy="6.8128768"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
      inkscape:current-layer="svg2464"
      inkscape:showpageshadow="false"
      showborder="true"
-     borderlayer="false" />
+     borderlayer="false"
+     inkscape:window-maximized="1" />
   <title
      id="title2466">coubre de bezier : Curve</title>
   <desc
@@ -178,13 +179,15 @@
        style="fill:url(#linearGradient3200);fill-opacity:1.0;stroke:#000000;stroke-width:0.04243850000000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
   <path
-     style="fill:#df421e;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.07989613;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 0.6750192,3.9418715 L 2.6365065,3.9418715 C 2.6431812,3.9418715 2.6508238,3.9342286 2.6508239,3.9275542 L 2.6508239,3.0541911 C 2.6508239,3.0475164 2.6431812,3.0398737 2.6365065,3.0398737 L 0.6750192,2.5530813 L 0.6750192,3.9418715 z"
+     style="fill:#df421e;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.07993699999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
+     d="m 0.6750192,3.9418715 1.9614873,0 0.00716,-0.8948391 -1.968646,-0.4939511 z"
      id="path3563"
-      />
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccc" />
   <path
-     style="fill:#663822;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.07989613;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 0.6750192,3.9418715 L 0.6750192,2.5530813 C 0.66834451,2.5530813 -1.1003416,3.0475164 -1.1003415,3.0541911 L -1.1003415,3.9275542 C -1.1003415,3.9342288 -1.0926988,3.9418715 -1.0860241,3.9418715 L 0.6750192,3.9418715 z"
+     style="fill:#663822;fill-opacity:1;fill-rule:evenodd;stroke:#060606;stroke-width:0.07989613000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round"
+     d="m 0.6750192,3.9418715 0,-1.3887902 -1.7753607,0.5011098 0.00716,0.8805218 1.768202,0.00716 z"
      id="rect3353"
-      />
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccccc" />
 </svg>
