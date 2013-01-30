@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2012 Michalis Kamburelis.
+  Copyright 2003-2013 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
