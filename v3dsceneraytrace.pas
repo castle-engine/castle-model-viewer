@@ -289,56 +289,59 @@ begin
     Window.EventResize; { init our projection }
 
     try
-      {mechanizm wyswietlania w RowMadeNotify wymaga single bufora,
-       dlatego przestawiamy sie tu na rysowanie zawsze w FRONT buffer}
-      glPushAttrib(GL_COLOR_BUFFER_BIT);
-      glDrawBuffer(GL_FRONT);
+      case RaytracerKind of
+        rtkClassic:
+          begin
+            RayTracer := TClassicRayTracer.Create;
+            TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
+            TClassicRayTracer(RayTracer).FogNode := Scene.FogStack.Top;
+            TClassicRayTracer(RayTracer).BaseLights := BaseLights;
+          end;
+        rtkPathTracer:
+          begin
+            RayTracer := TPathTracer.Create;
+            TPathTracer(RayTracer).MinDepth := RaytraceDepth;
+            TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
+            TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
+            TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
+            TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
+         end;
+      end;
+
+      { For ray-tracing, we create and use OctreeVisibleTriangles.
+
+        Although OctreeDynamicCollisions (usually already prepared for Scene,
+        when CollisionChecking is active) has quite excellent performance,
+        and ray-tracer can work with it.
+        But OctreeCollidableTriangles has only *collidable* geometry ---
+        while we want only *visible* geometry for ray-tracer.
+        When using Collision node, these may be two different things. }
+      Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
       try
-        case RaytracerKind of
-          rtkClassic:
-            begin
-              RayTracer := TClassicRayTracer.Create;
-              TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
-              TClassicRayTracer(RayTracer).FogNode := Scene.FogStack.Top;
-              TClassicRayTracer(RayTracer).BaseLights := BaseLights;
-            end;
-          rtkPathTracer:
-            begin
-              RayTracer := TPathTracer.Create;
-              TPathTracer(RayTracer).MinDepth := RaytraceDepth;
-              TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
-              TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
-              TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
-              TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
-           end;
-        end;
+        RayTracer.Image := CallData.Image;
+        RayTracer.Octree := Scene.OctreeVisibleTriangles;
+        RayTracer.CamPosition := CamPosition;
+        RayTracer.CamDirection := CamDir;
+        RayTracer.CamUp := CamUp;
+        RayTracer.PerspectiveView := PerspectiveView;
+        RayTracer.PerspectiveViewAngles := PerspectiveViewAngles;
+        RayTracer.OrthoViewDimensions := OrthoViewDimensions;
+        RayTracer.SceneBGColor := SceneBGColor;
+        RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
+        RayTracer.PixelsMadeNotifierData := Window;
 
-        { For ray-tracing, we create and use OctreeVisibleTriangles.
-
-          Although OctreeDynamicCollisions (usually already prepared for Scene,
-          when CollisionChecking is active) has quite excellent performance,
-          and ray-tracer can work with it.
-          But OctreeCollidableTriangles has only *collidable* geometry ---
-          while we want only *visible* geometry for ray-tracer.
-          When using Collision node, these may be two different things. }
-        Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
+        { RowMadeNotify approach requires single buffer,
+          so draw directly to the frond buffer.
+          Note: we do not do this earlier, because
+            Scene.Spatial := Scene.Spatial + [ssVisibleTriangles]
+          may draw progress bar (so it should be done with normal double buffer
+          behavior). }
+        glPushAttrib(GL_COLOR_BUFFER_BIT);
         try
-          RayTracer.Image := CallData.Image;
-          RayTracer.Octree := Scene.OctreeVisibleTriangles;
-          RayTracer.CamPosition := CamPosition;
-          RayTracer.CamDirection := CamDir;
-          RayTracer.CamUp := CamUp;
-          RayTracer.PerspectiveView := PerspectiveView;
-          RayTracer.PerspectiveViewAngles := PerspectiveViewAngles;
-          RayTracer.OrthoViewDimensions := OrthoViewDimensions;
-          RayTracer.SceneBGColor := SceneBGColor;
-          RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
-          RayTracer.PixelsMadeNotifierData := Window;
-
+          glDrawBuffer(GL_FRONT);
           RayTracer.Execute;
-        finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
-
-      finally glPopAttrib end;
+        finally glPopAttrib end;
+      finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
 
       { wyswietlaj w petli wyrenderowany obrazek, czekaj na Escape.
         Potrzebny PostRedisplay bo na skutek ROWS_SHOW_COUNT koncowe
