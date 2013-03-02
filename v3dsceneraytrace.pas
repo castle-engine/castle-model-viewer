@@ -86,7 +86,7 @@ begin
  {zrob na poczatku clear na wypadek gdyby user zresizowal okienko - wtedy
   dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka }
  glClear(GL_COLOR_BUFFER_BIT);
- glRasterPos2i(0, 0);
+ SetWindowPosZero;
  ImageDraw(PCallData(Window.UserData)^.Image);
 end;
 
@@ -123,7 +123,7 @@ begin
    {zrob na poczatku clear na wypadek gdyby user zresizowal okienko - wtedy
     dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka.}
    glClear(GL_COLOR_BUFFER_BIT);
-   glRasterPos2i(0, 0);
+   SetWindowPosZero;
    ImageDraw(D^.Image);
  glPopAttrib;
 end;
@@ -151,7 +151,7 @@ begin
    po kazdym wierszu. Robimy to wszystko co ROWS_SHOW_COUNT wierszy. }
  if (RowsMadeCount mod ROWS_SHOW_COUNT) = 0 then
  begin
-  glRasterPos2i(0, RowsMadeCount-ROWS_SHOW_COUNT);
+  SetWindowPos(0, RowsMadeCount-ROWS_SHOW_COUNT);
   ImageDrawRows(D^.Image, RowsMadeCount-ROWS_SHOW_COUNT, ROWS_SHOW_COUNT);
   glFlush;
 
