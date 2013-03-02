@@ -548,9 +548,6 @@ begin
 
   Statistics := SceneManager.Statistics;
 
-  glLoadIdentity;
-  glTranslatef(5, 5, 0);
-
   Strs := TStringList.Create;
   try
     DescribeSensors;
@@ -599,7 +596,7 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
-      StatusFont.PrintStringsBox(Strs, true, 0,
+      StatusFont.PrintStringsBox(Strs, true, 5, 5, 0,
         InsideColor, BorderColor, TextColor, BoxPixelMargin);
 
     glDisable(GL_BLEND);
