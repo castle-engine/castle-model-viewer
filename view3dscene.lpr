@@ -90,16 +90,13 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   V3DSceneAntiAliasing, V3DSceneScreenShot,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
-  V3DSceneLightsEditor, V3DSceneWindow;
+  V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus;
 
 var
   ShowFrustum: boolean = false;
   ShowFrustumAlwaysVisible: boolean = false;
 
   MenuCollisions: TMenuItemChecked;
-
-  { Initialized in Open, finalized in Close. }
-  StatusFont: TGLBitmapFont;
 
   RecentMenu: TWindowRecentFiles;
 
@@ -427,11 +424,6 @@ var
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
-  InsideColor       : TVector4f = (0, 0, 0, 0.7);
-  BorderColor       : TVector4f = (0, 1, 0, 1);
-  TextColor         : TVector4f = (1, 1, 0, 1);
-  { pixel size of spaces in status box }
-  BoxPixelMargin = 5;
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
@@ -489,8 +481,7 @@ const
          ((Over <> nil) and
           (Over.Count <> 0)) then
       begin
-        MaxLineChars := Max(10,
-          Floor((Window.Width - BoxPixelMargin * 2) / StatusFont.TextWidth('W')));
+        MaxLineChars := StatusMaxLineChars(Window.Width);
 
         { Display sensors active but not over.
           We do not just list all active sensors in the 1st pass,
@@ -593,13 +584,7 @@ begin
       S += ' (paused, not processing VRML/X3D events)';
     strs.Append(S);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-
-      StatusFont.PrintStringsBox(Strs, true, 5, 5, 0,
-        InsideColor, BorderColor, TextColor, BoxPixelMargin);
-
-    glDisable(GL_BLEND);
+    DrawStatus(Strs);
   finally
     FreeAndNil(Strs);
   end;

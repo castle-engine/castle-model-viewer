@@ -45,7 +45,7 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 implementation
 
 uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
-  CastleUtils, CastleMessages, CastleGLImages;
+  CastleUtils, CastleMessages, CastleGLImages, Classes, V3DSceneStatus;
 
 const
   DefaultPrimarySamplesCount = 1;
@@ -68,6 +68,8 @@ type
     RowsMadeCount: integer;
     { During and after raytracing, user can exit with Escape. }
     Quit: boolean;
+    { Ray-tracer statistics. }
+    Stats: TStringList;
   end;
   PCallData = ^TCallData;
 
@@ -90,13 +92,18 @@ end;
   Window calbacks after rendering (when Image is ready). }
 
 procedure DrawDone(Window: TCastleWindowBase);
+var
+  D: PCallData;
 begin
+  D := PCallData(Window.UserData);
+
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   glClear(GL_COLOR_BUFFER_BIT);
   SetWindowPosZero;
-  ImageDraw(PCallData(Window.UserData)^.Image);
+  ImageDraw(D^.Image);
+  DrawStatus(D^.Stats);
 end;
 
 { -------------------------------------------------------------------------
@@ -137,17 +144,19 @@ procedure PixelsMadeNotify(PixelsMadeCount: Cardinal; Data: Pointer);
 const
   RowsShowCount = 5;
 var
+  Window: TCastleWindowBase;
   D: PCallData;
   RowsMadeCount: Cardinal;
 begin
-  D := PCallData(TCastleWindowBase(Data).UserData);
+  Window := TCastleWindowBase(Data);
+  D := PCallData(Window.UserData);
 
   { Take this callback into account only when the row was just completed. }
   if PixelsMadeCount mod D^.Image.Width <> 0 then Exit;
   RowsMadeCount := PixelsMadeCount div D^.Image.Width;
   D^.RowsMadeCount := RowsMadeCount;
 
-  TCastleWindowBase(Data).Caption := Format('view3dscene - Ray Tracing - %d%%',
+  Window.Caption := Format('view3dscene - Ray Tracing - %d%%',
     [Round(100 * RowsMadeCount / D^.Image.Height)]);
 
   { To be fast (and this has to be fast to not slow down the ray-tracing)
@@ -266,6 +275,7 @@ begin
   RayTracer := nil;
   CallData.Image := nil;
   SavedMode := nil;
+  CallData.Stats := nil;
   try
     MainMenuDone := CreateMainMenuDone;
     MainMenuWorking := CreateMainMenuWorking;
@@ -337,11 +347,15 @@ begin
           behavior). }
         UseDoubleBuffer(Window, false);
         try
-          RayTracer.Execute;
+          CallData.Stats := TStringList.Create;
+          RayTracer.ExecuteStats(CallData.Stats);
         finally
           UseDoubleBuffer(Window, true);
         end;
       finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
+
+      CallData.Stats.Append('');
+      CallData.Stats.Append('<font color="#FFFFFF">Press Escape to return to normal 3D view.</font>');
 
       { Display the rendered image, wait for Escape.
         We call PostRedisplay to make sure to display the whole image
@@ -357,6 +371,7 @@ begin
   finally
     FreeAndNil(SavedMode);
     FreeAndNil(CallData.Image);
+    FreeAndNil(CallData.Stats);
     FreeAndNil(MainMenuWorking);
     FreeAndNil(MainMenuDone);
     FreeAndNil(RayTracer);
