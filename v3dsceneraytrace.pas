@@ -22,7 +22,6 @@
 
 { Simple unit that allows to incrementally display raytracer result
   in TCastleWindowBase window. }
-
 unit V3DSceneRaytrace;
 
 interface
@@ -31,9 +30,7 @@ uses GL, GLU, GLExt, CastleWindow, CastleVectors, X3DNodes,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore;
 
 const
-  DEF_RAYTRACE_DEPTH = 3;
-  DEF_PRIMARY_SAMPLES_COUNT = 1;
-  DEF_NON_PRIMARY_SAMPLES_COUNT = 4;
+  DefaultRaytracerDepth = 3;
 
 { Ray-tracer. }
 procedure RaytraceToWin(Window: TCastleWindowBase;
@@ -50,114 +47,120 @@ implementation
 uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
   CastleUtils, CastleMessages, CastleGLImages;
 
+const
+  DefaultPrimarySamplesCount = 1;
+  DefaultNonPrimarySamplesCount = 4;
+  DefaultRRoulContinue = 0.5;
+
 type
-  { callbacks data. Callbacki TCastleWindowBase moga osiagnac to Data przez
-    PCallData(Window.Userdata), callback RowMadeNotify dostaje Window
-    in Data (wiec musi zrobic PCallData(TCastleWindowBase(Data).UserData) ) }
+  { Callbacks data. Window.UserData contains a PCallData pointer
+    during the ray-tracing process (so callbacks like DrawDone
+    and DrawWorking can access it, without using any dirty global variables).
+    And PixelsMadeNotify gets Window in the Data parameter,
+    so PixelsMadeNotify callback can also access it. }
   TCallData = record
-    { Image to na poczatku SaveScreen sceny wyrenderowanej OpenGLem
-      i raytracer stopniowo go zapisuje. Musimy pamietac w tym obrazku
-      poczatkowa scene OpenGLa bo jesli user np. na chwile przelaczy sie do
-      innego okienka a potem wroci do nas to chcemy umiec odmalowac sobie
-      cale okienko = czesciowy wynik raytracera + czesciowa resztka oryginalnego
-      renderingu przy pomocy OpenGLa. To jest wykorzystywane w DrawRaytracing. }
+    { The screen save of the OpenGL rendering,
+      that is successively overwritten by ray-traced image.
+      This way we can always display this image to show OpenGL rendering
+      partially covered by the (ready part) of ray-traced image. }
     Image: TCastleImage;
-    { RowMadeNotify bedzie uaktualnialo ta zmienna. }
+    { For PixelsMadeNotify. }
     RowsMadeCount: integer;
-    { KeyDown, zarowno w czasie raytracingu jak i juz po jego zakonczeniu,
-      bedzie moglo uaktualnic ta zmienna na true }
-    UserWantsToQuit: boolean;
+    { During and after raytracing, user can exit with Escape. }
+    Quit: boolean;
   end;
   PCallData = ^TCallData;
 
 type
   BreakRaytracing = class(TCodeBreaker);
 
-function CaptionBegin: string;
+{ Should we use double-buffering. Ignored when the Window does not have
+  double-buffering at all. }
+procedure UseDoubleBuffer(Window: TCastleWindowBase; const Use: boolean);
 begin
- result := ProgramName+ ' - ray tracer';
+  { Actually view3dscene always has Window.DoubleBuffer = true.
+    But check for it, just to be safe. }
+  if Window.DoubleBuffer then
+    if Use then
+      glDrawBuffer(GL_BACK) else
+      glDrawBuffer(GL_FRONT);
 end;
 
 { -------------------------------------------------------------------------
-  Window calbacks AFTER rendering (when Image is ready) }
+  Window calbacks after rendering (when Image is ready). }
 
-procedure DrawRaytraced(Window: TCastleWindowBase);
+procedure DrawDone(Window: TCastleWindowBase);
 begin
- {zrob na poczatku clear na wypadek gdyby user zresizowal okienko - wtedy
-  dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka }
- glClear(GL_COLOR_BUFFER_BIT);
- SetWindowPosZero;
- ImageDraw(PCallData(Window.UserData)^.Image);
+  { Although usually the Image will cover the whole window (as it was
+    created with the size = window size), we have to clear screen first
+    in case user resized the window to make it larger. }
+  glClear(GL_COLOR_BUFFER_BIT);
+  SetWindowPosZero;
+  ImageDraw(PCallData(Window.UserData)^.Image);
 end;
 
 { -------------------------------------------------------------------------
-  calbacks WHILE rendering (when Image is only partially ready).
-  Remember to NOT trust Window.Width/Height here - they don't have to
-  be equal to Image.Width/Height here, user could already resize our window) }
+  Window calbacks while rendering (when Image is only partially ready).
+  Remember that Window.Width/Height do not have to be equal to
+  Image.Width/Height anymore, user could already resize our window. }
 
-procedure DrawRaytracing(Window: TCastleWindowBase);
-var D: PCallData;
+{ Display callback called when the window must be redrawn
+  (e.g. because user resized the window, or covered and uncovered
+  it by another window, and window manager requested the redraw). }
+procedure DrawWorking(Window: TCastleWindowBase);
+var
+  D: PCallData;
 begin
- {this DrawRaytracing callback will be called only when user requested
-  refreshing our window using window manager (e.g. resized
-  our window using window borders or temporary covered our window
-  with other window)}
+  { We have to change drawing to use normal mode (double-buffering,
+    that is: render to back buffer), because TCastleWindowBase
+    will call SwapBuffers after calling OnDraw.
 
- {switch our drawing to the back buffer. We have to do it because TCastleWindowBase
-  will call SwapBuffers after calling OnDraw (and it's good) but we changed
-  glDrawBuffer to GL_FRONT for drawing in RowsMadeNotifier.
-  We could use more elegant solution : switch glDrawBuffer to GL_FRONT
-  only in RowMadeNotify (in Push/PopAttrib clause) BUT we want
-  RowMadeNotify to work as fast as possible - so we don't want to switch
-  drawing buffers there}
+    We could use more elegant solution: switch UseDoubleBuffer
+    only in PixelsMadeNotify. But we want PixelsMadeNotify
+    to work as fast as possible --- so we don't want to switch
+    drawing buffers there. }
+  UseDoubleBuffer(Window, true);
 
- glPushAttrib(GL_COLOR_BUFFER_BIT);
-   { Actually I will always have Window.DoubleBuffer = true.
-     But I'm checking for it, just to be sure that I can compile
-     view3dscene with "Window.DoubleBuffer := false"
-     for testing purposes. }
-   if Window.DoubleBuffer then glDrawBuffer(GL_BACK);
+  D := PCallData(Window.UserData);
 
-   D := PCallData(Window.UserData);
+  glClear(GL_COLOR_BUFFER_BIT);
+  SetWindowPosZero;
+  ImageDraw(D^.Image);
 
-   {zrob na poczatku clear na wypadek gdyby user zresizowal okienko - wtedy
-    dobrze bedzie narysowac czarne tlo tam gdzie nie bedzie obrazka.}
-   glClear(GL_COLOR_BUFFER_BIT);
-   SetWindowPosZero;
-   ImageDraw(D^.Image);
- glPopAttrib;
+  { Restore UseDoubleBuffer suitable for PixelsMadeNotify drawing. }
+  UseDoubleBuffer(Window, false);
 end;
 
+{ Callback when ray-tracing is in process.
+  Given Data must be a TCastleWindowBase. }
 procedure PixelsMadeNotify(PixelsMadeCount: Cardinal; Data: Pointer);
-{ przekazane tu data to musi byc Window: TCastleWindowBase, a jego UserData musi
-  byc wskaznikiem PCallData }
-const ROWS_SHOW_COUNT = 5;
-var D: PCallData;
-    RowsMadeCount: Cardinal;
+const
+  RowsShowCount = 5;
+var
+  D: PCallData;
+  RowsMadeCount: Cardinal;
 begin
- D := PCallData(TCastleWindowBase(Data).UserData);
+  D := PCallData(TCastleWindowBase(Data).UserData);
 
- { obchodzi nas tylko RowsMadeCount, ignorujemy ten callback gdy PixelsMadeCount
-   nie oznacza ze wlasnie skonczylismy caly wiersz }
- if PixelsMadeCount mod D^.Image.Width <> 0 then Exit;
- RowsMadeCount := PixelsMadeCount div D^.Image.Width;
- D^.RowsMadeCount := RowsMadeCount;
+  { Take this callback into account only when the row was just completed. }
+  if PixelsMadeCount mod D^.Image.Width <> 0 then Exit;
+  RowsMadeCount := PixelsMadeCount div D^.Image.Width;
+  D^.RowsMadeCount := RowsMadeCount;
 
- TCastleWindowBase(Data).Caption := CaptionBegin +
-   Format(' working %d%%',[Round(100*RowsMadeCount/D^.Image.Height)]);
+  TCastleWindowBase(Data).Caption := Format('view3dscene - Ray Tracing - %d%%',
+    [Round(100 * RowsMadeCount / D^.Image.Height)]);
 
- { zeby szybkosc rysowania wierszy nie obnizala znaczaco szybkosci renderingu
-   nie wyswietlamy kazdego wiersza osobno i nie wywolujemy Application.ProcessMessage
-   po kazdym wierszu. Robimy to wszystko co ROWS_SHOW_COUNT wierszy. }
- if (RowsMadeCount mod ROWS_SHOW_COUNT) = 0 then
- begin
-  SetWindowPos(0, RowsMadeCount-ROWS_SHOW_COUNT);
-  ImageDrawRows(D^.Image, RowsMadeCount-ROWS_SHOW_COUNT, ROWS_SHOW_COUNT);
-  glFlush;
+  { To be fast (and this has to be fast to not slow down the ray-tracing)
+    we update the screen ony after each RowsShowCount rows. }
+  if (RowsMadeCount mod RowsShowCount) = 0 then
+  begin
+    SetWindowPos(0, RowsMadeCount - RowsShowCount);
+    ImageDrawRows(D^.Image, RowsMadeCount - RowsShowCount, RowsShowCount);
+    glFlush;
 
-  Application.ProcessAllMessages;
-  if D^.UserWantsToQuit then raise BreakRaytracing.Create;
- end;
+    Application.ProcessAllMessages;
+    if D^.Quit then raise BreakRaytracing.Create;
+  end;
 end;
 
 { menu things ---------------------------------------------------------------- }
@@ -168,54 +171,56 @@ var
   SaveAsFilename: string;
   ImgFormat: TImageFormat;
 begin
- D := PCallData(Window.UserData);
+  D := PCallData(Window.UserData);
 
- case Item.IntData of
-  10: begin
-        { This may be called only when rendering is done }
-        SaveAsFilename := ProgramName + '_rt.png';
-        if Window.FileDialog('Save image', SaveAsFilename, false,
-          SaveImage_FileFilters) then
-        begin
-          { Determine ImgFormat exactly the same like SaveImage() does. }
-          ImgFormat := FileExtToImageFormatDef(ExtractFileExt(SaveAsFilename), false, true,
-            DefaultSaveImageFormat);
+  case Item.IntData of
+    10: begin
+          { This may be called only when rendering is done }
+          SaveAsFilename := ProgramName + '_rt.png';
+          if Window.FileDialog('Save image', SaveAsFilename, false,
+            SaveImage_FileFilters) then
+          begin
+            { Determine ImgFormat exactly the same like SaveImage() does. }
+            ImgFormat := FileExtToImageFormatDef(ExtractFileExt(SaveAsFilename), false, true,
+              DefaultSaveImageFormat);
 
-          if ImgFormat = ifRGBE then
-            MessageOK(Window,
-              'Note: When saving raytraced image from view3dscene to ' +
-              'RGBE file format, you will *not* get image with perfect ' +
-              'RGB+Exponent precision. ' +
-              'That''s because image is already stored in memory in RGB ' +
-              '(8 bits per component) format (this was required to quickly display ' +
-              'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
-              'Use rayhunter if you want to have RGBE image with precise colors.',
-              taLeft);
+            if ImgFormat = ifRGBE then
+              MessageOK(Window,
+                'Note: When saving raytraced image from view3dscene to ' +
+                'RGBE file format, you will *not* get image with perfect ' +
+                'RGB+Exponent precision. ' +
+                'That''s because image is already stored in memory in RGB ' +
+                '(8 bits per component) format (this was required to quickly display ' +
+                'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
+                'Use rayhunter if you want to have RGBE image with precise colors.',
+                taLeft);
 
-          SaveImage(D^.Image, SaveAsFilename);
+            SaveImage(D^.Image, SaveAsFilename);
+          end;
         end;
-      end;
-  20: D^.UserWantsToQuit := true;
- end;
+    20: D^.Quit := true;
+  end;
 end;
 
-function CreateWhileRTMainMenu: TMenu;
-var M: TMenu;
+function CreateMainMenuWorking: TMenu;
+var
+  M: TMenu;
 begin
- Result := TMenu.Create('RaytraceToWindow - Main menu while RT');
- M := TMenu.Create('_Raytracer working');
-   M.Append(TMenuItem.Create('_Cancel', 20, CharEscape));
-   Result.Append(M);
+  Result := TMenu.Create('Raytracer working');
+  M := TMenu.Create('_Raytracer working');
+    M.Append(TMenuItem.Create('_Cancel', 20, CharEscape));
+    Result.Append(M);
 end;
 
-function CreateAfterRTMainMenu: TMenu;
-var M: TMenu;
+function CreateMainMenuDone: TMenu;
+var
+  M: TMenu;
 begin
- Result := TMenu.Create('RaytraceToWindow - Main menu after RT');
- M := TMenu.Create('_Raytracer done');
-   M.Append(TMenuItem.Create('_Save output to file',   10, CtrlS));
-   M.Append(TMenuItem.Create('_Return to main screen', 20, CharEscape));
-   Result.Append(M);
+  Result := TMenu.Create('Raytracer done');
+  M := TMenu.Create('_Raytracer done');
+    M.Append(TMenuItem.Create('_Save output to file',   10, CtrlS));
+    M.Append(TMenuItem.Create('_Return to main screen', 20, CharEscape));
+    Result.Append(M);
 end;
 
 { ----------------------------------------------------------------------------- }
@@ -228,60 +233,53 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
   const SceneBGColor: TVector3Single);
-var SavedMode: TGLMode;
-    CallData: TCallData;
-
-    RaytracerKind: TRaytracerKind;
-    RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
-    PathtraceRRoulContinue: Single;
-
-    AfterRTMainMenu, WhileRTMainMenu: TMenu;
-    RayTracer: TRayTracer;
+var
+  SavedMode: TGLMode;
+  CallData: TCallData;
+  RaytracerKind: TRaytracerKind;
+  RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
+  MainMenuDone, MainMenuWorking: TMenu;
+  RayTracer: TRayTracer;
 begin
-  { get input from user (BEFORE switching to our mode with ModeGLEnter) }
+  { get input from user }
   case LoCase(MessageChar(Window,
-     'Which ray tracer do you want to use  ?'+nl+
-     '[C] : Classic (Whitted-style) ray tracer'+nl+
-     '[P] : Path tracer' +nl+
-     '[Escape] : Cancel',
-     ['c','C', 'p', 'P', CharEscape], 'Press [C] or [P] or [Escape]', taLeft)) of
-   'c': RaytracerKind := rtkClassic;
-   'p': RaytracerKind := rtkPathTracer;
-   CharEscape: Exit;
+      'Which ray tracer do you want to use  ?'+nl+
+      '[C] : Classic (Whitted-style) ray tracer'+nl+
+      '[P] : Path tracer' +nl+
+      '[Escape] : Cancel',
+      ['c','C', 'p', 'P', CharEscape], 'Press [C] or [P] or [Escape]', taLeft)) of
+    'c': RaytracerKind := rtkClassic;
+    'p': RaytracerKind := rtkPathTracer;
+    CharEscape: Exit;
   end;
 
   RaytraceDepth := MessageInputCardinal(Window,
     'Ray-tracer depth (maximum for classic, minimum for path tracer):',
-    taLeft, DEF_RAYTRACE_DEPTH);
+    taLeft, DefaultRaytracerDepth);
   if RaytracerKind = rtkPathTracer then
-  begin
     PathtraceNonPrimarySamples := MessageInputCardinal(Window,
       'How many samples (non-primary) per pixel ?',
-      taLeft, DEF_NON_PRIMARY_SAMPLES_COUNT);
-    PathtraceRRoulContinue := 0.5; { TODO: ask user }
-  end;
+      taLeft, DefaultNonPrimarySamplesCount);
 
-  AfterRTMainMenu := nil;
-  WhileRTMainMenu := nil;
+  MainMenuDone := nil;
+  MainMenuWorking := nil;
   RayTracer := nil;
   CallData.Image := nil;
   SavedMode := nil;
   try
-    AfterRTMainMenu := CreateAfterRTMainMenu;
-    WhileRTMainMenu := CreateWhileRTMainMenu;
+    MainMenuDone := CreateMainMenuDone;
+    MainMenuWorking := CreateMainMenuWorking;
 
     CallData.Image := Window.SaveAlignedScreen;
 
     { switch to our mode }
     SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT, false,
-      {$ifdef FPC_OBJFPC} @ {$endif} DrawRaytracing,
-      {$ifdef FPC_OBJFPC} @ {$endif} Resize2D,
-      {$ifdef FPC_OBJFPC} @ {$endif} NoClose);
+      @DrawWorking, @Resize2D, @NoClose);
 
     Window.UserData := @CallData;
-    Window.MainMenu := WhileRTMainMenu;
+    Window.MainMenu := MainMenuWorking;
     Window.OnMenuCommand := @MenuCommand;
-    CallData.UserWantsToQuit := false;
+    CallData.Quit := false;
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_FOG);
@@ -301,8 +299,8 @@ begin
           begin
             RayTracer := TPathTracer.Create;
             TPathTracer(RayTracer).MinDepth := RaytraceDepth;
-            TPathTracer(RayTracer).RRoulContinue := PathtraceRRoulContinue;
-            TPathTracer(RayTracer).PrimarySamplesCount := DEF_PRIMARY_SAMPLES_COUNT;
+            TPathTracer(RayTracer).RRoulContinue := DefaultRRoulContinue;
+            TPathTracer(RayTracer).PrimarySamplesCount := DefaultPrimarySamplesCount;
             TPathTracer(RayTracer).NonPrimarySamplesCount := PathtraceNonPrimarySamples;
             TPathTracer(RayTracer).DirectIllumSamplesCount := 1;
          end;
@@ -330,34 +328,37 @@ begin
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
         RayTracer.PixelsMadeNotifierData := Window;
 
-        { RowMadeNotify approach requires single buffer,
-          so draw directly to the frond buffer.
+        { PixelsMadeNotify approach requires single buffer,
+          so draw directly to the front buffer.
+
           Note: we do not do this earlier, because
             Scene.Spatial := Scene.Spatial + [ssVisibleTriangles]
           may draw progress bar (so it should be done with normal double buffer
           behavior). }
-        glPushAttrib(GL_COLOR_BUFFER_BIT);
+        UseDoubleBuffer(Window, false);
         try
-          glDrawBuffer(GL_FRONT);
           RayTracer.Execute;
-        finally glPopAttrib end;
+        finally
+          UseDoubleBuffer(Window, true);
+        end;
       finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
 
-      { wyswietlaj w petli wyrenderowany obrazek, czekaj na Escape.
-        Potrzebny PostRedisplay bo na skutek ROWS_SHOW_COUNT koncowe
-        wiersze moga nie zostac namalowane przez RowDoneNotify. }
+      { Display the rendered image, wait for Escape.
+        We call PostRedisplay to make sure to display the whole image
+        (otherwise the image may not be fully displayed yet,
+        because of RowsShowCount mechanism). }
       Window.PostRedisplay;
-      Window.Caption := CaptionBegin+ ' done';
-      Window.OnDraw := @DrawRaytraced;
-      Window.MainMenu := AfterRTMainMenu;
-      repeat Application.ProcessMessage(true, true) until CallData.UserWantsToQuit;
+      Window.Caption := 'view3dscene - Ray Tracing - done';
+      Window.OnDraw := @DrawDone;
+      Window.MainMenu := MainMenuDone;
+      repeat Application.ProcessMessage(true, true) until CallData.Quit;
 
     except on BreakRaytracing do ; end;
   finally
     FreeAndNil(SavedMode);
     FreeAndNil(CallData.Image);
-    FreeAndNil(WhileRTMainMenu);
-    FreeAndNil(AfterRTMainMenu);
+    FreeAndNil(MainMenuWorking);
+    FreeAndNil(MainMenuDone);
     FreeAndNil(RayTracer);
   end;
 end;

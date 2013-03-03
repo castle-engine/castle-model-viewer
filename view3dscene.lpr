@@ -2318,7 +2318,7 @@ procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
        '    --camera-dir %s \' +nl+
        '    --camera-up %s \' +nl+
        '    --scene-bg-color %f %f %f \' +nl,
-       [ DEF_RAYTRACE_DEPTH,
+       [ DefaultRaytracerDepth,
          Window.Width, Window.Height,
          SceneFilename,
          ExtractOnlyFileName(SceneFilename) + '-rt.png',
