@@ -76,18 +76,6 @@ type
 type
   BreakRaytracing = class(TCodeBreaker);
 
-{ Should we use double-buffering. Ignored when the Window does not have
-  double-buffering at all. }
-procedure UseDoubleBuffer(Window: TCastleWindowBase; const Use: boolean);
-begin
-  { Actually view3dscene always has Window.DoubleBuffer = true.
-    But check for it, just to be safe. }
-  if Window.DoubleBuffer then
-    if Use then
-      glDrawBuffer(GL_BACK) else
-      glDrawBuffer(GL_FRONT);
-end;
-
 { -------------------------------------------------------------------------
   Window calbacks after rendering (when Image is ready). }
 
@@ -118,31 +106,18 @@ procedure DrawWorking(Window: TCastleWindowBase);
 var
   D: PCallData;
 begin
-  { We have to change drawing to use normal mode (double-buffering,
-    that is: render to back buffer), because TCastleWindowBase
-    will call SwapBuffers after calling OnDraw.
-
-    We could use more elegant solution: switch UseDoubleBuffer
-    only in PixelsMadeNotify. But we want PixelsMadeNotify
-    to work as fast as possible --- so we don't want to switch
-    drawing buffers there. }
-  UseDoubleBuffer(Window, true);
-
   D := PCallData(Window.UserData);
 
   glClear(GL_COLOR_BUFFER_BIT);
   SetWindowPosZero;
   ImageDraw(D^.Image);
-
-  { Restore UseDoubleBuffer suitable for PixelsMadeNotify drawing. }
-  UseDoubleBuffer(Window, false);
 end;
 
 { Callback when ray-tracing is in process.
   Given Data must be a TCastleWindowBase. }
 procedure PixelsMadeNotify(PixelsMadeCount: Cardinal; Data: Pointer);
 const
-  RowsShowCount = 5;
+  RowsShowCount = 10;
 var
   Window: TCastleWindowBase;
   D: PCallData;
@@ -163,10 +138,7 @@ begin
     we update the screen ony after each RowsShowCount rows. }
   if (RowsMadeCount mod RowsShowCount) = 0 then
   begin
-    SetWindowPos(0, RowsMadeCount - RowsShowCount);
-    ImageDrawRows(D^.Image, RowsMadeCount - RowsShowCount, RowsShowCount);
-    glFlush;
-
+    Window.PostRedisplay;
     Application.ProcessAllMessages;
     if D^.Quit then raise BreakRaytracing.Create;
   end;
@@ -338,20 +310,8 @@ begin
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
         RayTracer.PixelsMadeNotifierData := Window;
 
-        { PixelsMadeNotify approach requires single buffer,
-          so draw directly to the front buffer.
-
-          Note: we do not do this earlier, because
-            Scene.Spatial := Scene.Spatial + [ssVisibleTriangles]
-          may draw progress bar (so it should be done with normal double buffer
-          behavior). }
-        UseDoubleBuffer(Window, false);
-        try
-          CallData.Stats := TStringList.Create;
-          RayTracer.ExecuteStats(CallData.Stats);
-        finally
-          UseDoubleBuffer(Window, true);
-        end;
+        CallData.Stats := TStringList.Create;
+        RayTracer.ExecuteStats(CallData.Stats);
       finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
 
       CallData.Stats.Append('');
