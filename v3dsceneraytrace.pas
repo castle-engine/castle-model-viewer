@@ -146,7 +146,7 @@ end;
 
 { menu things ---------------------------------------------------------------- }
 
-procedure MenuCommand(Window: TCastleWindowBase; Item: TMenuItem);
+procedure MenuClick(Window: TCastleWindowBase; Item: TMenuItem);
 var
   D: PCallData;
   SaveAsFilename: string;
@@ -260,7 +260,7 @@ begin
 
     Window.UserData := @CallData;
     Window.MainMenu := MainMenuWorking;
-    Window.OnMenuCommand := @MenuCommand;
+    Window.OnMenuClick := @MenuClick;
     CallData.Quit := false;
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);

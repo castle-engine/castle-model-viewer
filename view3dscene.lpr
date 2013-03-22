@@ -1668,7 +1668,7 @@ begin
   finally FreeAndNil(Image) end;
 end;
 
-procedure MenuCommand(Window: TCastleWindowBase; MenuItem: TMenuItem);
+procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -4002,7 +4002,7 @@ begin
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;
-        Window.OnMenuCommand := @MenuCommand;
+        Window.OnMenuClick := @MenuClick;
         Window.OnOpen := @Open;
         Window.OnClose := @Close;
         Window.OnResize := @Resize;
