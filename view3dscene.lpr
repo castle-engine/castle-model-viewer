@@ -2869,11 +2869,25 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
   end;
 
+  procedure OpenSceneURL;
+  var
+    URL: string;
+  begin
+    URL := SceneURL;
+    if MessageInputQuery(Window,
+      'Open 3D model from given URL.' + NL + NL +
+      'Note that by default "http" is disabled (because the downloads are blocking for now, and every 3D model may reference additional resources like textures). Enable http by checking "Preferences -> Download Resources From Network".' + NL + NL +
+      'You can copy (Ctrl + C) and paste (Ctrl + V) here, for example to easily paste URL from/to your web browser.' + NL + NL +
+      'URL:', URL, taLeft) then
+      LoadScene(URL, [], 0.0, true);
+  end;
+
 var
   C: Cardinal;
 begin
  case MenuItem.IntData of
   10: THelper.OpenButtonClick(nil);
+  11: OpenSceneURL;
 
   12: Window.Close;
 
@@ -3261,6 +3275,7 @@ begin
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
     M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
+    M.Append(TMenuItem.Create('_Open URL ...',     11, CtrlL));
     MenuReopen := TMenuItem.Create('_Reopen',      15);
     MenuReopen.Enabled := false;
     M.Append(MenuReopen);
@@ -3338,7 +3353,7 @@ begin
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
-      '_Lighting Calculation',         91, CtrlL,
+      '_Lighting Calculation',         91,
       SceneAnimation.Attributes.Lighting, true));
     MenuHeadlight := TMenuItemChecked.Create('_Headlight', 92, CtrlH,
       (Scene <> nil) and Scene.HeadlightOn, true);
