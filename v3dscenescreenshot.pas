@@ -257,8 +257,7 @@ begin
       for I := 1 to FramesCount do
       begin
         TempFile := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter);
-        if not DeleteFile(TempFile) then
-          OnWarning(wtMinor, 'Video', Format('Cannot delete temporary file "%s"', [TempFile]));
+        CheckDeleteFile(TempFile, true);
       end;
       Writeln('done.');
     end;
