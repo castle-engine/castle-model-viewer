@@ -110,7 +110,7 @@ var
     variables, "null values" mean that these variables have some *defined
     but useless* values, i.e.
       SceneAnimation.Loaded = false
-      SceneFileName = '' }
+      SceneURL = '' }
   { Note that only one SceneAnimation object is created and present for the whole
     lifetime of this program, i.e. when I load new scene (from "Open"
     menu item) I DO NOT free and create new SceneAnimation object.
@@ -119,7 +119,7 @@ var
     This way I'm preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
   SceneAnimation: TCastlePrecalculatedAnimation;
-  SceneFilename: string;
+  SceneURL: string;
 
   SelectedItem: PTriangle;
   { SelectedPoint* always lies on SelectedItem item,
@@ -182,7 +182,7 @@ var
 
 type
   THelper = class
-    class procedure OpenRecent(const FileName: string);
+    class procedure OpenRecent(const URL: string);
     class procedure GeometryChanged(Scene: TCastleSceneCore;
       const SomeLocalGeometryChanged: boolean;
       OnlyShapeChanged: TShape);
@@ -978,7 +978,7 @@ begin
 
   Viewpoints.Recalculate(nil);
 
-  SceneFileName := '';
+  SceneURL := '';
 
   if MenuReopen <> nil then
     MenuReopen.Enabled := false;
@@ -1017,7 +1017,7 @@ procedure LoadClearScene; forward;
   like after FreeScene.
 
   This procedure does not really open any file
-  (so ASceneFileName need not be a name of existing file,
+  (so ASceneURL need not be a name of existing file,
   in fact it does not need to even be a valid filename).
   Instead in uses already created RootNode to init
   "scene global variables".
@@ -1035,14 +1035,14 @@ procedure LoadClearScene; forward;
   about the rest of issues with the SceneWarnings, like clearing
   them before calling LoadSceneCore.
 
-  ASceneFileName is not const parameter, to allow you to pass
-  SceneFileName as ASceneFileName. If ASceneFileName would be const
-  we would have problem, because FreeScene modifies SceneFileName
-  global variable, and this would change ASceneFileName value
+  ASceneURL is not const parameter, to allow you to pass
+  SceneURL as ASceneURL. If ASceneURL would be const
+  we would have problem, because FreeScene modifies SceneURL
+  global variable, and this would change ASceneURL value
   (actually, making it possibly totally invalid pointer,
   pointing at some other place of memory). That's always the
   problem with passing pointers to global variables
-  (ASceneFileName is a pointer) as local vars.
+  (ASceneURL is a pointer) as local vars.
 
   If UseInitialVars then we will use and reset
   InitialNavigationType and InitialViewpoint*.
@@ -1055,7 +1055,7 @@ procedure LoadSceneCore(
   const EqualityEpsilon: Single;
   TimeLoop, TimeBackwards: boolean;
 
-  ASceneFileName: string;
+  ASceneURL: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   InitializeCamera: boolean;
 
@@ -1077,7 +1077,7 @@ begin
   FreeScene;
 
   try
-    SceneFileName := ASceneFileName;
+    SceneURL := ASceneURL;
 
     if AnimationTimeSpeedWhenLoading <> 1.0 then
       ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
@@ -1131,7 +1131,8 @@ begin
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
-      NewCaption := ExtractFileName(SceneFilename);
+      { TODO-net using file operations on URL }
+      NewCaption := ExtractFileName(SceneURL);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
     if Window.Closed then
       Window.Caption := NewCaption else
@@ -1168,7 +1169,7 @@ begin
     end;
 
     if MenuReopen <> nil then
-      MenuReopen.Enabled := SceneFileName <> '';
+      MenuReopen.Enabled := SceneURL <> '';
   except
     FreeScene;
     raise;
@@ -1193,14 +1194,14 @@ end;
   Also, it shows the error message using MessageOK
   (so Glw must be already open).
 
-  It may seem that ASceneFileName could be constant parameter here.
+  It may seem that ASceneURL could be constant parameter here.
   Yes, it could. However, you will sometimes want to pass here
-  SceneFileName global value and this would cause memory havoc
+  SceneURL global value and this would cause memory havoc
   (parameter is passed as const, however when global variable
-  SceneFileName is changed then the parameter value implicitly
+  SceneURL is changed then the parameter value implicitly
   changes, it may even cause suddenly invalid pointer --- yeah,
   I experienced it). }
-procedure LoadScene(ASceneFileName: string;
+procedure LoadScene(ASceneURL: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   InitializeCamera: boolean);
 
@@ -1236,14 +1237,14 @@ begin
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif CATCH_EXCEPTIONS}
-        Load3DSequence(ASceneFileName, true,
+        Load3DSequence(ASceneURL, true,
           RootNodes, Times, ScenesPerTime, EqualityEpsilon,
           TimeLoop, TimeBackwards);
       {$ifdef CATCH_EXCEPTIONS}
       except
         on E: Exception do
         begin
-          LoadErrorMessage('Error while loading scene from "' +ASceneFileName+ '": ' +
+          LoadErrorMessage('Error while loading scene from "' +ASceneURL+ '": ' +
             E.Message);
           { In this case we can preserve current scene. }
           SceneWarnings.Assign(SavedSceneWarnings);
@@ -1260,7 +1261,7 @@ begin
         RootNodes, Times,
         ScenesPerTime, EqualityEpsilon,
         TimeLoop, TimeBackwards,
-        ASceneFileName, SceneChanges, ACameraRadius, InitializeCamera);
+        ASceneURL, SceneChanges, ACameraRadius, InitializeCamera);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
@@ -1278,7 +1279,7 @@ begin
           our Draw routine works OK when it's called to draw background
           under MessageOK. }
         LoadClearScene;
-        LoadErrorMessage('Error while loading scene from "' + ASceneFileName + '": ' +
+        LoadErrorMessage('Error while loading scene from "' + ASceneURL + '": ' +
           E.Message);
         Exit;
       end;
@@ -1289,7 +1290,7 @@ begin
       on "recent files" menu. This also applies when using view3dscene
       as a thumbnailer. }
     if not MakingScreenShot then
-      RecentMenu.Add(ASceneFileName);
+      RecentMenu.Add(ASceneURL);
 
     { We call PrepareResources to make SceneAnimation.PrepareResources to gather
       warnings (because some warnings, e.g. invalid texture filename,
@@ -1356,8 +1357,7 @@ begin
 
     Also, non-empty clear scene allows me to put there WorldInfo with a title.
     This way clear scene has an effect on view3dscene window's title,
-    and at the same time I don't have to set SceneFileName to something
-    dummy.
+    and at the same time I don't have to set SceneURL to something dummy.
 
     I'm not constructing here RootNode in code (i.e. Pascal).
     This would allow a fast implementation, but it's easier for me to
@@ -1376,26 +1376,27 @@ end;
 const
   SaveGenerator = 'view3dscene, http://castle-engine.sourceforge.net/view3dscene.php';
 
-{ Load model from ASceneFileName ('-' means stdin),
+{ Load model from ASceneURL ('-' means stdin),
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
-procedure WriteModel(const ASceneFileName: string;
+procedure WriteModel(const ASceneURL: string;
   const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
   const ForceConvertingToX3D: boolean);
 var
   Node: TX3DRootNode;
 begin
-  Node := Load3D(ASceneFileName, true);
+  Node := Load3D(ASceneURL, true);
   try
     ChangeNode(SceneChanges, Node);
     Save3D(Node, StdOutStream, SaveGenerator,
-      ExtractFileName(ASceneFileName), Encoding, ForceConvertingToX3D);
+      { TODO-net using file operations on URL }
+      ExtractFileName(ASceneURL), Encoding, ForceConvertingToX3D);
   finally FreeAndNil(Node) end;
 end;
 
-class procedure THelper.OpenRecent(const FileName: string);
+class procedure THelper.OpenRecent(const URL: string);
 begin
-  LoadScene(FileName, [], 0.0, true);
+  LoadScene(URL, [], 0.0, true);
 end;
 
 class procedure THelper.GeometryChanged(Scene: TCastleSceneCore;
@@ -1437,7 +1438,7 @@ begin
   S := TStringList.Create;
   try
     S.Append(Format('Total %d warnings about current scene "%s":',
-      [ SceneWarnings.Count, SceneFileName ]));
+      [ SceneWarnings.Count, SceneURL ]));
     S.Append('');
     S.AddStrings(SceneWarnings.Items);
     S.Append('');
@@ -1652,8 +1653,9 @@ begin
 
   Image := CaptureScreen;
   try
-    if SceneFileName <> '' then
-      ScreenShotName := ExtractOnlyFileName(SceneFileName) + '_%d.png' else
+    if SceneURL <> '' then
+      { TODO-net using file operations on URL }
+      ScreenShotName := ExtractOnlyFileName(SceneURL) + '_%d.png' else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
     { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
@@ -2305,8 +2307,9 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
        '    --scene-bg-color %f %f %f \' +nl,
        [ DefaultRaytracerDepth,
          Window.Width, Window.Height,
-         SceneFilename,
-         ExtractOnlyFileName(SceneFilename) + '-rt.png',
+         SceneURL,
+         { TODO-net using file operations on URL }
+         ExtractOnlyFileName(SceneURL) + '-rt.png',
          VectorToRawStr(Camera.Walk.Position),
          VectorToRawStr(Camera.Walk.Direction),
          VectorToRawStr(Camera.Walk.Up),
@@ -2550,8 +2553,9 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
     if Orientation <> CharEscape then
     begin
-      if SceneFileName <> '' then
-        FileNamePattern := ExtractOnlyFileName(SceneFileName) + '_cubemap_%s.png' else
+      if SceneURL <> '' then
+        { TODO-net using file operations on URL }
+        FileNamePattern := ExtractOnlyFileName(SceneURL) + '_cubemap_%s.png' else
         FileNamePattern := 'view3dscene_cubemap_%s.png';
 
       if Window.FileDialog('Image name template to save', FileNamePattern, false) then
@@ -2620,8 +2624,9 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
     FileName: string;
     Size: Cardinal;
   begin
-    if SceneFileName <> '' then
-      FileName := ExtractOnlyFileName(SceneFileName) + '_cubemap.dds' else
+    { TODO-net using file operations on URL }
+    if SceneURL <> '' then
+      FileName := ExtractOnlyFileName(SceneURL) + '_cubemap.dds' else
       FileName := 'view3dscene_cubemap.dds';
 
     if Window.FileDialog('Save image to file', FileName, false) then
@@ -2671,8 +2676,9 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
   var
     FileName: string;
   begin
-    if SceneFileName <> '' then
-      FileName := ExtractOnlyFileName(SceneFileName) + '_depth_%d.png' else
+    { TODO-net using file operations on URL }
+    if SceneURL <> '' then
+      FileName := ExtractOnlyFileName(SceneURL) + '_depth_%d.png' else
       FileName := 'view3dscene_depth_%d.png';
     FileName := FileNameAutoInc(FileName);
 
@@ -2811,7 +2817,8 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
-    ProposedSaveName := ChangeFileExt(SceneFileName, Extension);
+    { TODO-net using file operations on URL }
+    ProposedSaveName := ChangeFileExt(SceneURL, Extension);
 
     if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     try
@@ -2819,7 +2826,8 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         Scene.BeforeNodesFree;
 
       Save3D(Scene.RootNode, ProposedSaveName,
-        SaveGenerator, ExtractFileName(SceneFileName), SaveVersion, Encoding,
+        { TODO-net using file operations on URL }
+        SaveGenerator, ExtractFileName(SceneURL), SaveVersion, Encoding,
         ForceConvertingToX3D);
 
       if Convertion then
@@ -2874,7 +2882,7 @@ begin
           In fact, this was the purpose of this InitializeCamera
           parameter: to set it to false when reopening, as this makes
           reopening more useful. }
-        LoadScene(SceneFileName, [], 0.0, false);
+        LoadScene(SceneURL, [], 0.0, false);
       end;
 
   900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
@@ -3006,7 +3014,7 @@ begin
 
   121: begin
          ShowAndWrite(
-           'Scene "' + SceneFilename + '" information:' + NL + NL +
+           'Scene "' + SceneURL + '" information:' + NL + NL +
            SceneAnimation.Info(true, true, false));
        end;
   122: begin
@@ -3704,7 +3712,8 @@ class procedure THelper.OpenButtonClick(Sender: TObject);
 var
   S: string;
 begin
-  S := ExtractFilePath(SceneFilename);
+  { TODO-net using file operations on URL }
+  S := ExtractFilePath(SceneURL);
   if Window.FileDialog('Open file', s, true,
     Load3DSequence_FileFilters) then
     LoadScene(s, [], 0.0, true);
@@ -3755,8 +3764,8 @@ var
   WasParam_Write: boolean = false;
   Param_WriteEncoding: TX3DEncoding = xeClassic;
   Param_WriteForceX3D: boolean = false;
-  WasParam_SceneFileName: boolean = false;
-  Param_SceneFileName: string;
+  WasParam_SceneURL: boolean = false;
+  Param_SceneURL: string;
   Param_SceneChanges: TSceneChanges = [];
 
 const
@@ -3953,8 +3962,8 @@ begin
      'Expected at most one filename to load') else
   if Parameters.High = 1 then
   begin
-    WasParam_SceneFileName := true;
-    Param_SceneFileName := Parameters[1];
+    WasParam_SceneURL := true;
+    Param_SceneURL := Parameters[1];
   end;
 
   SceneManager := TV3DSceneManager.Create(nil);
@@ -3974,11 +3983,11 @@ begin
 
     if WasParam_Write then
     begin
-      if not WasParam_SceneFileName then
+      if not WasParam_SceneURL then
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any filename on command-line to load.');
-      WriteModel(Param_SceneFileName, Param_SceneChanges, Param_WriteEncoding,
+      WriteModel(Param_SceneURL, Param_SceneChanges, Param_WriteEncoding,
         Param_WriteForceX3D);
       Exit;
     end;
@@ -4032,8 +4041,8 @@ begin
 
         Window.Open(@RetryOpen);
 
-        if WasParam_SceneFileName then
-          LoadScene(Param_SceneFileName, Param_SceneChanges, Param_CameraRadius, true) else
+        if WasParam_SceneURL then
+          LoadScene(Param_SceneURL, Param_SceneChanges, Param_CameraRadius, true) else
           LoadWelcomeScene;
 
         if MakingScreenShot then
