@@ -1660,7 +1660,7 @@ begin
     ScreenShotName := FileNameAutoInc(ScreenShotName);
     { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
-      that it turn causes FBO rendering (as we need alpha channel in color buffer). }
+      that in turn causes FBO rendering (as we need alpha channel in color buffer). }
     if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
     try
       SaveImage(Image, ScreenShotName);
@@ -3725,13 +3725,12 @@ end;
 
 class procedure THelper.OpenButtonClick(Sender: TObject);
 var
-  S: string;
+  NewURL: string;
 begin
-  { TODO-net using file operations on URL }
-  S := ExtractFilePath(SceneURL);
-  if Window.FileDialog('Open file', s, true,
-    Load3DSequence_FileFilters) then
-    LoadScene(s, [], 0.0, true);
+  { TODO-net: file operations on URL }
+  NewURL := ExtractFilePath(SceneURL);
+  if Window.URLDialog('Open file', NewURL, true, Load3DSequence_FileFilters) then
+    LoadScene(NewURL, [], 0.0, true);
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
