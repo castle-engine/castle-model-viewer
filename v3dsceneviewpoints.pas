@@ -121,7 +121,7 @@ function TMenuViewpointGroup.FindGroup(
 var
   I: Integer;
 begin
-  for I := 0 to EntriesCount - 1 do
+  for I := 0 to Count - 1 do
     if (Entries[I] is TMenuViewpointGroup) and
        (TMenuViewpointGroup(Entries[I]).ViewpointGroup = AViewpointGroup) then
       Exit(TMenuViewpointGroup(Entries[I]));
@@ -216,7 +216,7 @@ procedure TMenuViewpoints.AddViewpoint(
       if NewResult = nil then
       begin
         NewResult := TMenuViewpointGroup.Create(
-          ViewpointToMenuCaption(Result.EntriesCount, Group));
+          ViewpointToMenuCaption(Result.Count, Group));
         NewResult.ViewpointGroup := Group;
         Result.Append(NewResult);
       end;
@@ -234,7 +234,7 @@ begin
 
   Group := CreateParentViewpointGroups(AddViewpointGroups);
 
-  ItemIndex := Group.EntriesCount;
+  ItemIndex := Group.Count;
   if ItemIndex < MaxMenuItems then
   begin
     S := ViewpointToMenuCaption(ItemIndex, Node);
@@ -263,7 +263,7 @@ end;
 procedure TMenuViewpoints.Recalculate(Scene: TCastleSceneCore);
 begin
   MenuUpdateBegin;
-  EntriesDeleteAll;
+  DeleteAll;
 
   ViewpointsRadioGroup := nil;
 
