@@ -62,9 +62,15 @@
 
 program view3dscene;
 
+{ Icon for Windows. .res file managed manually. }
 {$ifdef MSWINDOWS}
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
+
+{ Icon for Mac OS X. .res file managed by Lazarus. }
+{$ifdef DARWIN}
+  {$R *.res}
+{$endif}
 
 uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
   CastleBitmapFont_BVSansMono_Bold_m15, CastleTriangles,
