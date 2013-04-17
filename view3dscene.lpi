@@ -9,8 +9,8 @@
         <MainUnitHasTitleStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <Language Value=""/>
@@ -44,84 +44,53 @@
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="1"/>
-        <TopLine Value="480"/>
-        <CursorPos X="64" Y="494"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="welcome_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit1>
       <Unit2>
         <Filename Value="bgcolors.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit2>
       <Unit3>
         <Filename Value="clear_scene.inc"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit3>
       <Unit4>
         <Filename Value="colormodulators.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit4>
       <Unit5>
         <Filename Value="v3dsceneallcameras.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit5>
       <Unit6>
         <Filename Value="raytracetowindow.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit6>
       <Unit7>
         <Filename Value="scenechangesunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit7>
       <Unit8>
         <Filename Value="texturefilters.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TextureFilters"/>
-        <TopLine Value="15"/>
-        <CursorPos X="5" Y="29"/>
-        <UsageCount Value="26"/>
       </Unit8>
       <Unit9>
         <Filename Value="v3dsceneblending.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit9>
       <Unit10>
         <Filename Value="v3dscenecamera.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit10>
       <Unit11>
         <Filename Value="v3dsceneconfig.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="26"/>
       </Unit11>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="view3dscene.lpr"/>
-        <Caret Line="3173" Column="26" TopLine="3165"/>
-      </Position1>
-      <Position2>
-        <Filename Value="view3dscene.lpr"/>
-        <Caret Line="1934" Column="55" TopLine="1897"/>
-      </Position2>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -154,16 +123,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsGlobal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="../castle_game_engine/vrml/opengl/vrmltexturerenderer.inc"/>
-        <Line Value="0"/>
-      </Item1>
-    </BreakPoints>
-    <Exceptions Count="9">
+    <Exceptions Count="10">
       <Item1>
         <Name Value="ECodetoolError"/>
       </Item1>
@@ -191,7 +151,9 @@
       <Item9>
         <Name Value="BreakUsesTexture"/>
       </Item9>
+      <Item10>
+        <Name Value="ELibPngNotAvailable"/>
+      </Item10>
     </Exceptions>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>
