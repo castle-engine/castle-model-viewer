@@ -1750,6 +1750,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/navigation/speed_2.wrl
 ---- Reading again ../demo_models/navigation/speed_2.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/navigation/transition_multiple_viewpoints.x3dv
+---- Reading again ../demo_models/navigation/transition_multiple_viewpoints.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/type_examine.wrl
 ---- Reading again ../demo_models/navigation/type_examine.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
