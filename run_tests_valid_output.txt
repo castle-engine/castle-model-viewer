@@ -1651,6 +1651,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/lights_materials/lights.x3dv
 ---- Reading again ../demo_models/lights_materials/lights.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/lights_materials/material_color_mixed_with_texture_color.x3dv
+---- Reading again ../demo_models/lights_materials/material_color_mixed_with_texture_color.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/lights_materials/raytracer/alien_mirror.wrl
 ---- Reading again ../demo_models/lights_materials/raytracer/alien_mirror.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
