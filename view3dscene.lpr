@@ -2396,7 +2396,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
     TimeBegin := SceneAnimation.Time;
     TimeStep := 0.04;
     FramesCount := 25;
-    FileNamePattern := 'image%d.png';
+    FileNamePattern := 'image@counter(4).png';
 
     if MessageInputQuery(Window, 'Input start time for recording movie:',
       TimeBegin, taLeft) then
@@ -3882,7 +3882,7 @@ const
            '                        a single movie file (like .avi) (ffmpeg must' +NL+
            '                        be installed and available on $PATH for this)' +NL+
            '                        or to a sequence of image files (FILE-NAME' +NL+
-           '                        must then be specified like image%d.png).' +NL+
+           '                        must then be specified like image@counter(4).png).' +NL+
            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
            '                        Argument AMOUNT is an integer >= 0.' +NL+
            '                        Exact 0 means "no anti-aliasing",' +NL+

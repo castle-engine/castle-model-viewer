@@ -40,7 +40,7 @@ type
     capture and the image filename where to save this.
 
     Note that UseFileName will do the substitution and actually
-    increment the counter for filenames with %d inside. So always
+    increment the counter for filenames with @@counter(<padding>) (or %d) inside. So always
     call UseFileName only once, and in correct order. }
   TScreenShot = class
     FileNamePattern: string;
@@ -84,7 +84,7 @@ type
     function UseFileName(const Index: Integer): string; override;
 
     { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
-        detected, like an image file with no %d.) }
+        detected, like an image file with no @@counter(<padding>) or %d.) }
     procedure BeginCapture; override;
     procedure EndCapture(Success: boolean); override;
   end;
@@ -120,7 +120,7 @@ function MakeFileName(const FileNamePattern: string;
 var
   ReplacementsDone: Cardinal;
 begin
-  Result := FormatIndexedName(FileNamePattern, Counter, ReplacementsDone);
+  Result := FormatNameCounter(FileNamePattern, Counter, true, ReplacementsDone);
   if ReplacementsDone > 0 then
     Inc(Counter);
 end;
@@ -212,12 +212,12 @@ begin
 
   if not SingleMovieFile then
   begin
-    { Check that we have some %d in our filename.
-      Just call FormatIndexedName and ignore result,
+    { Check that we have some @counter(<padding>) (or %d) in our filename.
+      Just call FormatNameCounter and ignore result,
       to get and check ReplacementsDone. }
-    FormatIndexedName(FileNamePattern, -1, ReplacementsDone);
+    FormatNameCounter(FileNamePattern, -1, true, ReplacementsDone);
     if ReplacementsDone = 0 then
-      raise EInvalidScreenShotFileName.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no %%d pattern found', [FileNamePattern]);
+      raise EInvalidScreenShotFileName.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no @counter(<padding>) or %%d pattern found', [FileNamePattern]);
   end;
 
   Progress.Init(Count, Format('Screenshot range from time %f (%d frames)',
