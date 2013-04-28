@@ -134,45 +134,51 @@
     <glob pattern="*.x3db.gz"/>
   </mime-type>
 
-  <!-- Collada, Inventor, other mime types just invented by Kambi.
-       If there's any official agreement what mime types to use for them,
-       please report to Kambi ([http://castle-engine.sourceforge.net/] author),
-       and this file will be adjusted to specify standard mime values.
-  -->
-
-  <mime-type type="application/x-collada">
+  <!-- MIME type from http://en.wikipedia.org/wiki/COLLADA -->
+  <mime-type type="model/vnd.collada+xml">
     <sub-class-of type="text/xml"/>
     <comment>COLLADA model</comment>
     <glob pattern="*.dae"/>
   </mime-type>
 
-  <mime-type type="application/x-inventor">
+  <!-- MIME type from http://filext.com/file-extension/IV -->
+  <mime-type type="object/x-inventor">
     <sub-class-of type="text/plain"/>
     <comment>Inventor model</comment>
     <glob pattern="*.iv"/>
   </mime-type>
 
+  <!-- MIME type invented by Kambi.
+       Neither http://en.wikipedia.org/wiki/MD3_%28file_format%29
+       nor http://filext.com/file-extension/md3 specifies any Mime type.
+       Please report if there is any standard about this. -->
   <mime-type type="application/x-md3">
     <comment>MD3 (Quake 3 engine) model</comment>
     <glob pattern="*.md3"/>
   </mime-type>
 
+  <!-- MIME type invented by Kambi.
+       http://en.wikipedia.org/wiki/Wavefront_.obj_file says to use
+       text/plain, but that's useless for us, we need a unique MIME type
+       to handle this.
+       Please report if there is any standard about this. -->
   <mime-type type="application/x-wavefront-obj">
     <sub-class-of type="text/plain"/>
     <comment>Wavefront OBJ model</comment>
     <glob pattern="*.obj"/>
   </mime-type>
 
+  <!-- MIME type invented by Kambi.
+       Please report if there is any standard about this. -->
   <mime-type type="application/x-geo">
     <sub-class-of type="text/plain"/>
     <comment>Videoscape GEO model</comment>
     <glob pattern="*.geo"/>
   </mime-type>
 
-  <!-- Kanim is my format, see
-       [http://castle-engine.sourceforge.net/kanim_format.php],
-       so I can invent any mime type I want here... -->
-
+  <!-- MIME type invented by Kambi. Kanim is my format,
+       see [http://castle-engine.sourceforge.net/kanim_format.php],
+       so we can invent any mime type I want here. -->
   <mime-type type="application/x-kanim">
     <sub-class-of type="text/xml"/>
     <comment>Castle Game Engine animation</comment>
