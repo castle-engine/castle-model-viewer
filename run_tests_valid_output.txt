@@ -2707,6 +2707,9 @@ tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField
 ---- Reading ../demo_models/x3d/coverflow.x3dv
 ---- Reading again ../demo_models/x3d/coverflow.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/data_uri.x3dv
+---- Reading again ../demo_models/x3d/data_uri.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/dynamic_world.x3dv
 ---- Reading again ../demo_models/x3d/dynamic_world.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
