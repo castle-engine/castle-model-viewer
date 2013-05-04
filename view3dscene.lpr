@@ -78,7 +78,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
-  CastleKeysMouse, CastleDownload,
+  CastleKeysMouse, CastleDownload, CastleURIUtils,
   { OpenGL related units: }
   GL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
@@ -460,9 +460,9 @@ const
           Result := Description;
         if Anchor.FdUrl.Count <> 0 then
         begin
-          Result += ' [' + Anchor.FdUrl.Items[0];
+          Result += ' [' + URIDisplayLong(Anchor.FdUrl.Items[0]);
           for J := 1 to Anchor.FdUrl.Count - 1 do
-            Result += ', ' + Anchor.FdUrl.Items[J];
+            Result += ', ' + URIDisplayLong(Anchor.FdUrl.Items[J]);
           Result += ']';
         end;
       end;
