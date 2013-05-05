@@ -460,9 +460,9 @@ const
           Result := Description;
         if Anchor.FdUrl.Count <> 0 then
         begin
-          Result += ' [' + URIDisplayLong(Anchor.FdUrl.Items[0]);
+          Result += ' [' + URIDisplay(Anchor.FdUrl.Items[0]);
           for J := 1 to Anchor.FdUrl.Count - 1 do
-            Result += ', ' + URIDisplayLong(Anchor.FdUrl.Items[J]);
+            Result += ', ' + URIDisplay(Anchor.FdUrl.Items[J]);
           Result += ']';
         end;
       end;
