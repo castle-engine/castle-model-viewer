@@ -1711,6 +1711,66 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/movie_texture/movie_texture_tests.wrl
 ---- Reading again ../demo_models/movie_texture/movie_texture_tests.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/movie_texture/multi_texturing_ifs.x3dv
+---- Reading again ../demo_models/movie_texture/multi_texturing_ifs.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/movie_texture/multi_texturing_quad.x3dv
+---- Reading again ../demo_models/movie_texture/multi_texturing_quad.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/image_with_movie_multi_texture.x3d
+---- Reading again ../demo_models/multi_texturing/image_with_movie_multi_texture.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/image_with_movie_multi_texture.x3dv
+---- Reading again ../demo_models/multi_texturing/image_with_movie_multi_texture.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_and_sources.x3d
+---- Reading again ../demo_models/multi_texturing/modes_and_sources.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_and_sources.x3dv
+---- Reading again ../demo_models/multi_texturing/modes_and_sources.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_blend.x3d
+---- Reading again ../demo_models/multi_texturing/modes_blend.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_blend.x3dv
+---- Reading again ../demo_models/multi_texturing/modes_blend.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_modulate_add_order.x3d
+---- Reading again ../demo_models/multi_texturing/modes_modulate_add_order.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/modes_modulate_add_order.x3dv
+---- Reading again ../demo_models/multi_texturing/modes_modulate_add_order.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/primitives.x3d
+---- Reading again ../demo_models/multi_texturing/primitives.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/primitives.x3dv
+---- Reading again ../demo_models/multi_texturing/primitives.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/subtract_and_force_alpha.x3d
+---- Reading again ../demo_models/multi_texturing/subtract_and_force_alpha.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/subtract_and_force_alpha.x3dv
+---- Reading again ../demo_models/multi_texturing/subtract_and_force_alpha.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/subtract_rgb_various_sources.x3d
+---- Reading again ../demo_models/multi_texturing/subtract_rgb_various_sources.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/subtract_rgb_various_sources.x3dv
+---- Reading again ../demo_models/multi_texturing/subtract_rgb_various_sources.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/transform_and_coordinates_faces.x3d
+---- Reading again ../demo_models/multi_texturing/transform_and_coordinates_faces.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/transform_and_coordinates_faces.x3dv
+---- Reading again ../demo_models/multi_texturing/transform_and_coordinates_faces.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/transform_and_coordinates_quads.x3d
+---- Reading again ../demo_models/multi_texturing/transform_and_coordinates_quads.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/transform_and_coordinates_quads.x3dv
+---- Reading again ../demo_models/multi_texturing/transform_and_coordinates_quads.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/navigation/avatar_climb_stairs.x3dv
 ---- Reading again ../demo_models/navigation/avatar_climb_stairs.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2237,27 +2297,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeft
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/texturing_advanced/inlined_textures.wrl
 ---- Reading again ../demo_models/texturing_advanced/inlined_textures.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_blend_modes.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_blend_modes.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_order.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_order.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_primitives.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_primitives.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_quad_set.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_quad_set.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_separate_channels.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_separate_channels.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/texturing_advanced/multi_tex_various_modes_sources.x3dv
----- Reading again ../demo_models/texturing_advanced/multi_tex_various_modes_sources.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/texturing_advanced/tex3d_primitives_auto_gen.x3dv
 ---- Reading again ../demo_models/texturing_advanced/tex3d_primitives_auto_gen.x3dv
