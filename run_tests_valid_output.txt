@@ -1651,9 +1651,6 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/lights_materials/lights.x3dv
 ---- Reading again ../demo_models/lights_materials/lights.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/lights_materials/material_color_mixed_with_texture_color.x3dv
----- Reading again ../demo_models/lights_materials/material_color_mixed_with_texture_color.x3dv
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/lights_materials/raytracer/alien_mirror.wrl
 ---- Reading again ../demo_models/lights_materials/raytracer/alien_mirror.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1717,11 +1714,23 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/movie_texture/multi_texturing_quad.x3dv
 ---- Reading again ../demo_models/movie_texture/multi_texturing_quad.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/functions.x3d
+---- Reading again ../demo_models/multi_texturing/functions.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/functions.x3dv
+---- Reading again ../demo_models/multi_texturing/functions.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/multi_texturing/image_with_movie_multi_texture.x3d
 ---- Reading again ../demo_models/multi_texturing/image_with_movie_multi_texture.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/multi_texturing/image_with_movie_multi_texture.x3dv
 ---- Reading again ../demo_models/multi_texturing/image_with_movie_multi_texture.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/material_color_mixed_with_texture_color.x3d
+---- Reading again ../demo_models/multi_texturing/material_color_mixed_with_texture_color.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/multi_texturing/material_color_mixed_with_texture_color.x3dv
+---- Reading again ../demo_models/multi_texturing/material_color_mixed_with_texture_color.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/multi_texturing/modes_and_sources.x3d
 ---- Reading again ../demo_models/multi_texturing/modes_and_sources.x3d
