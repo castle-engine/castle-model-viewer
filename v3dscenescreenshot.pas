@@ -108,7 +108,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleProgress, CastleFilesUtils,
-  CastleWarnings, CastleVideos;
+  CastleWarnings, CastleVideos, CastleURIUtils;
 
 function MakingScreenShot: boolean;
 begin
@@ -176,13 +176,13 @@ end;
 procedure TRangeScreenShot.BeginCapture;
 var
   ReplacementsDone: Cardinal;
-  TemporaryImagesPrefix, Ext: string;
+  TemporaryImagesPrefix: string;
   FileRec: TSearchRec;
   SearchError: Integer;
 begin
   { calculate SingleMovieFile }
-  Ext := ExtractFileExt(FileNamePattern);
-  SingleMovieFile := FfmpegVideoFileExtension(Ext, true);
+  SingleMovieFile := FfmpegVideoMimeType(
+    URIMimeType(FilenameToURISafe(FileNamePattern)), true);
 
   if SingleMovieFile then
   begin
