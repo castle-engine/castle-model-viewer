@@ -1,0 +1,149 @@
+.TH view3dscene 1 "12 May 2013" "Castle Game Engine" "Viewer for 3D models, VRML / X3D browser"
+.SH NAME
+view3dscene \- VRML / X3D browser and viewer for other 3D models.
+
+.SH SYNOPSIS
+
+.B view3dscene
+[\fIfile\fR] [\fIoptions...\fR]
+
+.SH DESCRIPTION
+
+.B view3dscene
+is a VRML /X3D browser and viewer for other 3D models.
+
+.SH USAGE
+
+.B view3dscene
+takes the following arguments:
+.TP
+.B file
+The 3D model file to open.
+
+.TP
+.B All command-line options are optional.
+
+.TP
+.B -h / --help
+Print the help message and exit.
+
+.TP
+.B -v / --version
+Print the version number and exit.
+
+.TP
+.B -H / --hide-extras
+Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the 3D world.
+
+.TP
+.B --write
+Load the scene, optionally process by --scene-change-xxx,  save it as X3D to the standard output, exit. Use --write-encoding to choose encoding.
+
+.TP
+.B --write-encoding classic|xml
+Choose X3D encoding to use with --write option. Default is "classic".
+
+.TP
+.B --write-force-x3d
+Force convertion from VRML to X3D with --write option. Note that if you choose XML encoding  (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
+
+.TP
+.B --screenshot TIME IMAGE-FILE-NAME
+Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise  we'll just make a screenshot of the default black scene.
+
+.TP
+.B --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME
+Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).
+
+.TP
+.B --viewpoint NAME
+Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.
+
+.TP
+.B --anti-alias AMOUNT
+Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.
+
+.TP
+.B --audio-device DEVICE-NAME
+Choose specific OpenAL audio device. See the available device names in the --help output, or in the "Preferences -> Sound Device" menu.
+
+.TP
+.B --no-sound
+Turn off sound.
+
+.TP
+.B Window options (backend GTK+):
+
+.TP
+.B --geometry WIDTHxHEIGHT<sign>XOFF<sign>YOFF
+Set initial window size and/or position.
+
+.TP
+.B --fullscreen
+Set initial window size to cover whole screen.
+
+.TP
+.B --fullscreen-custom WIDTHxHEIGHT
+Try to resize the screen to WIDTHxHEIGHT and then set initial window size to cover whole screen.
+
+.TP
+.B --display DISPLAY-NAME
+Use given X display name.
+
+.TP
+.B Debug options:
+
+.TP
+.B --debug-log
+Write log info to stdout.
+
+.TP
+.B --debug-log-cache
+Write log info, including cache.
+
+.TP
+.B --debug-log-shaders
+Write log info, including shader source and log.
+
+.TP
+.B --debug-log-changes
+Write log info, including VRML/X3D graph changes.
+
+.TP
+.B Deprecated options:
+
+.TP
+.B --scene-change-no-normals
+Remove normals information from the loaded scene. Forces automatic calculation of normal vectors. Deprecated, doing this from command-line is not usually useful.
+
+.TP
+.B --scene-change-no-solid-objects
+Make all shapes not solid in the loaded scene. Disables backface culling. Deprecated, doing this from command-line is not usually useful.
+
+.TP
+.B --scene-change-no-convex-faces
+Treat all faces as potentially concave in the loaded scene. Deprecated, doing this from command-line is not usually useful.
+
+.TP
+.B --write-to-vrml
+Deprecated, shortcut for "--write --write-encoding=classic".
+
+.TP
+.B --camera-radius RADIUS
+Set camera sphere radius used for collisions and determinig moving speed. Deprecated, consider using NavigationInfo node inside your scene instead.
+
+.TP
+.B --navigation EXAMINE|WALK|FLY...
+Set initial navigation style. Deprecated, consider using NavigationInfo node inside your scene instead.
+
+.TP
+.B --detail-quadric-slices VALUE, --detail-quadric-stacks VALUE
+Adjust triangulation quality of quadrics. Slices and stacks adjust the triangulation of Spheres, Cones and Cylinders (like slices of a pizza and stacks of a tower). Deprecated, consider using KambiTriangulation node in your scene instead.
+
+.TP
+.B --detail-rect-divisions VALUE
+Adjust triangulation quality of boxes. Deprecated, consider using KambiTriangulation node in your scene instead.
+
+.SH SEE ALSO
+.IP
+.BR  tovrmlx3d (1)

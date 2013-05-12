@@ -59,13 +59,13 @@ begin
            HelpOptionHelp +NL+
            VersionOptionHelp +NL+
            '  --encoding classic|xml' +NL+
-           '                        Choose X3D encoding to use with --write option.' +NL+
-           '                        Default is "classic".' +NL+
-           '  --force-x3d           Force convertion from VRML to X3D with --write option.' +NL+
+           '                        Choose X3D encoding. Default is "classic".' +NL+
+           '  --force-x3d           Force convertion from VRML to X3D.' +NL+
            '                        Note that if you choose XML encoding' +NL+
            '                        (by --encoding=xml), this is automatic.' +NL+
            '                        Note that this works sensibly only for VRML 2.0' +NL+
-           '                        (not for older Inventor/VRML 1.0).' +NL+
+           '                        (not for older Inventor/VRML 1.0,' +NL+
+           '                        we cannot convert them to valid X3D for now).' +NL+
            NL+
            SCastleEngineProgramHelpSuffix('tovrmlx3d', Version, true));
          ProgramBreak;

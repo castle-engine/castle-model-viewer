@@ -52,11 +52,6 @@ procedure UpdateCameraNavigationTypeUI;
   Call this @italic(before) InitCameras. }
 procedure CamerasParseParameters;
 
-const
-  CamerasOptionsHelp =
-  '  --navigation Examine|Walk|Fly...'+nl+
-  '                        Set initial navigation style';
-
 var
   { When loading scene, check InitialNavigationType, and if non-empty:
     use it, and reset to empty. }

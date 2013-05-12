@@ -1,0 +1,41 @@
+.TH tovrmlx3d 1 "12 May 2013" "Castle Game Engine" "Convert 3D models to VRML / X3D"
+.SH NAME
+tovrmlx3d \- Convert 3D models to X3D, format VRML / X3D to have nice indentation.
+
+.SH SYNOPSIS
+
+.B tovrmlx3d
+[\fIfile\fR] [\fIoptions...\fR]
+
+.SH DESCRIPTION
+
+.B tovrmlx3d
+Convert 3D models to X3D, format VRML / X3D to have nice indentation. The output model will be written on standard output.
+
+.SH USAGE
+
+.B tovrmlx3d
+takes the following arguments:
+.TP
+.B file
+The 3D model file to open.
+
+.TP
+.B -h / --help
+Print the help message and exit.
+
+.TP
+.B -v / --version
+Print the version number and exit.
+
+.TP
+.B --encoding classic|xml
+Choose X3D encoding. Default is "classic".
+
+.TP
+.B --force-x3d
+Force convertion from VRML to X3D. Note that if you choose XML encoding (by --encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
+
+.SH SEE ALSO
+.IP
+.BR  view3dscene (1)

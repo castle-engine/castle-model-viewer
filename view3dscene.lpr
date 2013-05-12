@@ -3846,13 +3846,6 @@ const
            '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
            '                        or toolbar or bounding box) when program starts.' +NL+
            '                        Show only the 3D world.' +NL+
-           '  --camera-radius RADIUS' +NL+
-           '                        Set camera sphere radius used for collisions' +NL+
-           '                        and determinig moving speed' +NL+
-           '  --scene-change-no-normals ,' +NL+
-           '  --scene-change-no-solid-objects ,' +NL+
-           '  --scene-change-no-convex-faces' +NL+
-           '                        Change scene somehow after loading' +NL+
            '  --write               Load the scene,'+NL+
            '                        optionally process by --scene-change-xxx,' +NL+
            '                        save it as VRML/X3D to the standard output,' +NL+
@@ -3864,11 +3857,8 @@ const
            '                        Note that if you choose XML encoding' +NL+
            '                        (by --write-encoding=xml), this is automatic.' +NL+
            '                        Note that this works sensibly only for VRML 2.0' +NL+
-           '                        (not for older Inventor/VRML 1.0).' +NL+
-           '  --write-to-vrml       Obsolete shortcut for "--write --write-encoding=classic"' +NL+
-           CamerasOptionsHelp +NL+
-           '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
-           X3DNodesDetailOptionsHelp +NL+
+           '                        (not for older Inventor/VRML 1.0,' +NL+
+           '                        we cannot convert them to valid X3D for now).' +NL+
            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
            '                        Take a screenshot of the loaded scene' +NL+
            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3883,11 +3873,15 @@ const
            '                        be installed and available on $PATH for this)' +NL+
            '                        or to a sequence of image files (FILE-NAME' +NL+
            '                        must then be specified like image@counter(4).png).' +NL+
+           '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
+           '                        Especially useful to make a screenshot from given viewpoint.' +NL+
            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
            '                        Argument AMOUNT is an integer >= 0.' +NL+
            '                        Exact 0 means "no anti-aliasing",' +NL+
            '                        this is the default. Each successive integer' +NL+
            '                        generally makes method one step better.' +NL+
+           '                        Especially useful to make a screenshot with' +NL+
+           '                        anti-aliasing quality.' +NL+
            SoundEngine.ParseParametersHelp + NL+
            NL+
            TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
@@ -3897,6 +3891,33 @@ const
            '  --debug-log-cache     Write log info, including cache.' +nl+
            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
+           NL+
+           'Deprecated options:' +NL+
+           '  --scene-change-no-normals' +NL+
+           '                        Remove normals information from the loaded scene.' +NL+
+           '                        Forces automatic calculation of normal vectors.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --scene-change-no-solid-objects' +NL+
+           '                        Make all shapes not solid in the loaded scene.' +NL+
+           '                        Disables backface culling.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --scene-change-no-convex-faces' +NL+
+           '                        Treat all faces as potentially concave in the loaded scene.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
+           '  --camera-radius RADIUS' +NL+
+           '                        Set camera sphere radius used for collisions' +NL+
+           '                        and determinig moving speed.' +NL+
+           '                        Deprecated, consider using NavigationInfo node' +NL+
+           '                        inside your scene instead.' +NL+
+           '  --navigation EXAMINE|WALK|FLY...'+nl+
+           '                        Set initial navigation style.' +NL+
+           '                        Deprecated, consider using NavigationInfo node' +NL+
+           '                        inside your scene instead.' +NL+
+           X3DNodesDetailOptionsHelp +NL+
            NL+
            SCastleEngineProgramHelpSuffix(DisplayProgramName, Version, true));
          ProgramBreak;
