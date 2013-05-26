@@ -2823,10 +2823,9 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
-    { TODO-net using file operations on URL }
-    ProposedSaveName := ChangeFileExt(SceneURL, Extension);
+    ProposedSaveName := ChangeURIExt(SceneURL, Extension);
 
-    if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
+    if Window.URLDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     try
       if Convertion then
         Scene.BeforeNodesFree;
@@ -3733,8 +3732,7 @@ class procedure THelper.OpenButtonClick(Sender: TObject);
 var
   NewURL: string;
 begin
-  { TODO-net: file operations on URL }
-  NewURL := ExtractFilePath(SceneURL);
+  NewURL := ExtractURIPath(SceneURL);
   if Window.URLDialog('Open file', NewURL, true, Load3DSequence_FileFilters) then
     LoadScene(NewURL, [], 0.0, true);
 end;

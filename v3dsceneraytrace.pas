@@ -45,7 +45,8 @@ procedure RaytraceToWin(Window: TCastleWindowBase;
 implementation
 
 uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
-  CastleUtils, CastleMessages, CastleGLImages, Classes, V3DSceneStatus;
+  CastleUtils, CastleMessages, CastleGLImages, Classes, V3DSceneStatus,
+  CastleURIUtils;
 
 const
   DefaultPrimarySamplesCount = 1;
@@ -162,10 +163,8 @@ begin
             SaveImage_FileFilters) then
           begin
             { Determine ImgFormat exactly the same like SaveImage() does. }
-            ImgFormat := FileExtToImageFormatDef(ExtractFileExt(SaveAsFilename), false, true,
-              DefaultSaveImageFormat);
-
-            if ImgFormat = ifRGBE then
+            if MimeTypeToImageFormat(URIMimeType(SaveAsFilename), false, true, ImgFormat) and
+              (ImgFormat = ifRGBE) then
               MessageOK(Window,
                 'Note: When saving raytraced image from view3dscene to ' +
                 'RGBE file format, you will *not* get image with perfect ' +
