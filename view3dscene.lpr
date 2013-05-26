@@ -1649,7 +1649,7 @@ begin
   { Note that we capture screen *first*, and ask about where to save it later.
     That's because in some situations we capture directly from the back buffer,
     without FBO, and this means that our main window cannot be covered by
-    another window. Capturing right after Window.URLDialog at least under Linux
+    another window. Capturing right after Window.FileDialog at least under Linux
     may mean that OpenGL context underneath the dialog is not really updated
     (so we capture controls (toolbar, lights editor etc.) underneath the dialog). }
 
@@ -1662,7 +1662,7 @@ begin
     { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
-    if Window.URLDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+    if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
     try
       SaveImage(Image, ScreenShotName);
     except
@@ -2399,7 +2399,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
         'Input time step between capturing movie frames:', TimeStep, taLeft) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount, taLeft) then
-          if Window.URLDialog('Images pattern or movie filename to save', URLPattern, false) then
+          if Window.FileDialog('Images pattern or movie filename to save', URLPattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
               (otherwise some rendering behaves differently when
@@ -2557,7 +2557,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         URLPattern := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap_%s.png') else
         URLPattern := 'view3dscene_cubemap_%s.png';
 
-      if Window.URLDialog('Image name template to save', URLPattern, false) then
+      if Window.FileDialog('Image name template to save', URLPattern, false) then
       begin
         Size := DefaultCubeMapSize;
 
@@ -2627,7 +2627,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
       URL := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap.dds') else
       URL := 'view3dscene_cubemap.dds';
 
-    if Window.URLDialog('Save image to file', URL, false) then
+    if Window.FileDialog('Save image to file', URL, false) then
     begin
       Size := DefaultCubeMapSize;
 
@@ -2655,7 +2655,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
       { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
-        other drawing routine (like "frozen screen" drawn under URLDialog). }
+        other drawing routine (like "frozen screen" drawn under FileDialog). }
       Window.EventBeforeDraw;
       Window.EventDraw;
 
@@ -2679,7 +2679,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
       URL := 'view3dscene_depth_%d.png';
     URL := FileNameAutoInc(URL);
 
-    if Window.URLDialog('Save depth to a file', URL, false, SaveImage_FileFilters) then
+    if Window.FileDialog('Save depth to a file', URL, false, SaveImage_FileFilters) then
       DoSave(URL);
   end;
 
@@ -2815,7 +2815,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
     ProposedSaveName := ChangeURIExt(SceneURL, Extension);
 
-    if Window.URLDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
+    if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     try
       if Convertion then
         Scene.BeforeNodesFree;
@@ -3721,7 +3721,7 @@ var
   NewURL: string;
 begin
   NewURL := ExtractURIPath(SceneURL);
-  if Window.URLDialog('Open file', NewURL, true, Load3DSequence_FileFilters) then
+  if Window.FileDialog('Open file', NewURL, true, Load3DSequence_FileFilters) then
     LoadScene(NewURL, [], 0.0, true);
 end;
 

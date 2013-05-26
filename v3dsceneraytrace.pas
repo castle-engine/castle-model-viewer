@@ -159,7 +159,7 @@ begin
     10: begin
           { This may be called only when rendering is done }
           SaveURL := ProgramName + '_rt.png';
-          if Window.URLDialog('Save image', SaveURL, false,
+          if Window.FileDialog('Save image', SaveURL, false,
             SaveImage_FileFilters) then
           begin
             { Determine ImgFormat exactly the same like SaveImage() does. }
