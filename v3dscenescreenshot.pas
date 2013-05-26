@@ -25,29 +25,28 @@ unit V3DSceneScreenShot;
 
 interface
 
-uses CastleUtils, Classes, CastleClassUtils, CastleTimeUtils,
-  FGL, CastleParameters;
+uses CastleUtils, Classes, CastleClassUtils, CastleTimeUtils, FGL, CastleParameters;
 
 type
-  EInvalidScreenShotFileName = class(EInvalidParams);
+  EInvalidScreenShotURL = class(EInvalidParams);
 
   { One screenshot, that is one --screenshot or --screenshot-range option
     occurrence.
 
     Count describes how many actual image screen shots we have to do
     for this TScreenShot instance. For each Index between 0 and Count - 1,
-    you can call UseTime and UseFileName to actually get time of this
-    capture and the image filename where to save this.
+    you can call UseTime and UseURL to actually get time of this
+    capture and the image URL where to save this.
 
-    Note that UseFileName will do the substitution and actually
-    increment the counter for filenames with @@counter(<padding>) (or %d) inside. So always
-    call UseFileName only once, and in correct order. }
+    Note that UseURL will do the substitution and actually
+    increment the counter for filenames with @@counter(<padding>) (or %d) inside. 
+    So always call UseURL only once, and in correct order. }
   TScreenShot = class
-    FileNamePattern: string;
+    URLPattern: string;
 
     function Count: Cardinal; virtual; abstract;
     function UseTime(const Index: Integer): TFloatTime; virtual; abstract;
-    function UseFileName(const Index: Integer): string; virtual; abstract;
+    function UseURL(const Index: Integer): string; virtual; abstract;
 
     { Call BeginCapture, EndCapture around saving all images for this
       TScreenShot instance. They allow for some tasks, e.g.
@@ -66,7 +65,7 @@ type
 
     function Count: Cardinal; override;
     function UseTime(const Index: Integer): TFloatTime; override;
-    function UseFileName(const Index: Integer): string; override;
+    function UseURL(const Index: Integer): string; override;
   end;
 
   TRangeScreenShot = class(TScreenShot)
@@ -81,9 +80,9 @@ type
 
     function Count: Cardinal; override;
     function UseTime(const Index: Integer): TFloatTime; override;
-    function UseFileName(const Index: Integer): string; override;
+    function UseURL(const Index: Integer): string; override;
 
-    { @raises(EInvalidScreenShotFileName When invalid FileNamePattern
+    { @raises(EInvalidScreenShotURL When invalid URLPattern
         detected, like an image file with no @@counter(<padding>) or %d.) }
     procedure BeginCapture; override;
     procedure EndCapture(Success: boolean); override;
@@ -115,12 +114,12 @@ begin
   Result := ScreenShotsList.Count <> 0;
 end;
 
-function MakeFileName(const FileNamePattern: string;
+function MakeURL(const URLPattern: string;
   var Counter: Cardinal): string;
 var
   ReplacementsDone: Cardinal;
 begin
-  Result := FormatNameCounter(FileNamePattern, Counter, true, ReplacementsDone);
+  Result := FormatNameCounter(URLPattern, Counter, true, ReplacementsDone);
   if ReplacementsDone > 0 then
     Inc(Counter);
 end;
@@ -147,9 +146,9 @@ begin
   Result := Time;
 end;
 
-function TSingleScreenShot.UseFileName(const Index: Integer): string;
+function TSingleScreenShot.UseURL(const Index: Integer): string;
 begin
-  Result := MakeFileName(FileNamePattern, ScreenShotsList.ScreenShotCounter);
+  Result := MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter);
 end;
 
 { TRangeScreenShot ---------------------------------------------------------- }
@@ -164,11 +163,11 @@ begin
   Result := TimeBegin + Index * TimeStep;
 end;
 
-function TRangeScreenShot.UseFileName(const Index: Integer): string;
+function TRangeScreenShot.UseURL(const Index: Integer): string;
 begin
   if SingleMovieFile then
-    Result := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter) else
-    Result := MakeFileName(FileNamePattern, ScreenShotsList.ScreenShotCounter);
+    Result := MakeURL(TemporaryImagesPattern, TemporaryImagesCounter) else
+    Result := MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter);
 
   Progress.Step;
 end;
@@ -181,8 +180,7 @@ var
   SearchError: Integer;
 begin
   { calculate SingleMovieFile }
-  SingleMovieFile := FfmpegVideoMimeType(
-    URIMimeType(FilenameToURISafe(FileNamePattern)), true);
+  SingleMovieFile := FfmpegVideoMimeType(URIMimeType(URLPattern), true);
 
   if SingleMovieFile then
   begin
@@ -215,9 +213,9 @@ begin
     { Check that we have some @counter(<padding>) (or %d) in our filename.
       Just call FormatNameCounter and ignore result,
       to get and check ReplacementsDone. }
-    FormatNameCounter(FileNamePattern, -1, true, ReplacementsDone);
+    FormatNameCounter(URLPattern, -1, true, ReplacementsDone);
     if ReplacementsDone = 0 then
-      raise EInvalidScreenShotFileName.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no @counter(<padding>) or %%d pattern found', [FileNamePattern]);
+      raise EInvalidScreenShotURL.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no @counter(<padding>) or %%d pattern found', [URLPattern]);
   end;
 
   Progress.Init(Count, Format('Screenshot range from time %f (%d frames)',
@@ -243,7 +241,7 @@ begin
         [TemporaryImagesPattern]));
     end else
     begin
-      OutputMovieFileName := MakeFileName(FileNamePattern, ScreenShotsList.ScreenShotCounter);
+      OutputMovieFileName := URIToFilenameSafe(MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter));
 
       Writeln(Output, 'FFMpeg found, executing...');
       Writeln(Output, Executable + ' -f image2 -i "' +
@@ -256,7 +254,7 @@ begin
       TemporaryImagesCounter := 1;
       for I := 1 to FramesCount do
       begin
-        TempFile := MakeFileName(TemporaryImagesPattern, TemporaryImagesCounter);
+        TempFile := URIToFilenameSafe(MakeURL(TemporaryImagesPattern, TemporaryImagesCounter));
         CheckDeleteFile(TempFile, true);
       end;
       Writeln('done.');

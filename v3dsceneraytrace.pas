@@ -150,7 +150,7 @@ end;
 procedure MenuClick(Window: TCastleWindowBase; Item: TMenuItem);
 var
   D: PCallData;
-  SaveAsFilename: string;
+  SaveURL: string;
   ImgFormat: TImageFormat;
 begin
   D := PCallData(Window.UserData);
@@ -158,12 +158,12 @@ begin
   case Item.IntData of
     10: begin
           { This may be called only when rendering is done }
-          SaveAsFilename := ProgramName + '_rt.png';
-          if Window.FileDialog('Save image', SaveAsFilename, false,
+          SaveURL := ProgramName + '_rt.png';
+          if Window.URLDialog('Save image', SaveURL, false,
             SaveImage_FileFilters) then
           begin
             { Determine ImgFormat exactly the same like SaveImage() does. }
-            if MimeTypeToImageFormat(URIMimeType(SaveAsFilename), false, true, ImgFormat) and
+            if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
               (ImgFormat = ifRGBE) then
               MessageOK(Window,
                 'Note: When saving raytraced image from view3dscene to ' +
@@ -175,7 +175,7 @@ begin
                 'Use rayhunter if you want to have RGBE image with precise colors.',
                 taLeft);
 
-            SaveImage(D^.Image, SaveAsFilename);
+            SaveImage(D^.Image, SaveURL);
           end;
         end;
     20: D^.Quit := true;

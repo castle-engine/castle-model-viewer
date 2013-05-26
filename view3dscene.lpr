@@ -1023,10 +1023,8 @@ procedure LoadClearScene; forward;
   like after FreeScene.
 
   This procedure does not really open any file
-  (so ASceneURL need not be a name of existing file,
-  in fact it does not need to even be a valid filename).
-  Instead in uses already created RootNode to init
-  "scene global variables".
+  (so ASceneURL need not be a name of existing file/URL).
+  Instead it uses already created RootNode to init "scene global variables".
 
   Note that all RootNodes[] will be owned by Scene.
   So do not Free RootNodes[] items after using this procedure
@@ -1137,8 +1135,7 @@ begin
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
-      { TODO-net using file operations on URL }
-      NewCaption := ExtractFileName(SceneURL);
+      NewCaption := ExtractURIName(SceneURL);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
     if Window.Closed then
       Window.Caption := NewCaption else
@@ -1299,7 +1296,7 @@ begin
       RecentMenu.Add(ASceneURL);
 
     { We call PrepareResources to make SceneAnimation.PrepareResources to gather
-      warnings (because some warnings, e.g. invalid texture filename,
+      warnings (because some warnings, e.g. invalid texture URL,
       are reported only from SceneAnimation.PrepareResources).
       Also, this allows us to show first PrepareResources with progress bar. }
     PrepareResources(true);
@@ -1395,8 +1392,7 @@ begin
   try
     ChangeNode(SceneChanges, Node);
     Save3D(Node, StdOutStream, SaveGenerator,
-      { TODO-net using file operations on URL }
-      ExtractFileName(ASceneURL), Encoding, ForceConvertingToX3D);
+      ExtractURIName(ASceneURL), Encoding, ForceConvertingToX3D);
   finally FreeAndNil(Node) end;
 end;
 
@@ -1522,7 +1518,7 @@ begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
           Image := DrawAndSaveScreen(TRGBImage, ReadBuffer);
           try
-            SaveImage(Image, ScreenShotsList[I].UseFileName(J));
+            SaveImage(Image, ScreenShotsList[I].UseURL(J));
           finally FreeAndNil(Image) end;
         end;
         ScreenShotsList[I].EndCapture(true);
@@ -1653,21 +1649,20 @@ begin
   { Note that we capture screen *first*, and ask about where to save it later.
     That's because in some situations we capture directly from the back buffer,
     without FBO, and this means that our main window cannot be covered by
-    another window. Capturing right after Window.FileDialog at least under Linux
+    another window. Capturing right after Window.URLDialog at least under Linux
     may mean that OpenGL context underneath the dialog is not really updated
     (so we capture controls (toolbar, lights editor etc.) underneath the dialog). }
 
   Image := CaptureScreen;
   try
     if SceneURL <> '' then
-      { TODO-net using file operations on URL }
-      ScreenShotName := ExtractOnlyFileName(SceneURL) + '_%d.png' else
+      ScreenShotName := ChangeURIExt(ExtractURIName(SceneURL), '_%d.png') else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
     { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
-    if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
+    if Window.URLDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
     try
       SaveImage(Image, ScreenShotName);
     except
@@ -2314,8 +2309,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
        [ DefaultRaytracerDepth,
          Window.Width, Window.Height,
          SceneURL,
-         { TODO-net using file operations on URL }
-         ExtractOnlyFileName(SceneURL) + '-rt.png',
+         ChangeURIExt(ExtractURIName(SceneURL), '-rt.png'),
          VectorToRawStr(Camera.Walk.Position),
          VectorToRawStr(Camera.Walk.Direction),
          VectorToRawStr(Camera.Walk.Up),
@@ -2390,13 +2384,13 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
   var
     TimeBegin, TimeStep: TFloatTime;
     FramesCount: Cardinal;
-    FileNamePattern: string;
+    URLPattern: string;
     Range: TRangeScreenShot;
   begin
     TimeBegin := SceneAnimation.Time;
     TimeStep := 0.04;
     FramesCount := 25;
-    FileNamePattern := 'image@counter(4).png';
+    URLPattern := 'image@counter(4).png';
 
     if MessageInputQuery(Window, 'Input start time for recording movie:',
       TimeBegin, taLeft) then
@@ -2405,7 +2399,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
         'Input time step between capturing movie frames:', TimeStep, taLeft) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount, taLeft) then
-          if Window.FileDialog('Images pattern or movie filename to save', FileNamePattern, false) then
+          if Window.URLDialog('Images pattern or movie filename to save', URLPattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
               (otherwise some rendering behaves differently when
@@ -2416,13 +2410,13 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
             Range.TimeBegin := TimeBegin;
             Range.TimeStep := TimeStep;
             Range.FramesCount := FramesCount;
-            Range.FileNamePattern := FileNamePattern;
+            Range.URLPattern := URLPattern;
             ScreenShotsList.Add(Range);
 
             try
               MakeAllScreenShots(GL_BACK);
             except
-              on E: EInvalidScreenShotFileName do
+              on E: EInvalidScreenShotURL do
                 MessageOk(Window, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
             end;
 
@@ -2539,7 +2533,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
   var
     Side: TCubeMapSide;
     CubeMapImg: TCubeMapImages;
-    FileNamePattern: string;
+    URLPattern: string;
     Orientation: char;
     Size: Cardinal;
   begin
@@ -2560,11 +2554,10 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
     if Orientation <> CharEscape then
     begin
       if SceneURL <> '' then
-        { TODO-net using file operations on URL }
-        FileNamePattern := ExtractOnlyFileName(SceneURL) + '_cubemap_%s.png' else
-        FileNamePattern := 'view3dscene_cubemap_%s.png';
+        URLPattern := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap_%s.png') else
+        URLPattern := 'view3dscene_cubemap_%s.png';
 
-      if Window.FileDialog('Image name template to save', FileNamePattern, false) then
+      if Window.URLDialog('Image name template to save', URLPattern, false) then
       begin
         Size := DefaultCubeMapSize;
 
@@ -2586,33 +2579,33 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
                 CubeMapImg[csNegativeX].Rotate(2);
                 CubeMapImg[csPositiveZ].Rotate(2);
                 CubeMapImg[csNegativeZ].Rotate(2);
-                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['right']));
-                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['left']));
-                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['top']));
-                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['bottom']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['back']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['front']));
+                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['right']));
+                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['left']));
+                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['top']));
+                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['bottom']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['back']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['front']));
               end;
             'o':
               begin
                 { This is the most natural Orientation,
                   our csXxx names match OpenGL names and orientation. }
-                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['positive_x']));
-                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['negative_x']));
-                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['positive_y']));
-                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['negative_y']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['positive_z']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['negative_z']));
+                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['positive_x']));
+                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['negative_x']));
+                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['positive_y']));
+                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['negative_y']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['positive_z']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['negative_z']));
               end;
             'd':
               begin
                 { Swap positive/negative y, since DirectX is left-handed. }
-                SaveImage(CubeMapImg[csPositiveX], Format(FileNamePattern, ['positive_x']));
-                SaveImage(CubeMapImg[csNegativeX], Format(FileNamePattern, ['negative_x']));
-                SaveImage(CubeMapImg[csNegativeY], Format(FileNamePattern, ['positive_y']));
-                SaveImage(CubeMapImg[csPositiveY], Format(FileNamePattern, ['negative_y']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(FileNamePattern, ['positive_z']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(FileNamePattern, ['negative_z']));
+                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['positive_x']));
+                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['negative_x']));
+                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['positive_y']));
+                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['negative_y']));
+                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['positive_z']));
+                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['negative_z']));
               end;
             else EInternalError.Create('orient?');
           end;
@@ -2627,15 +2620,14 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
   procedure ScreenShotToCubeMapDDS;
   var
     DDS: TDDSImage;
-    FileName: string;
+    URL: string;
     Size: Cardinal;
   begin
-    { TODO-net using file operations on URL }
     if SceneURL <> '' then
-      FileName := ExtractOnlyFileName(SceneURL) + '_cubemap.dds' else
-      FileName := 'view3dscene_cubemap.dds';
+      URL := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap.dds') else
+      URL := 'view3dscene_cubemap.dds';
 
-    if Window.FileDialog('Save image to file', FileName, false) then
+    if Window.URLDialog('Save image to file', URL, false) then
     begin
       Size := DefaultCubeMapSize;
 
@@ -2647,7 +2639,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
           true, 0, 0);
         try
           glViewport(0, 0, Window.Width, Window.Height);
-          DDS.SaveToFile(FileName);
+          DDS.SaveToFile(URL);
         finally FreeAndNil(DDS) end;
       end;
     end;
@@ -2655,7 +2647,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ScreenShotDepthToImage;
 
-    procedure DoSave(const FileName: string);
+    procedure DoSave(const URL: string);
     var
       PackData: TPackNotAlignedData;
       Image: TGrayscaleImage;
@@ -2663,7 +2655,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
       { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
-        other drawing routine (like "frozen screen" drawn under FileDialog). }
+        other drawing routine (like "frozen screen" drawn under URLDialog). }
       Window.EventBeforeDraw;
       Window.EventDraw;
 
@@ -2675,22 +2667,20 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
             ImageGLType(Image), Image.RawPixels);
         finally AfterPackImage(PackData, Image) end;
 
-        SaveImage(Image, FileName);
+        SaveImage(Image, URL);
       finally FreeAndNil(Image) end;
     end;
 
   var
-    FileName: string;
+    URL: string;
   begin
-    { TODO-net using file operations on URL }
     if SceneURL <> '' then
-      FileName := ExtractOnlyFileName(SceneURL) + '_depth_%d.png' else
-      FileName := 'view3dscene_depth_%d.png';
-    FileName := FileNameAutoInc(FileName);
+      URL := ChangeURIExt(ExtractURIName(SceneURL), '_depth_%d.png') else
+      URL := 'view3dscene_depth_%d.png';
+    URL := FileNameAutoInc(URL);
 
-    if Window.FileDialog('Save depth to a file', FileName, false,
-      SaveImage_FileFilters) then
-      DoSave(FileName);
+    if Window.URLDialog('Save depth to a file', URL, false, SaveImage_FileFilters) then
+      DoSave(URL);
   end;
 
   procedure Raytrace;
@@ -2830,10 +2820,8 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
       if Convertion then
         Scene.BeforeNodesFree;
 
-      Save3D(Scene.RootNode, ProposedSaveName,
-        { TODO-net using file operations on URL }
-        SaveGenerator, ExtractFileName(SceneURL), SaveVersion, Encoding,
-        ForceConvertingToX3D);
+      Save3D(Scene.RootNode, ProposedSaveName, SaveGenerator,
+        ExtractURIName(SceneURL), SaveVersion, Encoding, ForceConvertingToX3D);
 
       if Convertion then
         Scene.ChangedAll;
@@ -3927,7 +3915,7 @@ const
     7 : begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
-          SingleScreenShot.FileNamePattern := SeparateArgs[2];
+          SingleScreenShot.URLPattern := SeparateArgs[2];
           ScreenShotsList.Add(SingleScreenShot);
         end;
     8 : begin
@@ -3935,7 +3923,7 @@ const
           RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
           RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
           RangeScreenShot.FramesCount := StrToInt(SeparateArgs[3]);
-          RangeScreenShot.FileNamePattern := SeparateArgs[4];
+          RangeScreenShot.URLPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
     9 : InitializeLog(Version);
