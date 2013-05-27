@@ -16,10 +16,11 @@
 { Simple converter to VRML/X3D from various other 3D formats.
   See [http://castle-engine.sourceforge.net/view3dscene.php#section_converting].
 
-  Reads a 3D model from the filename given as command-line parameter
-  ('-' means stdin), and outputs model as VRML/X3D to stdout.
+  Reads a 3D model from the URL (in sample case, just a filename)
+  given as command-line parameter ('-' means stdin),
+  and outputs model as VRML/X3D to stdout.
 
-  Can be used instead of view3dscene --write parameter.
+  Can be used instead of "view3dscene --write ...".
   This way you don't need e.g. OpenGL libraries (that are required
   to run view3dscene) installed on your system.
 
@@ -30,7 +31,8 @@
 program tovrmlx3d;
 
 uses SysUtils, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
-  CastleParameters, V3DSceneVersion, CastleWarnings, CastleFilesUtils;
+  CastleParameters, V3DSceneVersion, CastleWarnings, CastleFilesUtils,
+  CastleURIUtils;
 
 var
   Encoding: TX3DEncoding = xeClassic;
@@ -85,19 +87,19 @@ begin
 end;
 
 var
-  FileName: string;
+  URL: string;
   Node: TX3DNode;
 begin
   { parse command-line }
   Parameters.Parse(Options, @OptionProc, nil);
   Parameters.CheckHigh(1);
-  FileName := Parameters[1];
+  URL := Parameters[1];
 
   OnWarning := @OnWarningWrite;
 
-  Node := Load3D(FileName, true);
+  Node := Load3D(URL, true);
   try
     Save3D(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
-      ExtractFileName(FileName), Encoding, ForceX3D);
+      ExtractURIName(URL), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
 end.
