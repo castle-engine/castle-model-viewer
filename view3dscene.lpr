@@ -902,7 +902,7 @@ procedure OnWarningHandle(const AType: TWarningType; const Category, S: string);
 begin
   { Write to ErrOutput, not normal Output, since when --write is used,
     we write to output VRML/X3D contents. }
-  Writeln(ErrOutput, ProgramName + ': ' + Category + ' warning: ' + S);
+  Writeln(ErrOutput, ApplicationName + ': ' + Category + ' warning: ' + S);
   SceneWarnings.Add(Category + ': ' + S);
   UpdateWarningsButton;
   if Window <> nil then
@@ -1594,7 +1594,7 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  DisplayProgramName = 'view3dscene';
+  DisplayApplicationName = 'view3dscene';
 
 procedure UpdateStatusToolbarVisible; forward;
 
@@ -3905,7 +3905,7 @@ const
            '                        inside your scene instead.' +NL+
            X3DNodesDetailOptionsHelp +NL+
            NL+
-           SCastleEngineProgramHelpSuffix(DisplayProgramName, Version, true));
+           SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
          ProgramBreak;
         end;
     6 : begin

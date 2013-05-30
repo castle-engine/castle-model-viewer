@@ -158,7 +158,7 @@ begin
   case Item.IntData of
     10: begin
           { This may be called only when rendering is done }
-          SaveURL := ProgramName + '_rt.png';
+          SaveURL := ApplicationName + '_rt.png';
           if Window.FileDialog('Save image', SaveURL, false,
             SaveImage_FileFilters) then
           begin

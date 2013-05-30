@@ -187,7 +187,7 @@ begin
     { initialize TemporaryImagesPrefix, TemporaryImagesPattern,
       TemporaryImagesCounter }
 
-    TemporaryImagesPrefix := GetTempFileName('', ProgramName) + '_' +
+    TemporaryImagesPrefix := GetTempFileName('', ApplicationName) + '_' +
       { Although GetTempFileName should add some randomization here,
         there's no guarentee. And we really need randomization --- in case
         something failed (and, since calling external ffmpeg is involved,

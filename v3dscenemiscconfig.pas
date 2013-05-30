@@ -62,7 +62,7 @@ initialization
     - I sometimes display ApplicationName for user, and under Windows
       ParamStr(0) is ugly uppercased.
     - ParamStr(0) is unsure for Unixes.
-    - ApplicationName is used for Config.FileName by UserConfigFile. }
+    - ApplicationName is used for Config.FileName by ApplicationConfig. }
   OnGetApplicationName := @MyGetApplicationName;
 
   Config.OnLoad.Add(@TConfigOptions(nil).LoadFromConfig);
