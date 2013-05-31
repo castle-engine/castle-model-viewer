@@ -54,8 +54,8 @@ begin
     0: begin
          InfoWrite(
            'tovrmlx3d: converter from various 3D model formats into VRML/X3D.' +NL+
-           'Give input 3D model filename on the command-line, and output model' +NL+
-           'will be written to the standard output.' +NL+
+           'Give input 3D model URL (usually just a filename) on the command-line,' +NL+
+           'and output model will be written to the standard output.' +NL+
            NL+
            'Available options are:' +NL+
            HelpOptionHelp +NL+

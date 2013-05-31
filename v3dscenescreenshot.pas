@@ -39,7 +39,7 @@ type
     capture and the image URL where to save this.
 
     Note that UseURL will do the substitution and actually
-    increment the counter for filenames with @@counter(<padding>) (or %d) inside. 
+    increment the counter for URLs with @@counter(<padding>) (or %d) inside. 
     So always call UseURL only once, and in correct order. }
   TScreenShot = class
     URLPattern: string;

@@ -2399,7 +2399,7 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
         'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
         'Input time step between capturing movie frames:', TimeStep, taLeft) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount, taLeft) then
-          if Window.FileDialog('Images pattern or movie filename to save', URLPattern, false) then
+          if Window.FileDialog('Images pattern or movie file to save', URLPattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
               (otherwise some rendering behaves differently when
@@ -3983,10 +3983,10 @@ begin
   ViewpointsParseParameters;
   X3DNodesDetailOptionsParse;
   Parameters.Parse(Options, @OptionProc, nil);
-  { the most important param : filename to load }
+  { the most important param : URL to load }
   if Parameters.High > 1 then
    raise EInvalidParams.Create('Excessive command-line parameters. '+
-     'Expected at most one filename to load') else
+     'Expected at most one URL to load') else
   if Parameters.High = 1 then
   begin
     WasParam_SceneURL := true;
@@ -4013,7 +4013,7 @@ begin
       if not WasParam_SceneURL then
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
-          'But you didn''t provide any filename on command-line to load.');
+          'But you didn''t provide any URL on command-line to load.');
       WriteModel(Param_SceneURL, Param_SceneChanges, Param_WriteEncoding,
         Param_WriteForceX3D);
       Exit;
