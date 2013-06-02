@@ -46,6 +46,7 @@ set -eu
 # We want them to be predictable, the same on every system,
 # to make comparing two outputs (like run_tests_valid_output.txt) reliable.
 export LANG=C
+export LC_COLLATE=C
 
 test_dir()
 {
