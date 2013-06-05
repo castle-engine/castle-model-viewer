@@ -2846,6 +2846,40 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Reading ../demo_models/x3d/units_helper.x3dv
 ---- Reading again ../demo_models/x3d/units_helper.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/warnings/backslashes.x3d
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+---- Reading again ../demo_models/x3d/warnings/backslashes.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+---- Reading ../demo_models/x3d/warnings/backslashes.x3dv
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+---- Reading again ../demo_models/x3d/warnings/backslashes.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
 ---- Reading ../demo_models/x3d/warnings/bump_mapping_and_shader_mix.x3dv
 ---- Reading again ../demo_models/x3d/warnings/bump_mapping_and_shader_mix.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
