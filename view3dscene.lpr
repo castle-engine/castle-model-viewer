@@ -1135,7 +1135,7 @@ begin
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
-      NewCaption := ExtractURIName(SceneURL);
+      NewCaption := URICaption(SceneURL);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
     if Window.Closed then
       Window.Caption := NewCaption else
