@@ -42,7 +42,7 @@ do_read_save ()
   # It's important that temp_file is inside the same directory,
   # otherwise re-reading it would not work because relative URLs
   # are broken.
-  local TEMP_FILE=`dirname "$FILE"`/test_temporary.wrl
+  local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
 
   echo '---- Reading' "$FILE"
   "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE"
@@ -57,13 +57,13 @@ do_read_save ()
   # to any version we like, and output is always classic VRML --- so comparison
   # has no sense).
 
-  local FILE_EXTENSION=`stringoper ExtractFileExt "$FILE"`
+  local FILE_EXTENSION="`stringoper ExtractFileExt \"$FILE\"`"
 
   if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
            '(' "$FILE_EXTENSION" = '.x3dv' ')' ')' -a \
-       '(' `basename "$FILE"` != cones_gzipped_but_with_normal_extension.wrl ')' ]; then
-    local INPUT_HEADER=`head -n 1 "$FILE"`
-    local OUTPUT_HEADER=`head -n 1 "$TEMP_FILE"`
+       '(' "`basename \"$FILE\"`" != cones_gzipped_but_with_normal_extension.wrl ')' ]; then
+    local INPUT_HEADER="`head -n 1 \"$FILE\"`"
+    local OUTPUT_HEADER="`head -n 1 \"$TEMP_FILE\"`"
 
     # trim both headers, to trim possibly different newlines
     # (maybe they are stripped by ` already?)
