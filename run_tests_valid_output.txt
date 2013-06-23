@@ -2813,6 +2813,15 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 ---- Reading ../demo_models/x3d/line_set.x3dv
 ---- Reading again ../demo_models/x3d/line_set.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/percent space.x3dv
+---- Reading again ../demo_models/x3d/percent space.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/percent%4d.x3dv
+---- Reading again ../demo_models/x3d/percent%4d.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/x3d/percent_include.x3dv
+---- Reading again ../demo_models/x3d/percent_include.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/x3d/points_colorrgba.x3dv
 ---- Reading again ../demo_models/x3d/points_colorrgba.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
