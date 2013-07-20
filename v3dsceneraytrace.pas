@@ -46,7 +46,7 @@ implementation
 
 uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
   CastleUtils, CastleMessages, CastleGLImages, Classes, V3DSceneStatus,
-  CastleURIUtils;
+  CastleURIUtils, CastleKeysMouse;
 
 const
   DefaultPrimarySamplesCount = 1;
@@ -147,7 +147,8 @@ end;
 
 { menu things ---------------------------------------------------------------- }
 
-procedure MenuClick(Window: TCastleWindowBase; Item: TMenuItem);
+{ Save rendered image. This may be called only when rendering is done. }
+procedure EventSave(Window: TCastleWindowBase);
 var
   D: PCallData;
   SaveURL: string;
@@ -155,32 +156,55 @@ var
 begin
   D := PCallData(Window.UserData);
 
-  case Item.IntData of
-    10: begin
-          { This may be called only when rendering is done }
-          SaveURL := ApplicationName + '_rt.png';
-          if Window.FileDialog('Save image', SaveURL, false,
-            SaveImage_FileFilters) then
-          begin
-            { Determine ImgFormat exactly the same like SaveImage() does. }
-            if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
-              (ImgFormat = ifRGBE) then
-              MessageOK(Window,
-                'Note: When saving raytraced image from view3dscene to ' +
-                'RGBE file format, you will *not* get image with perfect ' +
-                'RGB+Exponent precision. ' +
-                'That''s because image is already stored in memory in RGB ' +
-                '(8 bits per component) format (this was required to quickly display ' +
-                'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
-                'Use rayhunter if you want to have RGBE image with precise colors.',
-                taLeft);
+  SaveURL := ApplicationName + '_rt.png';
+  if Window.FileDialog('Save image', SaveURL, false,
+    SaveImage_FileFilters) then
+  begin
+    { Determine ImgFormat exactly the same like SaveImage() does. }
+    if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
+      (ImgFormat = ifRGBE) then
+      MessageOK(Window,
+        'Note: When saving raytraced image from view3dscene to ' +
+        'RGBE file format, you will *not* get image with perfect ' +
+        'RGB+Exponent precision. ' +
+        'That''s because image is already stored in memory in RGB ' +
+        '(8 bits per component) format (this was required to quickly display ' +
+        'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
+        'Use rayhunter if you want to have RGBE image with precise colors.',
+        taLeft);
 
-            SaveImage(D^.Image, SaveURL);
-          end;
-        end;
-    20: D^.Quit := true;
+    SaveImage(D^.Image, SaveURL);
   end;
 end;
+
+procedure EventEscape(Window: TCastleWindowBase);
+var
+  D: PCallData;
+begin
+  D := PCallData(Window.UserData);
+  D^.Quit := true;
+end;
+
+procedure MenuClick(Window: TCastleWindowBase; Item: TMenuItem);
+begin
+  case Item.IntData of
+    10: EventSave(Window);
+    20: EventEscape(Window);
+  end;
+end;
+
+{$ifdef LCLCarbon}
+procedure PressWorking(Window: TCastleWindowBase; const Event: TInputPressRelease);
+begin
+  if Event.IsKey(CharEscape) then EventEscape(Window);
+end;
+
+procedure PressDone(Window: TCastleWindowBase; const Event: TInputPressRelease);
+begin
+  if Event.IsKey(CtrlS) then EventSave(Window);
+  if Event.IsKey(CharEscape) then EventEscape(Window);
+end;
+{$endif}
 
 function CreateMainMenuWorking: TMenu;
 var
@@ -258,8 +282,16 @@ begin
       @DrawWorking, @Resize2D, @NoClose);
 
     Window.UserData := @CallData;
+    { Lazarus Carbon widgetset (used by CastleWindow LCL backend on Mac OS X)
+      doesn't handle MainMenu changes nicely (it would fire ray-tracing
+      twice on Ctrl+R, since we rebuild the menu inside the menu handler).
+      For now, just handle Escape and CtrlS specially on Mac OS X. }
+    {$ifdef LCLCarbon}
+    Window.OnPress := @PressWorking;
+    {$else}
     Window.MainMenu := MainMenuWorking;
     Window.OnMenuClick := @MenuClick;
+    {$endif}
     CallData.Quit := false;
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
@@ -323,7 +355,11 @@ begin
       Window.PostRedisplay;
       Window.Caption := 'view3dscene - Ray Tracing - done';
       Window.OnDraw := @DrawDone;
+      {$ifdef LCLCarbon}
+      Window.OnPress := @PressDone;
+      {$else}
       Window.MainMenu := MainMenuDone;
+      {$endif}
       repeat Application.ProcessMessage(true, true) until CallData.Quit;
 
     except on BreakRaytracing do ; end;
