@@ -2864,13 +2864,19 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure OpenSceneURL;
   var
-    URL: string;
+    URL, CopyStr, CutStr, PasteStr: string;
   begin
     URL := SceneURL;
+    Check(KeyString(CtrlC, K_None, CopyStr));
+    Check(KeyString(CtrlX, K_None, CutStr));
+    Check(KeyString(CtrlV, K_None, PasteStr));
     if MessageInputQuery(Window,
       'Open 3D model from given URL.' + NL + NL +
       'Note that by default "http" is disabled (because the downloads are blocking for now, and every 3D model may reference additional resources like textures). Enable http by checking "Preferences -> Download Resources From Network".' + NL + NL +
-      'You can copy (Ctrl + C) and paste (Ctrl + V) here, for example to easily paste URL from/to your web browser.' + NL + NL +
+      'You can copy (' + CopyStr +
+      '), cut (' + CutStr +
+      ') and paste (' + PasteStr +
+      ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
       'URL:', URL, taLeft) then
       LoadScene(URL, [], 0.0, true);
   end;
