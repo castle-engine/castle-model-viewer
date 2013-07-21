@@ -35,29 +35,6 @@
   ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
   For an example 3D viewer using Lazarus forms, see
   ../castle_game_engine/examples/lazarus/model_3d_viewer/
-
-  Basic components of this program:
-  - use Load3DSequence to load any format to VRML/X3D scene.
-    This converts any known (to our engine) 3D model format to VRML/X3D.
-    This convertion doesn't lose anything because VRML/X3D is able to
-    express everything that is implemented in other 3D formats readers.
-    And we gain the simplicity of this program (we just treat everything
-    as VRML/X3D scene, actually VRML/X3D precalculated animation),
-    optimization (vbo, OpenGL renderer cache inside VRML/X3D renderer),
-    functionality (like automatic normals generation based on creaseAngle).
-  - render scene using TCastleScene (actually TCastlePrecalculatedAnimation
-    and TCastleScene is inside)
-  - use Cameras and TCastleWindowCustom to let user navigate
-    over the scene using various navigation modes
-    (Examine, Walk) and with optional gravity
-  - build TTriangleOctree to allow collision detection for
-    Walk camera and to allow raytracer
-  - build TShapeOctree to allow frustum culling using octree by TCastleScene
-  - use RayTracer embedded in V3DSceneRaytrace unit to allow
-    viewing raytraced image
-  - allow some kind of object picking with mouse left button
-    (for VRML/X3D sensors) and right button (to select for editing).
-    This simply casts a ray from a camera.
 }
 
 program view3dscene;
@@ -106,7 +83,7 @@ var
 
   RecentMenu: TWindowRecentFiles;
 
-  { These are so-called "scene global variables".
+  { Scene global variables.
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
     Also note that Window.Caption (and FPSBaseCaption) also should be modified
@@ -603,16 +580,16 @@ var
 
 procedure Open(Window: TCastleWindowBase);
 begin
- StatusFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
+  StatusFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
 
- { We want to be able to render any scene --- so we have to be prepared
-   that fog interpolation has to be corrected for perspective. }
- glHint(GL_FOG_HINT, GL_NICEST);
+  { We want to be able to render any scene --- so we have to be prepared
+    that fog interpolation has to be corrected for perspective. }
+  glHint(GL_FOG_HINT, GL_NICEST);
 
- WindowProgressInterface.Window := Window;
- Progress.UserInterface := WindowProgressInterface;
+  WindowProgressInterface.Window := Window;
+  Progress.UserInterface := WindowProgressInterface;
 
- BGColorChanged;
+  BGColorChanged;
 end;
 
 procedure Close(Window: TCastleWindowBase);
