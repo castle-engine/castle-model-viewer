@@ -1378,6 +1378,18 @@ begin
   LoadScene(URL, [], 0.0, true);
 end;
 
+procedure DropFiles(Window: TCastleWindowBase; const FileNames: array of string);
+var
+  URL: string;
+begin
+  if High(FileNames) >= 0 then
+  begin
+    URL := FilenameToURISafe(FileNames[0]);
+    if URL <> '' then
+      LoadScene(URL, [], 0.0, true);
+  end;
+end;
+
 class procedure THelper.GeometryChanged(Scene: TCastleSceneCore;
   const SomeLocalGeometryChanged: boolean;
   OnlyShapeChanged: TShape);
@@ -4030,6 +4042,7 @@ begin
         Window.OnClose := @Close;
         Window.OnResize := @Resize;
         Window.OnPress := @Press;
+        Window.OnDropFiles := @DropFiles;
 
         if MakingScreenShot then
         begin
