@@ -19,7 +19,7 @@
       <string>****</string>
     </array>
     <key>CFBundleTypeRole</key>
-    <string>Viewer</string>
+    <string>Editor</string>
   </dict>
   <dict>
     <key>CFBundleTypeExtensions</key>
@@ -57,7 +57,7 @@
       <string>****</string>
     </array>
     <key>CFBundleTypeRole</key>
-    <string>Viewer</string>
+    <string>Editor</string>
   </dict>
   <dict>
     <key>CFBundleTypeExtensions</key>
@@ -77,7 +77,7 @@
       <string>****</string>
     </array>
     <key>CFBundleTypeRole</key>
-    <string>Viewer</string>
+    <string>Editor</string>
   </dict>
   <dict>
     <key>CFBundleTypeExtensions</key>
