@@ -53,7 +53,7 @@
   </mime-type>
 
   <mime-type type="image/x-3ds">
-    <comment>3D Studio image</comment>
+    <comment>3DS model</comment>
     <comment xml:lang="az">3D Studio rəsmi</comment>
     <comment xml:lang="bg">Изображение — 3D Studio</comment>
     <comment xml:lang="ca">imatge de 3D Studio</comment>
