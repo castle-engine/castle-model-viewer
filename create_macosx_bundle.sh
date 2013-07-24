@@ -190,3 +190,8 @@
 '
 
 cp /sw/lib/libpng14.14.dylib view3dscene.app/Contents/MacOS/libpng.dylib
+
+cp /sw/lib/libvorbisfile.3.dylib \
+   /sw/lib/libvorbis.0.dylib \
+   /sw/lib/libogg.0.dylib \
+   view3dscene.app/Contents/MacOS/
