@@ -185,7 +185,7 @@ begin
     if Shaders[SE] = nil then
     begin
       if (TGLSLProgram.ClassSupport <> gsNone) and
-         GL_ARB_texture_rectangle then
+         GLFeatures.ARB_texture_rectangle then
       begin
         try
           Shaders[SE] := TGLSLProgram.Create;
