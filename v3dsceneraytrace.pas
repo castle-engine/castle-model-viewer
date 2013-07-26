@@ -90,7 +90,7 @@ begin
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   glClear(GL_COLOR_BUFFER_BIT);
-  SetWindowPosZero;
+  SetWindowPos(0, 0);
   ImageDraw(D^.Image);
   DrawStatus(D^.Stats);
 end;
@@ -110,7 +110,7 @@ begin
   D := PCallData(Window.UserData);
 
   glClear(GL_COLOR_BUFFER_BIT);
-  SetWindowPosZero;
+  SetWindowPos(0, 0);
   ImageDraw(D^.Image);
 end;
 
