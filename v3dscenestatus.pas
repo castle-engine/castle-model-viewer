@@ -25,19 +25,35 @@ unit V3DSceneStatus;
 
 interface
 
-uses CastleGLBitmapFonts, Classes;
+uses CastleGLBitmapFonts, Classes, CastleUIControls;
+
+type
+  TStatusText = class(TUIControl)
+  private
+    Font: TGLBitmapFont;
+    FMaxLineChars: Cardinal;
+  protected
+    procedure CalculateText(const Strs: TStringList); virtual;
+  public
+    function DrawStyle: TUIControlDrawStyle; override;
+    procedure Draw; override;
+    procedure GLContextOpen; override;
+    procedure GLContextClose; override;
+    procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
+    property MaxLineChars: Cardinal read FMaxLineChars;
+  end;
 
 var
-  { Initialized in Window.Open, freed in Window.Close. }
-  StatusFont: TGLBitmapFont;
+  StatusText: TStatusText;
 
-procedure DrawStatus(const S: TStringList);
-
-function StatusMaxLineChars(const WindowWidth: Cardinal): Cardinal;
+{ Draw status text directly. Call this only if StatusText is created
+  (since we reuse it's Font). }
+procedure DrawStatus(const Strs: TStringList);
 
 implementation
 
-uses CastleVectors, GL, CastleUtils;
+uses SysUtils, CastleBitmapFont_BVSansMono_Bold_m15,
+  CastleVectors, GL, CastleUtils;
 
 const
   { Margin inside status box size. }
@@ -45,7 +61,9 @@ const
   { Margin from status box to window border. }
   WindowMargin = 5;
 
-procedure DrawStatus(const S: TStringList);
+{ TStatusText ---------------------------------------------------------------- }
+
+procedure DrawStatus(const Strs: TStringList);
 const
   InsideColor: TVector4Single = (0, 0, 0, 0.7);
   BorderColor: TVector4Single = (0, 1, 0, 1);
@@ -53,14 +71,51 @@ const
 begin
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  StatusFont.PrintStringsBox(S, true, WindowMargin, WindowMargin, 0,
+  StatusText.Font.PrintStringsBox(Strs, true, WindowMargin, WindowMargin, 0,
     InsideColor, BorderColor, TextColor, BoxMargin);
   glDisable(GL_BLEND);
 end;
 
-function StatusMaxLineChars(const WindowWidth: Cardinal): Cardinal;
+procedure TStatusText.Draw;
+var
+  Strs: TStringList;
 begin
-  Result := Max(Integer(10), Integer(WindowWidth - BoxMargin * 2 - WindowMargin * 2) div StatusFont.TextWidth('W'));
+  if not GetExists then Exit;
+  Strs := TStringList.Create;
+  try
+    CalculateText(Strs);
+    DrawStatus(Strs);
+  finally FreeAndNil(Strs) end;
+end;
+
+function TStatusText.DrawStyle: TUIControlDrawStyle;
+begin
+  if GetExists then
+    Result := ds2D else
+    Result := dsNone;
+end;
+
+procedure TStatusText.CalculateText(const Strs: TStringList);
+begin
+end;
+
+procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
+begin
+  FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - BoxMargin * 2 -
+    WindowMargin * 2) div Font.TextWidth('W'));
+end;
+
+procedure TStatusText.GLContextOpen;
+begin
+  inherited;
+  if Font = nil then
+    Font := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
+end;
+
+procedure TStatusText.GLContextClose;
+begin
+  FreeAndNil(Font);
+  inherited;
 end;
 
 end.

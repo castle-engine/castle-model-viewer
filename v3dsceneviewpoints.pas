@@ -26,7 +26,8 @@ unit V3DSceneViewpoints;
 interface
 
 uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
-  CastleSceneCore, CastlePrecalculatedAnimation;
+  CastleSceneCore, CastlePrecalculatedAnimation, CastleScene,
+  CastleSceneManager, CastleKeysMouse;
 
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you
@@ -80,6 +81,9 @@ type
   public
     { Currently bound viewpoint (@nil if none),
       used to make appropriate menu item "checked".
+      This only takes care of updating menu state,
+      it does not actually jump to viewpoint,
+      for this see JumpToViewpoint.
 
       Note: we cannot make this of TAbstractViewpointNode,
       because the same viewpoint node may be USEd many times
@@ -93,6 +97,14 @@ type
     procedure Recalculate(Scene: TCastleSceneCore);
 
     function ItemOf(Viewpoint: TAbstractViewpointNode): TMenuItemViewpoint;
+
+    { Jump to specific viewpoint, by order.
+      This both updates the menu state (BoundViewpoint)
+      and actually moves the camera (JumpToViewpoint). }
+    procedure Initial(const SceneManager: TCastleSceneManager);
+    procedure Previous(const SceneManager: TCastleSceneManager);
+    procedure Next(const SceneManager: TCastleSceneManager);
+    procedure Final(const SceneManager: TCastleSceneManager);
   end;
 
 var
@@ -105,9 +117,15 @@ procedure ViewpointsParseParameters;
 procedure SetInitialViewpoint(SceneAnimation: TCastlePrecalculatedAnimation;
   const EnableNonStandardValue: boolean);
 
+{ Switch camera to given viewpoint. This only switches the 3D camera,
+  does not update the "Viewpoints" menu state (for this, see
+  TMenuViewpoints.BoundViewpoint). }
+procedure JumpToViewpoint(const SceneManager: TCastleSceneManager;
+  const Viewpoint: TAbstractViewpointNode);
+
 implementation
 
-uses SysUtils, CastleStringUtils, CastleParameters;
+uses SysUtils, CastleStringUtils, CastleParameters, V3DSceneStatus;
 
 function SForCaption(const S: string; const Limit: Cardinal): string;
 begin
@@ -261,6 +279,8 @@ begin
 end;
 
 procedure TMenuViewpoints.Recalculate(Scene: TCastleSceneCore);
+var
+  M: TMenuItem;
 begin
   MenuUpdateBegin;
   DeleteAll;
@@ -279,6 +299,19 @@ begin
     FreeAndNil(AddViewpointGroups);
   end;
 
+  Append(TMenuSeparator.Create);
+  M := TMenuItem.Create('Initial Viewpoint' , 65, K_Home);
+  M.Enabled := ViewpointsRadioGroup <> nil;
+  Append(M);
+  M := TMenuItem.Create('Previous Viewpoint', 66, K_PageUp);
+  M.Enabled := ViewpointsRadioGroup <> nil;
+  Append(M);
+  M := TMenuItem.Create('Next Viewpoint'    , 67, K_PageDown);
+  M.Enabled := ViewpointsRadioGroup <> nil;
+  Append(M);
+  M := TMenuItem.Create('Final Viewpoint'   , 68, K_End);
+  M.Enabled := ViewpointsRadioGroup <> nil;
+  Append(M);
   Append(TMenuSeparator.Create);
   Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
   Append(TMenuItem.Create('Default VRML 2.0 (and X3D) viewpoint', 52));
@@ -320,6 +353,50 @@ begin
       if TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]).Viewpoint = Viewpoint then
         Exit(TMenuItemViewpoint(ViewpointsRadioGroup.Items[I]));
   Result := nil;
+end;
+
+procedure TMenuViewpoints.Initial(const SceneManager: TCastleSceneManager);
+begin
+  if (ViewpointsRadioGroup <> nil) and
+     (ViewpointsRadioGroup.Count <> 0) then
+  begin
+    BoundViewpoint := ViewpointsRadioGroup.First as TMenuItemViewpoint;
+    JumpToViewpoint(SceneManager, BoundViewpoint.Viewpoint);
+  end;
+end;
+
+procedure TMenuViewpoints.Previous(const SceneManager: TCastleSceneManager);
+var
+  Item: TMenuItemRadio;
+begin
+  if (ViewpointsRadioGroup <> nil) and
+     ViewpointsRadioGroup.Previous(Item) then
+  begin
+    BoundViewpoint := Item as TMenuItemViewpoint;
+    JumpToViewpoint(SceneManager, BoundViewpoint.Viewpoint);
+  end;
+end;
+
+procedure TMenuViewpoints.Next(const SceneManager: TCastleSceneManager);
+var
+  Item: TMenuItemRadio;
+begin
+  if (ViewpointsRadioGroup <> nil) and
+     ViewpointsRadioGroup.Next(Item) then
+  begin
+    BoundViewpoint := Item as TMenuItemViewpoint;
+    JumpToViewpoint(SceneManager, BoundViewpoint.Viewpoint);
+  end;
+end;
+
+procedure TMenuViewpoints.Final(const SceneManager: TCastleSceneManager);
+begin
+  if (ViewpointsRadioGroup <> nil) and
+     (ViewpointsRadioGroup.Count <> 0) then
+  begin
+    BoundViewpoint := ViewpointsRadioGroup.Last as TMenuItemViewpoint;
+    JumpToViewpoint(SceneManager, BoundViewpoint.Viewpoint);
+  end;
 end;
 
 { command-line options ------------------------------------------------------- }
@@ -366,6 +443,24 @@ begin
     SceneAnimation.InitialViewpointIndex := 0;
     SceneAnimation.InitialViewpointName := '';
   end;
+end;
+
+procedure JumpToViewpoint(const SceneManager: TCastleSceneManager;
+  const Viewpoint: TAbstractViewpointNode);
+var
+  Pos, Dir, Up, GravityUp: TVector3Single;
+  Scene: TCastleScene;
+begin
+  Scene := SceneManager.MainScene;
+  if Viewpoint = Scene.ViewpointStack.Top then
+  begin
+    { Sending set_bind = true works fine if it's not current viewpoint,
+      otherwise nothing happens... So just explicitly go to viewpoint
+      position. }
+    Viewpoint.GetView(Pos, Dir, Up, GravityUp);
+    Scene.CameraTransition(SceneManager.Camera, Pos, Dir, Up, GravityUp);
+  end else
+    Viewpoint.EventSet_Bind.Send(true, Scene.Time);
 end;
 
 initialization

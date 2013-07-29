@@ -50,7 +50,7 @@ program view3dscene;
 {$endif}
 
 uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
-  CastleBitmapFont_BVSansMono_Bold_m15, CastleTriangles,
+  CastleTriangles,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
@@ -385,33 +385,21 @@ end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
 
-{ TStatusText ---------------------------------------------------------------- }
+{ TExtendedStatusText -------------------------------------------------------- }
 
 type
-  TStatusText = class(TUIControl)
-  public
-    function DrawStyle: TUIControlDrawStyle; override;
-    procedure Draw; override;
+  TExtendedStatusText = class(TStatusText)
+  protected
+    procedure CalculateText(const Strs: TStringList); override;
   end;
 
-function TStatusText.DrawStyle: TUIControlDrawStyle;
-begin
-  if GetExists then
-    Result := ds2D else
-    Result := dsNone;
-end;
-
-procedure TStatusText.Draw;
-var
-  Strs: TStringList;
+procedure TExtendedStatusText.CalculateText(const Strs: TStringList);
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
-  var
-    MaxLineChars: Cardinal;
 
     function DescribeSensor(Sensor: TX3DNode): string;
     var
@@ -464,8 +452,6 @@ const
          ((Over <> nil) and
           (Over.Count <> 0)) then
       begin
-        MaxLineChars := StatusMaxLineChars(Window.Width);
-
         { Display sensors active but not over.
           We do not just list all active sensors in the 1st pass,
           because we prefer to list active sensors in the (more stable) order
@@ -518,70 +504,58 @@ var
   Statistics: TRenderStatistics;
   Pos, Dir, Up: TVector3Single;
 begin
-  if not GetExists then Exit;
+  inherited;
 
   Statistics := SceneManager.Statistics;
 
-  Strs := TStringList.Create;
-  try
-    DescribeSensors;
+  DescribeSensors;
 
-    { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
-    if SceneOctreeCollisions = nil then
-      S += ' (octree resources released)';
-    strs.Append(S); }
+  { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
+  if SceneOctreeCollisions = nil then
+    S += ' (octree resources released)';
+  strs.Append(S); }
 
-    Camera.GetView(Pos, Dir, Up);
-    strs.Append(Format('Camera: pos %s, dir %s, up %s',
-      [ VectorToNiceStr(Pos), VectorToNiceStr(Dir), VectorToNiceStr(Up) ]));
+  Camera.GetView(Pos, Dir, Up);
+  strs.Append(Format('Camera: pos %s, dir %s, up %s',
+    [ VectorToNiceStr(Pos), VectorToNiceStr(Dir), VectorToNiceStr(Up) ]));
 
-    if Camera.NavigationClass = ncWalk then
-    begin
-      strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
-        [ Camera.Walk.MoveSpeed,
-          Camera.Walk.PreferredHeight,
-          CurrentAboveHeight ]));
-    end;
-
-    { if SceneLightsCount = 0 then
-     s := '(useless, scene has no lights)' else
-     s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
-    strs.Append(Format('Use scene lights: %s', [s])); }
-
-    if SceneAnimation.Attributes.UseOcclusionQuery or
-       SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
-      S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
-      S := '';
-    strs.Append(Format('Rendered Shapes : %d%s of %d ',
-      [ Statistics.ShapesRendered, S,
-        Statistics.ShapesVisible ]) + OctreeDisplayStatus);
-
-    if SceneAnimation.TimeAtLoad = 0.0 then
-      S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
-      S := Format('World time: load time + %d = %d',
-        [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
-         Trunc(SceneAnimation.Time)]);
-    if not AnimationTimePlaying then
-      S += ' (paused)';
-    if not ProcessEventsWanted then
-      S += ' (paused, not processing VRML/X3D events)';
-    strs.Append(S);
-
-    DrawStatus(Strs);
-  finally
-    FreeAndNil(Strs);
+  if Camera.NavigationClass = ncWalk then
+  begin
+    strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
+      [ Camera.Walk.MoveSpeed,
+        Camera.Walk.PreferredHeight,
+        CurrentAboveHeight ]));
   end;
-end;
 
-var
-  StatusText: TStatusText;
+  { if SceneLightsCount = 0 then
+   s := '(useless, scene has no lights)' else
+   s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
+  strs.Append(Format('Use scene lights: %s', [s])); }
+
+  if SceneAnimation.Attributes.UseOcclusionQuery or
+     SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
+    S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
+    S := '';
+  strs.Append(Format('Rendered Shapes : %d%s of %d ',
+    [ Statistics.ShapesRendered, S,
+      Statistics.ShapesVisible ]) + OctreeDisplayStatus);
+
+  if SceneAnimation.TimeAtLoad = 0.0 then
+    S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
+    S := Format('World time: load time + %d = %d',
+      [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
+       Trunc(SceneAnimation.Time)]);
+  if not AnimationTimePlaying then
+    S += ' (paused)';
+  if not ProcessEventsWanted then
+    S += ' (paused, not processing VRML/X3D events)';
+  strs.Append(S);
+end;
 
 { TCastleWindowBase callbacks --------------------------------------------------------- }
 
 procedure Open(Window: TCastleWindowBase);
 begin
-  StatusFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
-
   { We want to be able to render any scene --- so we have to be prepared
     that fog interpolation has to be corrected for perspective. }
   glHint(GL_FOG_HINT, GL_NICEST);
@@ -594,8 +568,6 @@ end;
 
 procedure Close(Window: TCastleWindowBase);
 begin
-  FreeAndNil(StatusFont);
-
   Progress.UserInterface := ProgressNullInterface;
 end;
 
@@ -2740,21 +2712,6 @@ procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure JumpToViewpoint(Viewpoint: TAbstractViewpointNode);
-  var
-    Pos, Dir, Up, GravityUp: TVector3Single;
-  begin
-    if Viewpoint = Scene.ViewpointStack.Top then
-    begin
-      { Sending set_bind = true works fine if it's not current viewpoint,
-        otherwise nothing happens... So just explicitly go to viewpoint
-        position. }
-      Viewpoint.GetView(Pos, Dir, Up, GravityUp);
-      Scene.CameraTransition(Camera, Pos, Dir, Up, GravityUp);
-    end else
-      Viewpoint.EventSet_Bind.Send(true, Scene.Time);
-  end;
-
   procedure VisualizeHumanoids;
   var
     Vis: THumanoidVisualization;
@@ -2939,6 +2896,11 @@ begin
   59: SetViewpointForWholeScene(1, 2, false, true);
   60: SetViewpointForWholeScene(1, 2, true , true);
 
+  65: Viewpoints.Initial(SceneManager);
+  66: Viewpoints.Previous(SceneManager);
+  67: Viewpoints.Next(SceneManager);
+  68: Viewpoints.Final(SceneManager);
+
   82: ShowBBox := not ShowBBox;
   84: if Window.ColorDialog(BGColor) then BGColorChanged;
   86: with SceneAnimation.Attributes do Blending := not Blending;
@@ -3105,7 +3067,7 @@ begin
 
   225: PrecalculateAnimationFromEvents;
 
-  300: JumpToViewpoint((MenuItem as TMenuItemViewpoint).Viewpoint);
+  300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
   340: SwitchScreenSpaceAmbientOcclusion;
   350..370:
@@ -3588,7 +3550,7 @@ begin
   ToolbarPanel.VerticalSeparators.Count := 2;
   Window.Controls.InsertFront(ToolbarPanel);
 
-  StatusText := TStatusText.Create(Application);
+  StatusText := TExtendedStatusText.Create(Application);
   Window.Controls.InsertFront(StatusText);
 
   OpenButton := TCastleButton.Create(Application);
