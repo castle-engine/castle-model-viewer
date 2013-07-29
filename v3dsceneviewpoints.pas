@@ -29,11 +29,15 @@ uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUti
   CastleSceneCore, CastlePrecalculatedAnimation, CastleScene,
   CastleSceneManager, CastleKeysMouse;
 
+const
+  DefaultCaptionLimit = 50;
+
 { Return S with newlines replaced with spaces and trimmed to
   sensible number of characters. This is useful when you
   want to use some user-supplied string (e.g. in VRML/X3D
   SFString field) in your UI (e.g. as menu or window caption). }
-function SForCaption(const S: string; const Limit: Cardinal = 50): string;
+function SForCaption(const S: string;
+  const Limit: Cardinal = DefaultCaptionLimit): string;
 
 type
   { Menu item referring to a viewpoint.
@@ -146,6 +150,29 @@ begin
   Result := nil;
 end;
 
+function NodeToCaption(const Node: TX3DNode): string;
+begin
+  Result := '';
+
+  if Node is TAbstractX3DViewpointNode then
+  begin
+    Result := SForCaption(TAbstractX3DViewpointNode(Node).FdDescription.Value);
+  end else
+  if Node is TViewpointGroupNode then
+  begin
+    Result := SForCaption(TViewpointGroupNode(Node).FdDescription.Value);
+  end;
+
+  { if node doesn't have a "description" field, or it's left empty,
+    use node name }
+  if Result = '' then
+    Result := Node.NodeName;
+
+  { if even the node name is empty, just write node type. }
+  if Result = '' then
+    Result := Node.NodeTypeName;
+end;
+
 const
   { We don't add more menu item entries for viewpoints. }
   MaxMenuItems = 20;
@@ -156,36 +183,11 @@ procedure TMenuViewpoints.AddViewpoint(
 
   { Nice menu item caption for TAbstractViewpointNode or TViewpointGroupNode }
   function ViewpointToMenuCaption(const ItemIndex: Integer; Node: TX3DNode): string;
-  var
-    Description: string;
   begin
     if ItemIndex < 10 then
       Result := '_';
     Result += IntToStr(ItemIndex) + ': ';
-
-    Description := '';
-
-    if Node is TAbstractX3DViewpointNode then
-    begin
-      Description := SQuoteMenuEntryCaption(
-        SForCaption(TAbstractX3DViewpointNode(Node).FdDescription.Value));
-    end else
-    if Node is TViewpointGroupNode then
-    begin
-      Description := SQuoteMenuEntryCaption(
-        SForCaption(TViewpointGroupNode(Node).FdDescription.Value));
-    end;
-
-    { if node doesn't have a "description" field, or it's left empty,
-      use node name }
-    if Description = '' then
-      Description := SQuoteMenuEntryCaption(Node.NodeName);
-
-    { if even the node name is empty, just write node type. }
-    if Description = '' then
-      Description := SQuoteMenuEntryCaption(Node.NodeTypeName);
-
-    Result += Description;
+    Result += SQuoteMenuEntryCaption(NodeToCaption(Node));
   end;
 
   { Scan ParentInfo information for TViewpointGroupNode.
@@ -451,6 +453,7 @@ var
   Pos, Dir, Up, GravityUp: TVector3Single;
   Scene: TCastleScene;
 begin
+  StatusText.Flash('Switching to viewpoint: ' + NodeToCaption(Viewpoint));
   Scene := SceneManager.MainScene;
   if Viewpoint = Scene.ViewpointStack.Top then
   begin

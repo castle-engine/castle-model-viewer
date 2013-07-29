@@ -25,22 +25,34 @@ unit V3DSceneStatus;
 
 interface
 
-uses CastleGLBitmapFonts, Classes, CastleUIControls;
+uses CastleGLBitmapFonts, Classes, CastleUIControls, CastleTimeUtils;
 
 type
   TStatusText = class(TUIControl)
   private
     Font: TGLBitmapFont;
     FMaxLineChars: Cardinal;
+    FlashTime, Time: TFloatTime;
+    FlashText: string;
   protected
     procedure CalculateText(const Strs: TStringList); virtual;
   public
+    constructor Create(AOwner: TComponent); override;
     function DrawStyle: TUIControlDrawStyle; override;
     procedure Draw; override;
     procedure GLContextOpen; override;
     procedure GLContextClose; override;
     procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
+    procedure Update(const SecondsPassed: Single;
+      const HandleMouseAndKeys: boolean;
+      var LetOthersHandleMouseAndKeys: boolean); override;
+
+    { How many characters can reasonably fit in a line for current window
+      width. }
     property MaxLineChars: Cardinal read FMaxLineChars;
+
+    { Show a message that will fadeout with time. }
+    procedure Flash(const Text: string);
   end;
 
 var
@@ -53,7 +65,7 @@ procedure DrawStatus(const Strs: TStringList);
 implementation
 
 uses SysUtils, CastleBitmapFont_BVSansMono_Bold_m15,
-  CastleVectors, GL, CastleUtils;
+  CastleVectors, GL, CastleUtils, CastleColors;
 
 const
   { Margin inside status box size. }
@@ -76,6 +88,14 @@ begin
   glDisable(GL_BLEND);
 end;
 
+constructor TStatusText.Create(AOwner: TComponent);
+begin
+  inherited;
+  { Do not capture any events, in particular inherited Update will
+    leave LetOthersHandleMouseAndKeys as true. }
+  ExclusiveEvents := false;
+end;
+
 procedure TStatusText.Draw;
 var
   Strs: TStringList;
@@ -95,8 +115,17 @@ begin
     Result := dsNone;
 end;
 
+const
+  FlashDelay = 1.0;
+
 procedure TStatusText.CalculateText(const Strs: TStringList);
 begin
+  if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
+  begin
+    Strs.Append('<font color="#' + ColorToHex(Vector4Single(1, 1, 0,
+      1 - (Time - FlashTime) / FlashDelay)) + '">' + FlashText + '</font>');
+    Strs.Append('');
+  end;
 end;
 
 procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
@@ -116,6 +145,22 @@ procedure TStatusText.GLContextClose;
 begin
   FreeAndNil(Font);
   inherited;
+end;
+
+procedure TStatusText.Flash(const Text: string);
+begin
+  FlashText := Text;
+  FlashTime := Time;
+end;
+
+procedure TStatusText.Update(const SecondsPassed: Single;
+  const HandleMouseAndKeys: boolean;
+  var LetOthersHandleMouseAndKeys: boolean);
+begin
+  inherited;
+  if not GetExists then Exit;
+  if (FlashText <> '') and (FlashTime + FlashDelay > Time) then VisibleChange;
+  Time += SecondsPassed;
 end;
 
 end.
