@@ -130,6 +130,7 @@ end;
 
 procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
 begin
+  inherited;
   FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - BoxMargin * 2 -
     WindowMargin * 2) div Font.TextWidth('W'));
 end;
