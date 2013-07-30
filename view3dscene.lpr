@@ -86,8 +86,7 @@ var
   { Scene global variables.
     Modified only by LoadSceneCore (and all using it Load*Scene* procedures)
     and FreeScene.
-    Also note that Window.Caption (and FPSBaseCaption) also should be modified
-    only by those procedures.
+    Note that Window.Caption also should be modified only by those procedures.
 
     In this program's comments I often talk about "null values" of these
     variables, "null values" mean that these variables have some *defined
@@ -1086,9 +1085,7 @@ begin
     if NewCaption = '' then
       NewCaption := URICaption(SceneURL);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
-    if Window.Closed then
-      Window.Caption := NewCaption else
-      Window.FPSBaseCaption := NewCaption;
+    Window.Caption := NewCaption;
 
     UpdateCameraUI;
 
