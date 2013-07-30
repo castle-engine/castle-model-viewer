@@ -3675,11 +3675,11 @@ end;
 
 class procedure THelper.OpenButtonClick(Sender: TObject);
 var
-  NewURL: string;
+  URL: string;
 begin
-  NewURL := ExtractURIPath(SceneURL);
-  if Window.FileDialog('Open file', NewURL, true, Load3DSequence_FileFilters) then
-    LoadScene(NewURL, [], 0.0, true);
+  URL := SceneURL;
+  if Window.FileDialog('Open file', URL, true, Load3DSequence_FileFilters) then
+    LoadScene(URL, [], 0.0, true);
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
