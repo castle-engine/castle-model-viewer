@@ -1632,7 +1632,7 @@ begin
   finally FreeAndNil(Image) end;
 end;
 
-procedure MenuClick(Window: TCastleWindowBase; MenuItem: TMenuItem);
+procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -2988,7 +2988,7 @@ begin
   123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
-  126: (Window as TCastleWindowCustom).SwapFullScreen;
+  126: Window.FullScreen := not Window.FullScreen;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
 
