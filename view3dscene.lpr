@@ -2813,9 +2813,9 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     URL, CopyStr, CutStr, PasteStr: string;
   begin
     URL := SceneURL;
-    Check(KeyString(CtrlC, K_None, CopyStr));
-    Check(KeyString(CtrlX, K_None, CutStr));
-    Check(KeyString(CtrlV, K_None, PasteStr));
+    Check(KeyString(CtrlC, K_None, [], CopyStr));
+    Check(KeyString(CtrlX, K_None, [], CutStr));
+    Check(KeyString(CtrlV, K_None, [], PasteStr));
     if MessageInputQuery(Window,
       'Open 3D model from given URL.' + NL + NL +
       'Note that by default "http" is disabled (because the downloads are blocking for now, and every 3D model may reference additional resources like textures). Enable http by checking "Preferences -> Download Resources From Network".' + NL + NL +
@@ -2988,7 +2988,6 @@ begin
   123: SetCollisions(not SceneAnimation.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
-  126: Window.FullScreen := not Window.FullScreen;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
 
@@ -3468,8 +3467,7 @@ begin
   M := TMenu.Create('_Display');
     M.AppendRadioGroup(ViewportsConfigNames, 3600, Ord(ViewportsConfig), true, false);
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItemChecked.Create('_Full Screen',           126, K_F11,
-      Window.FullScreen, true));
+    M.Append(TMenuItemToggleFullScreen.Create(Window.FullScreen));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
     M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
