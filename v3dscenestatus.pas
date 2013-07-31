@@ -37,15 +37,13 @@ type
   protected
     procedure CalculateText(const Strs: TStringList); virtual;
   public
-    constructor Create(AOwner: TComponent); override;
     function DrawStyle: TUIControlDrawStyle; override;
     procedure Draw; override;
     procedure GLContextOpen; override;
     procedure GLContextClose; override;
     procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
     procedure Update(const SecondsPassed: Single;
-      const HandleMouseAndKeys: boolean;
-      var LetOthersHandleMouseAndKeys: boolean); override;
+      var HandleInput: boolean); override;
 
     { How many characters can reasonably fit in a line for current window
       width. }
@@ -86,14 +84,6 @@ begin
   StatusText.Font.PrintStringsBox(Strs, true, WindowMargin, WindowMargin, 0,
     InsideColor, BorderColor, TextColor, BoxMargin);
   glDisable(GL_BLEND);
-end;
-
-constructor TStatusText.Create(AOwner: TComponent);
-begin
-  inherited;
-  { Do not capture any events, in particular inherited Update will
-    leave LetOthersHandleMouseAndKeys as true. }
-  ExclusiveEvents := false;
 end;
 
 procedure TStatusText.Draw;
@@ -155,8 +145,7 @@ begin
 end;
 
 procedure TStatusText.Update(const SecondsPassed: Single;
-  const HandleMouseAndKeys: boolean;
-  var LetOthersHandleMouseAndKeys: boolean);
+  var HandleInput: boolean);
 begin
   inherited;
   if not GetExists then Exit;
