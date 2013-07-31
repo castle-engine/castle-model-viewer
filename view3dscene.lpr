@@ -66,6 +66,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleSceneCore, X3DNodesDetailOptions,
   X3DCameraUtils, CastlePrecalculatedAnimation, CastleBackground,
   CastleRenderer, CastleShapes, CastleRenderingCamera, X3DShadowMaps, CastleSceneManager,
+  CastleMaterialProperties,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -2181,6 +2182,26 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     end;
   end;
 
+  procedure LoadMaterialProperties;
+  var
+    URL: string;
+  begin
+    URL := ExtractURIPath(SceneURL);
+    if Window.FileDialog('Open material_properties.xml file', URL, true,
+      'All Files|*|*XML files|*.xml') then
+    try
+      MaterialProperties.URL := URL;
+    except
+      on E: Exception do MessageOK(Window,
+        'Error while loading material properties: ' + E.Message, taLeft);
+    end;
+  end;
+
+  procedure CleanMaterialProperties;
+  begin
+    MaterialProperties.URL := '';
+  end;
+
   procedure ChangeLightModelAmbient;
   begin
     if Window.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
@@ -3102,6 +3123,8 @@ begin
 
   710: ChangeMaterialDiffuse;
   720: ChangeMaterialSpecular;
+  722: LoadMaterialProperties;
+  723: CleanMaterialProperties;
   725: if LightsEditorIsOpen then
          LightsEditorClose else
          LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
@@ -3432,6 +3455,8 @@ begin
       MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
       MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
     M.Append(MenuEditMaterial);
+    M.Append(TMenuItem.Create('Load material properties from external file ...', 722));
+    M.Append(TMenuItem.Create('Clear loaded material properties', 723));
     M.Append(TMenuSeparator.Create);
     MenuLightsEditor := TMenuItemChecked.Create('Lights Editor', 725,
       LightsEditorIsOpen, false);
