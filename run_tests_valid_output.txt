@@ -3090,6 +3090,12 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy'
 ---- Reading ../view3dscene/internal_scenes/welcome_scene.wrl
 ---- Reading again ../view3dscene/internal_scenes/welcome_scene.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../village_after_village/data/fir_01/fir_tree_01_a.x3d
+---- Reading again ../village_after_village/data/fir_01/fir_tree_01_a.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../village_after_village/data/thuja_01/thuja_01_big_high.x3d
+---- Reading again ../village_after_village/data/thuja_01/thuja_01_big_high.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../www/htdocs/fallback_prototypes.wrl
 ---- Reading again ../www/htdocs/fallback_prototypes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
