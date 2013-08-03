@@ -40,6 +40,8 @@ type
 
 implementation
 
+uses SysUtils;
+
 procedure THumanoidVisualization.VisualizeHumanoid(Node: TX3DNode);
 
   { Change shape's material to be transparent.
@@ -110,7 +112,9 @@ begin
       Joint := THAnimJointNode(HumanoidNode.FdJoints.Items[I]);
       Inc(JointsProcessed);
 
-      JointTransform := TTransformNode.Create('', HumanoidNode.BaseUrl);
+      JointTransform := TTransformNode.Create(
+        Format('HAnimVisualization_JointTransform_%d_%s', [I, Joint.NodeName]),
+          HumanoidNode.BaseUrl);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.Add(JointTransform);
 
