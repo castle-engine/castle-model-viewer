@@ -117,6 +117,11 @@ begin
       CenterRoute := TX3DRoute.Create;
       CenterRoute.SetSourceDirectly(Joint.FdCenter);
       CenterRoute.SetDestinationDirectly(JointTransform.FdTranslation);
+      { Brutally force saving of routes *after* normal nodes.
+        This is necessary, since the saved file is a mixture of stuff
+        read from file and created by code. So we either try to
+        set to zero all PositionInParent, or we try to set them good. }
+      CenterRoute.PositionInParent := 1000 * 1000 + I;
       HumanoidNode.Routes.Add(CenterRoute);
 
       JointTransform.FdChildren.Add(SphereShape);
