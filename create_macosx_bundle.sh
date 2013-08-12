@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 ../scripts/create_macosx_bundle.sh view3dscene view3dscene desktop/view3dscene.icns \
 '  <dict>
@@ -189,9 +190,27 @@
   </dict>
 '
 
-cp /sw/lib/libpng14.14.dylib view3dscene.app/Contents/MacOS/libpng.dylib
+cd view3dscene.app/Contents/MacOS/
 
-cp /sw/lib/libvorbisfile.3.dylib \
-   /sw/lib/libvorbis.0.dylib \
-   /sw/lib/libogg.0.dylib \
-   view3dscene.app/Contents/MacOS/
+# Copy fink lib $1, and adjust it's -id (how the library identifies itself,
+# may be important if another lib depends on it -- although tests show it's not really
+# important?).
+cp_fink_lib ()
+{
+  cp /sw/lib/"$1" .
+  install_name_tool -id @executable_path/"$1" "$1"
+}
+
+cp_fink_lib libpng14.14.dylib
+cp_fink_lib libvorbisfile.3.dylib
+cp_fink_lib libvorbis.0.dylib
+cp_fink_lib libogg.0.dylib
+
+install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0.dylib libvorbisfile.3.dylib
+install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
+install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
+
+if otool -L *.dylib | grep /sw/lib/; then
+  echo 'Error: Some references to /sw/lib/ remain inside the bundle, application possibly will not run without fink installed. Check install_name_tool commands in create_macosx_bundle.sh script.'
+  exit 1
+fi
