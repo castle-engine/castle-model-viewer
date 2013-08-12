@@ -207,7 +207,4 @@ install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0
 install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
 install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
 
-if otool -L *.dylib view3dscene tovrmlx3d | grep /sw/lib/; then
-  echo 'Error: Some references to /sw/lib/ remain inside the bundle, application possibly will not run without fink installed. Check install_name_tool commands in create_macosx_bundle.sh script.'
-  exit 1
-fi
+check_libs_not_depending_on_fink view3dscene tovrmlx3d

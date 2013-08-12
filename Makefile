@@ -10,4 +10,4 @@ install:
 .PHONY: clean
 clean:
 	rm -f view3dscene view3dscene.exe tovrmlx3d tovrmlx3d.exe
-	rm -Rf view3dscene.app tovrmlx3d.app
+	rm -Rf view3dscene.app tovrmlx3d.app macosx/view3dscene.app
