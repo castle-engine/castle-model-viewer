@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eu
 
-../scripts/create_macosx_bundle.sh view3dscene view3dscene desktop/view3dscene.icns \
+. ../../scripts/create_macosx_bundle.sh
+
+create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
 '  <dict>
     <key>CFBundleTypeExtensions</key>
     <array>
@@ -190,16 +192,11 @@ set -eu
   </dict>
 '
 
-cd view3dscene.app/Contents/MacOS/
+# add tovrmlx3d binary
+cp ../tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
 
-# Copy fink lib $1, and adjust it's -id (how the library identifies itself,
-# may be important if another lib depends on it -- although tests show it's not really
-# important?).
-cp_fink_lib ()
-{
-  cp /sw/lib/"$1" .
-  install_name_tool -id @executable_path/"$1" "$1"
-}
+# add libraries from fink
+cd view3dscene.app/Contents/MacOS/
 
 cp_fink_lib libpng14.14.dylib
 cp_fink_lib libvorbisfile.3.dylib
@@ -210,7 +207,7 @@ install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0
 install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
 install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
 
-if otool -L *.dylib | grep /sw/lib/; then
+if otool -L *.dylib view3dscene tovrmlx3d | grep /sw/lib/; then
   echo 'Error: Some references to /sw/lib/ remain inside the bundle, application possibly will not run without fink installed. Check install_name_tool commands in create_macosx_bundle.sh script.'
   exit 1
 fi
