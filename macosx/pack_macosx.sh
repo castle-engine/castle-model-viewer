@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eu
 
+# Create Mac OS X bundle, and then dmg (disk image) file to distribute view3dscene.
+# Compile the view3dscene (and tovrmlx3d) binaries before calling this.
+
 . ../../scripts/create_macosx_bundle.sh
 
 create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
@@ -208,3 +211,7 @@ install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dy
 install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
 
 check_libs_not_depending_on_fink view3dscene tovrmlx3d
+
+cd ../../../
+
+make -f ../../scripts/macosx_dmg.makefile NAME=view3dscene
