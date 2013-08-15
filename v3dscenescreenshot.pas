@@ -245,10 +245,10 @@ begin
 
       Writeln(Output, 'FFMpeg found, executing...');
       Writeln(Output, Executable + ' -f image2 -i "' +
-        TemporaryImagesPattern + '" -y -sameq "' + OutputMovieFileName + '"');
+        TemporaryImagesPattern + '" -y -qscale 1 "' + OutputMovieFileName + '"');
 
       ExecuteProcess(Executable,
-        [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-sameq', OutputMovieFileName ]);
+        [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-qscale', '1', OutputMovieFileName ]);
 
       Write(Output, 'Removing temporary image files "', TemporaryImagesPattern, '" ...');
       TemporaryImagesCounter := 1;
