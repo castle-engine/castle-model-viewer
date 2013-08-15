@@ -3566,7 +3566,6 @@ const
   MinImageHeight = 22;
 begin
   ToolbarPanel := TCastlePanel.Create(Application);
-  ToolbarPanel.Opacity := 0.8;
   ToolbarPanel.VerticalSeparators.Count := 2;
   Window.Controls.InsertFront(ToolbarPanel);
 
