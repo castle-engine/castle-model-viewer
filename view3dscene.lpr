@@ -2553,7 +2553,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
-            SceneManager.ProjectionNear, SceneManager.ProjectionFar, true, 0, 0);
+            SceneManager.ProjectionNear, SceneManager.ProjectionFar);
           glViewport(0, 0, Window.Width, Window.Height);
 
           case Orientation of
@@ -2619,8 +2619,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
-          SceneManager.ProjectionNear, SceneManager.ProjectionFar,
-          true, 0, 0);
+          SceneManager.ProjectionNear, SceneManager.ProjectionFar);
         try
           glViewport(0, 0, Window.Width, Window.Height);
           DDS.SaveToFile(URL);
