@@ -2515,6 +2515,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     URLPattern: string;
     Orientation: char;
     Size: Cardinal;
+
+    procedure SaveSide(const Image: TCastleImage; const SideName: string);
+    begin
+      SaveImage(Image, StringReplace(URLPattern, '@side', SideName, [rfReplaceAll]));
+    end;
+
   begin
     Orientation := MessageChar(Window,
       'This function will save six separate image files that show cube map environment around you.' + NL +
@@ -2533,8 +2539,8 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if Orientation <> CharEscape then
     begin
       if SceneURL <> '' then
-        URLPattern := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap_%s.png') else
-        URLPattern := 'view3dscene_cubemap_%s.png';
+        URLPattern := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap_@side.png') else
+        URLPattern := 'view3dscene_cubemap_@side.png';
 
       if Window.FileDialog('Image name template to save', URLPattern, false) then
       begin
@@ -2547,8 +2553,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
-            SceneManager.ProjectionNear, SceneManager.ProjectionFar,
-            true, 0, 0);
+            SceneManager.ProjectionNear, SceneManager.ProjectionFar, true, 0, 0);
           glViewport(0, 0, Window.Width, Window.Height);
 
           case Orientation of
@@ -2558,33 +2563,33 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
                 CubeMapImg[csNegativeX].Rotate(2);
                 CubeMapImg[csPositiveZ].Rotate(2);
                 CubeMapImg[csNegativeZ].Rotate(2);
-                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['right']));
-                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['left']));
-                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['top']));
-                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['bottom']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['back']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['front']));
+                SaveSide(CubeMapImg[csPositiveX], 'right');
+                SaveSide(CubeMapImg[csNegativeX], 'left');
+                SaveSide(CubeMapImg[csPositiveY], 'top');
+                SaveSide(CubeMapImg[csNegativeY], 'bottom');
+                SaveSide(CubeMapImg[csPositiveZ], 'back');
+                SaveSide(CubeMapImg[csNegativeZ], 'front');
               end;
             'o':
               begin
                 { This is the most natural Orientation,
                   our csXxx names match OpenGL names and orientation. }
-                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['positive_x']));
-                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['negative_x']));
-                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['positive_y']));
-                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['negative_y']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['positive_z']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['negative_z']));
+                SaveSide(CubeMapImg[csPositiveX], 'positive_x');
+                SaveSide(CubeMapImg[csNegativeX], 'negative_x');
+                SaveSide(CubeMapImg[csPositiveY], 'positive_y');
+                SaveSide(CubeMapImg[csNegativeY], 'negative_y');
+                SaveSide(CubeMapImg[csPositiveZ], 'positive_z');
+                SaveSide(CubeMapImg[csNegativeZ], 'negative_z');
               end;
             'd':
               begin
                 { Swap positive/negative y, since DirectX is left-handed. }
-                SaveImage(CubeMapImg[csPositiveX], Format(URLPattern, ['positive_x']));
-                SaveImage(CubeMapImg[csNegativeX], Format(URLPattern, ['negative_x']));
-                SaveImage(CubeMapImg[csNegativeY], Format(URLPattern, ['positive_y']));
-                SaveImage(CubeMapImg[csPositiveY], Format(URLPattern, ['negative_y']));
-                SaveImage(CubeMapImg[csPositiveZ], Format(URLPattern, ['positive_z']));
-                SaveImage(CubeMapImg[csNegativeZ], Format(URLPattern, ['negative_z']));
+                SaveSide(CubeMapImg[csPositiveX], 'positive_x');
+                SaveSide(CubeMapImg[csNegativeX], 'negative_x');
+                SaveSide(CubeMapImg[csNegativeY], 'positive_y');
+                SaveSide(CubeMapImg[csPositiveY], 'negative_y');
+                SaveSide(CubeMapImg[csPositiveZ], 'positive_z');
+                SaveSide(CubeMapImg[csNegativeZ], 'negative_z');
               end;
             else EInternalError.Create('orient?');
           end;
