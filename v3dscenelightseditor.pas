@@ -222,7 +222,7 @@ begin
 end;
 
 function MessageInputQueryDirection(
-  Window: TCastleWindowBase; const Title: string;
+  Window: TCastleWindowCustom; const Title: string;
   var Value: TVector3Single; TextAlign: TTextAlign): boolean;
 var
   Pos, Up: TVector3Single;

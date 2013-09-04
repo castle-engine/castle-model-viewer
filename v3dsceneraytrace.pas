@@ -33,7 +33,7 @@ const
   DefaultRaytracerDepth = 3;
 
 { Ray-tracer. }
-procedure RaytraceToWin(Window: TCastleWindowBase;
+procedure RaytraceToWin(Window: TCastleWindowCustom;
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
@@ -60,6 +60,7 @@ type
     And PixelsMadeNotify gets Window in the Data parameter,
     so PixelsMadeNotify callback can also access it. }
   TCallData = record
+    Window: TCastleWindowCustom;
     { The screen save of the OpenGL rendering,
       that is successively overwritten by ray-traced image.
       This way we can always display this image to show OpenGL rendering
@@ -163,7 +164,7 @@ begin
     { Determine ImgFormat exactly the same like SaveImage() does. }
     if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
       (ImgFormat = ifRGBE) then
-      MessageOK(Window,
+      MessageOK(D^.Window,
         'Note: When saving raytraced image from view3dscene to ' +
         'RGBE file format, you will *not* get image with perfect ' +
         'RGB+Exponent precision. ' +
@@ -229,7 +230,7 @@ end;
 
 { ----------------------------------------------------------------------------- }
 
-procedure RaytraceToWin(Window: TCastleWindowBase;
+procedure RaytraceToWin(Window: TCastleWindowCustom;
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
@@ -276,6 +277,7 @@ begin
     MainMenuWorking := CreateMainMenuWorking;
 
     CallData.Image := Window.SaveAlignedScreen;
+    CallData.Window := Window;
 
     { switch to our mode }
     SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT, false,
