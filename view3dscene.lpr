@@ -60,6 +60,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   GL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
   CastleGLVersion, CastleGLCubeMaps, CastleControls, CastleGLShaders,
+  CastleControlsImages,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleShapeOctree,
   X3DNodes, X3DLoad, CastleScene, X3DTriangles,
@@ -4019,6 +4020,7 @@ begin
       LoadClearScene;
       try
         MessagesTheme := MessagesTheme_TypicalGUI;
+        Theme.Window := Window_Gray;
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;
