@@ -2526,15 +2526,14 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     Orientation := MessageChar(Window,
       'This function will save six separate image files that show cube map environment around you.' + NL +
       NL +
-      'In a moment you will be asked to choose directory and base filename for saving these images, right now you have to decide how the cube map faces will be oriented and named. ("Names" of cube map faces will be placed instead of "%s" in image file pattern.)' + NL +
+      'In a moment you will be asked to choose directory and base filename for saving these images, right now you have to decide how the cube map faces will be oriented and named.' + NL +
       NL +
       '[B] : VRML/X3D Background orientation (left/right/...)' + NL +
       '[O] : OpenGL orientation (positive/negative x/y/z)' + NL +
-      '[D] : DirectX (and DDS) orientation (positive/negative x/y/z, in left-handed coord system)' + NL +
-      NL +
-      '[Escape] Cancel',
+      '[D] : DirectX (and DDS) orientation (positive/negative x/y/z, in left-handed coord system)',
       ['b', 'o', 'd', CharEscape],
-      'Press [B], [O], [D] or [Escape]',
+      ['VRML/X3D Background', 'OpenGL', 'DirectX', 'Cancel (Esc)'],
+      ['b', 'o', 'd', CharEscape],
       taLeft, true);
 
     if Orientation <> CharEscape then

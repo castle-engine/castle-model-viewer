@@ -247,12 +247,12 @@ var
   RayTracer: TRayTracer;
 begin
   { get input from user }
-  case LoCase(MessageChar(Window,
-      'Which ray tracer do you want to use  ?'+nl+
-      '[C] : Classic (Whitted-style) ray tracer'+nl+
-      '[P] : Path tracer' +nl+
-      '[Escape] : Cancel',
-      ['c','C', 'p', 'P', CharEscape], 'Press [C] or [P] or [Escape]', taLeft)) of
+  case MessageChar(Window,
+      'Which ray tracer do you want to use?',
+      ['c', 'p', CharEscape],
+      ['Classic (Whitted)', 'Path tracer', 'Cancel (Esc)'],
+      ['c', 'p', CharEscape],
+      taLeft, true) of
     'c': RaytracerKind := rtkClassic;
     'p': RaytracerKind := rtkPathTracer;
     CharEscape: Exit;
