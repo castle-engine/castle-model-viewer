@@ -4018,7 +4018,8 @@ begin
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
-        MessagesTheme := MessagesTheme_TypicalGUI;
+        Theme.MessageInputTextColor := Vector3Byte(0, 100, 0);
+        Theme.MessageTextColor := Vector3Byte(0, 0, 0);
         Theme.Images[tiWindow] := WindowGray;
 
         Window.GtkIconName := 'view3dscene';

@@ -280,7 +280,7 @@ begin
     CallData.Window := Window;
 
     { switch to our mode }
-    SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT, false,
+    SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT,
       @DrawWorking, @Resize2D, @NoClose);
 
     Window.UserData := @CallData;
