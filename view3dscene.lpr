@@ -4019,7 +4019,7 @@ begin
       LoadClearScene;
       try
         MessagesTheme := MessagesTheme_TypicalGUI;
-        Theme.Window := WindowGray;
+        Theme.Images[tiWindow] := WindowGray;
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;
