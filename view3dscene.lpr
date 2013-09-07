@@ -1133,7 +1133,7 @@ end;
 procedure LoadErrorMessage(const S: string);
 begin
   if not MakingScreenShot then
-    MessageOK(Window, S, taLeft) else
+    MessageOK(Window, S) else
     Writeln(ErrOutput, 'view3dscene: ', S);
 end;
 
@@ -1405,7 +1405,7 @@ begin
     S.AddStrings(SceneWarnings.Items);
     S.Append('');
     S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');
-    MessageOK(Window, S, taLeft);
+    MessageOK(Window, S);
     WarningsButtonEnabled := false;
     UpdateWarningsButton;
   finally FreeAndNil(S) end;
@@ -1643,8 +1643,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if MessageInputQuery(Window,
       'Input new camera up vector (three float values).' +nl+nl+
       'This vector will be used as new gravity upward vector. ' +
-      'This vector must not be zero vector.',
-      Answer, taLeft) then
+      'This vector must not be zero vector.', Answer) then
     begin
 
      try
@@ -1671,7 +1670,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if Camera.NavigationClass = ncWalk then
     begin
       MoveSpeed := Camera.Walk.MoveSpeed;
-      if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed, taLeft) then
+      if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
       begin
         Camera.Walk.MoveSpeed := MoveSpeed;
         Window.PostRedisplay;
@@ -1683,7 +1682,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   procedure ShowAndWrite(const S: string);
   begin
     Writeln(S);
-    MessageOK(Window, S, taLeft);
+    MessageOK(Window, S);
   end;
 
   procedure ChangePointSize;
@@ -1691,7 +1690,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.PointSize;
-    if MessageInputQuery(Window, 'Change point size:', Value, taLeft) then
+    if MessageInputQuery(Window, 'Change point size:', Value) then
       SceneAnimation.Attributes.PointSize := Max(Value, 0.01);
   end;
 
@@ -1700,7 +1699,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     Value: Single;
   begin
     Value := SceneAnimation.Attributes.LineWidth;
-    if MessageInputQuery(Window, 'Change line width:', Value, taLeft) then
+    if MessageInputQuery(Window, 'Change line width:', Value) then
       SceneAnimation.Attributes.LineWidth := Max(Value, 0.01);
   end;
 
@@ -1726,8 +1725,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       'VRML / X3D file, e.g. by interpolators) this is perfect, ' +
       'animation always remains smooth.' +nl+
       nl+
-      'New "on display" playing speed:',
-      S, taLeft) then
+      'New "on display" playing speed:', S) then
       SceneAnimation.TimePlayingSpeed := S;
   end;
 
@@ -1755,8 +1753,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       'as no frames are precalculated at loading. Use "on display" playing speed ' +
       'instead.' +nl+
       nl+
-      'New "on loading" playing speed:',
-      AnimationTimeSpeedWhenLoading, taLeft);
+      'New "on loading" playing speed:', AnimationTimeSpeedWhenLoading);
   end;
 
   procedure SelectedShowInformation;
@@ -1926,7 +1923,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
         SelectedItem^.Geometry, so this is only for the frame where
         octree is available. }
       MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).');
       Exit;
     end;
 
@@ -2080,7 +2077,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
         octree is available. Moreover, we call
         Scene.ChangedField. }
       MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).');
       Exit(false);
     end;
 
@@ -2098,7 +2095,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       M2 := Shape.Material;
       if M2 = nil then
       begin
-        if MessageYesNo(Window, 'No material present. Add material to this node and then edit it?', taLeft) then
+        if MessageYesNo(Window, 'No material present. Add material to this node and then edit it?') then
         begin
           { Note that this may remove old Shape.FdAppearance.Value,
             but only if Shape.Appearance = nil, indicating that
@@ -2194,7 +2191,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       MaterialProperties.URL := URL;
     except
       on E: Exception do MessageOK(Window,
-        'Error while loading material properties: ' + E.Message, taLeft);
+        'Error while loading material properties: ' + E.Message);
     end;
   end;
 
@@ -2231,8 +2228,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if MessageInputQuery(Window,
       'Input node name to be removed. You can use wildcards (* and ?) in ' +
       'the expression below to match many node names. The input is ' +
-      'case sensitive (like all VRML/X3D).',
-      Wildcard, taLeft) then
+      'case sensitive (like all VRML/X3D).', Wildcard) then
     begin
       SceneAnimation.BeforeNodesFree;
 
@@ -2247,8 +2243,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
       SceneAnimation.ChangedAll;
 
-      MessageOK(Window, Format('Removed %d node instances.', [RemovedNumber]),
-        taLeft);
+      MessageOK(Window, Format('Removed %d node instances.', [RemovedNumber]));
     end;
   end;
 
@@ -2262,7 +2257,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   begin
     if SceneAnimation.ScenesCount <> 1 then
     begin
-      MessageOK(Window, 'This is not possible with a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
+      MessageOK(Window, 'This is not possible with a precalculated animation (like loaded from Kanim or MD3 file).');
       Exit;
     end;
 
@@ -2271,7 +2266,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       SceneAnimation.BeforeNodesFree;
       SceneAnimation.FirstScene.RootNode.EnumerateReplaceChildren(@R.Remove);
       SceneAnimation.ChangedAll;
-      MessageOK(Window, Format('Removed %d nodes.', [R.Count]), taLeft);
+      MessageOK(Window, Format('Removed %d nodes.', [R.Count]));
     finally FreeAndNil(R) end;
   end;
 
@@ -2316,7 +2311,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   procedure WriteBoundingBox(const Box: TBox3D);
   begin
     if Box.IsEmpty then
-      MessageOK(Window, 'The bounding box is empty.', taLeft) else
+      MessageOK(Window, 'The bounding box is empty.') else
     begin
       Writeln(Format(
         '# ----------------------------------------' +nl+
@@ -2372,13 +2367,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     FramesCount := 25;
     URLPattern := 'image@counter(4).png';
 
-    if MessageInputQuery(Window, 'Input start time for recording movie:',
-      TimeBegin, taLeft) then
+    if MessageInputQuery(Window, 'Input start time for recording movie:', TimeBegin) then
       if MessageInputQuery(Window, 'Time step between capturing movie frames:' +NL+NL+
         'Note that if you later choose to record to a single movie file, like "output.avi", then we''ll generate a movie with 25 frames per second. ' +
         'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
-        'Input time step between capturing movie frames:', TimeStep, taLeft) then
-        if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount, taLeft) then
+        'Input time step between capturing movie frames:', TimeStep) then
+        if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount) then
           if Window.FileDialog('Images pattern or movie file to save', URLPattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
@@ -2397,7 +2391,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
               MakeAllScreenShots(GL_BACK);
             except
               on E: EInvalidScreenShotURL do
-                MessageOk(Window, 'Making screenshot failed: ' +NL+NL+ E.Message, taLeft);
+                MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
             end;
 
             ScreenShotsList.Clear;
@@ -2414,7 +2408,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   begin
     if SceneAnimation.ScenesCount <> 1 then
     begin
-      MessageOK(Window, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).', taLeft);
+      MessageOK(Window, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).');
       Exit;
     end;
 
@@ -2424,11 +2418,11 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
     if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation.' + ' This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
          nl+
-         'World BEGIN time of recording:', TimeBegin, taLeft) and
+         'World BEGIN time of recording:', TimeBegin) and
        MessageInputQuery(Window,
-         'World END time of recording:', TimeEnd, taLeft) and
+         'World END time of recording:', TimeEnd) and
        MessageInputQueryCardinal(Window,
-         'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime, taLeft) then
+         'Scenes per second (higher values make animation smoother but also more memory-consuming):', ScenesPerTime) then
     begin
       { Note: there's an inherent problem here since RootNode starts
         with state from current Time. This includes
@@ -2494,12 +2488,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   begin
     if SelectedItem = nil then
     begin
-      MessageOk(Window, 'Nothing selected.', taLeft);
+      MessageOk(Window, 'Nothing selected.');
     end else
     begin
       Shape := TShape(SelectedItem^.Shape);
       if Shape.OctreeTriangles = nil then
-        MessageOk(Window, 'No collision octree was initialized for this shape.', taLeft) else
+        MessageOk(Window, 'No collision octree was initialized for this shape.') else
       begin
         Writeln(Shape.OctreeTriangles.Statistics);
       end;
@@ -2523,7 +2517,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     end;
 
   begin
-    Orientation := MessageChar(Window,
+    Orientation := MessageChoice(Window,
       'This function will save six separate image files that show cube map environment around you.' + NL +
       NL +
       'In a moment you will be asked to choose directory and base filename for saving these images, right now you have to decide how the cube map faces will be oriented and named.' + NL +
@@ -2531,10 +2525,8 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       '[B] : VRML/X3D Background orientation (left/right/...)' + NL +
       '[O] : OpenGL orientation (positive/negative x/y/z)' + NL +
       '[D] : DirectX (and DDS) orientation (positive/negative x/y/z, in left-handed coord system)',
-      ['b', 'o', 'd', CharEscape],
       ['VRML/X3D Background', 'OpenGL', 'DirectX', 'Cancel (Esc)'],
-      ['b', 'o', 'd', CharEscape],
-      taLeft, true);
+      ['b', 'o', 'd', CharEscape]);
 
     if Orientation <> CharEscape then
     begin
@@ -2546,7 +2538,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       begin
         Size := DefaultCubeMapSize;
 
-        if MessageInputQueryCardinal(Window, 'Size of cube map images', Size, taLeft) then
+        if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
         begin
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
@@ -2615,7 +2607,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     begin
       Size := DefaultCubeMapSize;
 
-      if MessageInputQueryCardinal(Window, 'Size of cube map images', Size, taLeft) then
+      if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
@@ -2696,13 +2688,13 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
         SelectedItem^.Shape.GeometryOriginal, so this is only for the frame where
         octree is available. }
       MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).');
       Exit;
     end;
 
     if SelectedItem = nil then
     begin
-      MessageOk(Window, 'Nothing selected.', taLeft);
+      MessageOk(Window, 'Nothing selected.');
       Exit;
     end;
 
@@ -2710,19 +2702,19 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
 
     if not Shape.OriginalGeometry.Coord(Shape.OriginalState, Coord) then
     begin
-      MessageOK(Window, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.', taLeft);
+      MessageOK(Window, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.');
       Exit;
     end;
 
     if Coord = nil then
     begin
-      MessageOK(Window, 'Selected geometry node''s has an empty coordinate field. Nothing to merge.', taLeft);
+      MessageOK(Window, 'Selected geometry node''s has an empty coordinate field. Nothing to merge.');
       Exit;
     end;
 
     MergeDistance := 0.01;
     if MessageInputQuery(Window, 'Input merge distance. Vertexes closer than this will be set to be exactly equal.',
-      MergeDistance, taLeft, '0.01') then
+      MergeDistance, '0.01') then
     begin
       Inc(DisableAutoDynamicGeometry);
       try
@@ -2730,7 +2722,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
         if MergedCount <> 0 then
           Coord.Changed;
       finally Dec(DisableAutoDynamicGeometry) end;
-      MessageOK(Window, Format('Merged %d vertexes.', [MergedCount]), taLeft);
+      MessageOK(Window, Format('Merged %d vertexes.', [MergedCount]));
     end;
   end;
 
@@ -2741,7 +2733,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if SceneAnimation.ScenesCount > 1 then
     begin
       MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).', taLeft);
+        'precalculated animations (like from Kanim or MD3 files).');
       Exit;
     end;
 
@@ -2749,12 +2741,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     try
       Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
       if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
-        Vis.JointVisualizationSize, taLeft) then
+        Vis.JointVisualizationSize) then
       begin
         Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
           @Vis.VisualizeHumanoid, false);
         MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
-          [Vis.HumanoidsProcessed, Vis.JointsProcessed]), taLeft);
+          [Vis.HumanoidsProcessed, Vis.JointsProcessed]));
         if Vis.HumanoidsProcessed <> 0 then
           Scene.ChangedAll;
       end;
@@ -2774,10 +2766,10 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     if SceneAnimation.ScenesCount > 1 then
       if Convertion then
       begin
-        MessageOK(Window, 'This is a precalculated animation (like from Kanim or MD3 file). Converting it from VRML to X3D is not supported.', taLeft);
+        MessageOK(Window, 'This is a precalculated animation (like from Kanim or MD3 file). Converting it from VRML to X3D is not supported.');
         Exit;
       end else
-        MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.', taLeft);
+        MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.');
 
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
@@ -2797,7 +2789,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       on E: Exception do
       begin
         MessageOK(Window, 'Error while saving scene to "' +ProposedSaveName+
-          '": ' + E.Message, taLeft);
+          '": ' + E.Message);
       end;
     end;
   end;
@@ -2815,7 +2807,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       'This is only an approximation of desired FPS. Usually it''s quite precise, but on some systems some values may be actually capped by monitor refresh rate.' +NL+
       NL+
       'Special value 0 means "do not limit FPS".',
-      F, taLeft, FloatToNiceStr(F)) then
+      F, FloatToNiceStr(F)) then
       Application.LimitFPS := Max(F, 0.0);
   end;
 
@@ -2845,7 +2837,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       '), cut (' + CutStr +
       ') and paste (' + PasteStr +
       ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
-      'URL:', URL, taLeft) then
+      'URL:', URL) then
       LoadScene(URL, [], 0.0, true);
   end;
 
@@ -2888,7 +2880,7 @@ begin
   3530:
     begin
       C := SceneAnimation.ShadowMapsDefaultSize;
-      if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C, taLeft) then
+      if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C) then
       begin
         SceneAnimation.ShadowMapsDefaultSize := C;
       end;
@@ -2954,10 +2946,10 @@ begin
   100: SelectedShapeOctreeStat;
   101: if SceneOctreeCollisions <> nil then
          Writeln(SceneOctreeCollisions.Statistics) else
-         MessageOk(Window, SOnlyWhenOctreeAvailable, taLeft);
+         MessageOk(Window, SOnlyWhenOctreeAvailable);
   103: if SceneOctreeRendering <> nil then
          Writeln(SceneOctreeRendering.Statistics) else
-         MessageOk(Window, SOnlyWhenOctreeAvailable, taLeft);
+         MessageOk(Window, SOnlyWhenOctreeAvailable);
 
   105: PrintRayhunterCommand;
 

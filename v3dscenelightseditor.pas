@@ -223,14 +223,14 @@ end;
 
 function MessageInputQueryDirection(
   Window: TCastleWindowCustom; const Title: string;
-  var Value: TVector3Single; TextAlign: TTextAlign): boolean;
+  var Value: TVector3Single): boolean;
 var
   Pos, Up: TVector3Single;
   s: string;
 begin
   Result := false;
   s := Format('%g %g %g', [Value[0], Value[1], Value[2]]);
-  if MessageInputQuery(Window, Title, s, TextAlign) then
+  if MessageInputQuery(Window, Title, s) then
   begin
     try
       if LowerCase(Trim(S)) = 'c' then
@@ -239,7 +239,7 @@ begin
       Result := true;
     except
       on E: EConvertError do
-        MessageOK(Window, 'Invalid vector 3 value : ' + E.Message, taLeft);
+        MessageOK(Window, 'Invalid vector 3 value : ' + E.Message);
     end;
   end;
 end;
@@ -461,8 +461,7 @@ begin
       MessageOK(Window, 'No headlight in level.' +NL+ NL+
         'You have to turn on headlight first:' +NL+
         '- by menu item "View -> Headlight" (Ctrl+H),' +NL+
-        '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.',
-        taLeft);
+        '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.');
   end else
   if CurrentItem = ItemsIndex + 4 then
     LightsEditorClose;
@@ -528,7 +527,7 @@ begin
          if (Light is TPointLightNode_1) or
             (Light is TPointLightNode) then
          begin
-           MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).', taLeft);
+           MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
            Exit;
          end;
 
@@ -629,7 +628,7 @@ begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
       '(Input "C" to use current camera''s direction)',
-      Vector, taLeft) then
+      Vector) then
       Light.FdDirection.Send(Vector);
   end;
 end;
@@ -669,7 +668,7 @@ begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
       '(Input "C" to use current camera''s direction)',
-      Vector, taLeft) then
+      Vector) then
       Light.FdDirection.Send(Vector);
   end;
 end;
@@ -704,7 +703,7 @@ begin
     Vector := Light.FdDirection.Value;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
       '(Input "C" to use current camera''s direction)',
-      Vector, taLeft) then
+      Vector) then
       Light.FdDirection.Send(Vector);
   end;
 end;
@@ -730,8 +729,7 @@ begin
     { This was a nice message about attenuation for headlight,
       but we have nowhere to place it now:
       MessageOk(Window, 'HeadLight is not positional, it is not possible to set attenuation.' +NL+ NL+
-        'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.',
-        taLeft); }
+        'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.'); }
 
     AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
       TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);

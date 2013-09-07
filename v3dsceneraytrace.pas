@@ -171,8 +171,7 @@ begin
         'That''s because image is already stored in memory in RGB ' +
         '(8 bits per component) format (this was required to quickly display ' +
         'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
-        'Use rayhunter if you want to have RGBE image with precise colors.',
-        taLeft);
+        'Use rayhunter if you want to have RGBE image with precise colors.');
 
     SaveImage(D^.Image, SaveURL);
   end;
@@ -247,12 +246,10 @@ var
   RayTracer: TRayTracer;
 begin
   { get input from user }
-  case MessageChar(Window,
+  case MessageChoice(Window,
       'Which ray tracer do you want to use?',
-      ['c', 'p', CharEscape],
       ['Classic (Whitted)', 'Path tracer', 'Cancel (Esc)'],
-      ['c', 'p', CharEscape],
-      taLeft, true) of
+      ['c', 'p', CharEscape]) of
     'c': RaytracerKind := rtkClassic;
     'p': RaytracerKind := rtkPathTracer;
     CharEscape: Exit;
@@ -260,11 +257,11 @@ begin
 
   RaytraceDepth := MessageInputCardinal(Window,
     'Ray-tracer depth (maximum for classic, minimum for path tracer):',
-    taLeft, DefaultRaytracerDepth);
+    DefaultRaytracerDepth);
   if RaytracerKind = rtkPathTracer then
     PathtraceNonPrimarySamples := MessageInputCardinal(Window,
       'How many samples (non-primary) per pixel ?',
-      taLeft, DefaultNonPrimarySamplesCount);
+      DefaultNonPrimarySamplesCount);
 
   MainMenuDone := nil;
   MainMenuWorking := nil;
