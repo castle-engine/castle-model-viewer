@@ -27,7 +27,7 @@ interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   GL, GLU, CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
-  CastleControls;
+  CastleControls, CastleControlsImages;
 
 { Call this once on created SceneManager.
   This will take care of using proper SceneManager.Camera. }
@@ -75,11 +75,13 @@ type
 
 implementation
 
-uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages, V3DSceneImages;
+uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages,
+  V3DSceneImages, CastleRectangles;
 
 var
   ImageExamine_TooltipGL: TGLImage;
   ImageWalk_Fly_TooltipGL: TGLImage;
+  ImageTooltipArrow: TGLImage;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -152,8 +154,6 @@ end;
   - we cannot wrap text to window width. We just have to assume
     we'll fit inside.
 }
-{$define IMAGE_TOOLTIPS}
-{$ifdef IMAGE_TOOLTIPS}
 
 procedure TNavigationTypeButton.DrawTooltip;
 
@@ -162,45 +162,19 @@ procedure TNavigationTypeButton.DrawTooltip;
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;
     ImageMargin = 8;
-    ArrowSize = ButtonBottomMargin + 8;
   var
-    X1, Y1, X2, Y2, ArrowMiddleX: Integer;
-    Arrow: array [0..2] of TVector2Single;
+    R: TRectangle;
   begin
-    X1 := WindowBorderMargin;
-    X2 := X1 + 2 * ImageMargin + GLImage.Width;
-    Y2 := Bottom - ButtonBottomMargin;
-    Y1 := Y2 - 2 * ImageMargin - GLImage.Height;
+    R := Rectangle(
+      WindowBorderMargin,
+      Bottom - ButtonBottomMargin - (GLImage.Height + 2 * ImageMargin),
+      GLImage.Width  + 2 * ImageMargin,
+      GLImage.Height + 2 * ImageMargin);
 
-    GLRectangleWithBorder(X1, Y1, X2, Y2,
-      Vector4Single(Theme.TooltipInsideColor, 255),
-      Vector4Single(Theme.TooltipBorderColor, 255));
-
-    SetWindowPos(TGLint(X1 + ImageMargin), TGLint(Y1 + ImageMargin));
-    GLImage.Draw;
-
-    ArrowMiddleX := Left + Width div 2;
-    Arrow[0][0] := ArrowMiddleX - ArrowSize;
-    Arrow[0][1] := Y2 - 0.5; {< -0.5 needed on NVidia GeForce 9xxx (hal) }
-    Arrow[1][0] := ArrowMiddleX + ArrowSize;
-    Arrow[1][1] := Y2 - 0.5; {< -0.5 needed on NVidia GeForce 9xxx (hal) }
-    Arrow[2][0] := ArrowMiddleX;
-    Arrow[2][1] := Y2 + ArrowSize;
-
-    glColorv(Theme.TooltipInsideColor);
-    glBegin(GL_TRIANGLES);
-      glVertexv(Arrow[0]);
-      glVertexv(Arrow[1]);
-      glVertexv(Arrow[2]);
-    glEnd;
-
-    glColorv(Theme.TooltipBorderColor);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-      glVertexv(Arrow[0]);
-      glVertexv(Arrow[2]);
-      glVertexv(Arrow[1]);
-    glEnd;
+    Theme.Draw(R, tiTooltip);
+    GLImage.Draw(R.Left + ImageMargin, R.Bottom + ImageMargin);
+    { we decrease R.Top to overdraw the tooltip image border }
+    ImageTooltipArrow.Draw(Left + (Width - ImageTooltipArrow.Width) div 2, R.Top - 1);
   end;
 
 begin
@@ -208,82 +182,6 @@ begin
     DoDraw(ImageExamine_TooltipGL) else
     DoDraw(ImageWalk_Fly_TooltipGL);
 end;
-
-{$else}
-
-procedure TNavigationTypeButton.DrawTooltip;
-
-  procedure DoDraw(const Strings: array of string);
-  var
-    StringList: TStringList;
-  begin
-    StringList := TStringList.Create;
-    try
-      AddStrArrayToStrings(Strings, StringList);
-
-      Font.PrintStringsBox(StringList, false,
-        Left, Bottom - StringList.Count * Font.RowHeight, 0,
-        Vector4Single(Theme.TooltipInsideColor, 1),
-        Vector4Single(Theme.TooltipBorderColor, 1),
-        Vector4Single(Theme.TooltipTextColor, 1), 5);
-    finally FreeAndNil(StringList) end;
-  end;
-
-const
-  ExamineTooltip: array [0..14] of string = (
-    'Examine navigation controls:',
-    '',
-    'Mouse:',
-    '',
-    'Rotate         Left mouse dragging',
-    'Move           Middle mouse dragging (or Left mouse + Shift)',
-    'Zoom           Right mouse dragging (or Left mouse + Ctrl)',
-    '',
-    'Keys:',
-    '',
-    'Rotate                           Arrows / PageUp / PageDown',
-    'Stop rotating                    Space',
-    'Move                             Ctrl + Arrows / PageUp / PageDown',
-    'Scale                            + / -',
-    'Restore default transformation   Home'
-  );
-
-  WalkFlyTooltip: array [0..25] of string = (
-    'Walk / Fly navigation controls:',
-    '',
-    'Basic:',
-    '',
-    'Forward / backward                        Up / Down',
-    'Rotate                                    Left / Right',
-    'Raise / bow your head                     PageUp / PageDown',
-    'Restore head raise to initial position    Home',
-    '  (neutralize any effect of PageUp / PageDown)',
-    'Fly up / down                             Insert / Delete',
-    'Move left / right                         Comma / Period',
-    'Jump / crouch                             A / Z',
-    '  (only when Gravity works, in Walk mode)',
-    '',
-    'Turn "Mouse Look" "On" to comfortably look around by moving the mouse.',
-    'Then the keys for strafe and rotations swap their meaning:',
-    '  * Left / Right keys move left / right',
-    '  * Comma / Period rotate',
-    '',
-    'Additional controls:',
-    '',
-    'Increase / decrease moving speed               + / -',
-    'Increase / decrease avatar height              Ctrl + Insert/Delete',
-    'Rotate slower                                  Ctrl + Left / Right',
-    'Raise / bow your head slower                   Ctrl + PageUp / PageDown',
-    'Pick a point, selecting triangle and object    Right mouse click'
-  );
-
-begin
-  if NavigationType = ntExamine then
-    DoDraw(ExamineTooltip) else
-    DoDraw(WalkFlyTooltip);
-end;
-
-{$endif}
 
 procedure TNavigationTypeButton.GLContextOpen;
 begin
@@ -297,6 +195,8 @@ begin
       ImageExamine_TooltipGL := TGLImage.Create(Examine_Tooltip);
     if ImageWalk_Fly_TooltipGL = nil then
       ImageWalk_Fly_TooltipGL := TGLImage.Create(Walk_Fly_Tooltip);
+    if ImageTooltipArrow = nil then
+      ImageTooltipArrow := TGLImage.Create(TooltipArrow);
   end;
 end;
 
@@ -306,11 +206,14 @@ begin
   begin
     FreeAndNil(ImageExamine_TooltipGL);
     FreeAndNil(ImageWalk_Fly_TooltipGL);
+    FreeAndNil(ImageTooltipArrow);
   end;
   inherited;
 end;
 
 initialization
+  Theme.Images[tiTooltip] := TooltipRounded;
+  Theme.Corners[tiTooltip] := Vector4Integer(9, 9, 9, 9);
   Camera := TUniversalCamera.Create(nil);
 finalization
   FreeAndNil(Camera);

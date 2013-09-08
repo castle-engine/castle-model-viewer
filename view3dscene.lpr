@@ -391,10 +391,10 @@ function ViewpointNode: TAbstractViewpointNode; forward;
 type
   TExtendedStatusText = class(TStatusText)
   protected
-    procedure CalculateText(const Strs: TStringList); override;
+    procedure CalculateText; override;
   end;
 
-procedure TExtendedStatusText.CalculateText(const Strs: TStringList);
+procedure TExtendedStatusText.CalculateText;
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
@@ -460,7 +460,7 @@ const
         for I := 0 to Active.Count - 1 do
           if (Over = nil) or
              (Over.IndexOf(Active[I]) = -1) then
-            Strs.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
+            Text.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
 
         { Display sensors over which the mouse hovers (and enabled).
           Highlight active sensors on the list. }
@@ -471,7 +471,7 @@ const
               S := DescribeSensor(Over[I]);
               if Active.IndexOf(Over[I]) <> -1 then
                 S := HighlightBegin + S + HighlightEnd;
-              Strs.Append(S);
+              Text.Append(S);
             end;
 
         { Note that sensors that are "active and over" are undistinguishable
@@ -483,8 +483,8 @@ const
           makes the sensors status look much cleaner. }
 
         { a blank line, separating from the rest of status, if needed }
-        if Strs.Count <> 0 then
-          Strs.Append('');
+        if Text.Count <> 0 then
+          Text.Append('');
       end;
     end;
   end;
@@ -514,15 +514,15 @@ begin
   { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
   if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
-  strs.Append(S); }
+  Text.Append(S); }
 
   Camera.GetView(Pos, Dir, Up);
-  strs.Append(Format('Camera: pos %s, dir %s, up %s',
+  Text.Append(Format('Camera: pos %s, dir %s, up %s',
     [ VectorToNiceStr(Pos), VectorToNiceStr(Dir), VectorToNiceStr(Up) ]));
 
   if Camera.NavigationClass = ncWalk then
   begin
-    strs.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
+    Text.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
       [ Camera.Walk.MoveSpeed,
         Camera.Walk.PreferredHeight,
         CurrentAboveHeight ]));
@@ -531,13 +531,13 @@ begin
   { if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
    s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
-  strs.Append(Format('Use scene lights: %s', [s])); }
+  Text.Append(Format('Use scene lights: %s', [s])); }
 
   if SceneAnimation.Attributes.UseOcclusionQuery or
      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
     S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
     S := '';
-  strs.Append(Format('Rendered Shapes : %d%s of %d ',
+  Text.Append(Format('Rendered Shapes : %d%s of %d ',
     [ Statistics.ShapesRendered, S,
       Statistics.ShapesVisible ]) + OctreeDisplayStatus);
 
@@ -550,7 +550,7 @@ begin
     S += ' (paused)';
   if not ProcessEventsWanted then
     S += ' (paused, not processing VRML/X3D events)';
-  strs.Append(S);
+  Text.Append(S);
 end;
 
 { TCastleWindowBase callbacks --------------------------------------------------------- }
@@ -4013,6 +4013,7 @@ begin
         Theme.MessageInputTextColor := Vector3Byte(0, 100, 0);
         Theme.MessageTextColor := Vector3Byte(0, 0, 0);
         Theme.Images[tiWindow] := WindowGray;
+        Theme.Images[tiLabel] := FrameYellowBlack;
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;

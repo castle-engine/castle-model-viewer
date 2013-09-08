@@ -27,7 +27,7 @@ unit V3DSceneRaytrace;
 interface
 
 uses GL, GLU, GLExt, CastleWindow, CastleVectors, X3DNodes,
-  CastleFilesUtils, CastleStringUtils, CastleSceneCore;
+  CastleFilesUtils, CastleStringUtils, CastleSceneCore, CastleUIControls;
 
 const
   DefaultRaytracerDepth = 3;
@@ -70,49 +70,38 @@ type
     RowsMadeCount: integer;
     { During and after raytracing, user can exit with Escape. }
     Quit: boolean;
-    { Ray-tracer statistics. }
-    Stats: TStringList;
   end;
   PCallData = ^TCallData;
 
 type
   BreakRaytracing = class(TCodeBreaker);
 
-{ -------------------------------------------------------------------------
-  Window calbacks after rendering (when Image is ready). }
+{ TRayTracerImage ----------------------------------------------------------- }
 
-procedure DrawDone(Window: TCastleWindowBase);
-var
-  D: PCallData;
+type
+  TRayTracerImage = class(TUIControl)
+  private
+    Image: TCastleImage;
+  public
+    procedure Draw; override;
+    function DrawStyle: TUIControlDrawStyle; override;
+  end;
+
+function TRayTracerImage.DrawStyle: TUIControlDrawStyle;
 begin
-  D := PCallData(Window.UserData);
+  Result := ds2D;
+end;
+
+procedure TRayTracerImage.Draw;
+begin
+  if not GetExists then Exit;
 
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   glClear(GL_COLOR_BUFFER_BIT);
   SetWindowPos(0, 0);
-  ImageDraw(D^.Image);
-  DrawStatus(D^.Stats);
-end;
-
-{ -------------------------------------------------------------------------
-  Window calbacks while rendering (when Image is only partially ready).
-  Remember that Window.Width/Height do not have to be equal to
-  Image.Width/Height anymore, user could already resize our window. }
-
-{ Display callback called when the window must be redrawn
-  (e.g. because user resized the window, or covered and uncovered
-  it by another window, and window manager requested the redraw). }
-procedure DrawWorking(Window: TCastleWindowBase);
-var
-  D: PCallData;
-begin
-  D := PCallData(Window.UserData);
-
-  glClear(GL_COLOR_BUFFER_BIT);
-  SetWindowPos(0, 0);
-  ImageDraw(D^.Image);
+  ImageDraw(Image);
 end;
 
 { Callback when ray-tracing is in process.
@@ -227,6 +216,37 @@ begin
     Result.Append(M);
 end;
 
+{ TRayTracerStatus -------------------------------------------------------- }
+
+type
+  TRayTracerStatus = class(TStatusText)
+  private
+    Stats: TStringList;
+  protected
+    procedure CalculateText; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  end;
+
+constructor TRayTracerStatus.Create(AOwner: TComponent);
+begin
+  inherited;
+  Stats := TStringList.Create;
+end;
+
+destructor TRayTracerStatus.Destroy;
+begin
+  FreeAndNil(Stats);
+  inherited;
+end;
+
+procedure TRayTracerStatus.CalculateText;
+begin
+  inherited;
+  Text.Assign(Stats);
+end;
+
 { ----------------------------------------------------------------------------- }
 
 procedure RaytraceToWin(Window: TCastleWindowCustom;
@@ -244,6 +264,8 @@ var
   RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
   MainMenuDone, MainMenuWorking: TMenu;
   RayTracer: TRayTracer;
+  StatusText: TRayTracerStatus;
+  ImageControl: TRayTracerImage;
 begin
   { get input from user }
   case MessageChoice(Window,
@@ -268,7 +290,6 @@ begin
   RayTracer := nil;
   CallData.Image := nil;
   SavedMode := nil;
-  CallData.Stats := nil;
   try
     MainMenuDone := CreateMainMenuDone;
     MainMenuWorking := CreateMainMenuWorking;
@@ -277,8 +298,14 @@ begin
     CallData.Window := Window;
 
     { switch to our mode }
-    SavedMode := TGLMode.CreateReset(Window, GL_ENABLE_BIT,
-      @DrawWorking, @Resize2D, @NoClose);
+    SavedMode := TGLMode.CreateReset(Window, 0, nil, @Resize2D, @NoClose);
+
+    StatusText := TRayTracerStatus.Create(Window);
+    Window.Controls.InsertFront(StatusText);
+
+    ImageControl := TRayTracerImage.Create(Window);
+    ImageControl.Image := CallData.Image;
+    Window.Controls.InsertBack(ImageControl);
 
     Window.UserData := @CallData;
     { Lazarus Carbon widgetset (used by CastleWindow LCL backend on Mac OS X)
@@ -292,10 +319,6 @@ begin
     Window.OnMenuClick := @MenuClick;
     {$endif}
     CallData.Quit := false;
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_FOG);
-    glLoadIdentity;
     Window.EventResize; { init our projection }
 
     try
@@ -340,12 +363,11 @@ begin
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
         RayTracer.PixelsMadeNotifierData := Window;
 
-        CallData.Stats := TStringList.Create;
-        RayTracer.ExecuteStats(CallData.Stats);
+        RayTracer.ExecuteStats(StatusText.Stats);
       finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
 
-      CallData.Stats.Append('');
-      CallData.Stats.Append('<font color="#FFFFFF">Press Escape to return to normal 3D view.</font>');
+      StatusText.Stats.Append('');
+      StatusText.Stats.Append('<font color="#FFFFFF">Press Escape to return to normal 3D view.</font>');
 
       { Display the rendered image, wait for Escape.
         We call PostRedisplay to make sure to display the whole image
@@ -353,7 +375,6 @@ begin
         because of RowsShowCount mechanism). }
       Window.PostRedisplay;
       Window.Caption := 'view3dscene - Ray Tracing - done';
-      Window.OnDraw := @DrawDone;
       {$ifdef LCLCarbon}
       Window.OnPress := @PressDone;
       {$else}
@@ -364,8 +385,8 @@ begin
     except on BreakRaytracing do ; end;
   finally
     FreeAndNil(SavedMode);
+    FreeAndNil(StatusText);
     FreeAndNil(CallData.Image);
-    FreeAndNil(CallData.Stats);
     FreeAndNil(MainMenuWorking);
     FreeAndNil(MainMenuDone);
     FreeAndNil(RayTracer);

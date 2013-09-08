@@ -25,19 +25,21 @@ unit V3DSceneStatus;
 
 interface
 
-uses CastleGLBitmapFonts, Classes, CastleUIControls, CastleTimeUtils;
+uses CastleGLBitmapFonts, Classes, CastleUIControls, CastleTimeUtils,
+  CastleControls;
 
 type
-  TStatusText = class(TUIControl)
+  TStatusText = class(TCastleLabel)
   private
-    Font: TGLBitmapFont;
+    CustomFont: TGLBitmapFontAbstract;
     FMaxLineChars: Cardinal;
     FlashTime, Time: TFloatTime;
     FlashText: string;
   protected
-    procedure CalculateText(const Strs: TStringList); virtual;
+    procedure CalculateText; virtual;
+    function Font: TGLBitmapFontAbstract; override;
   public
-    function DrawStyle: TUIControlDrawStyle; override;
+    constructor Create(AOwner: TComponent); override;
     procedure Draw; override;
     procedure GLContextOpen; override;
     procedure GLContextClose; override;
@@ -50,97 +52,78 @@ type
     property MaxLineChars: Cardinal read FMaxLineChars;
 
     { Show a message that will fadeout with time. }
-    procedure Flash(const Text: string);
+    procedure Flash(const AText: string);
   end;
 
 var
   StatusText: TStatusText;
-
-{ Draw status text directly. Call this only if StatusText is created
-  (since we reuse it's Font). }
-procedure DrawStatus(const Strs: TStringList);
 
 implementation
 
 uses SysUtils, CastleBitmapFont_BVSansMono_Bold_m15,
   CastleVectors, GL, CastleUtils, CastleColors;
 
-const
-  { Margin inside status box size. }
-  BoxMargin = 5;
-  { Margin from status box to window border. }
-  WindowMargin = 5;
-
 { TStatusText ---------------------------------------------------------------- }
 
-procedure DrawStatus(const Strs: TStringList);
-const
-  InsideColor: TVector4Single = (0, 0, 0, 0.7);
-  BorderColor: TVector4Single = (0, 1, 0, 1);
-  TextColor  : TVector4Single = (1, 1, 0, 1);
+constructor TStatusText.Create(AOwner: TComponent);
 begin
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_BLEND);
-  StatusText.Font.PrintStringsBox(Strs, true, WindowMargin, WindowMargin, 0,
-    InsideColor, BorderColor, TextColor, BoxMargin);
-  glDisable(GL_BLEND);
+  inherited;
+  Tags := true;
+  Left := 5;
+  Bottom := 5;
+  Color := Vector3Byte(255, 255, 0);
+  Padding := 5;
 end;
 
 procedure TStatusText.Draw;
-var
-  Strs: TStringList;
 begin
   if not GetExists then Exit;
-  Strs := TStringList.Create;
-  try
-    CalculateText(Strs);
-    DrawStatus(Strs);
-  finally FreeAndNil(Strs) end;
-end;
-
-function TStatusText.DrawStyle: TUIControlDrawStyle;
-begin
-  if GetExists then
-    Result := ds2D else
-    Result := dsNone;
+  Text.Clear;
+  CalculateText;
+  inherited;
 end;
 
 const
   FlashDelay = 1.0;
 
-procedure TStatusText.CalculateText(const Strs: TStringList);
+procedure TStatusText.CalculateText;
 begin
   if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
   begin
-    Strs.Append('<font color="#' + ColorToHex(Vector4Single(1, 1, 0,
+    Text.Append('<font color="#' + ColorToHex(Vector4Single(1, 1, 0,
       1 - (Time - FlashTime) / FlashDelay)) + '">' + FlashText + '</font>');
-    Strs.Append('');
+    Text.Append('');
   end;
 end;
 
 procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
 begin
   inherited;
-  FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - BoxMargin * 2 -
-    WindowMargin * 2) div Font.TextWidth('W'));
+  FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - Padding * 2 -
+    Left * 2) div Font.TextWidth('W'));
 end;
 
 procedure TStatusText.GLContextOpen;
 begin
   inherited;
-  if Font = nil then
-    Font := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
+  if CustomFont = nil then
+    CustomFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
 end;
 
 procedure TStatusText.GLContextClose;
 begin
-  FreeAndNil(Font);
+  FreeAndNil(CustomFont);
   inherited;
 end;
 
-procedure TStatusText.Flash(const Text: string);
+function TStatusText.Font: TGLBitmapFontAbstract;
 begin
-  FlashText := Text;
+  Result := CustomFont;
+end;
+
+procedure TStatusText.Flash(const AText: string);
+begin
+  FlashText := AText;
   FlashTime := Time;
 end;
 
