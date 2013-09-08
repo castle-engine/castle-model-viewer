@@ -71,7 +71,7 @@ begin
   Tags := true;
   Left := 5;
   Bottom := 5;
-  Color := Vector3Byte(255, 255, 0);
+  Color := Yellow;
   Padding := 5;
 end;
 

@@ -4010,8 +4010,8 @@ begin
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
-        Theme.MessageInputTextColor := Vector3Byte(0, 100, 0);
-        Theme.MessageTextColor := Vector3Byte(0, 0, 0);
+        Theme.MessageInputTextColor := Vector4Byte(0, 100, 0, 255);
+        Theme.MessageTextColor := Black;
         Theme.Images[tiWindow] := WindowGray;
         Theme.Images[tiLabel] := FrameYellowBlack;
 
