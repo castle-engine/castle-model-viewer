@@ -555,7 +555,7 @@ end;
 
 { TCastleWindowBase callbacks --------------------------------------------------------- }
 
-procedure Open(Window: TCastleWindowBase);
+procedure Open(Sender: TCastleWindowBase);
 begin
   { We want to be able to render any scene --- so we have to be prepared
     that fog interpolation has to be corrected for perspective. }
