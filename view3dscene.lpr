@@ -2546,7 +2546,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
             SceneManager.ProjectionNear, SceneManager.ProjectionFar);
-          glViewport(0, 0, Window.Width, Window.Height);
+          glViewport(Window.Rect);
 
           case Orientation of
             'b':
@@ -2613,7 +2613,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
           @SceneManager.RenderFromViewEverything,
           SceneManager.ProjectionNear, SceneManager.ProjectionFar);
         try
-          glViewport(0, 0, Window.Width, Window.Height);
+          glViewport(Window.Rect);
           DDS.SaveToFile(URL);
         finally FreeAndNil(DDS) end;
       end;
