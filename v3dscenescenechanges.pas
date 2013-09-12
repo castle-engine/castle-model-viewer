@@ -66,8 +66,7 @@ type
     class procedure NoSolid_AbstractGeometry(Node: TX3DNode);
 
     class procedure NoConvex_ShapeHints(node: TX3DNode);
-    class procedure NoConvex_IFS(node: TX3DNode);
-    class procedure NoConvex_Extrusion(node: TX3DNode);
+    class procedure NoConvex_AbstractGeometry(node: TX3DNode);
   end;
 
 class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TX3DNode);
@@ -111,14 +110,12 @@ begin
   (Node as TShapeHintsNode_1).FdFaceType.Value := FACETYPE_UNKNOWN;
 end;
 
-class procedure TSceneChangesDo.NoConvex_IFS(node: TX3DNode);
+class procedure TSceneChangesDo.NoConvex_AbstractGeometry(node: TX3DNode);
+var
+  F: TSFBool;
 begin
-  (Node as TIndexedFaceSetNode).FdConvex.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoConvex_Extrusion(node: TX3DNode);
-begin
-  (Node as TExtrusionNode).FdConvex.Value := false;
+  F := (Node as TAbstractGeometryNode).ConvexField;
+  if F <> nil then F.Value := false;
 end;
 
 { SceneChange_Xxx functions ---------------------------------------- }
@@ -172,10 +169,8 @@ var
 begin
   Node.EnumerateNodes(TShapeHintsNode_1,
     @TSceneChangesDo(nil).NoConvex_ShapeHints, false);
-  Node.EnumerateNodes(TIndexedFaceSetNode,
-    @TSceneChangesDo(nil).NoConvex_IFS, false);
-  Node.EnumerateNodes(TExtrusionNode,
-    @TSceneChangesDo(nil).NoConvex_Extrusion, false);
+  Node.EnumerateNodes(TAbstractGeometryNode,
+    @TSceneChangesDo(nil).NoConvex_AbstractGeometry, false);
 
   if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
   begin
