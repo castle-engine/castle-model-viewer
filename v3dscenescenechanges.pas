@@ -51,7 +51,7 @@ procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TCastlePrecalculat
 
 implementation
 
-uses SysUtils;
+uses SysUtils, X3DFields;
 
 { TSceneChangesDo -------------------------------------------------- }
 
@@ -63,19 +63,7 @@ type
     class procedure NoNormal_ElevationGrid(node: TX3DNode);
 
     class procedure NoSolid_ShapeHints(node: TX3DNode);
-    class procedure NoSolid_X3DComposedGeometry(node: TX3DNode);
-    class procedure NoSolid_Extrusion(node: TX3DNode);
-    class procedure NoSolid_ElevationGrid(node: TX3DNode);
-    class procedure NoSolid_Box(node: TX3DNode);
-    class procedure NoSolid_Cone(node: TX3DNode);
-    class procedure NoSolid_Cylinder(node: TX3DNode);
-    class procedure NoSolid_Sphere(node: TX3DNode);
-    class procedure NoSolid_Text(node: TX3DNode);
-    class procedure NoSolid_Text3D(node: TX3DNode);
-    class procedure NoSolid_X3DNurbsSurfaceGeometryNode(Node: TX3DNode);
-    class procedure NoSolid_NurbsSweptSurface(Node: TX3DNode);
-    class procedure NoSolid_NurbsSwungSurface(Node: TX3DNode);
-    class procedure NoSolid_NurbsSurface(Node: TX3DNode);
+    class procedure NoSolid_AbstractGeometry(Node: TX3DNode);
 
     class procedure NoConvex_ShapeHints(node: TX3DNode);
     class procedure NoConvex_IFS(node: TX3DNode);
@@ -106,69 +94,16 @@ begin
   (Node as TShapeHintsNode_1).FdShapeType.Value := SHTYPE_UNKNOWN;
 end;
 
-class procedure TSceneChangesDo.NoSolid_X3DComposedGeometry(node: TX3DNode);
+class procedure TSceneChangesDo.NoSolid_AbstractGeometry(Node: TX3DNode);
+var
+  F: TSFBool;
 begin
-  (Node as TAbstractComposedGeometryNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Extrusion(node: TX3DNode);
-begin
-  (Node as TExtrusionNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_ElevationGrid(Node: TX3DNode);
-begin
-  (Node as TElevationGridNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Box(Node: TX3DNode);
-begin
-  (Node as TBoxNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Cone(Node: TX3DNode);
-begin
-  (Node as TConeNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Cylinder(Node: TX3DNode);
-begin
-  (Node as TCylinderNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Sphere(Node: TX3DNode);
-begin
-  (Node as TSphereNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Text(Node: TX3DNode);
-begin
-  (Node as TTextNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_Text3D(Node: TX3DNode);
-begin
-  (Node as TText3DNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_X3DNurbsSurfaceGeometryNode(Node: TX3DNode);
-begin
-  (Node as TAbstractNurbsSurfaceGeometryNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_NurbsSweptSurface(Node: TX3DNode);
-begin
-  (Node as TNurbsSweptSurfaceNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_NurbsSwungSurface(Node: TX3DNode);
-begin
-  (Node as TNurbsSwungSurfaceNode).FdSolid.Value := false;
-end;
-
-class procedure TSceneChangesDo.NoSolid_NurbsSurface(Node: TX3DNode);
-begin
-  (Node as TNurbsSurfaceNode).FdSolid.Value := false;
+  { We could also just use
+      (Node as TAbstractGeometryNode).Value := false
+    but that would be less optimal.
+    (Better to let scene to call ChangedAll later.)  }
+  F := (Node as TAbstractGeometryNode).SolidField;
+  if F <> nil then F.Value := false;
 end;
 
 class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
@@ -227,32 +162,8 @@ procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
 begin
   Node.EnumerateNodes(TShapeHintsNode_1,
     @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
-  Node.EnumerateNodes(TAbstractComposedGeometryNode,
-    @TSceneChangesDo(nil).NoSolid_X3DComposedGeometry, false);
-  Node.EnumerateNodes(TExtrusionNode,
-    @TSceneChangesDo(nil).NoSolid_Extrusion, false);
-  Node.EnumerateNodes(TElevationGridNode,
-    @TSceneChangesDo(nil).NoSolid_ElevationGrid, false);
-  Node.EnumerateNodes(TBoxNode,
-    @TSceneChangesDo(nil).NoSolid_Box, false);
-  Node.EnumerateNodes(TConeNode,
-    @TSceneChangesDo(nil).NoSolid_Cone, false);
-  Node.EnumerateNodes(TCylinderNode,
-    @TSceneChangesDo(nil).NoSolid_Cylinder, false);
-  Node.EnumerateNodes(TSphereNode,
-    @TSceneChangesDo(nil).NoSolid_Sphere, false);
-  Node.EnumerateNodes(TTextNode,
-    @TSceneChangesDo(nil).NoSolid_Text, false);
-  Node.EnumerateNodes(TText3DNode,
-    @TSceneChangesDo(nil).NoSolid_Text3D, false);
-  Node.EnumerateNodes(TAbstractNurbsSurfaceGeometryNode,
-    @TSceneChangesDo(nil).NoSolid_X3DNurbsSurfaceGeometryNode, false);
-  Node.EnumerateNodes(TNurbsSweptSurfaceNode,
-    @TSceneChangesDo(nil).NoSolid_NurbsSweptSurface, false);
-  Node.EnumerateNodes(TNurbsSwungSurfaceNode,
-    @TSceneChangesDo(nil).NoSolid_NurbsSwungSurface, false);
-  Node.EnumerateNodes(TNurbsSurfaceNode,
-    @TSceneChangesDo(nil).NoSolid_NurbsSurface, false);
+  Node.EnumerateNodes(TAbstractGeometryNode,
+    @TSceneChangesDo(nil).NoSolid_AbstractGeometry, false);
 end;
 
 procedure SceneChange_NoConvexFaces(Node: TX3DRootNode);
