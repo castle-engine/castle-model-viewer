@@ -564,7 +564,7 @@ begin
   WindowProgressInterface.Window := Window;
   Progress.UserInterface := WindowProgressInterface;
 
-  BGColorChanged;
+  BGColorChanged(SceneManager);
 end;
 
 procedure Close(Window: TCastleWindowBase);
@@ -2916,7 +2916,7 @@ begin
   68: Viewpoints.Final(SceneManager);
 
   82: ShowBBox := not ShowBBox;
-  84: if Window.ColorDialog(BGColor) then BGColorChanged;
+  84: if Window.ColorDialog(BGColor) then BGColorChanged(SceneManager);
   86: with SceneAnimation.Attributes do Blending := not Blending;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
   89: with SceneAnimation.Attributes do BlendingSort := not BlendingSort;

@@ -20,32 +20,33 @@
   ----------------------------------------------------------------------------
 }
 
-{ Simple management of glClearColor OpenGL property. }
-
+{ Changing BackgroundColor of all viewports. }
 unit V3DSceneBGColors;
 
 interface
 
-uses GL, GLU, CastleVectors;
+uses CastleColors, CastleSceneManager, V3DSceneViewports;
 
 const
-  DefaultBGColor: TVector3Single = (0, 0, 0);
+  DefaultBGColor: TCastleColor = (0, 0, 0, 1);
 
 var
-  BGColor: TVector3Single;
+  BGColor: TCastleColor;
 
-{ Call always after changing BGColor, call also once at the GL context open.
-  Sets glClearColor. }
-procedure BGColorChanged;
+{ Call always after changing BGColor, call also once at the beginning. }
+procedure BGColorChanged(const SceneManager: TCastleSceneManager);
 
 implementation
 
 uses CastleConfig;
 
-procedure BGColorChanged;
+procedure BGColorChanged(const SceneManager: TCastleSceneManager);
+var
+  I: Integer;
 begin
-  { Alpha of this is irrelevant. }
-  glClearColor(BGColor[0], BGColor[1], BGColor[2], 0);
+  for I := 0 to High(Viewports) do
+    Viewports[I].BackgroundColor := BGColor;
+  SceneManager.BackgroundColor := BGColor;
 end;
 
 type

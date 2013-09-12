@@ -26,7 +26,7 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses GL, GLU, GLExt, CastleWindow, CastleVectors, X3DNodes,
+uses CastleWindow, CastleVectors, X3DNodes, CastleColors,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore, CastleUIControls;
 
 const
@@ -40,7 +40,7 @@ procedure RaytraceToWin(Window: TCastleWindowCustom;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
-  const SceneBGColor: TVector3Single);
+  const SceneBGColor: TCastleColor);
 
 implementation
 
@@ -99,7 +99,7 @@ begin
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
-  glClear(GL_COLOR_BUFFER_BIT);
+  GLClear([cbColor], Black);
   SetWindowPos(0, 0);
   ImageDraw(Image);
 end;
@@ -256,7 +256,7 @@ procedure RaytraceToWin(Window: TCastleWindowCustom;
   const PerspectiveView: boolean;
   const PerspectiveViewAngles: TVector2Single;
   const OrthoViewDimensions: TVector4Single;
-  const SceneBGColor: TVector3Single);
+  const SceneBGColor: TCastleColor);
 var
   SavedMode: TGLMode;
   CallData: TCallData;
@@ -359,7 +359,7 @@ begin
         RayTracer.PerspectiveView := PerspectiveView;
         RayTracer.PerspectiveViewAngles := PerspectiveViewAngles;
         RayTracer.OrthoViewDimensions := OrthoViewDimensions;
-        RayTracer.SceneBGColor := SceneBGColor;
+        RayTracer.SceneBGColor := Vector3SingleCut(SceneBGColor);
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
         RayTracer.PixelsMadeNotifierData := Window;
 

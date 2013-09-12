@@ -60,42 +60,20 @@ procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
-{ If some custom viewports are visible then redraw background and 
+{ If some custom viewports are visible then redraw background and
   all viewports. Remember to always call SceneManager.Draw afterwards,
   as SceneManager is also another viewport. }
 procedure ViewportsDraw;
 
 implementation
 
-uses CastleVectors, SysUtils, CastleUtils, GL, CastleUIControls;
-
-{ TBackground ---------------------------------------------------------------- }
-
-type
-  TBackground = class(TUIControl)
-  public
-    function DrawStyle: TUIControlDrawStyle; override;
-    procedure Draw; override;
-  end;
-
-function TBackground.DrawStyle: TUIControlDrawStyle;
-begin
-  { 3D, because we want to be drawn before other 3D objects }
-  Result := ds3D;
-end;
-
-procedure TBackground.Draw;
-begin
-  glPushAttrib(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.5, 0.5, 0.5, 1); // saved by GL_COLOR_BUFFER_BIT
-    glClear(GL_COLOR_BUFFER_BIT);
-  glPopAttrib;
-end;
+uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
+  CastleGLUtils, CastleColors;
 
 { global routines ------------------------------------------------------------ }
 
 var
-  Background: TBackground;
+  Background: TCastleSimpleBackground;
 
 procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
@@ -149,7 +127,7 @@ begin
       vc1:
         begin
           { make sure glViewport is also restored }
-          glViewport(0, 0, Window.Width, Window.Height);
+          GLViewport(Window.Rect);
           for I := 0 to High(Viewports) do
             Window.Controls.Remove(Viewports[I]);
         end;
@@ -252,7 +230,8 @@ var
 begin
   for I := 0 to High(Viewports) do
     Viewports[I] := ViewportClass.Create(nil);
-  Background := TBackground.Create(nil);
+  Background := TCastleSimpleBackground.Create(nil);
+  Background.Color := Gray;
 end;
 
 procedure ViewportsDraw;
