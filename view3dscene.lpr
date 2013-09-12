@@ -616,12 +616,12 @@ begin
         has at least two frames. }
       if SceneAnimation.ScenesCount > 1 then
       begin
-        glColorv(Red3Single);
+        glColorv(Red);
         if not SceneAnimation.CurrentScene.BoundingBox.IsEmpty then
           glDrawBox3DWire(SceneAnimation.CurrentScene.BoundingBox);
       end;
 
-      glColorv(Green3Single);
+      glColorv(Green);
       if not SceneAnimation.BoundingBox.IsEmpty then
         glDrawBox3DWire(SceneAnimation.BoundingBox);
     end;
@@ -4010,7 +4010,7 @@ begin
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
-        Theme.MessageInputTextColor := Vector4Byte(0, 100, 0, 255);
+        Theme.MessageInputTextColor := Vector4Single(0, 0.4, 0, 1.0);
         Theme.MessageTextColor := Black;
         Theme.Images[tiWindow] := WindowGray;
         Theme.Images[tiLabel] := FrameYellowBlack;

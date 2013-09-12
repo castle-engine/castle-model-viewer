@@ -217,35 +217,35 @@ procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
 begin
   if OctreeTrianglesDisplay.Whole then
   begin
-    glColorv(Yellow3Single);
+    glColorv(Yellow);
     DisplayOctreeTrianglesWhole;
   end else
   if OctreeTrianglesDisplay.Depth >= 0 then
   begin
-    glColorv(Yellow3Single);
+    glColorv(Yellow);
     DisplayOctreeTrianglesDepth(OctreeTrianglesDisplay.Depth);
   end;
 
   if OctreeVisibleShapesDisplay.Whole then
   begin
-    glColorv(Blue3Single);
+    glColorv(Blue);
     DisplayOctreeWhole(SceneAnimation.FirstScene.OctreeRendering.TreeRoot);
   end else
   if OctreeVisibleShapesDisplay.Depth >= 0 then
   begin
-    glColorv(Blue3Single);
+    glColorv(Blue);
     DisplayOctreeDepth(SceneAnimation.FirstScene.OctreeRendering.TreeRoot,
       OctreeVisibleShapesDisplay.Depth);
   end;
 
   if OctreeCollidableShapesDisplay.Whole then
   begin
-    glColorv(Red3Single);
+    glColorv(Red);
     DisplayOctreeWhole(SceneAnimation.FirstScene.OctreeDynamicCollisions.TreeRoot);
   end else
   if OctreeCollidableShapesDisplay.Depth >= 0 then
   begin
-    glColorv(Red3Single);
+    glColorv(Red);
     DisplayOctreeDepth(SceneAnimation.FirstScene.OctreeDynamicCollisions.TreeRoot,
       OctreeCollidableShapesDisplay.Depth);
   end;
