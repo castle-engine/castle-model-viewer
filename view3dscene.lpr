@@ -601,7 +601,7 @@ begin
   if (RenderingCamera.Target = rtScreen) and (not MakingScreenShot) then
   begin
     { Visualization below depends on DEPTH_TEST enabled
-      (and after rendering scene, it may be disabled, if not PreserveOpenGLState) }
+      (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
     glEnable(GL_DEPTH_TEST);
 
     { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
