@@ -298,7 +298,7 @@ begin
     MainMenuDone := CreateMainMenuDone;
     MainMenuWorking := CreateMainMenuWorking;
 
-    CallData.Image := Window.SaveAlignedScreen;
+    CallData.Image := Window.SaveScreen;
     CallData.Window := Window;
 
     { switch to our mode }
