@@ -61,7 +61,7 @@ var
 implementation
 
 uses SysUtils, CastleBitmapFont_BVSansMono_Bold_m15,
-  CastleVectors, GL, CastleUtils, CastleColors;
+  CastleVectors, CastleUtils, CastleColors;
 
 { TStatusText ---------------------------------------------------------------- }
 

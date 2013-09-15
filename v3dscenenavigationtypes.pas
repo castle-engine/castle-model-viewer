@@ -26,7 +26,7 @@ unit V3DSceneNavigationTypes;
 interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
-  GL, GLU, CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
+  CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
   CastleControls, CastleControlsImages;
 
 { Call this once on created SceneManager.
