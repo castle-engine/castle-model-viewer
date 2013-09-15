@@ -93,6 +93,8 @@ begin
 end;
 
 procedure TRayTracerImage.Draw;
+var
+  GLImage: TGLImage;
 begin
   if not GetExists then Exit;
 
@@ -100,8 +102,10 @@ begin
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   GLClear([cbColor], Black);
-  SetWindowPos(0, 0);
-  ImageDraw(Image);
+  GLImage := TGLImage.Create(Image);
+  try
+    GLImage.Draw(0, 0);
+  finally FreeAndNil(GLImage) end;
 end;
 
 { Callback when ray-tracing is in process.
