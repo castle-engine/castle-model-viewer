@@ -39,7 +39,7 @@ type
     capture and the image URL where to save this.
 
     Note that UseURL will do the substitution and actually
-    increment the counter for URLs with @@counter(<padding>) (or %d) inside. 
+    increment the counter for URLs with @@counter(<padding>) (or %d) inside.
     So always call UseURL only once, and in correct order. }
   TScreenShot = class
     URLPattern: string;
@@ -231,7 +231,7 @@ begin
 
   if SingleMovieFile and Success then
   begin
-    Executable := PathFileSearch('ffmpeg'  + ExeExtension);
+    Executable := FfmpegExecutable(false);
 
     if Executable = '' then
     begin
@@ -243,11 +243,7 @@ begin
     begin
       OutputMovieFileName := URIToFilenameSafe(MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter));
 
-      Writeln(Output, 'FFMpeg found, executing...');
-      Writeln(Output, Executable + ' -f image2 -i "' +
-        TemporaryImagesPattern + '" -y -qscale 1 "' + OutputMovieFileName + '"');
-
-      ExecuteProcess(Executable,
+      FfmpegExecute(Executable,
         [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-qscale', '1', OutputMovieFileName ]);
 
       Write(Output, 'Removing temporary image files "', TemporaryImagesPattern, '" ...');
