@@ -1,8 +1,10 @@
 unit V3DSceneBlending;
 
+{$I castleconf.inc}
+
 interface
 
-uses GL, CastleGLUtils;
+uses CastleGL, CastleGLUtils;
 
 const
   BlendingFactors: array [0..10] of record

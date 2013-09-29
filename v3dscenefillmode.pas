@@ -1,5 +1,7 @@
 unit V3DSceneFillMode;
 
+{$I castleconf.inc}
+
 interface
 
 uses CastleScene, CastleWindow, CastleRenderer, CastleVectors;
@@ -54,7 +56,7 @@ procedure RenderSilhouetteBorderEdges(
 
 implementation
 
-uses GL;
+uses CastleGL;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 var

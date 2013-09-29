@@ -26,6 +26,8 @@
 
 unit V3DSceneLights;
 
+{$I castleconf.inc}
+
 interface
 
 uses CastleVectors, SysUtils, CastlePrecalculatedAnimation, CastleUtils, X3DNodes;
@@ -44,7 +46,7 @@ procedure LightModelAmbientChanged;
 
 implementation
 
-uses GL, GLU, CastleGLUtils, CastleParameters, V3DSceneFillMode;
+uses CastleGL, CastleGLUtils, CastleParameters, V3DSceneFillMode;
 
 procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);

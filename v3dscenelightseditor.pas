@@ -23,6 +23,8 @@
 { Lights editor in view3dscene. }
 unit V3DSceneLightsEditor;
 
+{$I castleconf.inc}
+
 interface
 
 uses CastleWindow, CastleSceneManager;
@@ -39,7 +41,7 @@ procedure LightsEditorClose;
 implementation
 
 uses SysUtils, CastleVectors, Classes, X3DNodes, CastleOnScreenMenu, CastleBoxes,
-  CastleMessages, CastleUtils, GL, CastleGLUtils;
+  CastleMessages, CastleUtils, CastleGL, CastleGLUtils;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 

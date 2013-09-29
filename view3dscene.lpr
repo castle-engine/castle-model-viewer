@@ -39,6 +39,8 @@
 
 program view3dscene;
 
+{$I castleconf.inc}
+
 { Icon for Windows. .res file managed manually. }
 {$ifdef MSWINDOWS}
   {$R windows/view3dscene.res}
@@ -57,7 +59,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
   CastleKeysMouse, CastleDownload, CastleURIUtils,
   { OpenGL related units: }
-  GL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
+  CastleGL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
   CastleGLVersion, CastleGLCubeMaps, CastleControls, CastleGLShaders,
   CastleControlsImages,

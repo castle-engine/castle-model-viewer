@@ -23,6 +23,8 @@
 { Visualizing the octree. }
 unit V3DSceneOctreeVisualize;
 
+{$I castleconf.inc}
+
 interface
 
 uses CastleOctree, CastlePrecalculatedAnimation, CastleWindow;
@@ -61,7 +63,7 @@ function OctreeDisplayStatus: string;
 
 implementation
 
-uses GL, CastleColors, CastleGLUtils, CastleShapes, SysUtils;
+uses CastleGL, CastleColors, CastleGLUtils, CastleShapes, SysUtils;
 
 { TOctreeDisplay ------------------------------------------------------------- }
 

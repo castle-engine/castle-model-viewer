@@ -27,7 +27,7 @@ procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 
 implementation
 
-uses SysUtils, CastleConfig, GL, CastleGLUtils, V3DSceneFillMode;
+uses SysUtils, CastleConfig, CastleGLUtils, V3DSceneFillMode;
 
 procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 begin
