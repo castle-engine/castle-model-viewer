@@ -3139,10 +3139,10 @@ begin
   2000: SetLimitFPS;
   2010: EnableNetwork := not EnableNetwork;
 
-  1100..1199: SetTextureMinFilter(
-    TTextureMinFilter  (MenuItem.IntData-1100), SceneAnimation);
-  1200..1299: SetTextureMagFilter(
-    TTextureMagFilter  (MenuItem.IntData-1200), SceneAnimation);
+  1100..1199: SetMinificationFilter(
+    TMinificationFilter  (MenuItem.IntData-1100), SceneAnimation);
+  1200..1299: SetMagnificationFilter(
+    TMagnificationFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399:
     begin
       Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
@@ -3151,8 +3151,6 @@ begin
     end;
   1400..1499: SceneAnimation.Attributes.BumpMapping :=
     TBumpMapping(MenuItem.IntData - 1400);
-  1600..1699: SetTextureModeRGB(
-    TTextureMode(MenuItem.IntData-1600), SceneAnimation);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
     V3DSceneWindow.Window, SceneManager);
   4000..4010: SceneAnimation.Attributes.Shaders :=
@@ -3330,13 +3328,10 @@ begin
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
       SceneAnimation.Attributes.EnableTextures, true));
     M2 := TMenu.Create('Texture Minification Method');
-      MenuAppendTextureMinFilters(M2, 1100);
+      MenuAppendMinificationFilters(M2, 1100);
       M.Append(M2);
     M2 := TMenu.Create('Texture Magnification Method');
-      MenuAppendTextureMagFilters(M2, 1200);
-      M.Append(M2);
-    M2 := TMenu.Create('RGB Textures Color Mode');
-      MenuAppendTextureModeRGB(M2, 1600);
+      MenuAppendMagnificationFilters(M2, 1200);
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Blending',                86,

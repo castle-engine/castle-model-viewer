@@ -32,17 +32,11 @@ unit V3DSceneTextureFilters;
 
 interface
 
-uses GL, GLU, GLExt, CastleUtils, CastleVectors, X3DNodes,
-  CastlePrecalculatedAnimation, CastleGLUtils, CastleWindow;
-
-type
-  TTextureMinFilter = (tminNearest, tminLinear, tminNearestMipmapNearest,
-    tminNearestMipmapLinear, tminLinearMipmapNearest, tminLinearMipmapLinear);
-  TTextureMagFilter = (tmagNearest, tmagLinear);
-  TTextureMode = (tmModulate, tmReplace);
+uses CastleUtils, CastleVectors, X3DNodes,
+  CastlePrecalculatedAnimation, CastleGLUtils, CastleGLImages, CastleWindow;
 
 const
-  TextureMinFilterNames: array [TTextureMinFilter] of string =
+  MinificationFilterNames: array [TMinificationFilter] of string =
   ( 'Nearest (Fastest)',
     'Linear',
     'Nearest Pixel and Nearest Mipmap',
@@ -50,98 +44,60 @@ const
     'Linear Pixel and Nearest Mipmap',
     'Linear Pixel and Linear Mimap (Trilinear; Best Quality)');
 
-  TextureMagFilterNames: array [TTextureMagFilter] of string =
+  MagnificationFilterNames: array [TMagnificationFilter] of string =
   ( 'Nearest (Fastest)',
     'Linear (Best Quality)');
 
-  TextureModeRGBNames: array [TTextureMode] of string =
-  ( 'Modulate (texture * light)',
-    'Replace (texture color overrides light)' );
-
 procedure InitTextureFilters(SceneAnimation: TCastlePrecalculatedAnimation);
 
-function TextureMinFilter: TTextureMinFilter;
-procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+function MinificationFilter: TMinificationFilter;
+procedure SetMinificationFilter(Value: TMinificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
 
-function TextureMagFilter: TTextureMagFilter;
-procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+function MagnificationFilter: TMagnificationFilter;
+procedure SetMagnificationFilter(Value: TMagnificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
 
-function TextureModeRGB: TTextureMode;
-procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TCastlePrecalculatedAnimation);
-
-procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
-procedure MenuAppendTextureMagFilters(M: TMenu; BaseIntData: Cardinal);
-procedure MenuAppendTextureModeRGB(M: TMenu; BaseIntData: Cardinal);
+procedure MenuAppendMinificationFilters(M: TMenu; BaseIntData: Cardinal);
+procedure MenuAppendMagnificationFilters(M: TMenu; BaseIntData: Cardinal);
 
 implementation
 
-const
-  TextureMinFilterToGL: array [TTextureMinFilter] of TGLint =
-  ( GL_NEAREST, GL_LINEAR,
-    GL_NEAREST_MIPMAP_NEAREST,
-    GL_NEAREST_MIPMAP_LINEAR,
-    GL_LINEAR_MIPMAP_NEAREST,
-    GL_LINEAR_MIPMAP_LINEAR );
-
-  TextureMagFilterToGL: array [TTextureMagFilter] of TGLint =
-  ( GL_NEAREST, GL_LINEAR );
-
-  TextureModeRGBToGL: array [TTextureMode] of TGLenum =
-  ( GL_MODULATE, GL_REPLACE );
-
 var
-  FTextureMinFilter: TTextureMinFilter;
-  FTextureMagFilter: TTextureMagFilter;
-  FTextureModeRGB: TTextureMode;
+  FMinificationFilter: TMinificationFilter;
+  FMagnificationFilter: TMagnificationFilter;
 
 procedure InitTextureFilters(SceneAnimation: TCastlePrecalculatedAnimation);
 begin
- SetTextureMinFilter(tminLinearMipmapLinear, SceneAnimation);
- SetTextureMagFilter(tmagLinear, SceneAnimation);
- SetTextureModeRGB(tmModulate, SceneAnimation);
+  SetMinificationFilter(minLinearMipmapLinear, SceneAnimation);
+  SetMagnificationFilter(magLinear, SceneAnimation);
 end;
 
-function TextureMinFilter: TTextureMinFilter;
-begin Result := FTextureMinFilter end;
+function MinificationFilter: TMinificationFilter;
+begin Result := FMinificationFilter end;
 
-procedure SetTextureMinFilter(Value: TTextureMinFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMinificationFilter(Value: TMinificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
 begin
- FTextureMinFilter := value;
- SceneAnimation.Attributes.TextureMinFilter := TextureMinFilterToGL[Value];
+  FMinificationFilter := value;
+  SceneAnimation.Attributes.MinificationFilter := Value;
 end;
 
-function TextureMagFilter: TTextureMagFilter;
-begin Result := FTextureMagFilter end;
+function MagnificationFilter: TMagnificationFilter;
+begin Result := FMagnificationFilter end;
 
-procedure SetTextureMagFilter(Value: TTextureMagFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMagnificationFilter(Value: TMagnificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
 begin
- FTextureMagFilter := value;
- SceneAnimation.Attributes.TextureMagFilter := TextureMagFilterToGL[Value];
+  FMagnificationFilter := value;
+  SceneAnimation.Attributes.MagnificationFilter := Value;
 end;
 
-function TextureModeRGB: TTextureMode;
-begin Result := FTextureModeRGB end;
-
-procedure SetTextureModeRGB(Value: TTextureMode; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure MenuAppendMinificationFilters(M: TMenu; BaseIntData: Cardinal);
 begin
- FTextureModeRGB := value;
- SceneAnimation.Attributes.TextureModeRGB := TextureModeRGBToGL[Value];
+  M.AppendRadioGroup(MinificationFilterNames, BaseIntData, Ord(MinificationFilter), true);
 end;
 
-procedure MenuAppendTextureMinFilters(M: TMenu; BaseIntData: Cardinal);
-begin
-  M.AppendRadioGroup(TextureMinFilterNames, BaseIntData, Ord(TextureMinFilter), true);
-end;
-
-procedure MenuAppendTextureMagFilters(M: TMenu;
+procedure MenuAppendMagnificationFilters(M: TMenu;
   BaseIntData: Cardinal);
 begin
-  M.AppendRadioGroup(TextureMagFilterNames, BaseIntData, Ord(TextureMagFilter), true);
-end;
-
-procedure MenuAppendTextureModeRGB(M: TMenu; BaseIntData: Cardinal);
-begin
-  M.AppendRadioGroup(TextureModeRGBNames, BaseIntData, Ord(TextureModeRGB), true);
+  M.AppendRadioGroup(MagnificationFilterNames, BaseIntData, Ord(MagnificationFilter), true);
 end;
 
 end.
