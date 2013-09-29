@@ -28,6 +28,8 @@
 
 unit V3DSceneTextureFilters;
 
+{$I castleconf.inc}
+
 interface
 
 uses GL, GLU, GLExt, CastleUtils, CastleVectors, X3DNodes,

@@ -1429,7 +1429,8 @@ end;
 
 { make screen shots ---------------------------------------------------------- }
 
-function DrawAndSaveScreen(ImageClass: TCastleImageClass; ReadBuffer: TGLenum): TCastleImage;
+function DrawAndSaveScreen(ImageClass: TCastleImageClass;
+  const ReadBuffer: TColorBuffer): TCastleImage;
 begin
   if ControlsOnScreenshot then
   begin
@@ -1439,14 +1440,13 @@ begin
     ViewportsDraw;
     SceneManager.Draw;
   end;
-  Result := SaveScreen_NoFlush(ImageClass,
-    0, 0, Window.Width, Window.Height, ReadBuffer);
+  Result := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
 end;
 
 { This performs all screenshot takes, as specified in ScreenShotsList.
   It is used both for batch mode screenshots (--screenshot, --screenshot-range)
   and interactive (menu items about screenshots) operation. }
-procedure MakeAllScreenShots(ReadBuffer: TGLenum);
+procedure MakeAllScreenShots(ReadBuffer: TColorBuffer);
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
@@ -1562,7 +1562,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
 
   function CaptureScreen: TCastleImage;
   var
-    ReadBuffer: TGLenum;
+    ReadBuffer: TColorBuffer;
     Fbo: TGLRenderToTexture;
     ImageClass: TCastleImageClass;
   begin
@@ -1585,7 +1585,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
         OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end else
     begin
-      ReadBuffer := GL_BACK;
+      ReadBuffer := Window.SaveScreenBuffer;
       ImageClass := TRGBImage;
     end;
 
@@ -2388,7 +2388,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
             ScreenShotsList.Add(Range);
 
             try
-              MakeAllScreenShots(GL_BACK);
+              MakeAllScreenShots(Window.SaveScreenBuffer);
             except
               on E: EInvalidScreenShotURL do
                 MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
