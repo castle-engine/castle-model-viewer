@@ -302,7 +302,7 @@ begin
     CallData.Window := Window;
 
     { switch to our mode }
-    SavedMode := TGLMode.CreateReset(Window, 0, nil, @Resize2D, @NoClose);
+    SavedMode := TGLMode.CreateReset(Window, nil, @Resize2D, @NoClose);
 
     StatusText := TRayTracerStatus.Create(Window);
     Window.Controls.InsertFront(StatusText);
