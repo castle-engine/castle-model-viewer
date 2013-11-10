@@ -1603,6 +1603,9 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading ../demo_models/lights_materials/aluminium.x3dv.gz
 ---- Reading again ../demo_models/lights_materials/aluminium.x3dv.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/lights_materials/blend_modes.x3dv
+---- Reading again ../demo_models/lights_materials/blend_modes.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/lights_materials/cubes_mesh.wrl
 ---- Reading again ../demo_models/lights_materials/cubes_mesh.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2487,9 +2490,6 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
 ---- Reading again ../demo_models/vrml_2/castle_extensions/logger_nodes.wrl
----- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
----- Reading ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
----- Reading again ../demo_models/vrml_2/castle_extensions/various_blend_modes.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/vrml_2/castle_with_lights.wrl
 ---- Reading again ../demo_models/vrml_2/castle_with_lights.wrl
