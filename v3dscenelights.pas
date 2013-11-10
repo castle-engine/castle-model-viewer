@@ -61,7 +61,9 @@ end;
 
 procedure LightModelAmbientChanged;
 begin
+  {$ifndef OpenGLES} //TODO-es
   glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(LightModelAmbient, 1.0));
+  {$endif}
 end;
 
 initialization

@@ -559,9 +559,11 @@ end;
 
 procedure Open(Sender: TCastleWindowBase);
 begin
+  {$ifndef OpenGLES} //TODO-es
   { We want to be able to render any scene --- so we have to be prepared
     that fog interpolation has to be corrected for perspective. }
   glHint(GL_FOG_HINT, GL_NICEST);
+  {$endif}
 
   WindowProgressInterface.Window := Window;
   Progress.UserInterface := WindowProgressInterface;
@@ -578,6 +580,7 @@ end;
 procedure RenderVisualizations;
 
   procedure DrawFrustum(AlwaysVisible: boolean);
+  {$ifndef OpenGLES} //TODO-es
   var
     FrustumPoints: TFrustumPointsDouble;
   begin
@@ -597,6 +600,9 @@ procedure RenderVisualizations;
     finally
       if AlwaysVisible then glPopAttrib;
     end;
+  {$else}
+  begin
+  {$endif}
   end;
 
 begin
@@ -613,6 +619,7 @@ begin
 
     if ShowBBox then
     begin
+      {$ifndef OpenGLES} //TODO-es
       { Display current bounding box only if there's a chance that it's
         different than whole animation BoundingBox --- this requires that animation
         has at least two frames. }
@@ -626,6 +633,7 @@ begin
       glColorv(Green);
       if not SceneAnimation.BoundingBox.IsEmpty then
         glDrawBox3DWire(SceneAnimation.BoundingBox);
+      {$endif}
     end;
 
     { Note that there is no sense in showing viewing frustum in
@@ -638,6 +646,7 @@ begin
 
     if SelectedItem <> nil then
     begin
+      {$ifndef OpenGLES} //TODO-es
       glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
         glColorv(Vector4Single(1, 1, 1, 0.25)); { may be changed carelessly }
@@ -661,6 +670,7 @@ begin
           glVertexv(SelectedItem^.World.Triangle[2]);
         glEnd;
       glPopAttrib;
+      {$endif}
     end;
   end;
 end;

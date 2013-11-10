@@ -117,6 +117,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
+{$ifndef OpenGLES} //TODO-es
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
     OctreeDisplayDepth: integer);
@@ -251,6 +252,9 @@ begin
     DisplayOctreeDepth(SceneAnimation.FirstScene.OctreeDynamicCollisions.TreeRoot,
       OctreeCollidableShapesDisplay.Depth);
   end;
+{$else}
+begin
+{$endif}
 end;
 
 function OctreeDisplayStatus: string;

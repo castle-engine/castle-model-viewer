@@ -476,12 +476,14 @@ begin
   begin
     GlobalAmbientLight := AmbientColorSlider.Value;
 
+    {$ifndef OpenGLES} //TODO-es
     { TODO: GlobalAmbientLight just modifies and directly sets OpenGL paramater now.
       Default is equal to OpenGL default.
       This may be changed to control NavigationInfo.globalAmbient field
       (InstantReality extension that we plan to implement too,
       see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ). }
     glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(GlobalAmbientLight, 1.0));
+    {$endif}
   end;
 end;
 

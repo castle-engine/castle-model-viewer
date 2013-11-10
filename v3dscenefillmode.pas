@@ -86,6 +86,7 @@ end;
 procedure RenderSilhouetteBorderEdges(
   const ObserverPos: TVector4Single; Scene: TCastleScene);
 begin
+  {$ifndef OpenGLES} //TODO-es
   glPushAttrib(GL_ENABLE_BIT);
     { Draw BorderEdges first, with thicker width. And draw all without depth
       test.
@@ -107,6 +108,7 @@ begin
     Scene.RenderSilhouetteEdges(ObserverPos, IdentityMatrix4Single);
 
   glPopAttrib;
+  {$endif}
 end;
 
 end.
