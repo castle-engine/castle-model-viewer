@@ -68,6 +68,7 @@ test_dir()
 
   find "$1" \
   '(' -type d -iname 'errors' -prune ')' -or \
+  '(' -type f -iwholename '*ios_tests/CastleEngineTest/CastleEngineTest*' ')' -or \
   '(' -type f -name '*test_temporary*' ')' -or \
   '(' -type f -name 'ssao_barna29_0.x3dv' ')' -or \
   '(' -type f -name 'ssao_stairs_with_test_plane.x3dv' ')' -or \

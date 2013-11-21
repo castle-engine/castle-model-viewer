@@ -757,6 +757,15 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
 ---- Reading again ../castle_game_engine/examples/3d_sound_game/data/levels/base/tree.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../castle_game_engine/examples/android/android_demo/data/castle.wrl
+---- Reading again ../castle_game_engine/examples/android/android_demo/data/castle.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/android/android_demo/data/castle_with_lights.wrl
+---- Reading again ../castle_game_engine/examples/android/android_demo/data/castle_with_lights.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/android/android_demo/data/castle_with_lights_and_camera.wrl
+---- Reading again ../castle_game_engine/examples/android/android_demo/data/castle_with_lights_and_camera.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/dynamic_ambient_occlusion/models/chinchilla_02k.wrl.gz
 ---- Reading again ../castle_game_engine/examples/dynamic_ambient_occlusion/models/chinchilla_02k.wrl.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1089,6 +1098,9 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/shadow_fields/models/teapot.x3dv
 ---- Reading again ../castle_game_engine/examples/shadow_fields/models/teapot.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/src/x3d/opengl/glsl/template_mobile_test.x3dv
+---- Reading again ../castle_game_engine/src/x3d/opengl/glsl/template_mobile_test.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/src/x3d/opengl/glsl/template_test.x3dv
 ---- Reading again ../castle_game_engine/src/x3d/opengl/glsl/template_test.x3dv
