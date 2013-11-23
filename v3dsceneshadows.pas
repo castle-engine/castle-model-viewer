@@ -1,5 +1,7 @@
 unit V3DSceneShadows;
 
+{$I castleconf.inc}
+
 interface
 
 uses CastleWindow, CastleScene, Castle3D, CastleVectors, CastleSceneManager,
