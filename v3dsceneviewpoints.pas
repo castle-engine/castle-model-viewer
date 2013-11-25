@@ -152,25 +152,12 @@ end;
 
 function NodeToCaption(const Node: TX3DNode): string;
 begin
-  Result := '';
-
-  if Node is TAbstractX3DViewpointNode then
-  begin
-    Result := SForCaption(TAbstractX3DViewpointNode(Node).FdDescription.Value);
-  end else
+  if Node is TAbstractViewpointNode then
+    Result := TAbstractViewpointNode(Node).Description else
   if Node is TViewpointGroupNode then
-  begin
-    Result := SForCaption(TViewpointGroupNode(Node).FdDescription.Value);
-  end;
-
-  { if node doesn't have a "description" field, or it's left empty,
-    use node name }
-  if Result = '' then
-    Result := Node.NodeName;
-
-  { if even the node name is empty, just write node type. }
-  if Result = '' then
-    Result := Node.NodeTypeName;
+    Result := TViewpointGroupNode(Node).Description else
+    Result := '';
+  Result := SForCaption(Result);
 end;
 
 const
