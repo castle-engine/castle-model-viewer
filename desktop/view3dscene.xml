@@ -141,8 +141,7 @@
     <glob pattern="*.dae"/>
   </mime-type>
 
-  <!-- MIME type from http://filext.com/file-extension/IV -->
-  <mime-type type="object/x-inventor">
+  <mime-type type="application/x-inventor">
     <sub-class-of type="text/plain"/>
     <comment>Inventor model</comment>
     <glob pattern="*.iv"/>

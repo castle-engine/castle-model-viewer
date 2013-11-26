@@ -109,7 +109,7 @@ create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
       <string>iv</string>
     </array>
     <key>CFBundleTypeMIMETypes</key>
-    <string>object/x-inventor</string>
+    <string>application/x-inventor</string>
     <key>CFBundleTypeName</key>
     <string>Inventor model</string>
     <key>CFBundleTypeIconFile</key>
