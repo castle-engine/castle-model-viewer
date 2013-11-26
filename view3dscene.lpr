@@ -2207,8 +2207,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
   end;
 
   procedure ChangeLightModelAmbient;
+  var
+    C: TVector3Single;
   begin
-    if Window.ColorDialog(LightModelAmbient) then LightModelAmbientChanged;
+    C := GlobalAmbient;
+    if Window.ColorDialog(C) then
+      GlobalAmbient := C;
   end;
 
   procedure SetViewpointForWholeScene(

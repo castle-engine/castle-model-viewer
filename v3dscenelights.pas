@@ -39,11 +39,6 @@ var
 procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
   NavigationNode: TNavigationInfoNode);
 
-var
-  LightModelAmbient: TVector3Single;
-
-procedure LightModelAmbientChanged;
-
 implementation
 
 uses CastleGL, CastleGLUtils, CastleParameters, V3DSceneFillMode;
@@ -59,16 +54,4 @@ begin
       NodesCount(TAbstractLightNode, true);
 end;
 
-procedure LightModelAmbientChanged;
-begin
-  {$ifndef OpenGLES} //TODO-es
-  glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(LightModelAmbient, 1.0));
-  {$endif}
-end;
-
-initialization
-  LightModelAmbient := Vector3Single(
-    GLDefaultLightModelAmbient[0],
-    GLDefaultLightModelAmbient[1],
-    GLDefaultLightModelAmbient[2]);
 end.

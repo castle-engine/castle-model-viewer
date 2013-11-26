@@ -322,9 +322,6 @@ end;
 
 { TLightsMenu ------------------------------------------------------- }
 
-var
-  GlobalAmbientLight: TVector3Single = (0.2, 0.2, 0.2);
-
 constructor TLightsMenu.Create(AOwner: TComponent);
 var
   I: Integer;
@@ -334,7 +331,7 @@ begin
 
   Lights := TX3DNodeList.Create(false);
 
-  AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, GlobalAmbientLight);
+  AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, GlobalAmbient);
 
   SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
@@ -474,16 +471,14 @@ begin
   inherited;
   if AmbientColorSlider.Selected(CurrentItem) then
   begin
-    GlobalAmbientLight := AmbientColorSlider.Value;
+    GlobalAmbient := AmbientColorSlider.Value;
 
-    {$ifndef OpenGLES} //TODO-es
-    { TODO: GlobalAmbientLight just modifies and directly sets OpenGL paramater now.
-      Default is equal to OpenGL default.
-      This may be changed to control NavigationInfo.globalAmbient field
+    { TODO: We just directly set global paramater now.
+      Default is equal to 0.2, 0.2, 0.2 default.
+      This could be changed to control NavigationInfo.globalAmbient field
       (InstantReality extension that we plan to implement too,
-      see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ). }
-    glLightModelv(GL_LIGHT_MODEL_AMBIENT, Vector4Single(GlobalAmbientLight, 1.0));
-    {$endif}
+      see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ),
+      and then we would keep GlobalAmbient at TCastleScene level. }
   end;
 end;
 
