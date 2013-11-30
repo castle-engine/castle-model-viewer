@@ -107,7 +107,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleProgress, CastleFilesUtils,
-  CastleWarnings, CastleVideos, CastleURIUtils;
+  CastleWarnings, CastleVideos, CastleURIUtils, CastleEnumerateFiles;
 
 function MakingScreenShot: boolean;
 begin
@@ -176,8 +176,7 @@ procedure TRangeScreenShot.BeginCapture;
 var
   ReplacementsDone: Cardinal;
   TemporaryImagesPrefix: string;
-  FileRec: TSearchRec;
-  SearchError: Integer;
+  FileInfo: TEnumeratedFileInfo;
 begin
   { calculate SingleMovieFile }
   SingleMovieFile := FfmpegVideoMimeType(URIMimeType(URLPattern), true);
@@ -196,13 +195,9 @@ begin
       IntToStr(Random(MaxInt)) + '_';
 
     { Check is it really Ok. }
-    SearchError := FindFirst(TemporaryImagesPrefix + '*', faReallyAnyFile,
-      FileRec);
-    try
-      if SearchError = 0 then
-        raise Exception.CreateFmt('Failed to generate unique temporary file prefix "%s": filename "%s" already exists',
-          [TemporaryImagesPrefix, FileRec.Name]);
-    finally FindClose(FileRec) end;
+    if EnumerateFirst(TemporaryImagesPrefix + '*', FileInfo) then
+      raise Exception.CreateFmt('Failed to generate unique temporary file prefix "%s": filename "%s" already exists',
+        [TemporaryImagesPrefix, FileInfo.AbsoluteName]);
 
     TemporaryImagesPattern := TemporaryImagesPrefix + '%d.png';
     TemporaryImagesCounter := 1;
