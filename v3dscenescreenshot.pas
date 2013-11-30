@@ -176,7 +176,6 @@ procedure TRangeScreenShot.BeginCapture;
 var
   ReplacementsDone: Cardinal;
   TemporaryImagesPrefix: string;
-  FileInfo: TEnumeratedFileInfo;
 begin
   { calculate SingleMovieFile }
   SingleMovieFile := FfmpegVideoMimeType(URIMimeType(URLPattern), true);
@@ -186,19 +185,7 @@ begin
     { initialize TemporaryImagesPrefix, TemporaryImagesPattern,
       TemporaryImagesCounter }
 
-    TemporaryImagesPrefix := GetTempFileName('', ApplicationName) + '_' +
-      { Although GetTempFileName should add some randomization here,
-        there's no guarentee. And we really need randomization --- in case
-        something failed (and, since calling external ffmpeg is involved,
-        everything can happen), we don't want to collide with leftovers from
-        previous call to other TRangeScreenShot.BeginCapture. }
-      IntToStr(Random(MaxInt)) + '_';
-
-    { Check is it really Ok. }
-    if EnumerateFirst(TemporaryImagesPrefix + '*', FileInfo) then
-      raise Exception.CreateFmt('Failed to generate unique temporary file prefix "%s": filename "%s" already exists',
-        [TemporaryImagesPrefix, FileInfo.AbsoluteName]);
-
+    TemporaryImagesPrefix := GetTempFileNamePrefix;
     TemporaryImagesPattern := TemporaryImagesPrefix + '%d.png';
     TemporaryImagesCounter := 1;
   end;
