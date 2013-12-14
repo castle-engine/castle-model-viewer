@@ -1126,6 +1126,450 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/tests/data/switches_and_transforms_2.x3dv
 ---- Reading again ../castle_game_engine/tests/data/switches_and_transforms_2.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0011.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0016.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0019.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0019.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0021.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0026.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0028.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0028.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0031.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0035.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/attack_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0011.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/die_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/hurt_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0011.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0016.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0019.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0019.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0021.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0026.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0028.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0028.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0031.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0036.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0037.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0037.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0041.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0041.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0046.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0046.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0051.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0051.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0055.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0055.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0056.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0056.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0061.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0061.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0064.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0064.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0066.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0066.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0071.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0071.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0073.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0073.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0076.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0076.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0081.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0081.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0082.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0082.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0086.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0086.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0091.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0091.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0096.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0096.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0100.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/idle_0100.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0011.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0016.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0019.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0019.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0021.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0026.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0028.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0028.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0031.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0035.x3d.gz
+---- Reading again ../darkest_before_dawn/data-unused/creatures/heavy/anims/walk_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0000.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0005.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0009.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0009.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0018.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0018.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0020.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0025.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0027.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0027.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0030.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0035.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0036.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/attack_0040.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/attack_0040.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0000.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0005.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0009.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0009.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0018.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0018.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0020.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0025.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0027.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0027.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0030.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/die_0031.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/die_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0000.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0005.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0009.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0009.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0018.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0018.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0020.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0025.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0027.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0027.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0030.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0035.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0036.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/hurt_0040.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/hurt_0040.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0000.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0005.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0009.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0009.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0018.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0018.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0020.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0025.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0027.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0027.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0030.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0035.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0036.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/idle_0040.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/idle_0040.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0001.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0006.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0011.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0016.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0019.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0019.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0021.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0026.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0028.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0028.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0031.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0036.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0037.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0037.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/run_0040.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/run_0040.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0000.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0005.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0009.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0009.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0010.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0015.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0018.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0018.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0020.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0025.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0027.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0027.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/anims/walk_0030.x3d.gz
+---- Reading again ../darkest_before_dawn/data/creatures/light/anims/walk_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/creatures/light/new_thin_zombie.x3d
+---- Reading again ../darkest_before_dawn/data/creatures/light/new_thin_zombie.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/collider.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/collider.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/level1_final.x3dv
+---- Reading again ../darkest_before_dawn/data/level/1/level1_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/above/elevator_1.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/above/elevator_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/above/elevator_2.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/above/elevator_2.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/above/elevator_3.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/above/elevator_3.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/above/elevator_4.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/above/elevator_4.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/above/main.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/above/main.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/outdoors/elevator_1.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/outdoors/elevator_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/outdoors/main.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/outdoors/main.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/street/elevator_1.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/street/elevator_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/street/elevator_2.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/street/elevator_2.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/street/main.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/street/main.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/tree/main.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/tree/main.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/tube/elevator_1.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/tube/elevator_1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../darkest_before_dawn/data/level/1/stages/tube/main.x3d
+---- Reading again ../darkest_before_dawn/data/level/1/stages/tube/main.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/3ds/include_3ds_from_vrml_1.wrl
 ---- Reading again ../demo_models/3ds/include_3ds_from_vrml_1.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
