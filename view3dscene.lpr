@@ -3014,25 +3014,7 @@ begin
   125: Raytrace;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
-
-  128: begin
-         Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
-
-         if Camera.Walk.MouseLook then
-         begin
-           Camera.Walk.Input_LeftStrafe.AssignFromDefault(Camera.Walk.Input_LeftRot);
-           Camera.Walk.Input_RightStrafe.AssignFromDefault(Camera.Walk.Input_RightRot);
-           Camera.Walk.Input_LeftRot.AssignFromDefault(Camera.Walk.Input_LeftStrafe);
-           Camera.Walk.Input_RightRot.AssignFromDefault(Camera.Walk.Input_RightStrafe);
-         end else
-         begin
-           Camera.Walk.Input_LeftStrafe.MakeDefault;
-           Camera.Walk.Input_RightStrafe.MakeDefault;
-           Camera.Walk.Input_LeftRot.MakeDefault;
-           Camera.Walk.Input_RightRot.MakeDefault;
-         end;
-       end;
-
+  128: Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
   129: begin
          ShowAndWrite(SceneAnimation.Info(false, false, true));
          SceneAnimation.FreeResources([frManifoldAndBorderEdges]);
