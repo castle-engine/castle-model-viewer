@@ -3732,9 +3732,10 @@ var
   WasParam_SceneURL: boolean = false;
   Param_SceneURL: string;
   Param_SceneChanges: TSceneChanges = [];
+  Param_HideMenu: boolean = false;
 
 const
-  Options: array[0..17] of TOption =
+  Options: array [0..18] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3753,7 +3754,8 @@ const
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
     (Short:  #0; Long: 'write'; Argument: oaNone),
     (Short:  #0; Long: 'write-encoding'; Argument: oaRequired),
-    (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone)
+    (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone),
+    (Short:  #0; Long: 'hide-menu'; Argument: oaNone)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3791,6 +3793,7 @@ const
            '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
            '                        or toolbar or bounding box) when program starts.' +NL+
            '                        Show only the 3D world.' +NL+
+           '  --hide-menu           Hide menu bar.' +NL+
            '  --write               Load the scene,'+NL+
            '                        optionally process by --scene-change-xxx,' +NL+
            '                        save it as VRML/X3D to the standard output,' +NL+
@@ -3916,6 +3919,7 @@ const
           Param_WriteEncoding := xeXML else
           raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
     17: Param_WriteForceX3D := true;
+    18: Param_HideMenu := true;
     else raise EInternalError.Create('OptionProc');
    end;
   end;
@@ -4004,6 +4008,7 @@ begin
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;
+        Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
         Window.OnOpen := @Open;
         Window.OnClose := @Close;
