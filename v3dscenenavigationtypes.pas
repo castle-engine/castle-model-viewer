@@ -35,9 +35,9 @@ procedure InitCameras(SceneManager: TCastleSceneManager);
 
 const
   CameraNames: array [TCameraNavigationType] of string =
-  ('Examine', 'Architecture (Work in Progress)', 'Walk', 'Fly', 'None');
+  ('Examine', 'Turntable (Work in Progress)', 'Walk', 'Fly', 'None');
   StableNavigationType = [Low(TCameraNavigationType)..High(TCameraNavigationType)]
-    -[ntArchitecture];
+    -[ntTurntable];
 
 var
   CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
