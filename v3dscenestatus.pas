@@ -31,18 +31,15 @@ uses CastleGLBitmapFonts, Classes, CastleUIControls, CastleTimeUtils,
 type
   TStatusText = class(TCastleLabel)
   private
-    CustomFont: TGLBitmapFontAbstract;
     FMaxLineChars: Cardinal;
     FlashTime, Time: TFloatTime;
     FlashText: string;
   protected
     procedure CalculateText; virtual;
-    function Font: TGLBitmapFontAbstract; override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Draw; override;
     procedure GLContextOpen; override;
-    procedure GLContextClose; override;
     procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
@@ -108,17 +105,7 @@ begin
   inherited;
   if CustomFont = nil then
     CustomFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
-end;
-
-procedure TStatusText.GLContextClose;
-begin
-  FreeAndNil(CustomFont);
-  inherited;
-end;
-
-function TStatusText.Font: TGLBitmapFontAbstract;
-begin
-  Result := CustomFont;
+  OwnsCustomFont := true;
 end;
 
 procedure TStatusText.Flash(const AText: string);
