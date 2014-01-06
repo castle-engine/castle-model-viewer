@@ -56,7 +56,7 @@ procedure AssignCamera(Target, Source: TCastleAbstractViewport;
 procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
 { Copy NavigationType to (existing) viewports cameras. }
-procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
+procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
@@ -214,7 +214,7 @@ begin
   end;
 end;
 
-procedure ViewportsSetNavigationType(const NavigationType: TCameraNavigationType);
+procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
 var
   I: Integer;
 begin

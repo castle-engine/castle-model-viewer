@@ -34,14 +34,14 @@ uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
 procedure InitCameras(SceneManager: TCastleSceneManager);
 
 const
-  CameraNames: array [TCameraNavigationType] of string =
+  CameraNames: array [TNavigationType] of string =
   ('Examine', 'Turntable (Work in Progress)', 'Walk', 'Fly', 'None');
-  StableNavigationType = [Low(TCameraNavigationType)..High(TCameraNavigationType)]
+  StableNavigationType = [Low(TNavigationType)..High(TNavigationType)]
     -[ntTurntable];
 
 var
-  CameraRadios: array [TCameraNavigationType] of TMenuItemRadio;
-  CameraButtons: array [TCameraNavigationType] of TCastleButton;
+  CameraRadios: array [TNavigationType] of TMenuItemRadio;
+  CameraButtons: array [TNavigationType] of TCastleButton;
 
 procedure UpdateCameraNavigationTypeUI;
 
@@ -64,9 +64,9 @@ var
 type
   TNavigationTypeButton = class(TCastleButton)
   public
-    NavigationType: TCameraNavigationType;
+    NavigationType: TNavigationType;
     constructor Create(AOwner: TComponent;
-      const ANavigationType: TCameraNavigationType); reintroduce;
+      const ANavigationType: TNavigationType); reintroduce;
     function TooltipStyle: TUIControlDrawStyle; override;
     procedure DrawTooltip; override;
     procedure GLContextOpen; override;
@@ -85,7 +85,7 @@ var
 
 procedure UpdateCameraNavigationTypeUI;
 var
-  NT: TCameraNavigationType;
+  NT: TNavigationType;
 begin
   if CameraRadios[Camera.NavigationType] <> nil then
     CameraRadios[Camera.NavigationType].Checked := true;
@@ -121,7 +121,7 @@ end;
 { TNavigationTypeButton ------------------------------------------------------ }
 
 constructor TNavigationTypeButton.Create(AOwner: TComponent;
-  const ANavigationType: TCameraNavigationType);
+  const ANavigationType: TNavigationType);
 begin
   inherited Create(AOwner);
   NavigationType := ANavigationType;

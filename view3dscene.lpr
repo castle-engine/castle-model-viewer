@@ -2988,8 +2988,8 @@ begin
   110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
 
   111: begin
-         if Camera.NavigationType = High(TCameraNavigationType) then
-           Camera.NavigationType := Low(TCameraNavigationType) else
+         if Camera.NavigationType = High(TNavigationType) then
+           Camera.NavigationType := Low(TNavigationType) else
          begin
            Camera.NavigationType := Succ(Camera.NavigationType);
            { skip over navigation types that are not stable }
@@ -3137,7 +3137,7 @@ begin
     TMagnificationFilter  (MenuItem.IntData-1200), SceneAnimation);
   1300..1399:
     begin
-      Camera.NavigationType := TCameraNavigationType(MenuItem.IntData - 1300);
+      Camera.NavigationType := TNavigationType(MenuItem.IntData - 1300);
       ViewportsSetNavigationType(Camera.NavigationType);
       UpdateCameraUI;
     end;
@@ -3161,7 +3161,7 @@ function CreateMainMenu: TMenu;
 
   procedure AppendNavigationTypes(M: TMenu);
   var
-    Mode: TCameraNavigationType;
+    Mode: TNavigationType;
     Group: TMenuItemRadioGroup;
   begin
     Group := M.AppendRadioGroup(CameraNames, 1300, Ord(Camera.NavigationType), true);
@@ -3514,7 +3514,7 @@ var
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
 var
-  NT: TCameraNavigationType;
+  NT: TNavigationType;
   Vis: boolean;
 begin
   Vis := ShowStatus and not MakingScreenShot;
@@ -3544,7 +3544,7 @@ end;
 
 procedure CreateStatusToolbar;
 var
-  NT: TCameraNavigationType;
+  NT: TNavigationType;
 const
   MinImageHeight = 22;
 begin
@@ -3619,7 +3619,7 @@ const
   ButtonsMargin = 8; {< between buttons }
   ButtonsSeparatorsMargin = 8; {< between buttons and separators }
 var
-  NT: TCameraNavigationType;
+  NT: TNavigationType;
   NextLeft, ButtonsHeight, ButtonsBottom: Integer;
 begin
   ButtonsHeight := Max(
