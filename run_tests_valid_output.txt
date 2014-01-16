@@ -946,6 +946,18 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0033.x3d.gz
 ---- Reading again ../castle_game_engine/examples/fps_game/data/knight_creature/walk_0033.x3d.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/billboard.wrl
+---- Reading again ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/billboard.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle.wrl
+---- Reading again ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle_with_lights.wrl
+---- Reading again ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle_with_lights.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle_with_lights_and_camera.wrl
+---- Reading again ../castle_game_engine/examples/library/ios_tester/ios_tester/sampledata/castle_with_lights_and_camera.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/examples/radiance_transfer/models/chinchilla.wrl.gz
 ---- Reading again ../castle_game_engine/examples/radiance_transfer/models/chinchilla.wrl.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
