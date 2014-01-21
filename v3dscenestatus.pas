@@ -57,7 +57,7 @@ var
 
 implementation
 
-uses SysUtils, CastleBitmapFont_BVSansMono_Bold_m15,
+uses SysUtils, CastleTextureFont, CastleTextureFont_DejaVuSansMonoBold_15,
   CastleVectors, CastleUtils, CastleColors;
 
 { TStatusText ---------------------------------------------------------------- }
@@ -104,7 +104,7 @@ procedure TStatusText.GLContextOpen;
 begin
   inherited;
   if CustomFont = nil then
-    CustomFont := TGLBitmapFont.Create(BitmapFont_BVSansMono_Bold_m15);
+    CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15, false);
   OwnsCustomFont := true;
 end;
 
