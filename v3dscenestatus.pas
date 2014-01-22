@@ -104,7 +104,7 @@ procedure TStatusText.GLContextOpen;
 begin
   inherited;
   if CustomFont = nil then
-    CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15, false);
+    CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15);
   OwnsCustomFont := true;
 end;
 
