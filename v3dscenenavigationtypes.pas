@@ -139,10 +139,6 @@ end;
   - it would be unhandy to print both normal and bold fonts
   - it would be unhandy to use non-monospace fonts and still
     make columns (key names) matching
-  - GIMP makes fonts antialiased, our bitmap fonts are not antialiased.
-    Besides making things look better, this allows us to use smaller fonts,
-    which is important (we have a lot of text that we have to fit within
-    window).
   - Also we can draw a nice circle instead of "*" inside walk_fly list.
 
   Of course, it also causes some problems. Things are no longer configurable

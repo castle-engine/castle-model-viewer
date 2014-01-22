@@ -59,7 +59,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
   CastleKeysMouse, CastleDownload, CastleURIUtils,
   { OpenGL related units: }
-  CastleGL, CastleWindow, CastleGLUtils, CastleGLBitmapFonts,
+  CastleGL, CastleWindow, CastleGLUtils, CastleFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
   CastleGLVersion, CastleGLCubeMaps, CastleControls, CastleGLShaders,
   CastleControlsImages,

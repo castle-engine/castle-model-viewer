@@ -25,7 +25,7 @@ unit V3DSceneStatus;
 
 interface
 
-uses CastleGLBitmapFonts, Classes, CastleUIControls, CastleTimeUtils,
+uses CastleFonts, Classes, CastleUIControls, CastleTimeUtils,
   CastleControls;
 
 type
@@ -57,7 +57,7 @@ var
 
 implementation
 
-uses SysUtils, CastleTextureFont, CastleTextureFont_DejaVuSansMonoBold_15,
+uses SysUtils, CastleTextureFont_DejaVuSansMonoBold_15,
   CastleVectors, CastleUtils, CastleColors;
 
 { TStatusText ---------------------------------------------------------------- }
