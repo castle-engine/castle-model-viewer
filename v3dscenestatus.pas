@@ -38,7 +38,7 @@ type
     procedure CalculateText; virtual;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure Draw; override;
+    procedure Render; override;
     procedure GLContextOpen; override;
     procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
     procedure Update(const SecondsPassed: Single;
@@ -72,7 +72,7 @@ begin
   Padding := 5;
 end;
 
-procedure TStatusText.Draw;
+procedure TStatusText.Render;
 begin
   if not GetExists then Exit;
   Text.Clear;

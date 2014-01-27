@@ -83,16 +83,16 @@ type
   private
     Image: TCastleImage;
   public
-    procedure Draw; override;
-    function DrawStyle: TUIControlDrawStyle; override;
+    procedure Render; override;
+    function RenderStyle: TRenderStyle; override;
   end;
 
-function TRayTracerImage.DrawStyle: TUIControlDrawStyle;
+function TRayTracerImage.RenderStyle: TRenderStyle;
 begin
-  Result := ds2D;
+  Result := rs2D;
 end;
 
-procedure TRayTracerImage.Draw;
+procedure TRayTracerImage.Render;
 var
   GLImage: TGLImage;
 begin

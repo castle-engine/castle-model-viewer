@@ -23,7 +23,7 @@ type
 
 var
   ShadowVolumes: boolean = true;
-  ShadowVolumesDraw: boolean = false;
+  ShadowVolumesRender: boolean = false;
 
 procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 
@@ -34,7 +34,7 @@ uses SysUtils, CastleConfig, CastleGLUtils, V3DSceneFillMode;
 procedure ViewportShadowsProperties(Viewport: TCastleAbstractViewport);
 begin
   Viewport.ShadowVolumes := ShadowVolumes;
-  Viewport.ShadowVolumesDraw := ShadowVolumesDraw;
+  Viewport.ShadowVolumesRender := ShadowVolumesRender;
 end;
 
 procedure Render3DShadowsBegin(Scene: TCastleScene);

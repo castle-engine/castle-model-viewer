@@ -192,8 +192,8 @@ type
     procedure RenderFromView3D(const Params: TRenderParams); override;
     procedure Render3D(const Params: TRenderParams); override;
   public
-    procedure BeforeDraw; override;
-    procedure Draw; override;
+    procedure BeforeRender; override;
+    procedure Render; override;
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
@@ -205,8 +205,8 @@ type
     procedure RenderFromView3D(const Params: TRenderParams); override;
     procedure Render3D(const Params: TRenderParams); override;
   public
-    procedure BeforeDraw; override;
-    procedure Draw; override;
+    procedure BeforeRender; override;
+    procedure Render; override;
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
@@ -573,7 +573,7 @@ end;
 { Render visualization of various stuff, like bounding box, octree and such. }
 procedure RenderVisualizations;
 
-  procedure DrawFrustum(AlwaysVisible: boolean);
+  procedure RenderFrustum(AlwaysVisible: boolean);
   {$ifndef OpenGLES} //TODO-es
   var
     FrustumPoints: TFrustumPointsDouble;
@@ -636,7 +636,7 @@ begin
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
     if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
-      DrawFrustum(ShowFrustumAlwaysVisible);
+      RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
     begin
@@ -701,14 +701,14 @@ begin
   end;
 end;
 
-procedure TV3DSceneManager.BeforeDraw;
+procedure TV3DSceneManager.BeforeRender;
 begin
   { Make sure to call ViewportProperties before inherited. }
   ViewportProperties(Self);
   inherited;
 end;
 
-procedure TV3DSceneManager.Draw;
+procedure TV3DSceneManager.Render;
 begin
   { Make sure to call ViewportProperties before inherited. }
   ViewportProperties(Self);
@@ -745,14 +745,14 @@ begin
   end;
 end;
 
-procedure TV3DViewport.BeforeDraw;
+procedure TV3DViewport.BeforeRender;
 begin
   { Make sure to call ViewportProperties before inherited. }
   ViewportProperties(Self);
   inherited;
 end;
 
-procedure TV3DViewport.Draw;
+procedure TV3DViewport.Render;
 begin
   { Make sure to call ViewportProperties before inherited. }
   ViewportProperties(Self);
@@ -867,7 +867,7 @@ end;
 
 procedure SceneOctreeCreate;
 var
-  OldDraw, OldBeforeDraw: TDrawFunc;
+  OldRender, OldBeforeRender: TRenderFunc;
 begin
   { Do not create octrees when SceneAnimation.Collides = false. This makes
     setting SceneAnimation.Collides to false an optimization: octree doesn't have to
@@ -877,12 +877,12 @@ begin
   begin
     { Beware: constructing octrees will cause progress drawing,
       and progress drawing may cause FlushRedisplay,
-      and FlushRedisplay may cause OnDraw and OnBeforeDraw to be called.
-      That's why we simply turn normal Draw/BeforeDraw temporarily off. }
-    OldDraw := Window.OnDraw;
-    OldBeforeDraw := Window.OnBeforeDraw;
-    Window.OnDraw := nil;
-    Window.OnBeforeDraw := nil;
+      and FlushRedisplay may cause OnRender and OnBeforeRender to be called.
+      That's why we simply turn normal Render/BeforeRender temporarily off. }
+    OldRender := Window.OnRender;
+    OldBeforeRender := Window.OnBeforeRender;
+    Window.OnRender := nil;
+    Window.OnBeforeRender := nil;
     try
       { For now we construct and store octrees only for the 1st animation frame. }
 
@@ -890,8 +890,8 @@ begin
       Scene.ShapeOctreeProgressTitle := 'Building Shape octree';
       Scene.Spatial := [ssRendering, ssDynamicCollisions];
     finally
-      Window.OnDraw := OldDraw;
-      Window.OnBeforeDraw := OldBeforeDraw;
+      Window.OnRender := OldRender;
+      Window.OnBeforeRender := OldBeforeRender;
     end;
   end;
 end;
@@ -1233,7 +1233,7 @@ begin
           with a clean state).
 
           We call LoadClearScene before we call MessageOK, this way
-          our Draw routine works OK when it's called to draw background
+          our Render routine works OK when it's called to draw background
           under MessageOK. }
         LoadClearScene;
         LoadErrorMessage('Error while loading scene from "' + ASceneURL + '": ' +
@@ -1435,16 +1435,16 @@ end;
 
 { make screen shots ---------------------------------------------------------- }
 
-function DrawAndSaveScreen(ImageClass: TCastleImageClass;
+function RenderAndSaveScreen(ImageClass: TCastleImageClass;
   const ReadBuffer: TColorBuffer): TCastleImage;
 begin
   if ControlsOnScreenshot then
   begin
-    Window.EventDraw;
+    Window.EventRender;
   end else
   begin
-    ViewportsDraw;
-    SceneManager.Draw;
+    ViewportsRender;
+    SceneManager.Render;
   end;
   Result := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
 end;
@@ -1465,7 +1465,7 @@ begin
   OldProgressUserInterface := Progress.UserInterface;
   OldTime := SceneAnimation.Time;
   try
-    SceneManager.BeforeDraw;
+    SceneManager.BeforeRender;
 
     { For TRangeScreenShot to display progress on console
       (it cannot display progress on GL window, since this would
@@ -1482,7 +1482,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
-          Image := DrawAndSaveScreen(TRGBImage, ReadBuffer);
+          Image := RenderAndSaveScreen(TRGBImage, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseURL(J));
           finally FreeAndNil(Image) end;
@@ -1596,8 +1596,8 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
     end;
 
     try
-      Window.EventBeforeDraw;
-      Result := DrawAndSaveScreen(ImageClass, ReadBuffer);
+      Window.EventBeforeRender;
+      Result := RenderAndSaveScreen(ImageClass, ReadBuffer);
     finally
       if Transparency then
       begin
@@ -2641,8 +2641,8 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
-      Window.EventBeforeDraw;
-      Window.EventDraw;
+      Window.EventBeforeRender;
+      Window.EventRender;
 
       Image := TGrayscaleImage.Create(Window.Width, Window.Height);
       try
@@ -3119,7 +3119,7 @@ begin
   730: MergeCloseVertexes;
 
   750: ShadowVolumes := not ShadowVolumes;
-  760: ShadowVolumesDraw := not ShadowVolumesDraw;
+  760: ShadowVolumesRender := not ShadowVolumesRender;
 
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
@@ -3303,8 +3303,8 @@ begin
     M2 := TMenu.Create('Shadow Volumes');
       M2.Append(TMenuItemChecked.Create('Enable (Requires Light With shadowVolumesMain)', 750,
         ShadowVolumes, true));
-      M2.Append(TMenuItemChecked.Create('Draw shadow volumes', 760,
-        ShadowVolumesDraw, true));
+      M2.Append(TMenuItemChecked.Create('Render shadow volumes', 760,
+        ShadowVolumesRender, true));
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(

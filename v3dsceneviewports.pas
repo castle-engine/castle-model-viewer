@@ -61,9 +61,9 @@ procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
 { If some custom viewports are visible then redraw background and
-  all viewports. Remember to always call SceneManager.Draw afterwards,
+  all viewports. Remember to always call SceneManager.Render afterwards,
   as SceneManager is also another viewport. }
-procedure ViewportsDraw;
+procedure ViewportsRender;
 
 implementation
 
@@ -234,16 +234,16 @@ begin
   Background.Color := Gray;
 end;
 
-procedure ViewportsDraw;
+procedure ViewportsRender;
 var
   I: Integer;
 const
   Visible: array [TViewportsConfig] of Integer = (0, 1, 3);
 begin
   if ViewportsConfig <> vc1 then
-    Background.Draw;
+    Background.Render;
   for I := 0 to Visible[ViewportsConfig] - 1 do
-    Viewports[I].Draw;
+    Viewports[I].Render;
 end;
 
 procedure DoFinalization;

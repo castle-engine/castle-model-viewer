@@ -67,8 +67,8 @@ type
     NavigationType: TNavigationType;
     constructor Create(AOwner: TComponent;
       const ANavigationType: TNavigationType); reintroduce;
-    function TooltipStyle: TUIControlDrawStyle; override;
-    procedure DrawTooltip; override;
+    function TooltipExists: boolean; override;
+    procedure TooltipRender; override;
     procedure GLContextOpen; override;
     procedure GLContextClose; override;
   end;
@@ -127,11 +127,9 @@ begin
   NavigationType := ANavigationType;
 end;
 
-function TNavigationTypeButton.TooltipStyle: TUIControlDrawStyle;
+function TNavigationTypeButton.TooltipExists: boolean;
 begin
-  if NavigationType in [ntExamine, ntWalk, ntFly] then
-    Result := ds2D else
-    Result := dsNone;
+  Result := NavigationType in [ntExamine, ntWalk, ntFly];
 end;
 
 { By using image instead of drawing the text we avoid some lacks
@@ -151,7 +149,7 @@ end;
     we'll fit inside.
 }
 
-procedure TNavigationTypeButton.DrawTooltip;
+procedure TNavigationTypeButton.TooltipRender;
 
   procedure DoDraw(GLImage: TGLImage);
   const
