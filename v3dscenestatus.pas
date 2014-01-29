@@ -39,7 +39,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure Render; override;
-    procedure GLContextOpen; override;
     procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
@@ -70,6 +69,8 @@ begin
   Bottom := 5;
   Color := Yellow;
   Padding := 5;
+  CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15);
+  OwnsCustomFont := true;
 end;
 
 procedure TStatusText.Render;
@@ -98,14 +99,6 @@ begin
   inherited;
   FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - Padding * 2 -
     Left * 2) div Font.TextWidth('W'));
-end;
-
-procedure TStatusText.GLContextOpen;
-begin
-  inherited;
-  if CustomFont = nil then
-    CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15);
-  OwnsCustomFont := true;
 end;
 
 procedure TStatusText.Flash(const AText: string);
