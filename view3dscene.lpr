@@ -788,7 +788,7 @@ begin
 
     UpdateSelectedEnabled;
 
-    Window.PostRedisplay;
+    Window.Invalidate;
   end;
 end;
 
@@ -796,7 +796,7 @@ class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
 begin
   { Our status text displays current sensors (under the mouse,
     and currently active (if any)), so we have to redisplay. }
-  Window.PostRedisplay;
+  Window.Invalidate;
 end;
 
 { Setting viewpoint ---------------------------------------------------------- }
@@ -862,7 +862,7 @@ begin
   SceneWarnings.Add(Category + ': ' + S);
   UpdateWarningsButton;
   if Window <> nil then
-    Window.PostRedisplay;
+    Window.Invalidate;
 end;
 
 procedure SceneOctreeCreate;
@@ -1658,7 +1658,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
      end;
 
      Camera.Walk.GravityUp := NewUp;
-     Window.PostRedisplay;
+     Window.Invalidate;
     end;
    end else
     MessageOK(Window, SNavigationClassWalkNeeded);
@@ -1674,7 +1674,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
       begin
         Camera.Walk.MoveSpeed := MoveSpeed;
-        Window.PostRedisplay;
+        Window.Invalidate;
       end;
     end else
       MessageOK(Window, SNavigationClassWalkNeeded);
@@ -3075,7 +3075,7 @@ begin
       ScreenEffects.ActiveEffectsRecalculate;
       { All that is needed to actually render with the new effect is to
         actually redisplay. }
-      Window.PostRedisplay;
+      Window.Invalidate;
     end;
 
   400..419: SceneAnimation.Attributes.BlendingSourceFactor :=

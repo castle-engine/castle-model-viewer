@@ -121,7 +121,7 @@ begin
     we update the screen ony after each RowsShowCount rows. }
   if (RowsMadeCount mod RowsShowCount) = 0 then
   begin
-    Window.PostRedisplay;
+    Window.Invalidate;
     Application.ProcessAllMessages;
     if D^.Quit then raise BreakRaytracing.Create;
   end;
@@ -359,10 +359,10 @@ begin
       StatusText.Stats.Append('<font color="#FFFFFF">Press Escape to return to normal 3D view.</font>');
 
       { Display the rendered image, wait for Escape.
-        We call PostRedisplay to make sure to display the whole image
+        We call Invalidate to make sure to display the whole image
         (otherwise the image may not be fully displayed yet,
         because of RowsShowCount mechanism). }
-      Window.PostRedisplay;
+      Window.Invalidate;
       Window.Caption := 'view3dscene - Ray Tracing - done';
       {$ifdef LCLCarbon}
       Window.OnPress := @PressDone;
