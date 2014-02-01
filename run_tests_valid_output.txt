@@ -1129,6 +1129,9 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../castle_game_engine/tests/data/extrusion_empty_spine_smooth.x3dv
 ---- Reading again ../castle_game_engine/tests/data/extrusion_empty_spine_smooth.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../castle_game_engine/tests/data/game/scene.x3d
+---- Reading again ../castle_game_engine/tests/data/game/scene.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../castle_game_engine/tests/data/key_sensor_2.x3dv
 ---- Reading again ../castle_game_engine/tests/data/key_sensor_2.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
