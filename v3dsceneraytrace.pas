@@ -83,20 +83,12 @@ type
     Image: TCastleImage;
   public
     procedure Render; override;
-    function RenderStyle: TRenderStyle; override;
   end;
-
-function TRayTracerImage.RenderStyle: TRenderStyle;
-begin
-  Result := rs2D;
-end;
 
 procedure TRayTracerImage.Render;
 var
   GLImage: TGLImage;
 begin
-  if not GetExists then Exit;
-
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
@@ -297,7 +289,7 @@ begin
     CallData.Image := Window.SaveScreen;
 
     { switch to our mode }
-    SavedMode := TGLMode.CreateReset(Window, nil, @Resize2D, @NoClose);
+    SavedMode := TGLMode.CreateReset(Window, nil, nil, @NoClose);
 
     StatusText := TRayTracerStatus.Create(Window);
     Window.Controls.InsertFront(StatusText);
@@ -318,7 +310,6 @@ begin
     Window.OnMenuClick := @MenuClick;
     {$endif}
     CallData.Quit := false;
-    Window.Container.EventResize; { init our projection }
 
     try
       case RaytracerKind of

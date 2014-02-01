@@ -1118,12 +1118,7 @@ begin
     Scene.CameraChanged(SceneManager.Camera, SceneManager.CameraToChanges);
 
     if not Window.Closed then
-    begin
-      { call EventResize to adjust zNear/zFar of our projection to the size
-        of Scene.BoundingBox }
-      Window.Container.EventResize;
       Scene.VisibleChangeHere([]);
-    end;
 
     if MenuReopen <> nil then
       MenuReopen.Enabled := SceneURL <> '';
