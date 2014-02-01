@@ -21,19 +21,19 @@
 }
 
 { Simple unit that allows to incrementally display raytracer result
-  in TCastleWindowBase window. }
+  in TCastleWindowCustom window. }
 unit V3DSceneRaytrace;
 
 interface
 
-uses CastleWindow, CastleVectors, X3DNodes, CastleColors,
+uses CastleVectors, X3DNodes, CastleColors,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore, CastleUIControls;
 
 const
   DefaultRaytracerDepth = 3;
 
 { Ray-tracer. }
-procedure RaytraceToWin(Window: TCastleWindowCustom;
+procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
@@ -44,9 +44,9 @@ procedure RaytraceToWin(Window: TCastleWindowCustom;
 
 implementation
 
-uses CastleRayTracer, CastleWindowModes, CastleGLUtils, CastleImages, SysUtils,
-  CastleUtils, CastleMessages, CastleGLImages, Classes, V3DSceneStatus,
-  CastleURIUtils, CastleKeysMouse;
+uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
+  CastleGLUtils, CastleImages, CastleUtils, CastleMessages, CastleGLImages,
+  CastleURIUtils, CastleKeysMouse, V3DSceneStatus, V3DSceneWindow;
 
 const
   DefaultPrimarySamplesCount = 1;
@@ -60,7 +60,6 @@ type
     And PixelsMadeNotify gets Window in the Data parameter,
     so PixelsMadeNotify callback can also access it. }
   TCallData = record
-    Window: TCastleWindowCustom;
     { The screen save of the OpenGL rendering,
       that is successively overwritten by ray-traced image.
       This way we can always display this image to show OpenGL rendering
@@ -108,17 +107,14 @@ begin
   finally FreeAndNil(GLImage) end;
 end;
 
-{ Callback when ray-tracing is in process.
-  Given Data must be a TCastleWindowBase. }
+{ Callback when ray-tracing is in process. }
 procedure PixelsMadeNotify(PixelsMadeCount: Cardinal; Data: Pointer);
 const
   RowsShowCount = 10;
 var
-  Window: TCastleWindowBase;
   D: PCallData;
   RowsMadeCount: Cardinal;
 begin
-  Window := TCastleWindowBase(Data);
   D := PCallData(Window.UserData);
 
   { Take this callback into account only when the row was just completed. }
@@ -142,7 +138,7 @@ end;
 { menu things ---------------------------------------------------------------- }
 
 { Save rendered image. This may be called only when rendering is done. }
-procedure EventSave(Window: TCastleWindowBase);
+procedure EventSave;
 var
   D: PCallData;
   SaveURL: string;
@@ -157,7 +153,7 @@ begin
     { Determine ImgFormat exactly the same like SaveImage() does. }
     if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
       (ImgFormat = ifRGBE) then
-      MessageOK(D^.Window,
+      MessageOK(Window,
         'Note: When saving raytraced image from view3dscene to ' +
         'RGBE file format, you will *not* get image with perfect ' +
         'RGB+Exponent precision. ' +
@@ -170,7 +166,7 @@ begin
   end;
 end;
 
-procedure EventEscape(Window: TCastleWindowBase);
+procedure EventEscape;
 var
   D: PCallData;
 begin
@@ -178,24 +174,24 @@ begin
   D^.Quit := true;
 end;
 
-procedure MenuClick(Window: TCastleWindowBase; Item: TMenuItem);
+procedure MenuClick(Container: TUIContainer; Item: TMenuItem);
 begin
   case Item.IntData of
-    10: EventSave(Window);
-    20: EventEscape(Window);
+    10: EventSave;
+    20: EventEscape;
   end;
 end;
 
 {$ifdef LCLCarbon}
-procedure PressWorking(Window: TCastleWindowBase; const Event: TInputPressRelease);
+procedure PressWorking(Container: TUIContainer; const Event: TInputPressRelease);
 begin
-  if Event.IsKey(CharEscape) then EventEscape(Window);
+  if Event.IsKey(CharEscape) then EventEscape;
 end;
 
-procedure PressDone(Window: TCastleWindowBase; const Event: TInputPressRelease);
+procedure PressDone(Container: TUIContainer; const Event: TInputPressRelease);
 begin
-  if Event.IsKey(CtrlS) then EventSave(Window);
-  if Event.IsKey(CharEscape) then EventEscape(Window);
+  if Event.IsKey(CtrlS) then EventSave;
+  if Event.IsKey(CharEscape) then EventEscape;
 end;
 {$endif}
 
@@ -253,7 +249,7 @@ end;
 
 { ----------------------------------------------------------------------------- }
 
-procedure RaytraceToWin(Window: TCastleWindowCustom;
+procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
@@ -299,7 +295,6 @@ begin
     MainMenuWorking := CreateMainMenuWorking;
 
     CallData.Image := Window.SaveScreen;
-    CallData.Window := Window;
 
     { switch to our mode }
     SavedMode := TGLMode.CreateReset(Window, nil, @Resize2D, @NoClose);
@@ -323,7 +318,7 @@ begin
     Window.OnMenuClick := @MenuClick;
     {$endif}
     CallData.Quit := false;
-    Window.EventResize; { init our projection }
+    Window.Container.EventResize; { init our projection }
 
     try
       case RaytracerKind of
@@ -365,7 +360,6 @@ begin
         RayTracer.OrthoViewDimensions := OrthoViewDimensions;
         RayTracer.SceneBGColor := Vector3SingleCut(SceneBGColor);
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
-        RayTracer.PixelsMadeNotifierData := Window;
 
         RayTracer.ExecuteStats(StatusText.Stats);
       finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;

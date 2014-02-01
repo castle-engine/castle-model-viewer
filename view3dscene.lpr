@@ -555,9 +555,9 @@ begin
   Text.Append(S);
 end;
 
-{ TCastleWindowBase callbacks --------------------------------------------------------- }
+{ TCastleWindowCustom callbacks --------------------------------------------------------- }
 
-procedure Open(Sender: TCastleWindowBase);
+procedure Open(Container: TUIContainer);
 begin
   WindowProgressInterface.Window := Window;
   Progress.UserInterface := WindowProgressInterface;
@@ -565,7 +565,7 @@ begin
   BGColorChanged(SceneManager);
 end;
 
-procedure Close(Window: TCastleWindowBase);
+procedure Close(Container: TUIContainer);
 begin
   Progress.UserInterface := ProgressNullInterface;
 end;
@@ -765,7 +765,7 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure Press(Window: TCastleWindowBase; const Event: TInputPressRelease);
+procedure Press(Container: TUIContainer; const Event: TInputPressRelease);
 begin
   { Support selecting item by ctrl + right button click. }
   if Event.IsMouseButton(mbRight) and (mkCtrl in Window.Pressed.Modifiers) then
@@ -851,7 +851,7 @@ begin
     because of WindowDefaultSize). Do not call EventResize then.
     May happen when you used --write, and some warning occurs. }
   if not Window.Closed then
-    Window.EventResize; { update WarningsButton.Left }
+    Window.Container.EventResize; { update WarningsButton.Left }
 end;
 
 procedure OnWarningHandle(const AType: TWarningType; const Category, S: string);
@@ -867,7 +867,7 @@ end;
 
 procedure SceneOctreeCreate;
 var
-  OldRender, OldBeforeRender: TRenderFunc;
+  OldRender, OldBeforeRender: TContainerEvent;
 begin
   { Do not create octrees when SceneAnimation.Collides = false. This makes
     setting SceneAnimation.Collides to false an optimization: octree doesn't have to
@@ -1121,7 +1121,7 @@ begin
     begin
       { call EventResize to adjust zNear/zFar of our projection to the size
         of Scene.BoundingBox }
-      Window.EventResize;
+      Window.Container.EventResize;
       Scene.VisibleChangeHere([]);
     end;
 
@@ -1355,7 +1355,7 @@ begin
   LoadScene(URL, [], 0.0, true);
 end;
 
-procedure DropFiles(Window: TCastleWindowBase; const FileNames: array of string);
+procedure DropFiles(Container: TUIContainer; const FileNames: array of string);
 var
   URL: string;
 begin
@@ -1440,7 +1440,7 @@ function RenderAndSaveScreen(ImageClass: TCastleImageClass;
 begin
   if ControlsOnScreenshot then
   begin
-    Window.EventRender;
+    Window.Container.EventRender;
   end else
   begin
     ViewportsRender;
@@ -1596,7 +1596,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
     end;
 
     try
-      Window.EventBeforeRender;
+      Window.Container.EventBeforeRender;
       Result := RenderAndSaveScreen(ImageClass, ReadBuffer);
     finally
       if Transparency then
@@ -1625,7 +1625,7 @@ begin
       ScreenShotName := ChangeURIExt(ExtractURIName(SceneURL), '_%d.png') else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
-    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
+    { Below is a little expanded version of TCastleWindowCustom.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
     if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
@@ -1637,7 +1637,7 @@ begin
   finally FreeAndNil(Image) end;
 end;
 
-procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
+procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure ChangeGravityUp;
   var Answer: string;
@@ -2637,12 +2637,12 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
       PackData: TPackNotAlignedData;
       Image: TGrayscaleImage;
     begin
-      { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
+      { Just like TCastleWindowCustom.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
-      Window.EventBeforeRender;
-      Window.EventRender;
+      Window.Container.EventBeforeRender;
+      Window.Container.EventRender;
 
       Image := TGrayscaleImage.Create(Window.Width, Window.Height);
       try
@@ -2673,7 +2673,7 @@ procedure MenuClick(Sender: TCastleWindowBase; MenuItem: TMenuItem);
     Pos, Dir, Up: TVector3Single;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(Window, SceneManager.BaseLights, Scene,
+    RaytraceToWin(SceneManager.BaseLights, Scene,
       Pos, Dir, Up,
       SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
       SceneManager.OrthoViewDimensions, BGColor);
@@ -3535,7 +3535,7 @@ begin
 
     { Call Resize after changing ToolbarPanel.Exists, as warnings button
       position is calculated differently based on it }
-    if not Window.Closed then Window.EventResize;
+    if not Window.Closed then Window.Container.EventResize;
   end;
 
   if StatusText <> nil then
@@ -3613,7 +3613,7 @@ begin
   UpdateStatusToolbarVisible;
 end;
 
-procedure Resize(Window: TCastleWindowBase);
+procedure Resize(Container: TUIContainer);
 const
   ToolbarMargin = 5;  {< between buttons and toolbar panel }
   ButtonsMargin = 8; {< between buttons }
@@ -3703,7 +3703,7 @@ end;
 
 { Try to lower anti-aliasing (multi-sampling) and shadows (stencil buffer)
   requirements and initialize worse GL context. }
-function RetryOpen(Window: TCastleWindowBase): boolean;
+function RetryOpen(Window: TCastleWindowCustom): boolean;
 begin
   if Window.AntiAliasing <> aaNone then
   begin
@@ -3832,7 +3832,7 @@ const
            '                        anti-aliasing quality.' +NL+
            SoundEngine.ParseParametersHelp + NL+
            NL+
-           TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
+           TCastleWindowCustom.ParseParametersHelp(StandardParseOptions, true) +NL+
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
