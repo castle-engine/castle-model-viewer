@@ -559,15 +559,7 @@ end;
 
 procedure Open(Container: TUIContainer);
 begin
-  WindowProgressInterface.Window := Window;
-  Progress.UserInterface := WindowProgressInterface;
-
   BGColorChanged(SceneManager);
-end;
-
-procedure Close(Container: TUIContainer);
-begin
-  Progress.UserInterface := ProgressNullInterface;
 end;
 
 { Render visualization of various stuff, like bounding box, octree and such. }
@@ -3922,6 +3914,9 @@ const
 begin
   Window := TCastleWindowCustom.Create(Application);
 
+  Application.MainWindow := Window;
+  Progress.UserInterface := WindowProgressInterface;
+
   { initialize RecentMenu, before Config.Load }
   RecentMenu := TWindowRecentFiles.Create(nil);
   RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
@@ -4006,7 +4001,6 @@ begin
         Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
         Window.OnOpen := @Open;
-        Window.OnClose := @Close;
         Window.OnResize := @Resize;
         Window.OnPress := @Press;
         Window.OnDropFiles := @DropFiles;
