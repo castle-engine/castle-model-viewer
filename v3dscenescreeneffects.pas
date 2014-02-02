@@ -184,8 +184,7 @@ begin
   for SE := Low(SE) to High(SE) do
     if Shaders[SE] = nil then
     begin
-      if (TGLSLProgram.ClassSupport <> gsNone) and
-         GLFeatures.TextureRectangle then
+      if TGLSLProgram.ClassSupport <> gsNone then
       begin
         try
           Shaders[SE] := TGLSLProgram.Create;
