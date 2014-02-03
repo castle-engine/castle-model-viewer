@@ -4,8 +4,11 @@ vec4 screen_get_color(ivec2 position);
 float screen_get_depth(ivec2 position);
 ivec2 screen_position();
 
+/* Below already declared by ScreenEffectLibrary that is glued at
+   the beginning.
 uniform int screen_width;
 uniform int screen_height;
+*/
 
 void main (void)
 {

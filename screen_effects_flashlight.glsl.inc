@@ -6,8 +6,11 @@
 'float screen_get_depth(ivec2 position);' + LineEnding + 
 'ivec2 screen_position();' + LineEnding + 
 '' + LineEnding + 
+'/* Below already declared by ScreenEffectLibrary that is glued at' + LineEnding + 
+'   the beginning.' + LineEnding + 
 'uniform int screen_width;' + LineEnding + 
 'uniform int screen_height;' + LineEnding + 
+'*/' + LineEnding + 
 '' + LineEnding + 
 'void main (void)' + LineEnding + 
 '{' + LineEnding + 
