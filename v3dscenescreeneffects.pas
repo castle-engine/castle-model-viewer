@@ -67,7 +67,7 @@ var
 implementation
 
 uses SysUtils, CastleGLUtils, CastleWarnings, CastleRenderer, CastleKeysMouse,
-  CastleRendererShader;
+  CastleScreenEffects;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
@@ -189,11 +189,9 @@ begin
       begin
         try
           Shaders[SE] := TGLSLProgram.Create;
-          Shaders[SE].AttachVertexShader(ScreenEffectVertexShader);
+          Shaders[SE].AttachVertexShader(ScreenEffectVertex);
           Shaders[SE].AttachFragmentShader(
-            { for OpenGLES, we have to glue all fragment shaders,
-              and ScreenEffectLibrary must be 1st }
-            ScreenEffectLibrary(ScreenEffectsInfo[SE].NeedsDepth) + NL +
+            ScreenEffectFragment(ScreenEffectsInfo[SE].NeedsDepth) +
             ScreenEffectsInfo[SE].Code);
           Shaders[SE].Link(true);
           Shaders[SE].UniformNotFoundAction := uaIgnore;
