@@ -868,8 +868,8 @@ begin
   if SceneAnimation.Collides then
   begin
     { Beware: constructing octrees will cause progress drawing,
-      and progress drawing may cause FlushRedisplay,
-      and FlushRedisplay may cause OnRender and OnBeforeRender to be called.
+      and progress drawing may cause SaveScreen,
+      and SaveScreen may cause OnRender and OnBeforeRender to be called.
       That's why we simply turn normal Render/BeforeRender temporarily off. }
     OldRender := Window.OnRender;
     OldBeforeRender := Window.OnBeforeRender;
