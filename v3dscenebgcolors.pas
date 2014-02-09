@@ -33,7 +33,8 @@ const
 var
   BGColor: TCastleColor;
 
-{ Call always after changing BGColor, call also once at the beginning. }
+{ Call always after changing BGColor, call also once at the beginning
+  after Viewports and SceneManager is ready. }
 procedure BGColorChanged(const SceneManager: TCastleSceneManager);
 
 implementation

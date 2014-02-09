@@ -557,11 +557,6 @@ end;
 
 { TCastleWindowCustom callbacks --------------------------------------------------------- }
 
-procedure Open(Container: TUIContainer);
-begin
-  BGColorChanged(SceneManager);
-end;
-
 { Render visualization of various stuff, like bounding box, octree and such. }
 procedure RenderVisualizations;
 
@@ -3952,6 +3947,7 @@ begin
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
   InitializeViewports(TV3DViewport);
+  BGColorChanged(SceneManager);
 
   CreateStatusToolbar;
 
@@ -4000,7 +3996,6 @@ begin
         Window.MainMenu := CreateMainMenu;
         Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
-        Window.OnOpen := @Open;
         Window.OnResize := @Resize;
         Window.OnPress := @Press;
         Window.OnDropFiles := @DropFiles;
