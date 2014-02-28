@@ -211,7 +211,7 @@ begin
 
   { We don't immediately free here LightsMenu instance, because this is called
     also by virtual Click (when user chooses "Close Lights Editor" item),
-    and we cannot free ourselves from our own method, as TCastleOnScreenMenu.MouseDown
+    and we cannot free ourselves from our own method, as TCastleOnScreenMenu.Press
     doesn't expect it. So instead leave LightsMenu instance existing,
     but make sure (for speed) that it's not connected by DestructionNotifications
     to our scene. }
