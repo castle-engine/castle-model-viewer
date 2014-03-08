@@ -3458,6 +3458,192 @@ tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories lis
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
+---- Reading ../little_things/data/avatar/avatar_0067.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0067.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0076.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0076.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0085.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0085.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0094.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0094.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0103.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0103.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0112.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0112.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0121.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0121.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0130.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0130.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0139.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0139.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0148.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0148.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0157.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0157.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0166.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0166.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0175.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0175.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0184.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0184.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0193.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0193.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0202.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0202.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0211.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0211.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0220.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0220.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0229.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0229.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0238.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0238.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0247.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0247.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0256.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0256.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0265.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0265.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0274.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0274.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0283.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0283.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0292.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0292.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0301.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0301.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0310.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0310.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0319.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0319.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0328.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0328.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0337.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0337.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0346.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0346.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0355.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0355.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0364.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0364.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0373.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0373.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0382.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0382.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0391.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0391.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0400.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0400.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0409.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0409.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0418.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0418.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0427.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0427.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0436.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0436.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0445.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0445.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0454.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0454.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0463.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0463.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0472.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0472.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0481.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0481.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0490.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0490.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0499.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0499.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/avatar/avatar_0500.x3d.gz
+---- Reading again ../little_things/data/avatar/avatar_0500.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/cave/part.x3d
+---- Reading again ../little_things/data/level/cave/part.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/cave/part_final.x3dv
+---- Reading again ../little_things/data/level/cave/part_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/forest/part.x3d
+---- Reading again ../little_things/data/level/forest/part.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/forest/part_final.x3dv
+---- Reading again ../little_things/data/level/forest/part_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/forest/tree_model/trees_0.x3d
+---- Reading again ../little_things/data/level/forest/tree_model/trees_0.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/forest/tree_model/trees_closed.x3d
+---- Reading again ../little_things/data/level/forest/tree_model/trees_closed.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/island/part.x3d
+---- Reading again ../little_things/data/level/island/part.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/island/part_final.x3dv
+---- Reading again ../little_things/data/level/island/part_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/lake/part_final.x3dv
+---- Reading again ../little_things/data/level/lake/part_final.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/level.x3dv
+---- Reading again ../little_things/data/level/level.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/level/useful_proto_plane_tess.x3dv
+---- Reading again ../little_things/data/level/useful_proto_plane_tess.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../little_things/data/title/title.x3dv
+---- Reading again ../little_things/data/title/title.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../malfunction/data/vrmls/black_hedgehog.wrl
 ---- Reading again ../malfunction/data/vrmls/black_hedgehog.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
