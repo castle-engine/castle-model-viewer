@@ -1660,6 +1660,9 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Reading ../demo_models/background/background_colors.wrl
 ---- Reading again ../demo_models/background/background_colors.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/background/background_movie_texture.x3dv
+---- Reading again ../demo_models/background/background_movie_texture.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/background/background_one_color.wrl
 ---- Reading again ../demo_models/background/background_one_color.wrl
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -1677,6 +1680,9 @@ VRML/X3D lexical error at position 21: VRML signature error : unrecognized signa
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/background/background_texture2.wrl
 ---- Reading again ../demo_models/background/background_texture2.wrl
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../demo_models/background/test_regression.x3dv
+---- Reading again ../demo_models/background/test_regression.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/background/vrml_1/background_alpha_tex.wrl
 ---- Reading again ../demo_models/background/vrml_1/background_alpha_tex.wrl
