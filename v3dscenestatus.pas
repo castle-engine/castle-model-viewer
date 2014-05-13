@@ -95,10 +95,15 @@ begin
 end;
 
 procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
+var
+  CharWidth: Integer;
 begin
   inherited;
-  FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - Padding * 2 -
-    Left * 2) div Font.TextWidth('W'));
+  CharWidth := Font.TextWidth('W');
+  if CharWidth > 0 then
+    FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - Padding * 2 -
+      Left * 2) div CharWidth) else
+    FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 
 procedure TStatusText.Flash(const AText: string);
