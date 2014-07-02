@@ -3720,6 +3720,186 @@ tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy'
 ---- Reading ../malfunction/data/vrmls/wawoz_bl.wrl
 ---- Reading again ../malfunction/data/vrmls/wawoz_bl.wrl
 ---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)
+---- Reading ../mountains_of_fire/data/level1/level1.x3d
+---- Reading again ../mountains_of_fire/data/level1/level1.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/level1/level1.x3dv
+---- Reading again ../mountains_of_fire/data/level1/level1.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0000.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0005.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0010.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0015.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0020.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0025.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0030.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0030.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0035.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0035.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0040.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0040.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0045.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0045.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0050.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0050.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0055.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0055.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0060.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0060.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0065.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0065.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0070.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0070.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0075.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0075.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0080.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0080.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0085.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0085.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0090.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0090.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0095.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0095.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0100.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0100.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0105.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0105.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0110.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0110.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0115.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0115.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0120.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0120.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0125.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0125.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0130.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0130.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0135.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0135.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/idle_0140.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/idle_0140.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0000.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0000.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0005.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0005.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0010.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0010.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0015.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0015.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0020.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0020.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0025.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0025.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/player/run_0028.x3d.gz
+---- Reading again ../mountains_of_fire/data/player/run_0028.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0001.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0006.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0011.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0016.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0021.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0026.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0031.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0036.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0041.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0041.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0046.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0046.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_idle_0050.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_idle_0050.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0001.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0006.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0011.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0016.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0021.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0026.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0031.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0036.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0041.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0041.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0046.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0046.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../mountains_of_fire/data/worm/worm_vertical_move_0050.x3d.gz
+---- Reading again ../mountains_of_fire/data/worm/worm_vertical_move_0050.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../papers/compositing_shaders/slides/simple.x3d
 ---- Reading again ../papers/compositing_shaders/slides/simple.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
