@@ -183,4 +183,13 @@
     <comment>Castle Game Engine animation</comment>
     <glob pattern="*.kanim"/>
   </mime-type>
+
+  <!-- view3dscene also handles Spine animations in *.json,
+       although we cannot create MIME type that captures Spine animations
+       and not other json content... -->
+  <mime-type type="application/json">
+    <sub-class-of type="text/plain"/>
+    <comment>JSON document</comment>
+    <glob pattern="*.json"/>
+  </mime-type>
 </mime-info>
