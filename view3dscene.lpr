@@ -2911,7 +2911,9 @@ begin
   84: if Window.ColorDialog(BGColor) then BGColorChanged(SceneManager);
   86: with SceneAnimation.Attributes do Blending := not Blending;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
-  89: with SceneAnimation.Attributes do BlendingSort := not BlendingSort;
+  450: SceneAnimation.Attributes.BlendingSort := bsNone;
+  452: SceneAnimation.Attributes.BlendingSort := bs3D;
+  454: SceneAnimation.Attributes.BlendingSort := bs2D;
   90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
   891: with SceneAnimation.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
@@ -3316,8 +3318,9 @@ begin
     M2 := TMenu.Create('Blending Destination Factor');
       AppendBlendingFactors(M2, false, 420);
       M.Append(M2);
-    M.Append(TMenuItemChecked.Create('Sort transparent shapes', 89,
-      SceneAnimation.Attributes.BlendingSort, true));
+    M.Append(TMenuItem.Create('No sorting of transparent shapes', 450));
+    M.Append(TMenuItem.Create('Sort transparent shapes (3D)', 452));
+    M.Append(TMenuItem.Create('Sort transparent shapes (2D, based on Z)', 454));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
       SceneAnimation.Attributes.UseOcclusionQuery, true));
