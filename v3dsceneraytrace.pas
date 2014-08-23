@@ -26,7 +26,7 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses CastleVectors, X3DNodes, CastleColors,
+uses CastleVectors, X3DNodes, CastleColors, CastleRays,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore, CastleUIControls;
 
 const
@@ -37,9 +37,7 @@ procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
-  const PerspectiveView: boolean;
-  const PerspectiveViewAngles: TVector2Single;
-  const OrthoViewDimensions: TVector4Single;
+  const Projection: TProjection;
   const SceneBGColor: TCastleColor);
 
 implementation
@@ -245,9 +243,7 @@ procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
   const CamPosition, CamDir, CamUp: TVector3Single;
-  const PerspectiveView: boolean;
-  const PerspectiveViewAngles: TVector2Single;
-  const OrthoViewDimensions: TVector4Single;
+  const Projection: TProjection;
   const SceneBGColor: TCastleColor);
 var
   SavedMode: TGLMode;
@@ -346,9 +342,7 @@ begin
         RayTracer.CamPosition := CamPosition;
         RayTracer.CamDirection := CamDir;
         RayTracer.CamUp := CamUp;
-        RayTracer.PerspectiveView := PerspectiveView;
-        RayTracer.PerspectiveViewAngles := PerspectiveViewAngles;
-        RayTracer.OrthoViewDimensions := OrthoViewDimensions;
+        RayTracer.Projection := Projection;
         RayTracer.SceneBGColor := Vector3SingleCut(SceneBGColor);
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
 

@@ -57,7 +57,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
-  CastleKeysMouse, CastleDownload, CastleURIUtils,
+  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils, CastleFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
@@ -2281,13 +2281,20 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
          VectorToRawStr(Camera.Walk.Direction),
          VectorToRawStr(Camera.Walk.Up),
          BGColor[0], BGColor[1], BGColor[2] ]);
-    if SceneManager.PerspectiveView then
-      S += Format('    --view-angle-x %f', [SceneManager.PerspectiveViewAngles[0]]) else
-      S += Format('    --ortho %f %f %f %f', [
-        SceneManager.OrthoViewDimensions[0],
-        SceneManager.OrthoViewDimensions[1],
-        SceneManager.OrthoViewDimensions[2],
-        SceneManager.OrthoViewDimensions[3] ]);
+
+    case SceneManager.Projection.ProjectionType of
+      ptPerspective:
+        S += Format('    --view-angle-x %f',
+          [SceneManager.Projection.PerspectiveAngles[0]]);
+      ptOrthographic:
+        S += Format('    --ortho %f %f %f %f', [
+          SceneManager.Projection.OrthoDimensions[0],
+          SceneManager.Projection.OrthoDimensions[1],
+          SceneManager.Projection.OrthoDimensions[2],
+          SceneManager.Projection.OrthoDimensions[3] ]);
+      else raise EInternalError.Create('PrintRayhunterCommand:ProjectionType?');
+    end;
+
     Writeln(S);
   end;
 
@@ -2537,7 +2544,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
             @SceneManager.RenderFromViewEverything,
-            SceneManager.ProjectionNear, SceneManager.ProjectionFar);
+            SceneManager.Projection.ProjectionNear,
+            SceneManager.Projection.ProjectionFar);
           glViewport(Window.Rect);
 
           case Orientation of
@@ -2603,7 +2611,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
           @SceneManager.RenderFromViewEverything,
-          SceneManager.ProjectionNear, SceneManager.ProjectionFar);
+          SceneManager.Projection.ProjectionNear,
+          SceneManager.Projection.ProjectionFar);
         try
           glViewport(Window.Rect);
           DDS.SaveToFile(URL);
@@ -2656,9 +2665,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
     RaytraceToWin(SceneManager.BaseLights, Scene,
-      Pos, Dir, Up,
-      SceneManager.PerspectiveView, SceneManager.PerspectiveViewAngles,
-      SceneManager.OrthoViewDimensions, BGColor);
+      Pos, Dir, Up, SceneManager.Projection, BGColor);
   end;
 
   procedure MergeCloseVertexes;
