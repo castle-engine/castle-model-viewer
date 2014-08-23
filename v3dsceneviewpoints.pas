@@ -27,17 +27,7 @@ interface
 
 uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
   CastleSceneCore, CastlePrecalculatedAnimation, CastleScene,
-  CastleSceneManager, CastleKeysMouse;
-
-const
-  DefaultCaptionLimit = 50;
-
-{ Return S with newlines replaced with spaces and trimmed to
-  sensible number of characters. This is useful when you
-  want to use some user-supplied string (e.g. in VRML/X3D
-  SFString field) in your UI (e.g. as menu or window caption). }
-function SForCaption(const S: string;
-  const Limit: Cardinal = DefaultCaptionLimit): string;
+  CastleSceneManager, CastleKeysMouse, V3DSceneCaptions;
 
 type
   { Menu item referring to a viewpoint.
@@ -130,13 +120,6 @@ procedure JumpToViewpoint(const SceneManager: TCastleSceneManager;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleParameters, V3DSceneStatus;
-
-function SForCaption(const S: string; const Limit: Cardinal): string;
-begin
-  Result := SCompressWhiteSpace(S);
-  if Length(Result) > Limit then
-    Result := Copy(Result, 1, Limit - 3) + '...';
-end;
 
 function TMenuViewpointGroup.FindGroup(
   AViewpointGroup: TViewpointGroupNode): TMenuViewpointGroup;
@@ -272,7 +255,7 @@ var
   M: TMenuItem;
 begin
   MenuUpdateBegin;
-  DeleteAll;
+  Clear;
 
   ViewpointsRadioGroup := nil;
 

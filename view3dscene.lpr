@@ -74,10 +74,10 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
-  V3DSceneAntiAliasing, V3DSceneScreenShot,
+  V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneCaptions,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
-  V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus;
+  V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations;
 
 var
   ShowFrustum: boolean = false;
@@ -926,6 +926,8 @@ begin
   Assert(SceneManager.MainScene = nil);
 
   Viewpoints.Recalculate(nil);
+  if MenuNamedAnimations <> nil then
+    MenuNamedAnimations.Clear;
 
   SceneURL := '';
 
@@ -1103,6 +1105,8 @@ begin
     { Make initial CameraChanged to make initial events to
       ProximitySensor, if user is within. }
     Scene.CameraChanged(SceneManager.Camera, SceneManager.CameraToChanges);
+
+    RefreshNamedAnimations(Scene);
 
     if not Window.Closed then
       Scene.VisibleChangeHere([]);
@@ -3402,6 +3406,9 @@ begin
       '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
     M.Append(MenuAnimationTimePlaying);
     M.Append(TMenuItem.Create('Rewind to Beginning', 221));
+    M.Append(TMenuSeparator.Create);
+    CreateMenuNamedAnimations;
+    M.Append(MenuNamedAnimations);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
     M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
