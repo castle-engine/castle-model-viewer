@@ -1768,14 +1768,18 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       s := Format(
            'Selected point %s from triangle %s (triangle id: %s).' +nl+
            nl+
-           'This triangle is part of the '+
-           'node named "%s" (original type %s, rendered through type %s). Node''s bounding box is %s. ',
+           'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node name: "%s", grand-parent node name: "%s", grand-grand-parent node name: "%s".' +nl+
+           nl+
+           'Node''s bounding box is %s. ',
            [VectorToNiceStr(SelectedPointWorld),
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
             SelectedGeometry.NodeName,
             SelectedShape.OriginalGeometry.NodeTypeName,
             SelectedGeometry.NodeTypeName,
+            SelectedShape.GeometryParentNodeName,
+            SelectedShape.GeometryGrandParentNodeName,
+            SelectedShape.GeometryGrandGrandParentNodeName,
             SelectedShape.BoundingBox.ToNiceStr]);
 
       if (SelectedItem^.Face.IndexBegin <> -1) and
