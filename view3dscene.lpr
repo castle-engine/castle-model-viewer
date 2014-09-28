@@ -628,29 +628,49 @@ begin
     if SelectedItem <> nil then
     begin
       {$ifndef OpenGLES} //TODO-es
+      SelectedShape := TShape(SelectedItem^.Shape);
       glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-        glColorv(Vector4Single(1, 1, 1, 0.25)); { may be changed carelessly }
-
-        glBegin(GL_LINE_LOOP);
+        glColorv(Vector4Single(0.5, 0.3, 0.3, 1));
+        glDrawCornerMarkers(SelectedShape.BoundingBox);   // draw red selection corner markers, visible through geometry
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
+        glEnable(GL_BLEND);
+        glEnable(GL_CULL_FACE);  { saved by GL_ENABLE_BIT }
+        glColorv(Vector4Single(0.5, 0.3, 0.3, 0.5));
+        glBegin(GL_TRIANGLES);   // draw face back in red, visible through geometry
+          glVertexv(SelectedItem^.World.Triangle[0]);
+          glVertexv(SelectedItem^.World.Triangle[2]);
+          glVertexv(SelectedItem^.World.Triangle[1]);
+        glEnd;
+        glColorv(Vector4Single(0.4, 0.4, 1, 0.4));
+        glBegin(GL_TRIANGLES);  // draw face front in blue,  visible through geometry
           glVertexv(SelectedItem^.World.Triangle[0]);
           glVertexv(SelectedItem^.World.Triangle[1]);
           glVertexv(SelectedItem^.World.Triangle[2]);
         glEnd;
 
-        glPointSize(5.0); { may be changed carelessly }
-        glBegin(GL_POINTS);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glColorv(Vector4Single(1, 1, 1, 1));
+
+        glLineWidth(2.0);
+        glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
+          glVertexv(SelectedItem^.World.Triangle[0]);
+          glVertexv(SelectedItem^.World.Triangle[1]);
+          glVertexv(SelectedItem^.World.Triangle[2]);
+        glEnd;
+
+        glPointSize(5.0);
+        glDisable(GL_DEPTH_TEST);
+        glBegin(GL_POINTS);     // draw hit point, visible through
           glVertexv(SelectedPointWorld);
         glEnd;
-
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
-        glEnable(GL_BLEND); { saved by GL_ENABLE_BIT }
-        glBegin(GL_TRIANGLES);
-          glVertexv(SelectedItem^.World.Triangle[0]);
-          glVertexv(SelectedItem^.World.Triangle[1]);
-          glVertexv(SelectedItem^.World.Triangle[2]);
-        glEnd;
       glPopAttrib;
+      // draw blue corner markers, these overwrite the red markers, but only when infront
+      // so corners infront are blue, those behind are red.
+      // gives depth impression and is generally visible against various geometry .
+      glColorv(Vector4Single(0.2, 0.2, 1, 1));
+      glDrawCornerMarkers(SelectedShape.BoundingBox);
       {$endif}
     end;
   end;
