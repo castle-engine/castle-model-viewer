@@ -57,7 +57,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
-  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays,
+  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils, CastleFonts,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
@@ -3758,7 +3758,7 @@ var
   Param_HideMenu: boolean = false;
 
 const
-  Options: array [0..18] of TOption =
+  Options: array [0..19] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3773,6 +3773,7 @@ const
     (Short:  #0; Long: 'debug-log-changes'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-videos'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
     (Short:  #0; Long: 'write'; Argument: oaNone),
@@ -3862,6 +3863,7 @@ const
              '  --debug-log-cache     Write log info, including cache.' +nl+
              '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
              '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
+             '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
              NL+
              'Deprecated options:' +NL+
              '  --scene-change-no-normals' +NL+
@@ -3925,24 +3927,28 @@ const
             LogShaders := true;
           end;
       13: begin
+            InitializeLog(Version);
+            LogVideosCache := true;
+          end;
+      14: begin
             Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
               Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
             if AntiAliasingMenu[Window.AntiAliasing] <> nil then
               AntiAliasingMenu[Window.AntiAliasing].Checked := true;
           end;
-      14: begin
+      15: begin
             ShowBBox := false;
             ShowStatus := false;
             UpdateStatusToolbarVisible;
           end;
-      15: WasParam_Write := true;
-      16: if SameText(Argument, 'classic') then
+      16: WasParam_Write := true;
+      17: if SameText(Argument, 'classic') then
             Param_WriteEncoding := xeClassic else
           if SameText(Argument, 'xml') then
             Param_WriteEncoding := xeXML else
             raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-      17: Param_WriteForceX3D := true;
-      18: Param_HideMenu := true;
+      18: Param_WriteForceX3D := true;
+      19: Param_HideMenu := true;
       else raise EInternalError.Create('OptionProc');
     end;
   end;
