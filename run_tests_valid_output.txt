@@ -3467,6 +3467,249 @@ tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories lis
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0026.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0031.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0036.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0036.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0041.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0041.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/attack_0043.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/attack_0043.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/die_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/die_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/die_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/die_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/die_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/die_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/die_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/hurt_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/hurt_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/hurt_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/hurt_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/hurt_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/hurt_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/idle_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/idle_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/idle_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/idle_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/idle_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0026.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0031.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/alien/walk_0033.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/alien/walk_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0026.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/attack_0031.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/attack_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0026.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0026.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0031.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0031.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/die_0033.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/die_0033.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/hurt_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/hurt_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/hurt_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/hurt_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/hurt_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/hurt_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/hurt_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/hurt_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/idle_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/idle_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/idle_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/idle_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/idle_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/idle_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/idle_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/idle_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/idle_0021.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/idle_0021.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/walk_0001.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/walk_0001.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/walk_0006.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/walk_0006.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/walk_0011.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/walk_0011.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/walk_0016.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/walk_0016.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/creatures/human/walk_0017.x3d.gz
+---- Reading again ../hotel_nuclear/data/creatures/human/walk_0017.x3d.gz
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/door.x3d
+---- Reading again ../hotel_nuclear/data/door.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/door.x3dv
+---- Reading again ../hotel_nuclear/data/door.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/elevator.x3d
+---- Reading again ../hotel_nuclear/data/elevator.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel.x3d
+---- Reading again ../hotel_nuclear/data/hotel.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel.x3dv
+---- Reading again ../hotel_nuclear/data/hotel.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel_x_negative.x3d
+---- Reading again ../hotel_nuclear/data/hotel_x_negative.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel_x_positive.x3d
+---- Reading again ../hotel_nuclear/data/hotel_x_positive.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel_z_negative.x3d
+---- Reading again ../hotel_nuclear/data/hotel_z_negative.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/hotel_z_positive.x3d
+---- Reading again ../hotel_nuclear/data/hotel_z_positive.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/aqua/aqua.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/aqua/aqua.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/black/black.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/black/black.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/blue/blue.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/blue/blue.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/gray/gray.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/gray/gray.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/green/green.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/green/green.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/red/red.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/red/red.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/white/white.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/white/white.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/items/key_card/yellow/yellow.x3d
+---- Reading again ../hotel_nuclear/data/items/key_card/yellow/yellow.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/room.x3d
+---- Reading again ../hotel_nuclear/data/room.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/room.x3dv
+---- Reading again ../hotel_nuclear/data/room.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/room_outside.x3d
+---- Reading again ../hotel_nuclear/data/room_outside.x3d
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+---- Reading ../hotel_nuclear/data/room_outside.x3dv
+---- Reading again ../hotel_nuclear/data/room_outside.x3dv
+---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../little_things/data/avatar/avatar_0067.x3d.gz
 ---- Reading again ../little_things/data/avatar/avatar_0067.x3d.gz
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
