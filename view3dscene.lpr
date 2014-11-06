@@ -41,7 +41,6 @@ program view3dscene;
 
 {$I castleconf.inc}
 
-{ Icon for Windows. .res file managed manually. }
 {$ifdef MSWINDOWS}
   {$R windows/view3dscene.res}
 {$endif MSWINDOWS}
