@@ -1895,8 +1895,12 @@ tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element 
 ---- Reading again ../demo_models/compositing_shaders/volumetric_animated_fog_geometry.x3d
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/compositing_shaders/warnings/invalid_effects.x3dv
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
 ---- Reading again ../demo_models/compositing_shaders/warnings/invalid_effects.x3dv
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
 ---- Reading ../demo_models/cube_environment_mapping/cubemap_composed.x3dv
 ---- Reading again ../demo_models/cube_environment_mapping/cubemap_composed.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
@@ -2616,8 +2620,12 @@ tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the V
 ---- Reading again ../demo_models/shaders/warnings/shader_invalid_uniforms.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
 ---- Reading ../demo_models/shaders/warnings/shader_link_and_compile_errors.x3dv
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 ---- Reading again ../demo_models/shaders/warnings/shader_link_and_compile_errors.x3dv
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 ---- Reading ../demo_models/shadow_maps/axes.x3dv
 ---- Reading again ../demo_models/shadow_maps/axes.x3dv
 ---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)
