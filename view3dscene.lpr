@@ -42,7 +42,7 @@ program view3dscene;
 {$I castleconf.inc}
 
 {$ifdef MSWINDOWS}
-  {$R windows/view3dscene.res}
+  {$R automatic-windows-resources.res}
 {$endif MSWINDOWS}
 
 { Icon for Mac OS X. .res file managed by Lazarus. }
