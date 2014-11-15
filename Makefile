@@ -9,5 +9,6 @@ install:
 # Run also "dircleaner . clean" here to really clean
 .PHONY: clean
 clean:
-	rm -f view3dscene view3dscene.exe tovrmlx3d tovrmlx3d.exe
+	castle-engine clean
+	rm -f tovrmlx3d tovrmlx3d.exe
 	rm -Rf view3dscene.app tovrmlx3d.app macosx/view3dscene.app macosx/*.dmg
