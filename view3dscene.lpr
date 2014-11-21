@@ -72,7 +72,7 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
-  V3DSceneBlending, V3DSceneWarnings, V3DSceneFillMode,
+  V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneCaptions,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
@@ -2945,9 +2945,6 @@ begin
   84: if Window.ColorDialog(BGColor) then BGColorChanged(SceneManager);
   86: with SceneAnimation.Attributes do Blending := not Blending;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
-  450: SceneAnimation.Attributes.BlendingSort := bsNone;
-  452: SceneAnimation.Attributes.BlendingSort := bs3D;
-  454: SceneAnimation.Attributes.BlendingSort := bs2D;
   90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
   891: with SceneAnimation.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
@@ -3101,11 +3098,6 @@ begin
       Window.Invalidate;
     end;
 
-  400..419: SceneAnimation.Attributes.BlendingSourceFactor :=
-    BlendingFactors[MenuItem.IntData - 400].Value;
-  420..439: SceneAnimation.Attributes.BlendingDestinationFactor :=
-    BlendingFactors[MenuItem.IntData - 420].Value;
-
   500..519:
     begin
       SetFillMode(MenuItem.IntData - 500);
@@ -3185,35 +3177,6 @@ function CreateMainMenu: TMenu;
     Group := M.AppendRadioGroup(CameraNames, 1300, Ord(Camera.NavigationType), true);
     for Mode := Low(Mode) to High(Mode) do
       CameraRadios[Mode] := Group[Ord(Mode)];
-  end;
-
-  procedure AppendBlendingFactors(M: TMenu; Source: boolean;
-    BaseIntData: Cardinal);
-  var
-    Radio: TMenuItemRadio;
-    RadioGroup: TMenuItemRadioGroup;
-    I: Cardinal;
-    Caption: string;
-    IsDefault: boolean;
-  begin
-    RadioGroup := nil;
-
-    for I := Low(BlendingFactors) to High(BlendingFactors) do
-      if (Source and BlendingFactors[I].ForSource) or
-         ((not Source) and BlendingFactors[I].ForDestination) then
-      begin
-        if Source then
-          IsDefault := BlendingFactors[I].Value = TSceneRenderingAttributes.DefaultBlendingSourceFactor else
-          IsDefault := BlendingFactors[I].Value = TSceneRenderingAttributes.DefaultBlendingDestinationFactor;
-        Caption := SQuoteMenuEntryCaption(BlendingFactors[I].Name);
-        if IsDefault then
-          Caption += ' (Default)';
-        Radio := TMenuItemRadio.Create(Caption, BaseIntData + I, IsDefault, true);
-        if RadioGroup = nil then
-          RadioGroup := Radio.Group else
-          Radio.Group := RadioGroup;
-        M.Append(Radio);
-      end;
   end;
 
   procedure MenuAppendSoundDevices(M: TMenu; BaseIntData: Cardinal);
@@ -3346,15 +3309,6 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Blending',                86,
       SceneAnimation.Attributes.Blending, true));
-    M2 := TMenu.Create('Blending Source Factor');
-      AppendBlendingFactors(M2, true, 400);
-      M.Append(M2);
-    M2 := TMenu.Create('Blending Destination Factor');
-      AppendBlendingFactors(M2, false, 420);
-      M.Append(M2);
-    M.Append(TMenuItem.Create('No sorting of transparent shapes', 450));
-    M.Append(TMenuItem.Create('Sort transparent shapes (3D)', 452));
-    M.Append(TMenuItem.Create('Sort transparent shapes (2D, based on Z)', 454));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
       SceneAnimation.Attributes.UseOcclusionQuery, true));
