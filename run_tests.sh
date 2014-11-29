@@ -87,9 +87,15 @@ test_dir()
                   -iname '*.dae' ')' \
               -print0 ')' | \
   sort --zero-terminated | \
-  xargs -0 --max-args=1 ./run_test_once.sh
+  xargs -0 --max-args=1 ./run_test_once.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
   set -e
 }
+
+OUTPUT_SHORT="$1"
+OUTPUT_VERBOSE="$2"
+shift 2
+
+rm -f "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 
 # test_dir ../demo_models/
 # test_dir ../castle/data/

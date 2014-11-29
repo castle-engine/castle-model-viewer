@@ -33,7 +33,23 @@ fi
 #VIEW3DSCENE_OTHER="$VIEW3DSCENE"
 VIEW3DSCENE_OTHER=view3dscene-3.10.0-release
 
-FILE="$1"
+OUTPUT_SHORT="$1"
+OUTPUT_VERBOSE="$2"
+FILE="$3"
+shift 3
+
+TEMP_PARTIAL_OUTPUT=/tmp/view3dscene_run_tests_output_partial.txt
+
+test_log ()
+{
+  echo "----" "$@" >> "${OUTPUT_VERBOSE}"
+}
+
+dump_partial ()
+{
+  cat "${TEMP_PARTIAL_OUTPUT}" >> "${OUTPUT_SHORT}"
+  cat "${TEMP_PARTIAL_OUTPUT}" >> "${OUTPUT_VERBOSE}"
+}
 
 # Reading and saving ---------------------------------------------------------
 
@@ -44,8 +60,9 @@ do_read_save ()
   # are broken.
   local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
 
-  echo '---- Reading' "$FILE"
-  "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE"
+  test_log 'Reading' "$FILE"
+  "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE" 2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
 
   # Check input file and output file headers.
   # They indicate VRML version used to write the file.
@@ -72,14 +89,16 @@ do_read_save ()
     local OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
 
     if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
-      echo 'WARNING: input/output headers differ:'
-      echo 'Header on input is' "$INPUT_HEADER"
-      echo 'Header on output is' "$OUTPUT_HEADER"
+      echo 'WARNING: input/output headers differ:'  > "${TEMP_PARTIAL_OUTPUT}"
+      echo 'Header on input is' "$INPUT_HEADER"    >> "${TEMP_PARTIAL_OUTPUT}"
+      echo 'Header on output is' "$OUTPUT_HEADER"  >> "${TEMP_PARTIAL_OUTPUT}"
+      dump_partial
     fi
   fi
 
-  echo '---- Reading again' "$FILE"
-  "$TOVRMLX3D" "$TEMP_FILE" --encoding=classic > /dev/null
+  test_log 'Reading again' "$FILE"
+  "$TOVRMLX3D" "$TEMP_FILE" --encoding=classic > /dev/null 2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
 
   rm -f "$TEMP_FILE"
 }
@@ -96,9 +115,12 @@ do_compare_classic_save ()
   local SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_old.x3dv`
   local SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_new.x3dv`
 
-  echo '---- Comparing classic save with' "$VIEW3DSCENE_OTHER"
-  "$VIEW3DSCENE_OTHER" "$FILE" --write-to-vrml > "$SAVE_CLASSIC_OLD"
-  "$VIEW3DSCENE"       "$FILE" --write-to-vrml > "$SAVE_CLASSIC_NEW"
+  test_log 'Comparing classic save with' "$VIEW3DSCENE_OTHER"
+  "$VIEW3DSCENE_OTHER" "$FILE" --write-to-vrml > "$SAVE_CLASSIC_OLD" 2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+
+  "$VIEW3DSCENE"       "$FILE" --write-to-vrml > "$SAVE_CLASSIC_NEW" 2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
 
   set +e
   diff -w --ignore-blank-lines --unified=0 "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
@@ -117,14 +139,16 @@ do_compare_classic_save ()
 do_save_xml_valid ()
 {
   if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
-    echo '---- Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
+    test_log 'Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
   else
     local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3d`
     local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3dv`
 
-    echo '---- Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
-    "$TOVRMLX3D" "$FILE"     --encoding=xml     > "$SAVE_XML"
-    "$TOVRMLX3D" "$SAVE_XML" --encoding=classic > "$SAVE_CLASSIC"
+    test_log 'Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
+    "$TOVRMLX3D" "$FILE"     --encoding=xml     > "$SAVE_XML"      2> "${TEMP_PARTIAL_OUTPUT}"
+    dump_partial
+    "$TOVRMLX3D" "$SAVE_XML" --encoding=classic > "$SAVE_CLASSIC"   2> "${TEMP_PARTIAL_OUTPUT}"
+    dump_partial
 
     set +e
     # We do not test with official DTD or XSD, they are too buggy ---
@@ -150,10 +174,13 @@ do_compare_classic_xml_save ()
   local     SAVE_2_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3d`
   local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3dv`
 
-  echo '---- Comparing saving to classic vs saving to xml and then classic'
-  "$TOVRMLX3D" "$FILE"  --force-x3d --encoding=classic > "$SAVE_1_CLASSIC"
-  "$TOVRMLX3D" "$FILE"              --encoding=xml     > "$SAVE_2_XML"
-  "$TOVRMLX3D" "$SAVE_2_XML"        --encoding=classic > "$SAVE_2_CLASSIC"
+  test_log 'Comparing saving to classic vs saving to xml and then classic'
+  "$TOVRMLX3D" "$FILE"  --force-x3d --encoding=classic > "$SAVE_1_CLASSIC"  2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+  "$TOVRMLX3D" "$FILE"              --encoding=xml     > "$SAVE_2_XML"      2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+  "$TOVRMLX3D" "$SAVE_2_XML"        --encoding=classic > "$SAVE_2_CLASSIC"  2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
 
   set +e
   diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
@@ -201,24 +228,30 @@ filter_out_generator_meta ()
 
 do_view3dscene_and_tovrmlx3d_equal ()
 {
-  echo "---- Comparing $VIEW3DSCENE and $TOVRMLX3D output"
+  test_log "Comparing $VIEW3DSCENE and $TOVRMLX3D output"
   local VIEW3DSCENE_OUT=`stringoper ChangeFileExt "$FILE" _test_temporary_view3dscene_and_tovrmlx3d_equal_1`
   local   TOVRMLX3D_OUT=`stringoper ChangeFileExt "$FILE" _test_temporary_view3dscene_and_tovrmlx3d_equal_2`
 
-  "$VIEW3DSCENE" "$FILE" --write > "$VIEW3DSCENE_OUT"
-  "$TOVRMLX3D"   "$FILE"         > "$TOVRMLX3D_OUT"
+  "$VIEW3DSCENE" "$FILE" --write > "$VIEW3DSCENE_OUT"  2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+  "$TOVRMLX3D"   "$FILE"         > "$TOVRMLX3D_OUT"    2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
   filter_out_generator_meta "$VIEW3DSCENE_OUT"
   filter_out_generator_meta "$TOVRMLX3D_OUT"
   diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
 
-  "$VIEW3DSCENE" "$FILE" --write --write-encoding=xml > "$VIEW3DSCENE_OUT"
-  "$TOVRMLX3D"   "$FILE"               --encoding=xml > "$TOVRMLX3D_OUT"
+  "$VIEW3DSCENE" "$FILE" --write --write-encoding=xml > "$VIEW3DSCENE_OUT"  2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+  "$TOVRMLX3D"   "$FILE"               --encoding=xml > "$TOVRMLX3D_OUT"    2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
   filter_out_generator_meta "$VIEW3DSCENE_OUT"
   filter_out_generator_meta "$TOVRMLX3D_OUT"
   diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
 
-  "$VIEW3DSCENE" "$FILE" --write --write-force-x3d > "$VIEW3DSCENE_OUT"
-  "$TOVRMLX3D"   "$FILE"               --force-x3d > "$TOVRMLX3D_OUT"
+  "$VIEW3DSCENE" "$FILE" --write --write-force-x3d > "$VIEW3DSCENE_OUT"   2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
+  "$TOVRMLX3D"   "$FILE"               --force-x3d > "$TOVRMLX3D_OUT"     2> "${TEMP_PARTIAL_OUTPUT}"
+  dump_partial
   filter_out_generator_meta "$VIEW3DSCENE_OUT"
   filter_out_generator_meta "$TOVRMLX3D_OUT"
   diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
@@ -238,10 +271,10 @@ do_compare_screenshot ()
 
   local DELETE_SCREENSHOTS='t'
 
-  echo '---- Rendering and making screenshot' "$VIEW3DSCENE_OTHER"
+  test_log 'Rendering and making screenshot' "$VIEW3DSCENE_OTHER"
   "$VIEW3DSCENE_OTHER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
 
-  echo '---- Comparing screenshot' "$VIEW3DSCENE"
+  test_log 'Comparing screenshot' "$VIEW3DSCENE"
   "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
 
   # Don't exit on screenshot comparison fail. That's because
