@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -eux
 
 # Run various tests of view3dscene / tovrmlx3d on a given 3D model.
 # 3D model filename is provided as a parameter for this script.
@@ -61,8 +61,13 @@ do_read_save ()
   local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
 
   test_log 'Reading' "$FILE"
+  set +e
   "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE" 2> "${TEMP_PARTIAL_OUTPUT}"
+  set -e
   dump_partial
+  if [ -n "${TEMP_PARTIAL_OUTPUT}" ]; then 
+    exit 1
+  fi
 
   # Check input file and output file headers.
   # They indicate VRML version used to write the file.
