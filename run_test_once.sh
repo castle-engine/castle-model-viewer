@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 
 # Run various tests of view3dscene / tovrmlx3d on a given 3D model.
 # 3D model filename is provided as a parameter for this script.
@@ -65,7 +65,7 @@ do_read_save ()
   "$TOVRMLX3D" "$FILE" --encoding=classic > "$TEMP_FILE" 2> "${TEMP_PARTIAL_OUTPUT}"
   set -e
   dump_partial
-  if [ -n "${TEMP_PARTIAL_OUTPUT}" ]; then 
+  if [ -n "`cat \"${TEMP_PARTIAL_OUTPUT}\"`" ]; then 
     exit 1
   fi
 
