@@ -5,7 +5,7 @@
   <icons>
     <icon path="windows/view3dscene.ico" />
   </icons>
-  <version value="3.14.0" />
+  <version value="3.15.0" />
   <package>
     <include path="COPYING.GPL2.txt" />
   </package>
