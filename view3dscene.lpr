@@ -50,7 +50,7 @@ program view3dscene;
   {$R *.res}
 {$endif}
 
-uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
+uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
   CastleTriangles,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
@@ -58,9 +58,9 @@ uses Math, CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleCla
   CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
   CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos,
   { OpenGL related units: }
-  CastleGL, CastleWindow, CastleGLUtils, CastleFonts,
+  CastleGL, CastleWindow, CastleGLUtils,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
-  CastleGLVersion, CastleGLCubeMaps, CastleControls, CastleGLShaders,
+  CastleGLCubeMaps, CastleControls, CastleGLShaders,
   CastleControlsImages,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleShapeOctree,

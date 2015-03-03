@@ -107,7 +107,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleProgress, CastleFilesUtils,
-  CastleWarnings, CastleVideos, CastleURIUtils, CastleFindFiles;
+  CastleWarnings, CastleVideos, CastleURIUtils;
 
 function MakingScreenShot: boolean;
 begin
