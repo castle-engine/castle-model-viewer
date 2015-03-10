@@ -41,7 +41,7 @@ procedure LightsEditorClose;
 implementation
 
 uses SysUtils, CastleVectors, Classes, X3DNodes, CastleOnScreenMenu, CastleBoxes,
-  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls;
+  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls, CastleRectangles;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -312,10 +312,10 @@ begin
   inherited;
   BackgroundOpacityFocused := 0.3;
   BackgroundOpacityNotFocused := 0.2;
-  PositionRelativeMenuX := prLow;
-  PositionRelativeMenuY := prHigh;
-  PositionRelativeScreenX := prLow;
-  PositionRelativeScreenY := prHigh;
+  PositionRelativeMenuX := hpLeft;
+  PositionRelativeMenuY := vpTop;
+  PositionRelativeScreenX := hpLeft;
+  PositionRelativeScreenY := vpTop;
   Position[0] := 20;
   Position[1] := - WindowMarginTop - 20;
 end;
