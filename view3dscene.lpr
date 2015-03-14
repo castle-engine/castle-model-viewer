@@ -3015,6 +3015,8 @@ begin
          UpdateCameraUI;
        end;
 
+  120: Writeln(TextureMemoryProfiler.Summary);
+
   121: begin
          ShowAndWrite(
            'Scene "' + SceneURL + '" information:' + NL + NL +
@@ -3440,6 +3442,7 @@ begin
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
     M.Append(TMenuItem.Create('Print Bounding Box (of current _animation frame)', 110));
     M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Print Texture Memory Usage (run with --debug-texture-memory)', 120));
     M.Append(TMenuItem.Create('Print Statistics of Top _Collisions Octree (Based on Shapes)', 101));
     MenuSelectedOctreeStat := TMenuItem.Create('Print Statistics of _Collisions Octree Of Selected Shape (Based on Triangles)', 100);
     M.Append(MenuSelectedOctreeStat);
@@ -3711,7 +3714,7 @@ var
   Param_HideMenu: boolean = false;
 
 const
-  Options: array [0..19] of TOption =
+  Options: array [0..20] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3732,7 +3735,8 @@ const
     (Short:  #0; Long: 'write'; Argument: oaNone),
     (Short:  #0; Long: 'write-encoding'; Argument: oaRequired),
     (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone),
-    (Short:  #0; Long: 'hide-menu'; Argument: oaNone)
+    (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3817,6 +3821,7 @@ const
              '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
              '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
              '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
+             '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
              NL+
              'Deprecated options:' +NL+
              '  --scene-change-no-normals' +NL+
@@ -3902,6 +3907,7 @@ const
             raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
       18: Param_WriteForceX3D := true;
       19: Param_HideMenu := true;
+      20: TextureMemoryProfiler.Enabled := true;
       else raise EInternalError.Create('OptionProc');
     end;
   end;
