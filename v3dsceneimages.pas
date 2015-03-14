@@ -46,24 +46,33 @@ uses SysUtils;
 {$I v3dsceneimages.image_data}
 
 initialization
-  Warning_icon := TRGBAlphaImage.Create(Warning_iconWidth, Warning_iconHeight);
+  Warning_icon := TRGBAlphaImage.Create(Warning_iconWidth, Warning_iconHeight, Warning_iconDepth);
   Move(Warning_iconPixels, Warning_icon.RawPixels^, SizeOf(Warning_iconPixels));
-  Examine := TRGBAlphaImage.Create(ExamineWidth, ExamineHeight);
+  Warning_icon.URL := 'embedded-image://Warning_icon';
+  Examine := TRGBAlphaImage.Create(ExamineWidth, ExamineHeight, ExamineDepth);
   Move(ExaminePixels, Examine.RawPixels^, SizeOf(ExaminePixels));
-  Walk := TRGBAlphaImage.Create(WalkWidth, WalkHeight);
+  Examine.URL := 'embedded-image://Examine';
+  Walk := TRGBAlphaImage.Create(WalkWidth, WalkHeight, WalkDepth);
   Move(WalkPixels, Walk.RawPixels^, SizeOf(WalkPixels));
-  Fly := TRGBAlphaImage.Create(FlyWidth, FlyHeight);
+  Walk.URL := 'embedded-image://Walk';
+  Fly := TRGBAlphaImage.Create(FlyWidth, FlyHeight, FlyDepth);
   Move(FlyPixels, Fly.RawPixels^, SizeOf(FlyPixels));
-  Open := TRGBAlphaImage.Create(OpenWidth, OpenHeight);
+  Fly.URL := 'embedded-image://Fly';
+  Open := TRGBAlphaImage.Create(OpenWidth, OpenHeight, OpenDepth);
   Move(OpenPixels, Open.RawPixels^, SizeOf(OpenPixels));
-  Screenshot := TRGBAlphaImage.Create(ScreenshotWidth, ScreenshotHeight);
+  Open.URL := 'embedded-image://Open';
+  Screenshot := TRGBAlphaImage.Create(ScreenshotWidth, ScreenshotHeight, ScreenshotDepth);
   Move(ScreenshotPixels, Screenshot.RawPixels^, SizeOf(ScreenshotPixels));
-  TooltipArrow := TRGBAlphaImage.Create(TooltipArrowWidth, TooltipArrowHeight);
+  Screenshot.URL := 'embedded-image://Screenshot';
+  TooltipArrow := TRGBAlphaImage.Create(TooltipArrowWidth, TooltipArrowHeight, TooltipArrowDepth);
   Move(TooltipArrowPixels, TooltipArrow.RawPixels^, SizeOf(TooltipArrowPixels));
-  Examine_tooltip := TRGBImage.Create(Examine_tooltipWidth, Examine_tooltipHeight);
+  TooltipArrow.URL := 'embedded-image://TooltipArrow';
+  Examine_tooltip := TRGBImage.Create(Examine_tooltipWidth, Examine_tooltipHeight, Examine_tooltipDepth);
   Move(Examine_tooltipPixels, Examine_tooltip.RawPixels^, SizeOf(Examine_tooltipPixels));
-  Walk_fly_tooltip := TRGBImage.Create(Walk_fly_tooltipWidth, Walk_fly_tooltipHeight);
+  Examine_tooltip.URL := 'embedded-image://Examine_tooltip';
+  Walk_fly_tooltip := TRGBImage.Create(Walk_fly_tooltipWidth, Walk_fly_tooltipHeight, Walk_fly_tooltipDepth);
   Move(Walk_fly_tooltipPixels, Walk_fly_tooltip.RawPixels^, SizeOf(Walk_fly_tooltipPixels));
+  Walk_fly_tooltip.URL := 'embedded-image://Walk_fly_tooltip';
 finalization
   FreeAndNil(Warning_icon);
   FreeAndNil(Examine);
