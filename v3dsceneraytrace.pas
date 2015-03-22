@@ -132,28 +132,11 @@ procedure EventSave;
 var
   D: PCallData;
   SaveURL: string;
-  ImgFormat: TImageFormat;
 begin
   D := PCallData(Window.UserData);
-
   SaveURL := ApplicationName + '_rt.png';
-  if Window.FileDialog('Save image', SaveURL, false,
-    SaveImage_FileFilters) then
-  begin
-    { Determine ImgFormat exactly the same like SaveImage() does. }
-    if MimeTypeToImageFormat(URIMimeType(SaveURL), false, true, ImgFormat) and
-      (ImgFormat = ifRGBE) then
-      MessageOK(Window,
-        'Note: When saving raytraced image from view3dscene to ' +
-        'RGBE file format, you will *not* get image with perfect ' +
-        'RGB+Exponent precision. ' +
-        'That''s because image is already stored in memory in RGB ' +
-        '(8 bits per component) format (this was required to quickly display ' +
-        'image in OpenGL) so any precision (beyond 8-bits) is already lost. ' +
-        'Use rayhunter if you want to have RGBE image with precise colors.');
-
+  if Window.FileDialog('Save image', SaveURL, false, SaveImage_FileFilters) then
     SaveImage(D^.Image, SaveURL);
-  end;
 end;
 
 procedure EventEscape;
