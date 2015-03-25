@@ -40,6 +40,8 @@ const
 var
   ViewportsConfig: TViewportsConfig;
 
+  SceneManager: TCastleSceneManager;
+
   { Custom viewports. Remember that also SceneManager acts as the first viewport,
     @italic(not listed here). }
   Viewports: array [0..2] of TCastleViewport;

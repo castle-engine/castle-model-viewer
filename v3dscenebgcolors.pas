@@ -33,15 +33,22 @@ const
 var
   BGColor: TCastleColor;
 
+  { Should be used by viewports, Background method should return nil
+    if this is > 0. }
+  DisableBackground: Cardinal = 0;
+
 { Call always after changing BGColor, call also once at the beginning
   after Viewports and SceneManager is ready. }
-procedure BGColorChanged(const SceneManager: TCastleSceneManager);
+procedure BGColorChanged;
+
+procedure BackgroundTransparent;
+procedure BackgroundOpaque;
 
 implementation
 
 uses CastleConfig;
 
-procedure BGColorChanged(const SceneManager: TCastleSceneManager);
+procedure BGColorChanged;
 var
   I: Integer;
 begin
@@ -66,6 +73,20 @@ class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
   Config.SetDeleteValue('video_options/default_background_color',
     BGColor, DefaultBGColor);
+end;
+
+procedure BackgroundTransparent;
+begin
+  Inc(DisableBackground);
+  BGColor[3] := 0;
+  BGColorChanged;
+end;
+
+procedure BackgroundOpaque;
+begin
+  Dec(DisableBackground);
+  BGColor[3] := 1;
+  BGColorChanged;
 end;
 
 initialization

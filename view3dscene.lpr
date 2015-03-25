@@ -212,9 +212,6 @@ type
     function Background: TBackground; override;
   end;
 
-var
-  SceneManager: TV3DSceneManager;
-
 procedure ViewportProperties(Viewport: TCastleAbstractViewport);
 begin
   ViewportShadowsProperties(Viewport);
@@ -242,9 +239,6 @@ begin
   Result := (inherited ScreenEffectsNeedDepth) or
     V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
 end;
-
-var
-  DisableBackground: Cardinal;
 
 function TV3DSceneManager.Background: TBackground;
 begin
@@ -1457,7 +1451,8 @@ end;
 { This performs all screenshot takes, as specified in ScreenShotsList.
   It is used both for batch mode screenshots (--screenshot, --screenshot-range)
   and interactive (menu items about screenshots) operation. }
-procedure MakeAllScreenShots(ReadBuffer: TColorBuffer);
+procedure MakeAllScreenShots(
+  const ImageClass: TCastleImageClass; const ReadBuffer: TColorBuffer);
 var
   I, J: Integer;
   OldProgressUserInterface: TProgressUserInterface;
@@ -1487,7 +1482,7 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
-          Image := RenderAndSaveScreen(TRGBImage, ReadBuffer);
+          Image := RenderAndSaveScreen(ImageClass, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseURL(J));
           finally FreeAndNil(Image) end;
@@ -1507,17 +1502,39 @@ end;
 
 { Make all the screenshots, preferably using FBO.
   This allows the window to be hidden. }
-procedure MakeAllScreenShotsFBO;
+procedure MakeAllScreenShotsFBO(const Transparency: boolean);
 var
   ScreenshotRender: TGLRenderToTexture;
+  ImageClass: TCastleImageClass;
 begin
   ScreenshotRender := TGLRenderToTexture.Create(Window.Width, Window.Height);
   try
     ScreenshotRender.Buffer := tbNone;
+    if Transparency then
+    begin
+      ScreenshotRender.ColorBufferAlpha := true;
+      ImageClass := TRGBAlphaImage;
+    end else
+      ImageClass := TRGBImage;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
-    MakeAllScreenShots(ScreenshotRender.ColorBuffer);
-    ScreenshotRender.RenderEnd;
+
+    if Transparency then
+    begin
+      BackgroundTransparent;
+      if glGetInteger(GL_ALPHA_BITS) = 0 then
+        { In case FBO is not available, and main context doesn't have alpha
+          bits either. }
+        OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
+    end;
+
+    try
+      MakeAllScreenShots(ImageClass, ScreenshotRender.ColorBuffer);
+    finally
+      ScreenshotRender.RenderEnd;
+      if Transparency then
+        BackgroundOpaque;
+    end;
   finally FreeAndNil(ScreenshotRender) end;
 end;
 
@@ -1588,7 +1605,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       Fbo.RenderBegin;
       ReadBuffer := Fbo.ColorBuffer;
       ImageClass := TRGBAlphaImage;
-      Inc(DisableBackground);
+      BackgroundTransparent;
 
       if glGetInteger(GL_ALPHA_BITS) = 0 then
         { In case FBO is not available, and main context doesn't have alpha
@@ -1608,7 +1625,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       begin
         Fbo.RenderEnd;
         FreeAndNil(Fbo);
-        Dec(DisableBackground);
+        BackgroundOpaque;
       end;
     end;
   end;
@@ -2381,7 +2398,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure ScreenShotToVideo;
+  procedure ScreenShotToVideo(const Transparency: boolean);
   var
     TimeBegin, TimeStep: TFloatTime;
     FramesCount: Cardinal;
@@ -2414,7 +2431,12 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             ScreenShotsList.Add(Range);
 
             try
-              MakeAllScreenShots(Window.SaveScreenBuffer);
+              { We could just call here MakeAllScreenShotsFBO(Transparency).
+                But when Transparency = false, there is no need to use FBO
+                for this, so we can work even on more ancient GPUs. }
+              if Transparency then
+                MakeAllScreenShotsFBO(true) else
+                MakeAllScreenShots(TRGBImage, Window.SaveScreenBuffer);
             except
               on E: EInvalidScreenShotURL do
                 MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
@@ -2570,7 +2592,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
-            @SceneManager.RenderFromViewEverything,
+            @TV3DSceneManager(SceneManager).RenderFromViewEverything,
             SceneManager.Projection.ProjectionNear,
             SceneManager.Projection.ProjectionFar);
           glViewport(Window.Rect);
@@ -2637,7 +2659,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
         DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
-          @SceneManager.RenderFromViewEverything,
+          @TV3DSceneManager(SceneManager).RenderFromViewEverything,
           SceneManager.Projection.ProjectionNear,
           SceneManager.Projection.ProjectionFar);
         try
@@ -2942,7 +2964,7 @@ begin
   68: Viewpoints.Final(SceneManager);
 
   82: ShowBBox := not ShowBBox;
-  84: if Window.ColorDialog(BGColor) then BGColorChanged(SceneManager);
+  84: if Window.ColorDialog(BGColor) then BGColorChanged;
   86: with SceneAnimation.Attributes do Blending := not Blending;
   88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
   90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
@@ -3113,7 +3135,8 @@ begin
 
   530: ChangeLineWidth;
 
-  540: ScreenShotToVideo;
+  540: ScreenShotToVideo(false);
+  542: ScreenShotToVideo(true);
   550: ScreenShotToCubeMap;
   555: ScreenShotToCubeMapDDS;
   560: ScreenShotDepthToImage;
@@ -3456,6 +3479,7 @@ begin
     M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
     M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
     M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
+    M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images (Transparent Background) ...', 542));
     M.Append(TMenuItem.Create('Screenshot to _Cube Map (environment around camera position) ...',  550));
     M.Append(TMenuItem.Create('Screenshot to Cube Map DDS (environment around camera position) ...',  555));
     M.Append(TMenuItem.Create('Screenshot Depth to Grayscale Image ...', 560));
@@ -3953,7 +3977,7 @@ begin
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
   InitializeViewports(TV3DViewport);
-  BGColorChanged(SceneManager);
+  BGColorChanged;
 
   CreateStatusToolbar;
 
@@ -4032,7 +4056,7 @@ begin
 
         if MakingScreenShot then
         begin
-          MakeAllScreenShotsFBO;
+          MakeAllScreenShotsFBO(false);
           Exit;
         end;
 
