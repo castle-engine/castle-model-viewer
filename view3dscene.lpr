@@ -3736,9 +3736,10 @@ var
   Param_SceneURL: string;
   Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
+  Param_ScreenshotTransparent: boolean = false;
 
 const
-  Options: array [0..20] of TOption =
+  Options: array [0..21] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3760,7 +3761,8 @@ const
     (Short:  #0; Long: 'write-encoding'; Argument: oaRequired),
     (Short:  #0; Long: 'write-force-x3d'; Argument: oaNone),
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone)
+    (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
+    (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone)
   );
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3826,6 +3828,10 @@ const
              '                        be installed and available on $PATH for this)' +NL+
              '                        or to a sequence of image files (FILE-NAME' +NL+
              '                        must then be specified like image@counter(4).png).' +NL+
+             '  --screenshot-transparent' +NL+
+             '                        Screenshots background is transparent.' +NL+
+             '                        Useful only together' +NL+
+             '                        with --screenshot-range or --screenshot options.' +NL+
              '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
              '                        Especially useful to make a screenshot from given viewpoint.' +NL+
              '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
@@ -3932,6 +3938,7 @@ const
       18: Param_WriteForceX3D := true;
       19: Param_HideMenu := true;
       20: TextureMemoryProfiler.Enabled := true;
+      21: Param_ScreenshotTransparent := true;
       else raise EInternalError.Create('OptionProc');
     end;
   end;
@@ -4056,7 +4063,7 @@ begin
 
         if MakingScreenShot then
         begin
-          MakeAllScreenShotsFBO(false);
+          MakeAllScreenShotsFBO(Param_ScreenshotTransparent);
           Exit;
         end;
 
