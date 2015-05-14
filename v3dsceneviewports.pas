@@ -62,9 +62,16 @@ procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
-{ If some custom viewports are visible then redraw background and
-  all viewports. Remember to always call SceneManager.Render afterwards,
-  as SceneManager is also another viewport. }
+{ Redraw everything in viewports (including scene manager).
+
+  If some custom viewports are visible then redraw background and
+  all viewports.
+
+  Then does SceneManager.Render, as SceneManager is also another viewport.
+
+  Calls BeforeRender before all Render calls too (this makes
+  sure that render textures are generated, important for mirrors
+  for screenshots in batch mode). }
 procedure ViewportsRender;
 
 implementation
@@ -245,7 +252,12 @@ begin
   if ViewportsConfig <> vc1 then
     Background.Render;
   for I := 0 to Visible[ViewportsConfig] - 1 do
+  begin
+    Viewports[I].BeforeRender;
     Viewports[I].Render;
+  end;
+  SceneManager.BeforeRender;
+  SceneManager.Render;
 end;
 
 procedure DoFinalization;

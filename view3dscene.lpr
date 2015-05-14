@@ -1439,11 +1439,11 @@ function RenderAndSaveScreen(ImageClass: TCastleImageClass;
 begin
   if ControlsOnScreenshot then
   begin
+    Window.Container.EventBeforeRender;
     Window.Container.EventRender;
   end else
   begin
     ViewportsRender;
-    SceneManager.Render;
   end;
   Result := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
 end;
