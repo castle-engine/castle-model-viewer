@@ -2173,7 +2173,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdDiffuseColor.Send(Color);
+        M2.DiffuseColor := Color;
       end else
       begin
         Assert(M1 <> nil);
@@ -2203,7 +2203,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     begin
       if M2 <> nil then
       begin
-        M2.FdSpecularColor.Send(Color);
+        M2.SpecularColor := Color;
       end else
       begin
         Assert(M1 <> nil);

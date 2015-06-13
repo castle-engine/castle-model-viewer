@@ -520,7 +520,7 @@ begin
   case CurrentItem of
     5: begin
          OnArgument.Value := not OnArgument.Value;
-         Light.FdOn.Send(OnArgument.Value);
+         Light.IsOn := OnArgument.Value;
        end;
     6: begin
          if (Light is TPointLightNode_1) or
@@ -531,15 +531,15 @@ begin
          end;
 
          ShadowsArgument.Value := not ShadowsArgument.Value;
-         Light.FdShadows.Send(ShadowsArgument.Value);
+         Light.Shadows := ShadowsArgument.Value;
        end;
     7: begin
          ShadowVolumesArgument.Value := not ShadowVolumesArgument.Value;
-         Light.FdShadowVolumes.Send(ShadowVolumesArgument.Value);
+         Light.ShadowVolumes := ShadowVolumesArgument.Value;
        end;
     8: begin
          ShadowVolumesMainArgument.Value := not ShadowVolumesMainArgument.Value;
-         Light.FdShadowVolumesMain.Send(ShadowVolumesMainArgument.Value);
+         Light.ShadowVolumesMain := ShadowVolumesMainArgument.Value;
        end;
     else
     if CurrentItem = BackIndex then
@@ -551,10 +551,10 @@ procedure TLightMenu.AccessoryValueChanged;
 begin
   inherited;
   if ColorSlider.Selected(CurrentItem) then
-    Light.FdColor.Send(ColorSlider.Value) else
+    Light.Color := ColorSlider.Value else
   case CurrentItem of
-    3: Light.FdIntensity.Send(IntensitySlider.Value);
-    4: Light.FdAmbientIntensity.Send(AmbientIntensitySlider.Value);
+    3: Light.Intensity := IntensitySlider.Value;
+    4: Light.AmbientIntensity := AmbientIntensitySlider.Value;
   end;
 end;
 
@@ -596,9 +596,9 @@ procedure TPositionalLightMenu.AccessoryValueChanged;
 begin
   inherited;
   if PositionSlider.Selected(CurrentItem) then
-    Light.FdLocation.Send(PositionSlider.Value) else
+    Light.Location := PositionSlider.Value else
   if AttenuationSlider.Selected(CurrentItem) then
-    Light.FdAttenuation.Send(AttenuationSlider.Value);
+    Light.Attenuation := AttenuationSlider.Value;
 end;
 
 { TSpot1LightMenu ------------------------------------------------------- }
@@ -664,11 +664,11 @@ begin
   inherited;
   if CurrentItem = ItemsIndex then
   begin
-    Vector := Light.FdDirection.Value;
+    Vector := Light.Direction;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
       '(Input "C" to use current camera''s direction)',
       Vector) then
-      Light.FdDirection.Send(Vector);
+      Light.Direction := Vector;
   end;
 end;
 
@@ -676,9 +676,9 @@ procedure TSpotLightMenu.AccessoryValueChanged;
 begin
   inherited;
   if CurrentItem = ItemsIndex + 1 then
-    Light.FdCutOffAngle.Send(CutOffAngleSlider.Value) else
+    Light.CutOffAngle := CutOffAngleSlider.Value else
   if CurrentItem = ItemsIndex + 2 then
-    Light.FdBeamWidth.Send(BeamWidthSlider.Value);
+    Light.BeamWidth := BeamWidthSlider.Value;
 end;
 
 { TDirectionalLightMenu ------------------------------------------------------- }
@@ -699,11 +699,11 @@ begin
   inherited;
   if CurrentItem = ItemsIndex then
   begin
-    Vector := Light.FdDirection.Value;
+    Vector := Light.Direction;
     if MessageInputQueryDirection(Window, 'Change direction' +nl+
       '(Input "C" to use current camera''s direction)',
       Vector) then
-      Light.FdDirection.Send(Vector);
+      Light.Direction := Vector;
   end;
 end;
 
@@ -750,13 +750,13 @@ procedure THeadLightMenu.AccessoryValueChanged;
 begin
   inherited;
   if ColorSlider.Selected(CurrentItem) then
-    Headlight.FdColor.Send(ColorSlider.Value) else
+    Headlight.Color := ColorSlider.Value else
   if (AttenuationSlider <> nil) and
       AttenuationSlider.Selected(CurrentItem) then
-    (Headlight as TAbstractPositionalLightNode).FdAttenuation.Send(AttenuationSlider.Value) else
+    (Headlight as TAbstractPositionalLightNode).Attenuation := AttenuationSlider.Value else
   case CurrentItem of
-    0: Headlight.FdAmbientIntensity.Value := AmbientIntensitySlider.Value;
-    4: Headlight.FdIntensity.Value := IntensitySlider.Value;
+    0: Headlight.AmbientIntensity := AmbientIntensitySlider.Value;
+    4: Headlight.Intensity := IntensitySlider.Value;
   end;
 end;
 
