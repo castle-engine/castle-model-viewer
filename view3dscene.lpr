@@ -1117,7 +1117,8 @@ begin
 
     { Make initial CameraChanged to make initial events to
       ProximitySensor, if user is within. }
-    Scene.CameraChanged(SceneManager.Camera, SceneManager.CameraToChanges);
+    Scene.CameraChanged(SceneManager.Camera);
+    Scene.VisibleChangeNotification(SceneManager.CameraToChanges);
 
     RefreshNamedAnimations(Scene);
 
