@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="view3dscene"
   standalone_source="code/view3dscene.lpr"
-  author="Michalis Kamburelis">
+  author="Michalis Kamburelis"
+  qualified_name="net.sourceforge.castleengine.view3dscene"
+  >
   <icons>
     <icon path="windows/view3dscene.ico" />
+    <icon path="desktop/view3dscene.svg" />
+    <icon path="desktop/view3dscene.icns" />
   </icons>
+  <dependencies>
+    <dependency name="Zlib" /> <!-- read .gz -->
+    <dependency name="Png" /> <!-- read .png -->
+    <dependency name="Sound" /> <!-- make sound -->
+    <dependency name="OggVorbis" /> <!-- read .ogg  -->
+  </dependencies>
   <version value="3.15.0" />
   <package>
     <include path="COPYING.GPL2.txt" />
