@@ -39,7 +39,7 @@
 
 program view3dscene;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 {$ifdef MSWINDOWS}
   {$R automatic-windows-resources.res}

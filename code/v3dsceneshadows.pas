@@ -1,6 +1,6 @@
 unit V3DSceneShadows;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 

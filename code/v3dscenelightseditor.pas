@@ -23,7 +23,7 @@
 { Lights editor in view3dscene. }
 unit V3DSceneLightsEditor;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 

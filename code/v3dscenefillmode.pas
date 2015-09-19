@@ -1,6 +1,6 @@
 unit V3DSceneFillMode;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 

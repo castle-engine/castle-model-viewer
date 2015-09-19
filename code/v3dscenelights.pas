@@ -26,7 +26,7 @@
 
 unit V3DSceneLights;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 

@@ -23,7 +23,7 @@
 { Visualizing the octree. }
 unit V3DSceneOctreeVisualize;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 

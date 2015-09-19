@@ -28,7 +28,7 @@
 
 unit V3DSceneTextureFilters;
 
-{$I castleconf.inc}
+{$I v3dsceneconf.inc}
 
 interface
 
