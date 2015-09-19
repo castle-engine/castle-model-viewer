@@ -70,11 +70,11 @@ begin
            '                        we cannot convert them to valid X3D for now).' +NL+
            NL+
            SCastleEngineProgramHelpSuffix('tovrmlx3d', Version, true));
-         ProgramBreak;
+         Halt;
        end;
     1: begin
          Writeln(Version);
-         ProgramBreak;
+         Halt;
        end;
     2: if SameText(Argument, 'classic') then
          Encoding := xeClassic else

@@ -3882,11 +3882,11 @@ const
              X3DNodesDetailOptionsHelp +NL+
              NL+
              SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
-           ProgramBreak;
+           Halt;
           end;
       6 : begin
            Writeln(Version);
-           ProgramBreak;
+           Halt;
           end;
       7 : begin
             SingleScreenShot := TSingleScreenShot.Create;
