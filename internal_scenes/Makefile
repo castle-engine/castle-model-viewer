@@ -9,8 +9,8 @@ default: $(ALL_TARGETS)
 clean:
 	rm -f $(ALL_TARGETS)
 
-../welcome_scene.inc: welcome_scene.wrl
+../code/welcome_scene.inc: welcome_scene.wrl
 	file_to_pascal_string $< $@
 
-../clear_scene.inc: clear_scene.wrl
+../code/clear_scene.inc: clear_scene.wrl
 	file_to_pascal_string $< $@

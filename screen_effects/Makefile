@@ -10,5 +10,5 @@ default: $(ALL_TARGETS)
 clean:
 	rm -f $(ALL_TARGETS)
 
-../screen_effects_%.glsl.inc: %.glsl
+../code/screen_effects_%.glsl.inc: %.glsl
 	file_to_pascal_string $< $@

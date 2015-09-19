@@ -22,4 +22,9 @@ cd ../castle_game_engine/
 
 fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/code/tovrmlx3d.lpr
 # move tovrmlx3d binaries up
-mv -f ../view3dscene/code/tovrmlx3d ../view3dscene/code/tovrmlx3d.exe ../view3dscene/
+if [ -f ../view3dscene/code/tovrmlx3d ]; then
+  mv -f ../view3dscene/code/tovrmlx3d ../view3dscene/
+fi
+if [ -f ../view3dscene/code/tovrmlx3d.exe ]; then
+  mv -f ../view3dscene/code/tovrmlx3d.exe ../view3dscene/
+fi
