@@ -1885,6 +1885,11 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       end else
       begin
         M1 := SelectedItem^.State.LastNodes.Material;
+
+        {$ifdef VER3_1_1}
+        {$warning Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr}
+        {$else}
+
         S += Format(
             'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
@@ -1899,6 +1904,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
               VectorToNiceStr(M1.SpecularColor3Single(0)),
               FloatToNiceStr(M1.Shininess(0)),
               FloatToNiceStr(M1.Transparency(0)) ]);
+
+        {$endif}
       end;
     end;
     ShowAndWrite(S);
@@ -2357,6 +2364,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     if Box.IsEmpty then
       MessageOK(Window, 'The bounding box is empty.') else
     begin
+      {$ifdef VER3_1_1}
+      {$warning Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr}
+      {$else}
+
       Writeln(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
@@ -2383,6 +2394,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]),
           FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]),
           FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]) ]));
+
+      {$endif}
     end;
   end;
 
