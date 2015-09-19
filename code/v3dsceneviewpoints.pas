@@ -67,9 +67,9 @@ type
     SceneBoundViewpoint: TAbstractViewpointNode;
     AddViewpointGroups: TX3DNodeList;
 
-    procedure AddViewpoint(
+    function AddViewpoint(
       Node: TX3DNode; StateStack: TX3DGraphTraverseStateStack;
-      ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
+      ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean): Pointer;
     function GetBoundViewpoint: TMenuItemViewpoint;
     procedure SetBoundViewpoint(const Value: TMenuItemViewpoint);
   public
@@ -147,9 +147,9 @@ const
   { We don't add more menu item entries for viewpoints. }
   MaxMenuItems = 20;
 
-procedure TMenuViewpoints.AddViewpoint(
+function TMenuViewpoints.AddViewpoint(
   Node: TX3DNode; StateStack: TX3DGraphTraverseStateStack;
-  ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean);
+  ParentInfo: PTraversingInfo; var TraverseIntoChildren: boolean): Pointer;
 
   { Nice menu item caption for TAbstractViewpointNode or TViewpointGroupNode }
   function ViewpointToMenuCaption(const ItemIndex: Integer; Node: TX3DNode): string;
@@ -220,6 +220,7 @@ var
   MenuItem: TMenuItemViewpoint;
   Group: TMenuViewpointGroup;
 begin
+  Result := nil;
   if not GetParentViewpointGroups(AddViewpointGroups) then Exit;
 
   Group := CreateParentViewpointGroups(AddViewpointGroups);
