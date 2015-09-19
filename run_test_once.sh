@@ -178,12 +178,19 @@ do_save_xml_valid ()
     run_tovrmlx3d "$SAVE_XML"     "$FILE"     --encoding=xml
     run_tovrmlx3d "$SAVE_CLASSIC" "$SAVE_XML" --encoding=classic
 
-    set +e
-    # We do not test with official DTD or XSD, they are too buggy ---
-    # at least for xmllint.  --postvalid
-    xmllint --noout "$SAVE_XML"
-    # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
-    set -e
+    if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' ]; then
+      # Not running xmllint, as it fails with
+      # parser error : internal error: Huge input lookup
+      # on this file. See https://bugzilla.redhat.com/show_bug.cgi?id=862969
+      echo "Not running xmllint on $SAVE_XML" > /dev/null
+    else
+      set +e
+      # We do not test with official DTD or XSD, they are too buggy ---
+      # at least for xmllint.  --postvalid
+      xmllint --noout "$SAVE_XML"
+      # 2>&1 | grep --invert-match 'Content model of ProtoBody is not determinist'
+      set -e
+    fi
 
     rm -f "$SAVE_CLASSIC" "$SAVE_XML"
   fi
