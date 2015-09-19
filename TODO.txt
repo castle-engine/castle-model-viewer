@@ -1,3 +1,8 @@
+Note: See Castle Game Engine TODO list (in txt format, and in tickets)
+for a *real* TODO stuff that also affects view3dscene:)
+Here we only list a view3dscene tasks that can be done purely at view3dscene
+code, without any help from CGE code:)
+
 ----------------------------------------
 Blockers before next release:
 
