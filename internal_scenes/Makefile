@@ -2,7 +2,7 @@
 # that I made for pasdoc [http://pasdoc.sf.net/] project, see
 # [https://pasdoc.svn.sourceforge.net/svnroot/pasdoc/trunk/source/tools/file_to_pascal_string.dpr]
 
-ALL_TARGETS := ../welcome_scene.inc ../clear_scene.inc
+ALL_TARGETS := ../code/welcome_scene.inc ../code/clear_scene.inc
 
 default: $(ALL_TARGETS)
 

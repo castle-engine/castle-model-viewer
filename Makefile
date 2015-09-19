@@ -2,6 +2,13 @@
 compile:
 	./compile.sh
 
+# Run a couple of child targets to autogenerate some code
+.PHONY: generate-code
+generate-code:
+	$(MAKE) -C images/
+	$(MAKE) -C internal_scenes/
+	$(MAKE) -C screen_effects/
+
 .PHONY: install
 install:
 	$(MAKE) -C desktop/ install

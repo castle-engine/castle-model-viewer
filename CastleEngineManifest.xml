@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="view3dscene"
-  standalone_source="view3dscene.lpr"
+  standalone_source="code/view3dscene.lpr"
   author="Michalis Kamburelis">
   <icons>
     <icon path="windows/view3dscene.ico" />

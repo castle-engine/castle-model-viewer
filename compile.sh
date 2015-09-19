@@ -13,11 +13,13 @@ cd ../castle_game_engine/
 # Force rebuilding CastleWindow unit with proper backend.
 make clean-window
 
-# fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/view3dscene.lpr
+# fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/code/view3dscene.lpr
 # Compile view3dscene binary using castle-engine,
 # this is good for Windows to include the icon/versioninfo/manfest in resources.
 cd ../view3dscene/
 castle-engine compile ${CASTLE_ENGINE_TOOL_OPTIONS:-}
 cd ../castle_game_engine/
 
-fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/tovrmlx3d.lpr
+fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/code/tovrmlx3d.lpr
+# move tovrmlx3d binaries up
+mv -f ../view3dscene/code/tovrmlx3d ../view3dscene/code/tovrmlx3d.exe ../view3dscene/
