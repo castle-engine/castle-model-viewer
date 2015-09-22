@@ -3963,17 +3963,14 @@ begin
   Application.MainWindow := Window;
   Progress.UserInterface := WindowProgressInterface;
 
-  { initialize RecentMenu, before Config.Load }
-  RecentMenu := TWindowRecentFiles.Create(nil);
-  RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
-
-  { initialize SoundEngine, before Config.Load }
-  SoundEngine;
-
   { load config, before SoundEngine.ParseParameters
     (that may change Enable by --no-sound) and
     after creating Window (various OnLoad / OnSave may use Window instance). }
   Config.Load;
+
+  { initialize RecentMenu }
+  RecentMenu := TWindowRecentFiles.Create(nil);
+  RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
 
   { parse parameters }
   Window.ParseParameters(StandardParseOptions);
