@@ -1,5 +1,5 @@
 .PHONY: compile
-compile:
+compile: generate-code
 	./compile.sh
 
 # Run a couple of child targets to autogenerate some code
