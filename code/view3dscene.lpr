@@ -1419,17 +1419,17 @@ end;
 
 procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
 begin
-  Attributes.LineWidth := Config.GetFloat('video_options/line_width',
+  Attributes.LineWidth := UserConfig.GetFloat('video_options/line_width',
     Attributes.DefaultLineWidth);
-  Attributes.PointSize := Config.GetFloat('video_options/point_size',
+  Attributes.PointSize := UserConfig.GetFloat('video_options/point_size',
     Attributes.DefaultPointSize);
 end;
 
 procedure AttributesSaveToConfig(Attributes: TRenderingAttributes);
 begin
-  Config.SetDeleteFloat('video_options/line_width',
+  UserConfig.SetDeleteFloat('video_options/line_width',
     Attributes.LineWidth, Attributes.DefaultLineWidth);
-  Config.SetDeleteFloat('video_options/point_size',
+  UserConfig.SetDeleteFloat('video_options/point_size',
     Attributes.PointSize, Attributes.DefaultPointSize);
 end;
 
@@ -3964,13 +3964,16 @@ begin
   Progress.UserInterface := WindowProgressInterface;
 
   { load config, before SoundEngine.ParseParameters
-    (that may change Enable by --no-sound) and
-    after creating Window (various OnLoad / OnSave may use Window instance). }
-  Config.Load;
+    (that may change SoundEngine.Enable by --no-sound) and
+    after creating Window (various OnLoad / OnSave listeners in V3DSceneXxx units
+    may use Window instance). }
+  UserConfig.Load;
+  SoundEngine.LoadFromConfig(UserConfig);
 
   { initialize RecentMenu }
   RecentMenu := TWindowRecentFiles.Create(nil);
   RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
+  RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
   Window.ParseParameters(StandardParseOptions);
@@ -4083,7 +4086,9 @@ begin
 
       AttributesSaveToConfig(SceneAnimation.Attributes);
 
-      Config.Save;
+      SoundEngine.SaveToConfig(UserConfig);
+      RecentMenu.SaveToConfig(UserConfig);
+      UserConfig.Save;
     finally
       FreeAndNil(SceneAnimation);
       FreeAndNil(RecentMenu);

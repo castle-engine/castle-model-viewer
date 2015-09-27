@@ -65,6 +65,6 @@ initialization
     - ApplicationName is used for Config.URL by ApplicationConfig. }
   OnGetApplicationName := @MyGetApplicationName;
 
-  Config.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
-  Config.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
+  UserConfig.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
+  UserConfig.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
 end.

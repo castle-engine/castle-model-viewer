@@ -51,6 +51,6 @@ begin
 end;
 
 initialization
-  Config.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
-  Config.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
+  UserConfig.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
+  UserConfig.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
 end.
