@@ -3173,7 +3173,7 @@ begin
   770: InitialShowBBox := not InitialShowBBox;
   771: InitialShowStatus := not InitialShowStatus;
 
-  801: SoundEngine.Enable := not SoundEngine.Enable;
+  801: SoundEngine.Enabled := not SoundEngine.Enabled;
   810..850: SoundEngine.Device :=
     SoundEngine.Devices[MenuItem.IntData - 810].Name;
 
@@ -3270,7 +3270,7 @@ begin
       M2.Append(TMenuItemChecked.Create('Show Status and Toolbar at Start', 771,
         InitialShowStatus, true));
       M2.Append(TMenuSeparator.Create);
-      M2.Append(TMenuItemChecked.Create('Sound', 801, SoundEngine.Enable, true));
+      M2.Append(TMenuItemChecked.Create('Sound', 801, SoundEngine.Enabled, true));
       M3 := TMenu.Create('Sound Device');
         MenuAppendSoundDevices(M3, 810);
         M2.Append(M3);
@@ -4059,7 +4059,7 @@ begin
           Window.Visible := false;
 
           { Don't make sound when rendering in batch mode. }
-          SoundEngine.Enable := false;
+          SoundEngine.Enabled := false;
           SoundEngine.EnableSaveToConfig := false;
         end;
 
