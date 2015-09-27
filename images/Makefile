@@ -9,7 +9,7 @@ clean:
 
 ../v3dsceneimages.pas: warning_icon.png examine.png walk.png fly.png \
   open.png screenshot.png examine_tooltip.png walk_fly_tooltip.png TooltipArrow.png
-	image_to_pas --output ../code V3DSceneImages \
+	image2pascal --output ../code V3DSceneImages \
 	  warning_icon.png examine.png walk.png fly.png open.png screenshot.png \
 	  TooltipArrow.png \
 	  @alpha=strip examine_tooltip.png walk_fly_tooltip.png
