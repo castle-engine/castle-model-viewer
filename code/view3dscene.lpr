@@ -3993,7 +3993,7 @@ begin
   end;
 
   SceneManager := TV3DSceneManager.Create(nil);
-  Window.Controls.Add(SceneManager);
+  Window.Controls.InsertBack(SceneManager);
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
 
@@ -4002,7 +4002,7 @@ begin
 
   CreateStatusToolbar;
 
-  Window.Controls.Add(ScreenEffects);
+  Window.Controls.InsertBack(ScreenEffects);
 
   SceneWarnings := TSceneWarnings.Create;
   try

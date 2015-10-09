@@ -41,7 +41,8 @@ procedure LightsEditorClose;
 implementation
 
 uses SysUtils, CastleVectors, Classes, X3DNodes, CastleOnScreenMenu, CastleBoxes,
-  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls, CastleRectangles;
+  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls, CastleRectangles,
+  CastleControls;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -59,17 +60,18 @@ type
   { Three float sliders to control TVector3Single value. }
   TMenuVector3Sliders = class(TComponent)
   strict private
-    Floats: array [0..2] of TMenuFloatSlider;
-    ItemsIndex: Integer;
+    Floats: array [0..2] of TCastleFloatSlider;
+    FOnChange: TNotifyEvent;
+    procedure ChildSliderChanged(Sender: TObject);
   public
     constructor Create(const AOwner: TComponent;
-      const Range: TBox3D; const AValue: TVector3Single);
+      const Range: TBox3D; const AValue: TVector3Single); reintroduce; overload;
     constructor Create(const AOwner: TComponent;
-      const Min, Max: Single; const AValue: TVector3Single);
-    procedure AddToMenu(const Items: TStringList;
+      const Min, Max: Single; const AValue: TVector3Single); reintroduce; overload;
+    procedure AddToMenu(const Menu: TCastleOnScreenMenu;
       const TitleBase, Title0, Title1, Title2: string);
-    function Selected(const CurrentItem: Integer): boolean;
     function Value: TVector3Single;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TLightsMenu = class(TV3DOnScreenMenu)
@@ -84,11 +86,11 @@ type
     ItemsIndex: Integer;
     procedure AddLight(Node: TX3DNode);
     procedure DestructionNotification(Node: TX3DNode);
+    procedure AmbientColorChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure Click; override;
     destructor Destroy; override;
-    procedure AccessoryValueChanged; override;
     { Do a partial destruction: remove everything that can have connections
       to existing scene. }
     procedure ClearLights;
@@ -99,50 +101,55 @@ type
     Light: TAbstractLightNode;
     BackIndex: Integer;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TMenuFloatSlider;
-    AmbientIntensitySlider: TMenuFloatSlider;
-    OnArgument: TMenuBooleanArgument;
-    ShadowsArgument: TMenuBooleanArgument;
-    ShadowVolumesArgument: TMenuBooleanArgument;
-    ShadowVolumesMainArgument: TMenuBooleanArgument;
+    IntensitySlider: TCastleFloatSlider;
+    AmbientIntensitySlider: TCastleFloatSlider;
+    OnArgument: TCastleBooleanLabel;
+    ShadowsArgument: TCastleBooleanLabel;
+    ShadowVolumesArgument: TCastleBooleanLabel;
+    ShadowVolumesMainArgument: TCastleBooleanLabel;
+    procedure ColorChanged(Sender: TObject);
+    procedure IntensityChanged(Sender: TObject);
+    procedure AmbientIntensityChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
     procedure Click; override;
-    procedure AccessoryValueChanged; override;
   end;
 
   TPositionalLightMenu = class(TLightMenu)
   strict private
     Light: TAbstractPositionalLightNode;
     PositionSlider, AttenuationSlider: TMenuVector3Sliders;
+    procedure PositionChanged(Sender: TObject);
+    procedure AttenuationChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode); reintroduce;
-    procedure AccessoryValueChanged; override;
   end;
 
   TSpot1LightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode_1;
     ItemsIndex: Integer;
-    CutOffAngleSlider: TMenuFloatSlider;
-    DropOffRateSlider: TMenuFloatSlider;
+    CutOffAngleSlider: TCastleFloatSlider;
+    DropOffRateSlider: TCastleFloatSlider;
+    procedure CutOffAngleChanged(Sender: TObject);
+    procedure DropOffRateChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode_1); reintroduce;
     procedure Click; override;
-    procedure AccessoryValueChanged; override;
   end;
 
   TSpotLightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode;
     ItemsIndex: Integer;
-    CutOffAngleSlider: TMenuFloatSlider;
-    BeamWidthSlider: TMenuFloatSlider;
+    CutOffAngleSlider: TCastleFloatSlider;
+    BeamWidthSlider: TCastleFloatSlider;
+    procedure CutOffAngleChanged(Sender: TObject);
+    procedure BeamWidthChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
     procedure Click; override;
-    procedure AccessoryValueChanged; override;
   end;
 
   TDirectionalLightMenu = class(TLightMenu)
@@ -158,14 +165,17 @@ type
   strict private
     Headlight: TAbstractLightNode;
     BackIndex: Integer;
-    AmbientIntensitySlider: TMenuFloatSlider;
+    AmbientIntensitySlider: TCastleFloatSlider;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TMenuFloatSlider;
+    IntensitySlider: TCastleFloatSlider;
     AttenuationSlider: TMenuVector3Sliders;
+    procedure ColorChanged(Sender: TObject);
+    procedure AttenuationChanged(Sender: TObject);
+    procedure AmbientIntensityChanged(Sender: TObject);
+    procedure IntensityChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; AHeadlight: TAbstractLightNode); reintroduce;
     procedure Click; override;
-    procedure AccessoryValueChanged; override;
   end;
 
 { global utils --------------------------------------------------------------- }
@@ -181,7 +191,7 @@ var
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
 begin
-  Window.Controls.MakeSingle(TCastleOnScreenMenu, NewValue, true);
+  Window.Controls.MakeSingle(TCastleOnScreenMenu, NewValue, false);
 end;
 
 function LightsEditorIsOpen: boolean;
@@ -263,8 +273,13 @@ var
 begin
   inherited Create(AOwner);
   for I := 0 to 2 do
-    Floats[I] := TMenuFloatSlider.Create(
-      Range.Data[0, I], Range.Data[1, I], AValue[I]);
+  begin
+    Floats[I] := TCastleFloatSlider.Create(Self);
+    Floats[I].Min := Range.Data[0, I];
+    Floats[I].Max := Range.Data[1, I];
+    Floats[I].Value := AValue[I];
+    Floats[I].OnChange := @ChildSliderChanged;
+  end;
 end;
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
@@ -274,14 +289,13 @@ begin
     Box3D(Vector3Single(Min, Min, Min), Vector3Single(Max, Max, Max)), AValue);
 end;
 
-procedure TMenuVector3Sliders.AddToMenu(const Items: TStringList;
+procedure TMenuVector3Sliders.AddToMenu(const Menu: TCastleOnScreenMenu;
   const TitleBase, Title0, Title1, Title2: string);
 var
   I: Integer;
   Title: TString3;
   TitleBaseSpace: string;
 begin
-  ItemsIndex := Items.Count;
   Title[0] := Title0;
   Title[1] := Title1;
   Title[2] := Title2;
@@ -289,7 +303,7 @@ begin
     TitleBaseSpace := TitleBase + ' ' else
     TitleBaseSpace := '';
   for I := 0 to 2 do
-    Items.AddObject(TitleBaseSpace + Title[I], Floats[I]);
+    Menu.Add(TitleBaseSpace + Title[I], Floats[I]);
 end;
 
 function TMenuVector3Sliders.Value: TVector3Single;
@@ -300,9 +314,10 @@ begin
     Result[I] := Floats[I].Value;
 end;
 
-function TMenuVector3Sliders.Selected(const CurrentItem: Integer): boolean;
+procedure TMenuVector3Sliders.ChildSliderChanged(Sender: TObject);
 begin
-  Result := (ItemsIndex <= CurrentItem) and (CurrentItem <= ItemsIndex + 2);
+  if Assigned(OnChange) then
+    OnChange(Self);
 end;
 
 { TV3DOnScreenMenu ----------------------------------------------------------- }
@@ -312,12 +327,13 @@ begin
   inherited;
   BackgroundOpacityFocused := 0.3;
   BackgroundOpacityNotFocused := 0.2;
-  PositionRelativeMenuX := hpLeft;
-  PositionRelativeMenuY := vpTop;
-  PositionRelativeScreenX := hpLeft;
-  PositionRelativeScreenY := vpTop;
-  Position[0] := 20;
-  Position[1] := - WindowMarginTop - 20;
+
+  HasHorizontalAnchor := true;
+  HorizontalAnchor := hpLeft;
+  HorizontalAnchorDelta := 20;
+  HasVerticalAnchor := true;
+  VerticalAnchor := vpTop;
+  VerticalAnchorDelta := - WindowMarginTop - 20;
 end;
 
 { TLightsMenu ------------------------------------------------------- }
@@ -332,18 +348,19 @@ begin
   Lights := TX3DNodeList.Create(false);
 
   AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, GlobalAmbient);
+  AmbientColorSlider.OnChange := @AmbientColorChanged;
 
   SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
   for I := 0 to Lights.Count - 1 do
   begin
     Light := Lights[I] as TAbstractLightNode;
-    Items.Add(Format('Edit %d: %s', [I, Light.NiceName]));
+    Add(Format('Edit %d: %s', [I, Light.NiceName]));
   end;
-  ItemsIndex := Items.Count;
-  AmbientColorSlider.AddToMenu(Items, 'Global Ambient Light', 'Red', 'Green', 'Blue');
-  Items.Add('Edit Headlight');
-  Items.Add('Close Lights Editor');
+  ItemsIndex := ControlsCount;
+  AmbientColorSlider.AddToMenu(Self, 'Global Ambient Light', 'Red', 'Green', 'Blue');
+  Add('Edit Headlight');
+  Add('Close Lights Editor');
 end;
 
 destructor TLightsMenu.Destroy;
@@ -466,20 +483,16 @@ begin
     LightsEditorClose;
 end;
 
-procedure TLightsMenu.AccessoryValueChanged;
+procedure TLightsMenu.AmbientColorChanged(Sender: TObject);
 begin
-  inherited;
-  if AmbientColorSlider.Selected(CurrentItem) then
-  begin
-    GlobalAmbient := AmbientColorSlider.Value;
+  GlobalAmbient := AmbientColorSlider.Value;
 
-    { TODO: We just directly set global paramater now.
-      Default is equal to 0.2, 0.2, 0.2 default.
-      This could be changed to control NavigationInfo.globalAmbient field
-      (InstantReality extension that we plan to implement too,
-      see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ),
-      and then we would keep GlobalAmbient at TCastleScene level. }
-  end;
+  { TODO: We just directly set global paramater now.
+    Default is equal to 0.2, 0.2, 0.2 default.
+    This could be changed to control NavigationInfo.globalAmbient field
+    (InstantReality extension that we plan to implement too,
+    see http://doc.instantreality.org/documentation/nodetype/NavigationInfo/ ),
+    and then we would keep GlobalAmbient at TCastleScene level. }
 end;
 
 { TLightMenu ---------------------------------------------------------- }
@@ -491,27 +504,45 @@ begin
   Light := ALight;
 
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.FdColor.Value);
-  IntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdIntensity.Value);
-  AmbientIntensitySlider := TMenuFloatSlider.Create(0, 1, Light.FdAmbientIntensity.Value);
-  OnArgument := TMenuBooleanArgument.Create(Light.FdOn.Value);
-  ShadowsArgument := TMenuBooleanArgument.Create(Light.FdShadows.Value);
-  ShadowVolumesArgument := TMenuBooleanArgument.Create(Light.FdShadowVolumes.Value);
-  ShadowVolumesMainArgument := TMenuBooleanArgument.Create(
-    Light.FdShadowVolumesMain.Value);
+  ColorSlider.OnChange := @ColorChanged;
 
-  ColorSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
-  Items.AddObject('Intensity', IntensitySlider);
-  Items.AddObject('Ambient Intensity', AmbientIntensitySlider);
-  Items.AddObject('On', OnArgument);
-  Items.AddObject('Shadows (Easy: By Shadow Maps)', ShadowsArgument);
-  Items.AddObject('Shadow Volumes (Off In Shadows)', ShadowVolumesArgument);
-  Items.AddObject('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainArgument);
+  IntensitySlider := TCastleFloatSlider.Create(Self);
+  IntensitySlider.Min := 0;
+  IntensitySlider.Max := 1;
+  IntensitySlider.Value := Light.FdIntensity.Value;
+  IntensitySlider.OnChange := @IntensityChanged;
+
+  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
+  AmbientIntensitySlider.Min := 0;
+  AmbientIntensitySlider.Max := 1;
+  AmbientIntensitySlider.Value := Light.FdAmbientIntensity.Value;
+  AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
+
+  OnArgument := TCastleBooleanLabel.Create(Self);
+  OnArgument.Value := Light.FdOn.Value;
+
+  ShadowsArgument := TCastleBooleanLabel.Create(Self);
+  ShadowsArgument.Value := Light.FdShadows.Value;
+
+  ShadowVolumesArgument := TCastleBooleanLabel.Create(Self);
+  ShadowVolumesArgument.Value := Light.FdShadowVolumes.Value;
+
+  ShadowVolumesMainArgument := TCastleBooleanLabel.Create(Self);
+  ShadowVolumesMainArgument.Value := Light.FdShadowVolumesMain.Value;
+
+  ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
+  Add('Intensity', IntensitySlider);
+  Add('Ambient Intensity', AmbientIntensitySlider);
+  Add('On', OnArgument);
+  Add('Shadows (Easy: By Shadow Maps)', ShadowsArgument);
+  Add('Shadow Volumes (Off In Shadows)', ShadowVolumesArgument);
+  Add('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainArgument);
 end;
 
 procedure TLightMenu.AfterCreate;
 begin
-  BackIndex := Items.Count;
-  Items.Add('Back to Lights Menu');
+  BackIndex := ControlsCount;
+  Add('Back to Lights Menu');
 end;
 
 procedure TLightMenu.Click;
@@ -547,15 +578,19 @@ begin
   end;
 end;
 
-procedure TLightMenu.AccessoryValueChanged;
+procedure TLightMenu.ColorChanged(Sender: TObject);
 begin
-  inherited;
-  if ColorSlider.Selected(CurrentItem) then
-    Light.Color := ColorSlider.Value else
-  case CurrentItem of
-    3: Light.Intensity := IntensitySlider.Value;
-    4: Light.AmbientIntensity := AmbientIntensitySlider.Value;
-  end;
+  Light.Color := ColorSlider.Value;
+end;
+
+procedure TLightMenu.IntensityChanged(Sender: TObject);
+begin
+  Light.Intensity := IntensitySlider.Value;
+end;
+
+procedure TLightMenu.AmbientIntensityChanged(Sender: TObject);
+begin
+  Light.AmbientIntensity := AmbientIntensitySlider.Value;
 end;
 
 { TPositionalLightMenu ------------------------------------------------------- }
@@ -584,21 +619,24 @@ begin
     Box.Data[1] := Box.Data[1] + BoxSizes;
   end;
   PositionSlider := TMenuVector3Sliders.Create(Self, Box, Light.FdLocation.Value);
+  PositionSlider.OnChange := @PositionChanged;
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
     AttenuationRange, Light.FdAttenuation.Value);
+  AttenuationSlider.OnChange := @AttenuationChanged;
 
-  PositionSlider.AddToMenu(Items, 'Position', 'X', 'Y', 'Z');
-  AttenuationSlider.AddToMenu(Items, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
+  PositionSlider.AddToMenu(Self, 'Position', 'X', 'Y', 'Z');
+  AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
 end;
 
-procedure TPositionalLightMenu.AccessoryValueChanged;
+procedure TPositionalLightMenu.PositionChanged(Sender: TObject);
 begin
-  inherited;
-  if PositionSlider.Selected(CurrentItem) then
-    Light.Location := PositionSlider.Value else
-  if AttenuationSlider.Selected(CurrentItem) then
-    Light.Attenuation := AttenuationSlider.Value;
+  Light.Location := PositionSlider.Value;
+end;
+
+procedure TPositionalLightMenu.AttenuationChanged(Sender: TObject);
+begin
+  Light.Attenuation := AttenuationSlider.Value;
 end;
 
 { TSpot1LightMenu ------------------------------------------------------- }
@@ -608,13 +646,22 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdCutOffAngle.Value);
-  DropOffRateSlider := TMenuFloatSlider.Create(0, 1, Light.FdDropOffRate.Value);
+  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
+  CutOffAngleSlider.Min := 0.01;
+  CutOffAngleSlider.Max := Pi/2;
+  CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
+  CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  ItemsIndex := Items.Count;
-  Items.Add('Direction ...');
-  Items.AddObject('Cut Off Angle', CutOffAngleSlider);
-  Items.AddObject('Drop Off Rate', DropOffRateSlider);
+  DropOffRateSlider := TCastleFloatSlider.Create(Self);
+  DropOffRateSlider.Min := 0;
+  DropOffRateSlider.Max := 1;
+  DropOffRateSlider.Value := Light.FdDropOffRate.Value;
+  DropOffRateSlider.OnChange := @DropOffRateChanged;
+
+  ItemsIndex := ControlsCount;
+  Add('Direction ...');
+  Add('Cut Off Angle', CutOffAngleSlider);
+  Add('Drop Off Rate', DropOffRateSlider);
 end;
 
 procedure TSpot1LightMenu.Click;
@@ -632,13 +679,14 @@ begin
   end;
 end;
 
-procedure TSpot1LightMenu.AccessoryValueChanged;
+procedure TSpot1LightMenu.CutOffAngleChanged(Sender: TObject);
 begin
-  inherited;
-  if CurrentItem = ItemsIndex + 1 then
-    Light.FdCutOffAngle.Send(CutOffAngleSlider.Value) else
-  if CurrentItem = ItemsIndex + 2 then
-    Light.FdDropOffRate.Send(DropOffRateSlider.Value);
+  Light.FdCutOffAngle.Send(CutOffAngleSlider.Value);
+end;
+
+procedure TSpot1LightMenu.DropOffRateChanged(Sender: TObject);
+begin
+  Light.FdDropOffRate.Send(DropOffRateSlider.Value);
 end;
 
 { TSpotLightMenu ------------------------------------------------------- }
@@ -648,13 +696,22 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdCutOffAngle.Value);
-  BeamWidthSlider := TMenuFloatSlider.Create(0.01, Pi/2, Light.FdBeamWidth.Value);
+  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
+  CutOffAngleSlider.Min := 0.01;
+  CutOffAngleSlider.Max := Pi/2;
+  CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
+  CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  ItemsIndex := Items.Count;
-  Items.Add('Direction ...');
-  Items.AddObject('Cut Off Angle', CutOffAngleSlider);
-  Items.AddObject('Beam Width', BeamWidthSlider);
+  BeamWidthSlider := TCastleFloatSlider.Create(Self);
+  BeamWidthSlider.Min := 0.01;
+  BeamWidthSlider.Max := Pi/2;
+  BeamWidthSlider.Value := Light.FdBeamWidth.Value;
+  BeamWidthSlider.OnChange := @BeamWidthChanged;
+
+  ItemsIndex := ControlsCount;
+  Add('Direction ...');
+  Add('Cut Off Angle', CutOffAngleSlider);
+  Add('Beam Width', BeamWidthSlider);
 end;
 
 procedure TSpotLightMenu.Click;
@@ -672,13 +729,14 @@ begin
   end;
 end;
 
-procedure TSpotLightMenu.AccessoryValueChanged;
+procedure TSpotLightMenu.CutOffAngleChanged(Sender: TObject);
 begin
-  inherited;
-  if CurrentItem = ItemsIndex + 1 then
-    Light.CutOffAngle := CutOffAngleSlider.Value else
-  if CurrentItem = ItemsIndex + 2 then
-    Light.BeamWidth := BeamWidthSlider.Value;
+  Light.CutOffAngle := CutOffAngleSlider.Value;
+end;
+
+procedure TSpotLightMenu.BeamWidthChanged(Sender: TObject);
+begin
+  Light.BeamWidth := BeamWidthSlider.Value;
 end;
 
 { TDirectionalLightMenu ------------------------------------------------------- }
@@ -688,8 +746,8 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  ItemsIndex := Items.Count;
-  Items.Add('Direction ...');
+  ItemsIndex := ControlsCount;
+  Add('Direction ...');
 end;
 
 procedure TDirectionalLightMenu.Click;
@@ -714,14 +772,23 @@ begin
   inherited Create(AOwner);
   Headlight := AHeadlight;
 
-  AmbientIntensitySlider := TMenuFloatSlider.Create(0, 1, Headlight.FdAmbientIntensity.Value);
-  Items.AddObject('Ambient Intensity', AmbientIntensitySlider);
+  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
+  AmbientIntensitySlider.Min := 0;
+  AmbientIntensitySlider.Max := 1;
+  AmbientIntensitySlider.Value := Headlight.FdAmbientIntensity.Value;
+  AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
+  Add('Ambient Intensity', AmbientIntensitySlider);
 
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Headlight.FdColor.Value);
-  ColorSlider.AddToMenu(Items, '', 'Red', 'Green', 'Blue');
+  ColorSlider.OnChange := @ColorChanged;
+  ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
 
-  IntensitySlider := TMenuFloatSlider.Create(0, 1, Headlight.FdIntensity.Value);
-  Items.AddObject('Intensity', IntensitySlider);
+  IntensitySlider := TCastleFloatSlider.Create(Self);
+  IntensitySlider.Min := 0;
+  IntensitySlider.Max := 1;
+  IntensitySlider.Value := Headlight.FdIntensity.Value;
+  IntensitySlider.OnChange := @IntensityChanged;
+  Add('Intensity', IntensitySlider);
 
   if Headlight is TAbstractPositionalLightNode then
   begin
@@ -732,11 +799,12 @@ begin
 
     AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
       TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);
-    AttenuationSlider.AddToMenu(Items, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
+    AttenuationSlider.OnChange := @AttenuationChanged;
+    AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
   end;
 
-  BackIndex := Items.Count;
-  Items.Add('Back to Lights Menu');
+  BackIndex := ControlsCount;
+  Add('Back to Lights Menu');
 end;
 
 procedure THeadLightMenu.Click;
@@ -746,18 +814,24 @@ begin
     SetCurrentMenu(LightsMenu);
 end;
 
-procedure THeadLightMenu.AccessoryValueChanged;
+procedure THeadLightMenu.ColorChanged(Sender: TObject);
 begin
-  inherited;
-  if ColorSlider.Selected(CurrentItem) then
-    Headlight.Color := ColorSlider.Value else
-  if (AttenuationSlider <> nil) and
-      AttenuationSlider.Selected(CurrentItem) then
-    (Headlight as TAbstractPositionalLightNode).Attenuation := AttenuationSlider.Value else
-  case CurrentItem of
-    0: Headlight.AmbientIntensity := AmbientIntensitySlider.Value;
-    4: Headlight.Intensity := IntensitySlider.Value;
-  end;
+  Headlight.Color := ColorSlider.Value;
+end;
+
+procedure THeadLightMenu.AttenuationChanged(Sender: TObject);
+begin
+  (Headlight as TAbstractPositionalLightNode).Attenuation := AttenuationSlider.Value;
+end;
+
+procedure THeadLightMenu.AmbientIntensityChanged(Sender: TObject);
+begin
+  Headlight.AmbientIntensity := AmbientIntensitySlider.Value;
+end;
+
+procedure THeadLightMenu.IntensityChanged(Sender: TObject);
+begin
+  Headlight.Intensity := IntensitySlider.Value;
 end;
 
 finalization
