@@ -71,6 +71,7 @@ begin
   Padding := 5;
   CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15);
   OwnsCustomFont := true;
+  Frame := true;
 end;
 
 procedure TStatusText.Render;
