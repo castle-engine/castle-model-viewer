@@ -178,7 +178,10 @@ do_save_xml_valid ()
     run_tovrmlx3d "$SAVE_XML"     "$FILE"     --encoding=xml
     run_tovrmlx3d "$SAVE_CLASSIC" "$SAVE_XML" --encoding=classic
 
-    if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' ]; then
+    if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt_rays1000.wrl' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'water_no_shaders.x3dv' ]; then
+
       # Not running xmllint, as it fails with
       # parser error : internal error: Huge input lookup
       # on this file. See https://bugzilla.redhat.com/show_bug.cgi?id=862969
