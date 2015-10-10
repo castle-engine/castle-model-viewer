@@ -1,5 +1,3 @@
-tovrmlx3d: Exception EX3DLexerError : 
-VRML/X3D lexical error at position 21: VRML signature error : unrecognized signature
 tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
 tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
 tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
