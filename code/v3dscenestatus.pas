@@ -39,7 +39,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure Render; override;
-    procedure ContainerResize(const AContainerWidth, AContainerHeight: Cardinal); override;
+    procedure Resize; override;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
 
@@ -95,7 +95,7 @@ begin
   end;
 end;
 
-procedure TStatusText.ContainerResize(const AContainerWidth, AContainerHeight: Cardinal);
+procedure TStatusText.Resize;
 var
   CharWidth: Integer;
 begin
