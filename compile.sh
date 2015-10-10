@@ -11,7 +11,7 @@ set -eu
 cd ../castle_game_engine/
 
 # Force rebuilding CastleWindow unit with proper backend.
-make clean-window
+make --quiet clean-window
 
 # fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/code/view3dscene.lpr
 # Compile view3dscene binary using castle-engine,
