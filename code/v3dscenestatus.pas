@@ -69,8 +69,8 @@ begin
   Bottom := 5;
   Color := Yellow;
   Padding := 5;
-  CustomFont := TTextureFont.Create(TextureFont_DejaVuSansMonoBold_15);
-  OwnsCustomFont := true;
+  CustomFont := TTextureFont.Create(Self);
+  TTextureFont(CustomFont).Load(TextureFont_DejaVuSansMonoBold_15);
   Frame := true;
 end;
 
