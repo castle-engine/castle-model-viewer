@@ -130,7 +130,7 @@ begin
     ViewportsConfig := Value;
     SceneManager.FullSize := ViewportsConfig = vc1;
     if ViewportsConfig = vc1 then
-      Window.Controls.Remove(Background) else
+      Window.Controls.RemoveAll(Background) else
       Window.Controls.InsertBackIfNotExists(Background);
     case ViewportsConfig of
       vc1:
@@ -138,13 +138,13 @@ begin
           { make sure glViewport is also restored }
           GLViewport(Window.Rect);
           for I := 0 to High(Viewports) do
-            Window.Controls.Remove(Viewports[I]);
+            Window.Controls.RemoveAll(Viewports[I]);
         end;
       vc2Horizontal:
         begin
           AddViewport(Viewports[0]);
-          Window.Controls.Remove(Viewports[1]);
-          Window.Controls.Remove(Viewports[2]);
+          Window.Controls.RemoveAll(Viewports[1]);
+          Window.Controls.RemoveAll(Viewports[2]);
           { Configure camera for newly appearing viewports }
           if OldValue = vc1 then
             AssignCamera(Viewports[0], SceneManager, SceneManager, true);
