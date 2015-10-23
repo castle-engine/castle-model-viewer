@@ -103,10 +103,10 @@ type
     ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
-    OnArgument: TCastleBooleanLabel;
-    ShadowsArgument: TCastleBooleanLabel;
-    ShadowVolumesArgument: TCastleBooleanLabel;
-    ShadowVolumesMainArgument: TCastleBooleanLabel;
+    OnToggle: TCastleMenuToggle;
+    ShadowsToggle: TCastleMenuToggle;
+    ShadowVolumesToggle: TCastleMenuToggle;
+    ShadowVolumesMainToggle: TCastleMenuToggle;
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
@@ -518,25 +518,25 @@ begin
   AmbientIntensitySlider.Value := Light.FdAmbientIntensity.Value;
   AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
 
-  OnArgument := TCastleBooleanLabel.Create(Self);
-  OnArgument.Value := Light.FdOn.Value;
+  OnToggle := TCastleMenuToggle.Create(Self);
+  OnToggle.Pressed := Light.FdOn.Value;
 
-  ShadowsArgument := TCastleBooleanLabel.Create(Self);
-  ShadowsArgument.Value := Light.FdShadows.Value;
+  ShadowsToggle := TCastleMenuToggle.Create(Self);
+  ShadowsToggle.Pressed := Light.FdShadows.Value;
 
-  ShadowVolumesArgument := TCastleBooleanLabel.Create(Self);
-  ShadowVolumesArgument.Value := Light.FdShadowVolumes.Value;
+  ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
+  ShadowVolumesToggle.Pressed := Light.FdShadowVolumes.Value;
 
-  ShadowVolumesMainArgument := TCastleBooleanLabel.Create(Self);
-  ShadowVolumesMainArgument.Value := Light.FdShadowVolumesMain.Value;
+  ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
+  ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
 
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
-  Add('On', OnArgument);
-  Add('Shadows (Easy: By Shadow Maps)', ShadowsArgument);
-  Add('Shadow Volumes (Off In Shadows)', ShadowVolumesArgument);
-  Add('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainArgument);
+  Add('On', OnToggle);
+  Add('Shadows (Easy: By Shadow Maps)', ShadowsToggle);
+  Add('Shadow Volumes (Off In Shadows)', ShadowVolumesToggle);
+  Add('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainToggle);
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -550,8 +550,8 @@ begin
   inherited;
   case CurrentItem of
     5: begin
-         OnArgument.Value := not OnArgument.Value;
-         Light.IsOn := OnArgument.Value;
+         OnToggle.Pressed := not OnToggle.Pressed;
+         Light.IsOn := OnToggle.Pressed;
        end;
     6: begin
          if (Light is TPointLightNode_1) or
@@ -561,16 +561,16 @@ begin
            Exit;
          end;
 
-         ShadowsArgument.Value := not ShadowsArgument.Value;
-         Light.Shadows := ShadowsArgument.Value;
+         ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
+         Light.Shadows := ShadowsToggle.Pressed;
        end;
     7: begin
-         ShadowVolumesArgument.Value := not ShadowVolumesArgument.Value;
-         Light.ShadowVolumes := ShadowVolumesArgument.Value;
+         ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
+         Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
        end;
     8: begin
-         ShadowVolumesMainArgument.Value := not ShadowVolumesMainArgument.Value;
-         Light.ShadowVolumesMain := ShadowVolumesMainArgument.Value;
+         ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
+         Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
        end;
     else
     if CurrentItem = BackIndex then
