@@ -104,7 +104,7 @@ begin
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   GLClear([cbColor], Black);
-  GLImage := TGLImage.Create(Image);
+  GLImage := TGLImage.Create(Image, false);
   try
     GLImage.Draw(0, 0);
   finally FreeAndNil(GLImage) end;
