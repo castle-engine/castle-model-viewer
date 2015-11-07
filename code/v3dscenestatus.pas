@@ -68,7 +68,8 @@ begin
   Left := 5;
   Bottom := 5;
   Color := Yellow;
-  Padding := 5;
+  PaddingHorizontal := 5;
+  PaddingVertical := 5;
   CustomFont := TTextureFont.Create(Self);
   TTextureFont(CustomFont).Load(TextureFont_DejaVuSansMonoBold_15);
   Frame := true;
@@ -102,8 +103,8 @@ begin
   inherited;
   CharWidth := Font.TextWidth('W');
   if CharWidth > 0 then
-    FMaxLineChars := Max(Integer(10), Integer(ContainerWidth - Padding * 2 -
-      Left * 2) div CharWidth) else
+    FMaxLineChars := Max(Integer(10), Integer(ContainerWidth -
+      PaddingHorizontal * 2 - Left * 2) div CharWidth) else
     FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 
