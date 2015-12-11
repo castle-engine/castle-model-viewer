@@ -328,12 +328,8 @@ begin
   BackgroundOpacityFocused := 0.3;
   BackgroundOpacityNotFocused := 0.2;
 
-  HasHorizontalAnchor := true;
-  HorizontalAnchor := hpLeft;
-  HorizontalAnchorDelta := 20;
-  HasVerticalAnchor := true;
-  VerticalAnchor := vpTop;
-  VerticalAnchorDelta := - WindowMarginTop - 20;
+  Anchor(hpLeft, 20);
+  Anchor(vpTop, -WindowMarginTop - 20);
 end;
 
 { TLightsMenu ------------------------------------------------------- }
