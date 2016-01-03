@@ -30,7 +30,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="/usr/bin/mate-terminal  -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -41,7 +41,7 @@
         <PackageName Value="castle_base"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="31">
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -51,46 +51,121 @@
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="bgcolors.pas"/>
+        <Filename Value="clear_scene.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="clear_scene.inc"/>
+        <Filename Value="v3dscenelightseditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="colormodulators.pas"/>
+        <Filename Value="automatic-windows-resources.res"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="v3dsceneallcameras.pas"/>
+        <Filename Value="screen_effects_flashlight.glsl.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="raytracetowindow.pas"/>
+        <Filename Value="v3dscenelights.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="scenechangesunit.pas"/>
+        <Filename Value="v3dscenescreeneffects.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="texturefilters.pas"/>
+        <Filename Value="v3dsceneshadows.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="TextureFilters"/>
       </Unit8>
       <Unit9>
-        <Filename Value="v3dsceneblending.pas"/>
+        <Filename Value="v3dscenescreenshot.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="v3dscenecamera.pas"/>
+        <Filename Value="v3dsceneconf.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit10>
       <Unit11>
-        <Filename Value="v3dsceneconfig.pas"/>
+        <Filename Value="v3dscenetexturefilters.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="v3dscenewarnings.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="v3dscenebgcolors.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="v3dscenenavigationtypes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="v3dsceneviewpoints.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="v3dsceneversion.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="v3dscenestatus.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="v3dscenewindow.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="v3dscenemiscconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="v3dsceneoctreevisualize.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="v3dsceneimages.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="v3dscenenamedanimations.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="v3dscenefillmode.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="v3dsceneantialiasing.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="v3dsceneraytrace.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="v3dsceneviewports.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="v3dscenecaptions.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="screen_effects_edge_detect.glsl.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="v3dscenehanim.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="v3dscenescenechanges.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -100,22 +175,30 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
         <CStyleMacros Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <Checks>
         <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
       </Checks>
       <Optimizations>
         <OptimizationLevel Value="2"/>
       </Optimizations>
     </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
+    </Linking>
     <Other>
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
