@@ -61,7 +61,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleGL, CastleWindow, CastleGLUtils,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
   CastleGLCubeMaps, CastleControls, CastleGLShaders,
-  CastleControlsImages,
+  CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleShapeOctree,
   X3DNodes, X3DLoad, CastleScene, X3DTriangles,
@@ -76,7 +76,8 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneCaptions,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
-  V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations;
+  V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
+  V3DSceneBoxes;
 
 var
   ShowFrustum: boolean = false;
