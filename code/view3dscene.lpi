@@ -41,7 +41,7 @@
         <PackageName Value="castle_base"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -166,6 +166,10 @@
         <Filename Value="v3dscenescenechanges.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="v3dsceneboxes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit31>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
