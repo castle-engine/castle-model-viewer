@@ -65,13 +65,13 @@ type
 
 class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
 begin
-  BGColor := Config.GetValue(
+  BGColor := Config.GetVector(
     'video_options/default_background_color', DefaultBGColor);
 end;
 
 class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
-  Config.SetDeleteValue('video_options/default_background_color',
+  Config.SetDeleteVector('video_options/default_background_color',
     BGColor, DefaultBGColor);
 end;
 
