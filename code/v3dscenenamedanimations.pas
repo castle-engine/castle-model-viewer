@@ -119,14 +119,13 @@ var
 begin
   CreateMenuNamedAnimations;
 
-  NamedAnimations := Scene.Animations;
-  try
-    MenuNamedAnimations.Clear;
-    AppendLooping;
-    for I := 0 to NamedAnimations.Count - 1 do
-      MenuNamedAnimations.Append(
-        TMenuItemAnimation.Create(Scene, NamedAnimations[I]));
-  finally FreeAndNil(NamedAnimations) end;
+  MenuNamedAnimations.Clear;
+  AppendLooping;
+
+  NamedAnimations := Scene.AnimationsList;
+  for I := 0 to NamedAnimations.Count - 1 do
+    MenuNamedAnimations.Append(
+      TMenuItemAnimation.Create(Scene, NamedAnimations[I]));
 end;
 
 end.
