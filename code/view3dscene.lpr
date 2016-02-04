@@ -2821,13 +2821,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     ProposedSaveName, Extension, FileFilters: string;
     SaveVersion: TX3DVersion;
-    Convertion: boolean;
+    Conversion: boolean;
   begin
     SaveVersion := Save3DVersion(Scene.RootNode);
-    Convertion := Save3DWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
+    Conversion := Save3DWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
 
     if SceneAnimation.ScenesCount > 1 then
-      if Convertion then
+      if Conversion then
       begin
         MessageOK(Window, 'This is a precalculated animation (like from Kanim or MD3 file). Converting it from VRML to X3D is not supported.');
         Exit;
@@ -2840,13 +2840,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
     if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     try
-      if Convertion then
+      if Conversion then
         Scene.BeforeNodesFree;
 
       Save3D(Scene.RootNode, ProposedSaveName, SaveGenerator,
         ExtractURIName(SceneURL), SaveVersion, Encoding, ForceConvertingToX3D);
 
-      if Convertion then
+      if Conversion then
         Scene.ChangedAll;
     except
       on E: Exception do
