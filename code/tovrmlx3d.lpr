@@ -62,7 +62,7 @@ begin
            VersionOptionHelp +NL+
            '  --encoding classic|xml' +NL+
            '                        Choose X3D encoding. Default is "classic".' +NL+
-           '  --force-x3d           Force convertion from VRML to X3D.' +NL+
+           '  --force-x3d           Force conversion from VRML to X3D.' +NL+
            '                        Note that if you choose XML encoding' +NL+
            '                        (by --encoding=xml), this is automatic.' +NL+
            '                        Note that this works sensibly only for VRML 2.0' +NL+

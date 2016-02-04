@@ -3823,7 +3823,7 @@ const
              '  --write-encoding classic|xml' +NL+
              '                        Choose X3D encoding to use with --write option.' +NL+
              '                        Default is "classic".' +NL+
-             '  --write-force-x3d     Force convertion from VRML to X3D with --write option.' +NL+
+             '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
              '                        Note that if you choose XML encoding' +NL+
              '                        (by --write-encoding=xml), this is automatic.' +NL+
              '                        Note that this works sensibly only for VRML 2.0' +NL+
