@@ -108,7 +108,7 @@ do_read_save ()
   # to any version we like, and output is always classic VRML --- so comparison
   # has no sense).
 
-  local FILE_EXTENSION="`stringoper ExtractFileExt \"$FILE\"`"
+  local FILE_EXTENSION="${FILE##*.}"
 
   if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
            '(' "$FILE_EXTENSION" = '.x3dv' ')' ')' -a \
@@ -171,8 +171,8 @@ do_save_xml_valid ()
   if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
     test_log 'Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
   else
-    local     SAVE_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3d`
-    local SAVE_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_save_xml_valid.x3dv`
+    local     SAVE_XML="${FILE##*.}_test_temporary_save_xml_valid.x3d"
+    local SAVE_CLASSIC="${FILE##*.}_test_temporary_save_xml_valid.x3dv"
 
     test_log 'Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
     run_tovrmlx3d "$SAVE_XML"     "$FILE"     --encoding=xml
@@ -264,8 +264,8 @@ filter_out_generator_meta ()
 do_view3dscene_and_tovrmlx3d_equal ()
 {
   test_log "Comparing $VIEW3DSCENE and $TOVRMLX3D output"
-  local VIEW3DSCENE_OUT=`stringoper ChangeFileExt "$FILE" _test_temporary_view3dscene_and_tovrmlx3d_equal_1`
-  local   TOVRMLX3D_OUT=`stringoper ChangeFileExt "$FILE" _test_temporary_view3dscene_and_tovrmlx3d_equal_2`
+  local VIEW3DSCENE_OUT="${FILE##*.}_test_temporary_view3dscene_and_tovrmlx3d_equal_1"
+  local   TOVRMLX3D_OUT="${FILE##*.}_test_temporary_view3dscene_and_tovrmlx3d_equal_2"
 
   run_view3dscene "$VIEW3DSCENE_OUT" "$FILE" --write
   run_tovrmlx3d   "$TOVRMLX3D_OUT" "$FILE"
