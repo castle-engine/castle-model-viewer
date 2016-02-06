@@ -9,7 +9,7 @@ install:
 # Run also "dircleaner . clean" here to really clean
 .PHONY: clean
 clean:
-	castle-engine clean
+	if which castle-engine > /dev/null; then castle-engine clean; else rm -f code/*.ppu code/*.o code/*.or code/*.rst code/*.rsj; fi
 	rm -f view3dscene view3dscene.exe code/view3dscene code/view3dscene.exe \
 	      tovrmlx3d tovrmlx3d.exe code/tovrmlx3d code/tovrmlx3d.exe
 	rm -Rf view3dscene.app tovrmlx3d.app macosx/view3dscene.app macosx/tovrmlx3d.app macosx/*.dmg
