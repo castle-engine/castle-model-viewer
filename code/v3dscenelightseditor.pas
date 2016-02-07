@@ -83,13 +83,14 @@ type
     Headlight: TAbstractLightNode;
     LightMenu: TLightMenu;
     HeadLightMenu: THeadLightMenu;
-    ItemsIndex: Integer;
     procedure AddLight(Node: TX3DNode);
     procedure DestructionNotification(Node: TX3DNode);
+    procedure ClickEditLight(Sender: TObject);
+    procedure ClickEditHeadlight(Sender: TObject);
+    procedure ClickClose(Sender: TObject);
     procedure AmbientColorChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure Click; override;
     destructor Destroy; override;
     { Do a partial destruction: remove everything that can have connections
       to existing scene. }
@@ -99,7 +100,6 @@ type
   TLightMenu = class(TV3DOnScreenMenu)
   strict private
     Light: TAbstractLightNode;
-    BackIndex: Integer;
     ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
@@ -110,10 +110,14 @@ type
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
+    procedure ClickOn(Sender: TObject);
+    procedure ClickShadows(Sender: TObject);
+    procedure ClickShadowVolumes(Sender: TObject);
+    procedure ClickShadowVolumesMain(Sender: TObject);
+    procedure ClickBack(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
-    procedure Click; override;
   end;
 
   TPositionalLightMenu = class(TLightMenu)
@@ -129,42 +133,38 @@ type
   TSpot1LightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode_1;
-    ItemsIndex: Integer;
     CutOffAngleSlider: TCastleFloatSlider;
     DropOffRateSlider: TCastleFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure DropOffRateChanged(Sender: TObject);
+    procedure ClickDirection(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode_1); reintroduce;
-    procedure Click; override;
   end;
 
   TSpotLightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode;
-    ItemsIndex: Integer;
     CutOffAngleSlider: TCastleFloatSlider;
     BeamWidthSlider: TCastleFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure BeamWidthChanged(Sender: TObject);
+    procedure ClickDirection(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
-    procedure Click; override;
   end;
 
   TDirectionalLightMenu = class(TLightMenu)
   strict private
     Light: TAbstractDirectionalLightNode;
-    ItemsIndex: Integer;
+    procedure ClickDirection(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode); reintroduce;
-    procedure Click; override;
   end;
 
   THeadLightMenu = class(TV3DOnScreenMenu)
   strict private
     Headlight: TAbstractLightNode;
-    BackIndex: Integer;
     AmbientIntensitySlider: TCastleFloatSlider;
     ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TCastleFloatSlider;
@@ -173,9 +173,9 @@ type
     procedure AttenuationChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
+    procedure ClickBack(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; AHeadlight: TAbstractLightNode); reintroduce;
-    procedure Click; override;
   end;
 
 { global utils --------------------------------------------------------------- }
@@ -220,9 +220,8 @@ begin
   SetCurrentMenu(nil);
 
   { We don't immediately free here LightsMenu instance, because this is called
-    also by virtual Click (when user chooses "Close Lights Editor" item),
-    and we cannot free ourselves from our own method, as TCastleOnScreenMenu.Press
-    doesn't expect it. So instead leave LightsMenu instance existing,
+    also by TLightsMenu.CickClose, and we should not free ourselves
+    from our own method. So instead leave LightsMenu instance existing,
     but make sure (for speed) that it's not connected by DestructionNotifications
     to our scene. }
   if LightsMenu <> nil then
@@ -338,6 +337,7 @@ constructor TLightsMenu.Create(AOwner: TComponent);
 var
   I: Integer;
   Light: TAbstractLightNode;
+  LightEditButton: TCastleMenuButton;
 begin
   inherited;
 
@@ -351,12 +351,14 @@ begin
   for I := 0 to Lights.Count - 1 do
   begin
     Light := Lights[I] as TAbstractLightNode;
-    Add(Format('Edit %d: %s', [I, Light.NiceName]));
+    LightEditButton := TCastleMenuButton.Create(Self);
+    LightEditButton.Tag := I;
+    LightEditButton.OnClick := @ClickEditLight;
+    Add(Format('Edit %d: %s', [I, Light.NiceName]), LightEditButton);
   end;
-  ItemsIndex := ControlsCount;
   AmbientColorSlider.AddToMenu(Self, 'Global Ambient Light', 'Red', 'Green', 'Blue');
-  Add('Edit Headlight');
-  Add('Close Lights Editor');
+  Add('Edit Headlight', @ClickEditHeadlight);
+  Add('Close Lights Editor', @ClickClose);
 end;
 
 destructor TLightsMenu.Destroy;
@@ -429,54 +431,56 @@ begin
   end;
 end;
 
-procedure TLightsMenu.Click;
+procedure TLightsMenu.ClickEditLight(Sender: TObject);
+var
+  Node: TAbstractLightNode;
+begin
+  FreeAndNil(LightMenu);
+  Node := Lights[CurrentItem] as TAbstractLightNode;
+  if Node is TSpotLightNode_1 then
+    LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
+  if Node is TSpotLightNode then
+    LightMenu := TSpotLightMenu.Create(Self, TSpotLightNode(Node)) else
+  if Node is TAbstractDirectionalLightNode then
+    LightMenu := TDirectionalLightMenu.Create(Self, TAbstractDirectionalLightNode(Node)) else
+  if Node is TAbstractPositionalLightNode then
+    LightMenu := TPositionalLightMenu.Create(Self, TAbstractPositionalLightNode(Node)) else
+    { fallback on TLightMenu, although currently we just capture all
+      possible descendants with specialized menu types above }
+    LightMenu := TLightMenu.Create(Self, Node);
+  LightMenu.AfterCreate;
+  SetCurrentMenu(LightMenu);
+end;
+
+procedure TLightsMenu.ClickEditHeadlight(Sender: TObject);
 var
   H: TLightInstance;
-  Node, NewHeadlight: TAbstractLightNode;
+  NewHeadlight: TAbstractLightNode;
 begin
-  inherited;
-  if CurrentItem < ItemsIndex then
+  if SceneManager.HeadlightInstance(H) then
   begin
-    FreeAndNil(LightMenu);
-    Node := Lights[CurrentItem] as TAbstractLightNode;
-    if Node is TSpotLightNode_1 then
-      LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
-    if Node is TSpotLightNode then
-      LightMenu := TSpotLightMenu.Create(Self, TSpotLightNode(Node)) else
-    if Node is TAbstractDirectionalLightNode then
-      LightMenu := TDirectionalLightMenu.Create(Self, TAbstractDirectionalLightNode(Node)) else
-    if Node is TAbstractPositionalLightNode then
-      LightMenu := TPositionalLightMenu.Create(Self, TAbstractPositionalLightNode(Node)) else
-      { fallback on TLightMenu, although currently we just capture all
-        possible descendants with specialized menu types above }
-      LightMenu := TLightMenu.Create(Self, Node);
-    LightMenu.AfterCreate;
-    SetCurrentMenu(LightMenu);
-  end else
-  if CurrentItem = ItemsIndex + 3 then
-  begin
-    if SceneManager.HeadlightInstance(H) then
-    begin
-      FreeAndNil(HeadLightMenu);
-      NewHeadlight := H.Node;
-      HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
-      SetCurrentMenu(HeadLightMenu);
+    FreeAndNil(HeadLightMenu);
+    NewHeadlight := H.Node;
+    HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
+    SetCurrentMenu(HeadLightMenu);
 
-      if Headlight <> NewHeadlight then
-      begin
-        if Headlight <> nil then
-          Headlight.DestructionNotifications.Remove(@DestructionNotification);
-        Headlight := NewHeadlight;
-        Headlight.DestructionNotifications.Add(@DestructionNotification);
-      end;
-    end else
-      MessageOK(Window, 'No headlight in level.' +NL+ NL+
-        'You have to turn on headlight first:' +NL+
-        '- by menu item "View -> Headlight" (Ctrl+H),' +NL+
-        '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.');
+    if Headlight <> NewHeadlight then
+    begin
+      if Headlight <> nil then
+        Headlight.DestructionNotifications.Remove(@DestructionNotification);
+      Headlight := NewHeadlight;
+      Headlight.DestructionNotifications.Add(@DestructionNotification);
+    end;
   end else
-  if CurrentItem = ItemsIndex + 4 then
-    LightsEditorClose;
+    MessageOK(Window, 'No headlight in level.' +NL+ NL+
+      'You have to turn on headlight first:' +NL+
+      '- by menu item "View -> Headlight" (Ctrl+H),' +NL+
+      '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.');
+end;
+
+procedure TLightsMenu.ClickClose(Sender: TObject);
+begin
+  LightsEditorClose;
 end;
 
 procedure TLightsMenu.AmbientColorChanged(Sender: TObject);
@@ -516,15 +520,19 @@ begin
 
   OnToggle := TCastleMenuToggle.Create(Self);
   OnToggle.Pressed := Light.FdOn.Value;
+  OnToggle.OnClick := @ClickOn;
 
   ShadowsToggle := TCastleMenuToggle.Create(Self);
   ShadowsToggle.Pressed := Light.FdShadows.Value;
+  ShadowsToggle.OnClick := @ClickShadows;
 
   ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
   ShadowVolumesToggle.Pressed := Light.FdShadowVolumes.Value;
+  ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
 
   ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
   ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
+  ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
 
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
@@ -537,41 +545,7 @@ end;
 
 procedure TLightMenu.AfterCreate;
 begin
-  BackIndex := ControlsCount;
-  Add('Back to Lights Menu');
-end;
-
-procedure TLightMenu.Click;
-begin
-  inherited;
-  case CurrentItem of
-    5: begin
-         OnToggle.Pressed := not OnToggle.Pressed;
-         Light.IsOn := OnToggle.Pressed;
-       end;
-    6: begin
-         if (Light is TPointLightNode_1) or
-            (Light is TPointLightNode) then
-         begin
-           MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
-           Exit;
-         end;
-
-         ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
-         Light.Shadows := ShadowsToggle.Pressed;
-       end;
-    7: begin
-         ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
-         Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
-       end;
-    8: begin
-         ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
-         Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
-       end;
-    else
-    if CurrentItem = BackIndex then
-      SetCurrentMenu(LightsMenu);
-  end;
+  Add('Back to Lights Menu', @ClickBack);
 end;
 
 procedure TLightMenu.ColorChanged(Sender: TObject);
@@ -587,6 +561,42 @@ end;
 procedure TLightMenu.AmbientIntensityChanged(Sender: TObject);
 begin
   Light.AmbientIntensity := AmbientIntensitySlider.Value;
+end;
+
+procedure TLightMenu.ClickOn(Sender: TObject);
+begin
+  OnToggle.Pressed := not OnToggle.Pressed;
+  Light.IsOn := OnToggle.Pressed;
+end;
+
+procedure TLightMenu.ClickShadows(Sender: TObject);
+begin
+  if (Light is TPointLightNode_1) or
+     (Light is TPointLightNode) then
+  begin
+    MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
+    Exit;
+  end;
+
+  ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
+  Light.Shadows := ShadowsToggle.Pressed;
+end;
+
+procedure TLightMenu.ClickShadowVolumes(Sender: TObject);
+begin
+  ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
+  Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
+end;
+
+procedure TLightMenu.ClickShadowVolumesMain(Sender: TObject);
+begin
+  ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
+  Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
+end;
+
+procedure TLightMenu.ClickBack(Sender: TObject);
+begin
+  SetCurrentMenu(LightsMenu);
 end;
 
 { TPositionalLightMenu ------------------------------------------------------- }
@@ -654,25 +664,20 @@ begin
   DropOffRateSlider.Value := Light.FdDropOffRate.Value;
   DropOffRateSlider.OnChange := @DropOffRateChanged;
 
-  ItemsIndex := ControlsCount;
-  Add('Direction ...');
+  Add('Direction ...', @ClickDirection);
   Add('Cut Off Angle', CutOffAngleSlider);
   Add('Drop Off Rate', DropOffRateSlider);
 end;
 
-procedure TSpot1LightMenu.Click;
+procedure TSpot1LightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  inherited;
-  if CurrentItem = ItemsIndex then
-  begin
-    Vector := Light.FdDirection.Value;
-    if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "C" to use current camera''s direction)',
-      Vector) then
-      Light.FdDirection.Send(Vector);
-  end;
+  Vector := Light.FdDirection.Value;
+  if MessageInputQueryDirection(Window, 'Change direction' +nl+
+    '(Input "C" to use current camera''s direction)',
+    Vector) then
+    Light.FdDirection.Send(Vector);
 end;
 
 procedure TSpot1LightMenu.CutOffAngleChanged(Sender: TObject);
@@ -704,25 +709,20 @@ begin
   BeamWidthSlider.Value := Light.FdBeamWidth.Value;
   BeamWidthSlider.OnChange := @BeamWidthChanged;
 
-  ItemsIndex := ControlsCount;
-  Add('Direction ...');
+  Add('Direction ...', @ClickDirection);
   Add('Cut Off Angle', CutOffAngleSlider);
   Add('Beam Width', BeamWidthSlider);
 end;
 
-procedure TSpotLightMenu.Click;
+procedure TSpotLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  inherited;
-  if CurrentItem = ItemsIndex then
-  begin
-    Vector := Light.Direction;
-    if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "C" to use current camera''s direction)',
-      Vector) then
-      Light.Direction := Vector;
-  end;
+  Vector := Light.Direction;
+  if MessageInputQueryDirection(Window, 'Change direction' +nl+
+    '(Input "C" to use current camera''s direction)',
+    Vector) then
+    Light.Direction := Vector;
 end;
 
 procedure TSpotLightMenu.CutOffAngleChanged(Sender: TObject);
@@ -741,24 +741,18 @@ constructor TDirectionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractDi
 begin
   inherited Create(AOwner, ALight);
   Light := ALight;
-
-  ItemsIndex := ControlsCount;
-  Add('Direction ...');
+  Add('Direction ...', @ClickDirection);
 end;
 
-procedure TDirectionalLightMenu.Click;
+procedure TDirectionalLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  inherited;
-  if CurrentItem = ItemsIndex then
-  begin
-    Vector := Light.Direction;
-    if MessageInputQueryDirection(Window, 'Change direction' +nl+
-      '(Input "C" to use current camera''s direction)',
-      Vector) then
-      Light.Direction := Vector;
-  end;
+  Vector := Light.Direction;
+  if MessageInputQueryDirection(Window, 'Change direction' +nl+
+    '(Input "C" to use current camera''s direction)',
+    Vector) then
+    Light.Direction := Vector;
 end;
 
 { THeadLightMenu --------------------------------------------------------- }
@@ -799,15 +793,12 @@ begin
     AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
   end;
 
-  BackIndex := ControlsCount;
-  Add('Back to Lights Menu');
+  Add('Back to Lights Menu', @ClickBack);
 end;
 
-procedure THeadLightMenu.Click;
+procedure THeadLightMenu.ClickBack(Sender: TObject);
 begin
-  inherited;
-  if CurrentItem = BackIndex then
-    SetCurrentMenu(LightsMenu);
+  SetCurrentMenu(LightsMenu);
 end;
 
 procedure THeadLightMenu.ColorChanged(Sender: TObject);
