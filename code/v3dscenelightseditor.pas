@@ -433,10 +433,12 @@ end;
 
 procedure TLightsMenu.ClickEditLight(Sender: TObject);
 var
+  LightIndex: Integer;
   Node: TAbstractLightNode;
 begin
   FreeAndNil(LightMenu);
-  Node := Lights[CurrentItem] as TAbstractLightNode;
+  LightIndex := (Sender as TCastleMenuButton).Tag;
+  Node := Lights[LightIndex] as TAbstractLightNode;
   if Node is TSpotLightNode_1 then
     LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
   if Node is TSpotLightNode then
