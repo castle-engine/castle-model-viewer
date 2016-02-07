@@ -108,7 +108,8 @@ do_read_save ()
   # to any version we like, and output is always classic VRML --- so comparison
   # has no sense).
 
-  local FILE_EXTENSION="${FILE##*.}"
+  # Like ExtractFileExt from $FILE --- get (last) extension, including the dot
+  local FILE_EXTENSION=".${FILE##*.}"
 
   if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
            '(' "$FILE_EXTENSION" = '.x3dv' ')' ')' -a \
@@ -145,8 +146,8 @@ do_read_save
 
 do_compare_classic_save ()
 {
-  local SAVE_CLASSIC_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_old.x3dv`
-  local SAVE_CLASSIC_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_save_new.x3dv`
+  local SAVE_CLASSIC_OLD="${FILE%.*}_test_temporary_classic_save_old.x3dv"
+  local SAVE_CLASSIC_NEW="${FILE%.*}_test_temporary_classic_save_new.x3dv"
 
   test_log 'Comparing classic save with' "$VIEW3DSCENE_OTHER"
   run_view3dscene_other "$SAVE_CLASSIC_OLD" "$FILE" --write-to-vrml
@@ -171,8 +172,9 @@ do_save_xml_valid ()
   if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
     test_log 'Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
   else
-    local     SAVE_XML="${FILE##*.}_test_temporary_save_xml_valid.x3d"
-    local SAVE_CLASSIC="${FILE##*.}_test_temporary_save_xml_valid.x3dv"
+    # Like ChangeFileExt $FILE ..., must preserve directory
+    local     SAVE_XML="${FILE%.*}_test_temporary_save_xml_valid.x3d"
+    local SAVE_CLASSIC="${FILE%.*}_test_temporary_save_xml_valid.x3dv"
 
     test_log 'Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
     run_tovrmlx3d "$SAVE_XML"     "$FILE"     --encoding=xml
@@ -208,9 +210,9 @@ do_save_xml_valid
 
 do_compare_classic_xml_save ()
 {
-  local SAVE_1_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_1.x3dv`
-  local     SAVE_2_XML=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3d`
-  local SAVE_2_CLASSIC=`stringoper ChangeFileExt "$FILE" _test_temporary_classic_xml_2.x3dv`
+  local SAVE_1_CLASSIC="${FILE%.*}_test_temporary_classic_xml_1.x3dv"
+  local     SAVE_2_XML="${FILE%.*}_test_temporary_classic_xml_2.x3d"
+  local SAVE_2_CLASSIC="${FILE%.*}_test_temporary_classic_xml_2.x3dv"
 
   test_log 'Comparing saving to classic vs saving to xml and then classic'
   run_tovrmlx3d "$SAVE_1_CLASSIC" "$FILE"  --force-x3d --encoding=classic
@@ -264,8 +266,9 @@ filter_out_generator_meta ()
 do_view3dscene_and_tovrmlx3d_equal ()
 {
   test_log "Comparing $VIEW3DSCENE and $TOVRMLX3D output"
-  local VIEW3DSCENE_OUT="${FILE##*.}_test_temporary_view3dscene_and_tovrmlx3d_equal_1"
-  local   TOVRMLX3D_OUT="${FILE##*.}_test_temporary_view3dscene_and_tovrmlx3d_equal_2"
+  # Like ChangeFileExt $FILE ..., must preserve directory
+  local VIEW3DSCENE_OUT="${FILE%.*}_test_temporary_view3dscene_and_tovrmlx3d_equal_1"
+  local   TOVRMLX3D_OUT="${FILE%.*}_test_temporary_view3dscene_and_tovrmlx3d_equal_2"
 
   run_view3dscene "$VIEW3DSCENE_OUT" "$FILE" --write
   run_tovrmlx3d   "$TOVRMLX3D_OUT" "$FILE"
@@ -295,8 +298,8 @@ do_view3dscene_and_tovrmlx3d_equal ()
 
 do_compare_screenshot ()
 {
-  local SCREENSHOT_OLD=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_old.png`
-  local SCREENSHOT_NEW=`stringoper ChangeFileExt "$FILE" _test_temporary_screen_new.png`
+  local SCREENSHOT_OLD="${FILE%.*}_test_temporary_screen_old.png"
+  local SCREENSHOT_NEW="${FILE%.*}_test_temporary_screen_new.png"
 
   local DELETE_SCREENSHOTS='t'
 
