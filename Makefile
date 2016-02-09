@@ -1,10 +1,8 @@
+# build / clean --------------------------------------------------------------
+
 .PHONY: compile
 compile:
 	./compile.sh
-
-.PHONY: install
-install:
-	$(MAKE) -C desktop/ install
 
 # Run also "dircleaner . clean" here to really clean
 .PHONY: clean
@@ -13,6 +11,31 @@ clean:
 	rm -f view3dscene view3dscene.exe code/view3dscene code/view3dscene.exe \
 	      tovrmlx3d tovrmlx3d.exe code/tovrmlx3d code/tovrmlx3d.exe
 	rm -Rf view3dscene.app tovrmlx3d.app macosx/view3dscene.app macosx/tovrmlx3d.app macosx/*.dmg
+
+# install / uninstall --------------------------------------------------------
+#
+# By default view3dscene is installed system-wide to /usr/local .
+# You can run "make" followed by "sudo make install" to have it
+# ready on a typical Unix system.
+
+# Standard installation dirs, following conventions on
+# http://www.gnu.org/prep/standards/html_node/Directory-Variables.html#Directory-Variables
+PREFIX=$(DESTDIR)/usr/local
+EXEC_PREFIX=$(PREFIX)
+BINDIR=$(EXEC_PREFIX)/bin
+DATAROOTDIR=$(PREFIX)/share
+DATADIR=$(DATAROOTDIR)
+
+.PHONY: install
+install:
+	install view3dscene $(BINDIR)
+	cd desktop/ && ./install.sh "$(DATADIR)"
+
+.PHONY: uninstall
+uninstall:
+	rm -f  $(BINDIR)/view3dscene
+
+# code generation ------------------------------------------------------------
 
 # Run a couple of child targets to autogenerate some code
 .PHONY: generate-code
@@ -27,4 +50,3 @@ clean-code:
 	$(MAKE) -C images/ clean
 	$(MAKE) -C internal_scenes/ clean
 	$(MAKE) -C screen_effects/ clean
-

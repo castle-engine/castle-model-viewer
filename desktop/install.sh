@@ -6,25 +6,25 @@ set -eu
 
 APP_NAME='view3dscene'
 
-# For non-user install, change this to
-#   SHARE_PREFIX = /usr/local/share
-# For Debian package, you probably want to set this to
-#   SHARE_PREFIX = $(DESTDIR)/usr/share
-SHARE_PREFIX="$HOME"/.local/share
+# Use share directory from parameter. By default use user-local directory
+# (this makes this script useful for normal users, documented on view3dscene website).
+SHARE_PREFIX="${1:-${HOME}/.local/share}"
+
+echo "Installing desktop stuff (MIME types, icons, desktop file) to ${SHARE_PREFIX}"
 
 # Install mime types:
-mkdir -p "$SHARE_PREFIX"/mime/packages/
-cp -f "$APP_NAME".xml "$SHARE_PREFIX"/mime/packages/
+install -d "$SHARE_PREFIX"/mime/packages/
+install "$APP_NAME".xml "$SHARE_PREFIX"/mime/packages/
 update-mime-database "$SHARE_PREFIX"/mime
 
 # Install icons:
-mkdir -p "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
-cp -f "$APP_NAME".svg "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
+install -d "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
+install "$APP_NAME".svg "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
 
 # Install also 48x48 PNG version, this helps nautilus to display icon
 # properly on the desktop.
-mkdir -p "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
-cp -f "$APP_NAME".png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
+install -d "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
+install "$APP_NAME".png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
 
 # Is this needed?
 #if which update-icon-caches >/dev/null 2>&1 ; then update-icon-caches "$SHARE_PREFIX"/icons/hicolor/; fi
@@ -33,8 +33,8 @@ cp -f "$APP_NAME".png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
 # (Do this at the end, when mime and icons are already installed;
 # I don't know for sure what update-desktop-database actually does,
 # it's better to be safe).
-mkdir -p "$SHARE_PREFIX"/applications/
-cp -f "$APP_NAME".desktop "$SHARE_PREFIX"/applications/
+install -d "$SHARE_PREFIX"/applications/
+install "$APP_NAME".desktop "$SHARE_PREFIX"/applications/
 if which update-desktop-database >/dev/null 2>&1 ; then update-desktop-database -q "$SHARE_PREFIX"/applications/; fi
 
 echo "Installed $APP_NAME (menu entries, icons, mime types): all OK."

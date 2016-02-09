@@ -3,10 +3,12 @@ set -eu
 
 # Compile view3dscene and tovrmlx3d.
 
-# Force rebuilding CastleWindow unit with proper backend.
-cd ../castle_game_engine/
-make --quiet clean-window
-cd ../view3dscene/
+if [ -d ../castle_game_engine ]; then
+  # Force rebuilding CastleWindow unit with proper backend.
+  cd ../castle_game_engine/
+  make --quiet clean-window
+  cd ../view3dscene/
+fi
 
 # fpc -dRELEASE ${CASTLE_FPC_OPTIONS:-} @castle-fpc.cfg ../view3dscene/code/view3dscene.lpr
 # Compile view3dscene binary using castle-engine,
