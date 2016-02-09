@@ -10,7 +10,7 @@ APP_NAME='view3dscene'
 # (this makes this script useful for normal users, documented on view3dscene website).
 SHARE_PREFIX="${1:-${HOME}/.local/share}"
 
-echo "Installing desktop stuff (MIME types, icons, desktop file) to ${SHARE_PREFIX}"
+echo -n "Installing $APP_NAME desktop stuff (MIME types, icons, desktop file) to ${SHARE_PREFIX}... "
 
 # Install mime types:
 install -d "$SHARE_PREFIX"/mime/packages/
@@ -37,4 +37,4 @@ install -d "$SHARE_PREFIX"/applications/
 install "$APP_NAME".desktop "$SHARE_PREFIX"/applications/
 if which update-desktop-database >/dev/null 2>&1 ; then update-desktop-database -q "$SHARE_PREFIX"/applications/; fi
 
-echo "Installed $APP_NAME (menu entries, icons, mime types): all OK."
+echo "installed OK."
