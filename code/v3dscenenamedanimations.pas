@@ -114,7 +114,7 @@ procedure RefreshNamedAnimations(const Scene: TCastleScene);
   end;
 
 var
-  NamedAnimations: TStringList;
+  NamedAnimations: TStrings;
   I: Integer;
 begin
   CreateMenuNamedAnimations;
