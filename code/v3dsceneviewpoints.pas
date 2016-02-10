@@ -434,7 +434,7 @@ begin
     Viewpoint.GetView(Pos, Dir, Up, GravityUp);
     Scene.CameraTransition(SceneManager.Camera, Pos, Dir, Up, GravityUp);
   end else
-    Viewpoint.EventSet_Bind.Send(true, Scene.Time);
+    Viewpoint.EventSet_Bind.Send(true);
 end;
 
 initialization
