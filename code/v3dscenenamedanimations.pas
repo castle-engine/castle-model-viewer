@@ -64,10 +64,15 @@ type
 
 constructor TMenuItemAnimation.Create(
   const AScene: TCastleScene; const AnAnimationName: string);
+var
+  MenuCaption: string;
 begin
   Scene := AScene;
   AnimationName := AnAnimationName;
-  inherited Create(SQuoteMenuEntryCaption(SForCaption(AnimationName)), 0 { unused });
+  MenuCaption := Format('%s (%f)',
+    [ SQuoteMenuEntryCaption(SForCaption(AnimationName)),
+      AScene.AnimationDuration(AnimationName) ]);
+  inherited Create(MenuCaption, 0 { unused });
 end;
 
 function TMenuItemAnimation.DoClick: boolean;
