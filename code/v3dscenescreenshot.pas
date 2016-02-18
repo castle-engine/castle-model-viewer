@@ -20,12 +20,13 @@
   ----------------------------------------------------------------------------
 }
 
-{ }
+{ Saving screenshots / movies. }
 unit V3DSceneScreenShot;
 
 interface
 
-uses CastleUtils, Classes, CastleClassUtils, CastleTimeUtils, FGL, CastleParameters;
+uses Classes, FGL,
+  CastleUtils, CastleClassUtils, CastleTimeUtils, CastleParameters;
 
 type
   EInvalidScreenShotURL = class(EInvalidParams);

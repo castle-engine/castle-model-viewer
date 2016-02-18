@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ }
+{ Scene transformations (available through Edit menu). }
 unit V3DSceneSceneChanges;
 
 interface
