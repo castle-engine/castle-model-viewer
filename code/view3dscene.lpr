@@ -4039,10 +4039,7 @@ begin
       { init "scene global variables" to non-null values }
       LoadClearScene;
       try
-        Theme.MessageInputTextColor := Vector4Single(0, 0.4, 0, 1.0);
-        Theme.MessageTextColor := Black;
-        Theme.Images[tiWindow] := WindowGray;
-        Theme.Images[tiLabel] := FrameYellowBlack;
+        Theme.DialogsLight;
 
         Window.GtkIconName := 'view3dscene';
         Window.MainMenu := CreateMainMenu;
