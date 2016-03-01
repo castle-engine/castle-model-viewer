@@ -55,7 +55,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
-  CastleImages, CastleCubeMaps, CastleDDS, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
+  CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
   CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils,
@@ -2657,9 +2657,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     end;
   end;
 
-  procedure ScreenShotToCubeMapDDS;
+  procedure ScreenShotToCubeMapComposite;
   var
-    DDS: TDDSImage;
+    Composite: TCompositeImage;
     URL: string;
     Size: Cardinal;
   begin
@@ -2673,14 +2673,14 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
-        DDS := GLCaptureCubeMapDDS(Size, SceneManager.Camera.GetPosition,
+        Composite := GLCaptureCubeMapComposite(Size, SceneManager.Camera.GetPosition,
           @TV3DSceneManager(SceneManager).RenderFromViewEverything,
           SceneManager.Projection.ProjectionNear,
           SceneManager.Projection.ProjectionFar);
         try
           glViewport(Window.Rect);
-          DDS.SaveToFile(URL);
-        finally FreeAndNil(DDS) end;
+          Composite.SaveToFile(URL);
+        finally FreeAndNil(Composite) end;
       end;
     end;
   end;
@@ -3153,7 +3153,7 @@ begin
   540: ScreenShotToVideo(false);
   542: ScreenShotToVideo(true);
   550: ScreenShotToCubeMap;
-  555: ScreenShotToCubeMapDDS;
+  555: ScreenShotToCubeMapComposite;
   560: ScreenShotDepthToImage;
   570: ControlsOnScreenshot := not ControlsOnScreenshot;
 
