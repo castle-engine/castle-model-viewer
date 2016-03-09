@@ -33,7 +33,7 @@ unit V3DSceneTextureFilters;
 interface
 
 uses CastleUtils, CastleVectors, X3DNodes,
-  CastlePrecalculatedAnimation, CastleGLUtils, CastleGLImages, CastleWindow;
+  CastleScene, CastleGLUtils, CastleGLImages, CastleWindow;
 
 const
   MinificationFilterNames: array [TMinificationFilter] of string =
@@ -48,13 +48,13 @@ const
   ( 'Nearest (Fastest)',
     'Linear (Best Quality)');
 
-procedure InitTextureFilters(SceneAnimation: TCastlePrecalculatedAnimation);
+procedure InitTextureFilters(Scene: TCastleScene);
 
 function MinificationFilter: TMinificationFilter;
-procedure SetMinificationFilter(Value: TMinificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMinificationFilter(Value: TMinificationFilter; Scene: TCastleScene);
 
 function MagnificationFilter: TMagnificationFilter;
-procedure SetMagnificationFilter(Value: TMagnificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMagnificationFilter(Value: TMagnificationFilter; Scene: TCastleScene);
 
 procedure MenuAppendMinificationFilters(M: TMenu; BaseIntData: Cardinal);
 procedure MenuAppendMagnificationFilters(M: TMenu; BaseIntData: Cardinal);
@@ -65,28 +65,28 @@ var
   FMinificationFilter: TMinificationFilter;
   FMagnificationFilter: TMagnificationFilter;
 
-procedure InitTextureFilters(SceneAnimation: TCastlePrecalculatedAnimation);
+procedure InitTextureFilters(Scene: TCastleScene);
 begin
-  SetMinificationFilter(minLinearMipmapLinear, SceneAnimation);
-  SetMagnificationFilter(magLinear, SceneAnimation);
+  SetMinificationFilter(minLinearMipmapLinear, Scene);
+  SetMagnificationFilter(magLinear, Scene);
 end;
 
 function MinificationFilter: TMinificationFilter;
 begin Result := FMinificationFilter end;
 
-procedure SetMinificationFilter(Value: TMinificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMinificationFilter(Value: TMinificationFilter; Scene: TCastleScene);
 begin
   FMinificationFilter := value;
-  SceneAnimation.Attributes.MinificationFilter := Value;
+  Scene.Attributes.MinificationFilter := Value;
 end;
 
 function MagnificationFilter: TMagnificationFilter;
 begin Result := FMagnificationFilter end;
 
-procedure SetMagnificationFilter(Value: TMagnificationFilter; SceneAnimation: TCastlePrecalculatedAnimation);
+procedure SetMagnificationFilter(Value: TMagnificationFilter; Scene: TCastleScene);
 begin
   FMagnificationFilter := value;
-  SceneAnimation.Attributes.MagnificationFilter := Value;
+  Scene.Attributes.MagnificationFilter := Value;
 end;
 
 procedure MenuAppendMinificationFilters(M: TMenu; BaseIntData: Cardinal);

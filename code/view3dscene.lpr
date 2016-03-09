@@ -63,10 +63,8 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleGLCubeMaps, CastleControls, CastleGLShaders,
   CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
-  X3DFields, CastleShapeOctree,
-  X3DNodes, X3DLoad, CastleScene, X3DTriangles,
-  CastleSceneCore, X3DNodesDetailOptions,
-  X3DCameraUtils, CastlePrecalculatedAnimation, CastleBackground,
+  X3DFields, CastleShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
+  CastleSceneCore, X3DNodesDetailOptions, X3DCameraUtils, CastleBackground,
   CastleRenderer, CastleShapes, CastleRenderingCamera, X3DShadowMaps, CastleSceneManager,
   CastleMaterialProperties,
   { view3dscene-specific units: }
@@ -92,19 +90,13 @@ var
     and FreeScene.
     Note that Window.Caption also should be modified only by those procedures.
 
-    In this program's comments I often talk about "null values" of these
-    variables, "null values" mean that these variables have some *defined
-    but useless* values, i.e.
-      SceneAnimation.Loaded = false
-      SceneURL = '' }
-  { Note that only one SceneAnimation object is created and present for the whole
-    lifetime of this program, i.e. when I load new scene (from "Open"
-    menu item) I DO NOT free and create new SceneAnimation object.
-    Instead I'm only freeing and creating underlying scenes
-    (by Close / Load of TCastlePrecalculatedAnimation).
-    This way I'm preserving values of all Attributes.Xxx when opening new scene
+    Note that only one Scene object is created and present for the whole
+    lifetime of this program. When we load new scene (from "Open"
+    menu item) we DO NOT free and create new Scene object.
+    Instead we only free and create underlying root node (TCastleScene.Load).
+    This way we're preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
-  SceneAnimation: TCastlePrecalculatedAnimation;
+  Scene: TCastleScene;
   SceneURL: string;
 
   SelectedItem: PTriangle;
@@ -137,7 +129,7 @@ var
 
     When false, this also makes Time stopped (just like
     AnimationTimePlaying = @false. IOW, always
-    SceneAnimation.TimePlaying := AnimationTimePlaying and ProcessEventsWanted.)
+    Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted.)
 
     This is simpler for user --- ProcessEventsWanted=false is something
     stricly "stronger" than AnimationTimePlaying=false. Actually, the engine
@@ -155,7 +147,6 @@ var
   ToolbarPanel: TCastlePanel;
   CollisionsButton: TCastleButton;
 
-  AnimationTimeSpeedWhenLoading: TFloatTime = 1.0;
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
 
@@ -279,17 +270,6 @@ end;
 
 { Helper functions ----------------------------------------------------------- }
 
-{ First animation scene. Always present when loaded,
-  nil if not (although our SceneAnimation tries to always stay loaded).
-  We use it for VRML/X3D events, and all other stuff where
-  a single scene is needed. }
-function Scene: TCastleScene;
-begin
-  if SceneAnimation.Loaded then
-    Result := SceneAnimation.Scenes[0] else
-    Result := nil;
-end;
-
 procedure UpdateSelectedEnabled;
 begin
   if MenuSelectedInfo <> nil then
@@ -322,19 +302,18 @@ end;
 
 { Return currently used collisions octree.
 
-  Note: When SceneAnimation.Collides = true, octree is always initialized
+  Note: When Scene.Collides = true, octree is always initialized
   (SceneOctreeCreate is called, and corresponding SceneOctreeDestroy
   was not).
-  Otherwise, when SceneAnimation.Collides = false, octree *may* be available
-  but doesn't have to. When setting SceneAnimation.Collides to false we do not
+  Otherwise, when Scene.Collides = false, octree *may* be available
+  but doesn't have to. When setting Scene.Collides to false we do not
   immediately destroy the octree (in case user will just go back
-  to SceneAnimation.Collides = true next), but it will be destroyed on next
+  to Scene.Collides = true next), but it will be destroyed on next
   rebuild of octree (when we will just destroy old and not recreate new).
 }
 function SceneOctreeCollisions: TBaseTrianglesOctree;
 begin
-  if (SceneAnimation <> nil) and
-     (Scene <> nil) and
+  if (Scene <> nil) and
      (Scene.OctreeCollisions <> nil) then
     Result := Scene.OctreeCollisions else
     Result := nil;
@@ -342,23 +321,22 @@ end;
 
 function SceneOctreeRendering: TShapeOctree;
 begin
-  if (SceneAnimation <> nil) and
-     (Scene <> nil) and
+  if (Scene <> nil) and
      (Scene.OctreeRendering <> nil) then
     Result := Scene.OctreeRendering else
     Result := nil;
 end;
 
 { This calls SceneManager.PrepareResources
-  (that causes SceneAnimation.PrepareResources).
+  (that causes Scene.PrepareResources).
   Additionally, if AllowProgess and some other conditions are met,
   this shows progress of operation.
 
   Remember that you can call this only when gl context is already active
-  (SceneAnimation.PrepareResources requires this) }
+  (Scene.PrepareResources requires this) }
 procedure PrepareResources(AllowProgress: boolean);
 begin
-  if AllowProgress and (SceneAnimation.ScenesCount > 1) then
+  if AllowProgress then
     SceneManager.PrepareResources('Preparing animation') else
     SceneManager.PrepareResources;
 end;
@@ -368,14 +346,13 @@ procedure SceneOctreeCreate; forward;
 procedure SetCollisions(const Value: boolean;
   const NeedMenuUpdate: boolean = true);
 begin
-  if SceneAnimation.Collides <> Value then
+  if Scene.Collides <> Value then
   begin
-    SceneAnimation.Collides := Value;
+    Scene.Collides := Value;
     CollisionsButton.Pressed := Value;
     if NeedMenuUpdate then
       MenuCollisions.Checked := Value;
-    if SceneAnimation.Collides and
-      (SceneAnimation.FirstScene.OctreeCollisions = nil) then
+    if Scene.Collides and (Scene.OctreeCollisions = nil) then
       SceneOctreeCreate;
   end;
 end;
@@ -438,50 +415,47 @@ const
     I: Integer;
     S: string;
   begin
-    if SceneAnimation.ScenesCount = 1 then
+    if Scene.PointingDeviceOverItem <> nil then
+      Over := Scene.PointingDeviceSensors else
+      Over := nil;
+    Active := Scene.PointingDeviceActiveSensors;
+
+    if (Active.Count <> 0) or
+       ((Over <> nil) and
+        (Over.Count <> 0)) then
     begin
-      if Scene.PointingDeviceOverItem <> nil then
-        Over := Scene.PointingDeviceSensors else
-        Over := nil;
-      Active := Scene.PointingDeviceActiveSensors;
+      { Display sensors active but not over.
+        We do not just list all active sensors in the 1st pass,
+        because we prefer to list active sensors in the (more stable) order
+        they have on Over list. See also g3l_stapes_dbg.wrl testcase. }
+      for I := 0 to Active.Count - 1 do
+        if (Over = nil) or
+           (Over.IndexOf(Active[I]) = -1) then
+          Text.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
 
-      if (Active.Count <> 0) or
-         ((Over <> nil) and
-          (Over.Count <> 0)) then
-      begin
-        { Display sensors active but not over.
-          We do not just list all active sensors in the 1st pass,
-          because we prefer to list active sensors in the (more stable) order
-          they have on Over list. See also g3l_stapes_dbg.wrl testcase. }
-        for I := 0 to Active.Count - 1 do
-          if (Over = nil) or
-             (Over.IndexOf(Active[I]) = -1) then
-            Text.Append(HighlightBegin + DescribeSensor(Active[I]) + HighlightEnd);
+      { Display sensors over which the mouse hovers (and enabled).
+        Highlight active sensors on the list. }
+      if Over <> nil then
+        for I := 0 to Over.Count - 1 do
+          if Over.Enabled(I) then
+          begin
+            S := DescribeSensor(Over[I]);
+            if Active.IndexOf(Over[I]) <> -1 then
+              S := HighlightBegin + S + HighlightEnd;
+            Text.Append(S);
+          end;
 
-        { Display sensors over which the mouse hovers (and enabled).
-          Highlight active sensors on the list. }
-        if Over <> nil then
-          for I := 0 to Over.Count - 1 do
-            if Over.Enabled(I) then
-            begin
-              S := DescribeSensor(Over[I]);
-              if Active.IndexOf(Over[I]) <> -1 then
-                S := HighlightBegin + S + HighlightEnd;
-              Text.Append(S);
-            end;
+      { Note that sensors that are "active and over" are undistinguishable
+        from "active and not over".
+        This means that a tiny bit of information is lost
+        (because you are not *always* over an active sensor, so this way
+        you don't know if you're over or not over an active sensor).
+        But it's not really useful information in practice, and hiding it
+        makes the sensors status look much cleaner. }
 
-        { Note that sensors that are "active and over" are undistinguishable
-          from "active and not over".
-          This means that a tiny bit of information is lost
-          (because you are not *always* over an active sensor, so this way
-          you don't know if you're over or not over an active sensor).
-          But it's not really useful information in practice, and hiding it
-          makes the sensors status look much cleaner. }
-
-        { a blank line, separating from the rest of status, if needed }
-        if Text.Count <> 0 then
-          Text.Append('');
-      end;
+      { a blank line, separating from the rest of status, if needed }
+      if Text.Count <> 0 then
+        Text.Append('');
     end;
   end;
 
@@ -507,7 +481,7 @@ begin
 
   DescribeSensors;
 
-  { S := Format('Collision detection: %s', [ BoolToStrOO[SceneAnimation.Collides] ]);
+  { S := Format('Collision detection: %s', [ BoolToStrOO[Scene.Collides] ]);
   if SceneOctreeCollisions = nil then
     S += ' (octree resources released)';
   Text.Append(S); }
@@ -526,22 +500,21 @@ begin
 
   { if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[SceneAnimation.Attributes.UseSceneLights];
+   s := BoolToStrOO[Scene.Attributes.UseSceneLights];
   Text.Append(Format('Use scene lights: %s', [s])); }
 
-  if SceneAnimation.Attributes.UseOcclusionQuery or
-     SceneAnimation.Attributes.UseHierarchicalOcclusionQuery then
+  if Scene.Attributes.UseOcclusionQuery or
+     Scene.Attributes.UseHierarchicalOcclusionQuery then
     S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
     S := '';
   Text.Append(Format('Rendered Shapes : %d%s of %d ',
     [ Statistics.ShapesRendered, S,
       Statistics.ShapesVisible ]) + OctreeDisplayStatus);
 
-  if SceneAnimation.TimeAtLoad = 0.0 then
-    S := Format('World time: %d', [Trunc(SceneAnimation.Time)]) else
+  if Scene.TimeAtLoad = 0.0 then
+    S := Format('World time: %d', [Trunc(Scene.Time)]) else
     S := Format('World time: load time + %d = %d',
-      [Trunc(SceneAnimation.Time - SceneAnimation.TimeAtLoad),
-       Trunc(SceneAnimation.Time)]);
+      [Trunc(Scene.Time - Scene.TimeAtLoad), Trunc(Scene.Time)]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   if not ProcessEventsWanted then
@@ -587,27 +560,17 @@ begin
       (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
     glEnable(GL_DEPTH_TEST);
 
-    { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
-    glLineWidth(SceneAnimation.Attributes.LineWidth);
+    { Use Scene.Attributes.LineWidth for our visualizations as well }
+    glLineWidth(Scene.Attributes.LineWidth);
 
-    OctreeDisplay(SceneAnimation);
+    OctreeDisplay(Scene);
 
     if ShowBBox then
     begin
       {$ifndef OpenGLES} //TODO-es
-      { Display current bounding box only if there's a chance that it's
-        different than whole animation BoundingBox --- this requires that animation
-        has at least two frames. }
-      if SceneAnimation.ScenesCount > 1 then
-      begin
-        glColorv(Red);
-        if not SceneAnimation.CurrentScene.BoundingBox.IsEmpty then
-          glDrawBox3DWire(SceneAnimation.CurrentScene.BoundingBox);
-      end;
-
       glColorv(Green);
-      if not SceneAnimation.BoundingBox.IsEmpty then
-        glDrawBox3DWire(SceneAnimation.BoundingBox);
+      if not Scene.BoundingBox.IsEmpty then
+        glDrawBox3DWire(Scene.BoundingBox);
       {$endif}
     end;
 
@@ -691,8 +654,8 @@ begin
 
   if FillMode = fmSilhouetteBorderEdges then
   begin
-    { Use SceneAnimation.Attributes.LineWidth for our visualizations as well }
-    glLineWidth(SceneAnimation.Attributes.LineWidth);
+    { Use Scene.Attributes.LineWidth for our visualizations as well }
+    glLineWidth(Scene.Attributes.LineWidth);
     RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene);
     RenderVisualizations;
   end else
@@ -825,7 +788,7 @@ class procedure THelper.BoundViewpointChanged(Sender: TObject);
 var
   V: TAbstractViewpointNode;
 begin
-  V := SceneManager.MainScene.ViewpointStack.Top;
+  V := Scene.ViewpointStack.Top;
   Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
 end;
 
@@ -870,11 +833,11 @@ procedure SceneOctreeCreate;
 var
   OldRender, OldBeforeRender: TContainerEvent;
 begin
-  { Do not create octrees when SceneAnimation.Collides = false. This makes
-    setting SceneAnimation.Collides to false an optimization: octree doesn't have to
+  { Do not create octrees when Scene.Collides = false. This makes
+    setting Scene.Collides to false an optimization: octree doesn't have to
     be recomputed when animation frame changes, or new scene is loaded etc. }
 
-  if SceneAnimation.Collides then
+  if Scene.Collides then
   begin
     { Beware: constructing octrees will cause progress drawing,
       and progress drawing may cause SaveScreen,
@@ -919,25 +882,12 @@ begin
   UpdateSelectedEnabled;
 end;
 
-{ Frees (and sets to some null values) "scene global variables".
-
-  Note about OpenGL context: remember that calling Close
-  on SceneAnimation also calls GLContextClose  that closes all connections
-  of Scene to OpenGL context. This means that:
-  1) SceneAnimation must not be Loaded, or Scene must not have any
-     connections with OpenGL context (like e.g. after calling
-     SceneAnimation.GLContextClose)
-  2) or you must call FreeScene in the same OpenGL context that the
-     SceneAnimation is connected to. }
+{ Frees (and sets to some null values) "scene global variables". }
 procedure FreeScene;
 begin
   SceneOctreeFree;
 
-  SceneAnimation.Close;
-  { SceneAnimation.Close must free all scenes, including FirstScene,
-    which should (through free notification) set to nil also
-    SceneManager.MainScene }
-  Assert(SceneManager.MainScene = nil);
+  // Scene.Close;
 
   Viewpoints.Recalculate(nil);
   if MenuNamedAnimations <> nil then
@@ -949,22 +899,6 @@ begin
     MenuReopen.Enabled := false;
 
   Unselect;
-end;
-
-{ Update state of ProcessEvents for all SceneAnimation.Scenes[].
-
-  This looks at ProcessEventsWanted and SceneAnimation.ScenesCount,
-  so should be repeated when they change, and when new Scenes[] are loaded. }
-procedure UpdateProcessEvents;
-var
-  I: Integer;
-  Value: boolean;
-begin
-  { Always disable ProcessEvents for TCastlePrecalculatedAnimation consisting of many models. }
-  Value := ProcessEventsWanted and (SceneAnimation.ScenesCount = 1);
-
-  for I := 0 to SceneAnimation.ScenesCount - 1 do
-    SceneAnimation.Scenes[I].ProcessEvents := Value;
 end;
 
 procedure LoadClearScene; forward;
@@ -1012,26 +946,11 @@ procedure LoadClearScene; forward;
   This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
-  RootNodes: TX3DNodeList;
-  ATimes: TSingleList;
-  ScenesPerTime: Cardinal;
-  const EqualityEpsilon: Single;
-  TimeLoop, TimeBackwards: boolean;
-
+  RootNode: TX3DRootNode;
   ASceneURL: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
   InitializeCamera: boolean;
-
   UseInitialVars: boolean = true);
-
-  procedure ScaleAll(A: TSingleList; const Value: Single);
-  var
-    I: Integer;
-  begin
-    for I := 0 to A.Count - 1 do
-      A.L[I] *= Value;
-  end;
-
 var
   NewCaption: string;
   I: Integer;
@@ -1042,27 +961,12 @@ begin
   try
     SceneURL := ASceneURL;
 
-    if AnimationTimeSpeedWhenLoading <> 1.0 then
-      ScaleAll(ATimes, 1 / AnimationTimeSpeedWhenLoading);
+    { set InitialViewpoint* before Scene.Load }
+    SetInitialViewpoint(Scene, UseInitialVars);
 
-    { set InitialViewpoint* before creating the TCastleSceneCores, so before
-      doing SceneAnimation.Load }
-    SetInitialViewpoint(SceneAnimation, UseInitialVars);
+    Scene.Load(RootNode, true);
 
-    SceneAnimation.Load(RootNodes, true, ATimes, ScenesPerTime, EqualityEpsilon);
-    SceneAnimation.TimeLoop := TimeLoop;
-    SceneAnimation.TimeBackwards := TimeBackwards;
-    { do it before even assigning MainScene, as assigning MainScene may
-      (through VisibleChange notification) already want to refer
-      to current animation scene, so better make it sensible. }
-    SceneAnimation.ResetTimeAtLoad;
-
-    { assign SceneManager.MainScene relatively early, because our
-      rendering assumes that SceneManager.MainScene is usable,
-      and rendering may be called during progress bars even from this function. }
-    SceneManager.MainScene := Scene;
-
-    ChangeAnimation(SceneChanges, SceneAnimation);
+    ChangeScene(SceneChanges, Scene);
 
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
@@ -1076,9 +980,9 @@ begin
 
     if InitializeCamera then
     begin
-      SceneManager.MainScene.CameraFromNavigationInfo(Camera,
-        SceneAnimation.BoundingBox, ForceNavigationType, ACameraRadius);
-      SceneManager.MainScene.CameraFromViewpoint(Camera, false, false);
+      Scene.CameraFromNavigationInfo(Camera,
+        Scene.BoundingBox, ForceNavigationType, ACameraRadius);
+      Scene.CameraFromViewpoint(Camera, false, false);
       for I := 0 to High(Viewports) do
         AssignCamera(Viewports[I], SceneManager, SceneManager, false);
       Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
@@ -1086,7 +990,7 @@ begin
       { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
       Viewpoints.BoundViewpoint := nil;
 
-    SceneInitLights(SceneAnimation, NavigationNode);
+    SceneInitLights(Scene, NavigationNode);
 
     { update MenuHeadlight.Checked now, and make it always updated. }
     THelper.HeadlightOnChanged(Scene);
@@ -1102,19 +1006,11 @@ begin
 
     SceneOctreeCreate;
 
-    for I := 0 to SceneAnimation.ScenesCount - 1 do
-    begin
-      SceneAnimation.Scenes[I].OnGeometryChanged := @THelper(nil).GeometryChanged;
-      SceneAnimation.Scenes[I].OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
-      SceneAnimation.Scenes[I].OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
-
-      { Regardless of ProcessEvents, we may change the nodes graph,
-        e.g. by Edit->Material->...
-        This is now ensured by TryFirstSceneDynamic. }
-      Assert(SceneAnimation.Scenes[I].Static = (SceneAnimation.ScenesCount <> 1));
-    end;
-
-    UpdateProcessEvents;
+    Scene.OnGeometryChanged := @THelper(nil).GeometryChanged;
+    Scene.OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
+    Scene.OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
+    Assert(Scene.Static = false);
+    Scene.ProcessEvents := ProcessEventsWanted;
 
     { Make initial CameraChanged to make initial events to
       ProximitySensor, if user is within. }
@@ -1144,7 +1040,7 @@ begin
     Writeln(ErrOutput, 'view3dscene: ', S);
 end;
 
-{ This loads the scene from file (using Load3DSequence) and
+{ This loads the scene from file (using Load3D) and
   then inits our scene variables by LoadSceneCore.
 
   If it fails, it tries to preserve current scene
@@ -1171,133 +1067,88 @@ procedure LoadScene(ASceneURL: string;
 {$define CATCH_EXCEPTIONS}
 
 var
-  RootNodes: TX3DNodeList;
-  Times: TSingleList;
-  ScenesPerTime: Cardinal;
-  EqualityEpsilon: Single;
-  TimeLoop, TimeBackwards: boolean;
+  RootNode: TX3DRootNode;
   SavedSceneWarnings: TSceneWarnings;
 begin
-  RootNodes := TX3DNodeList.Create(false);
-  Times := TSingleList.Create;
+  { We have to clear SceneWarnings here (not later)
+    to catch also all warnings raised during parsing of the file.
+    This causes a potential problem: if loading the scene will fail,
+    we should restore the old warnings (if the old scene will be
+    preserved) or clear them (if the clear scene will be loaded
+    --- LoadClearScene will clear them). }
+  SavedSceneWarnings := TSceneWarnings.Create;
   try
-    { We have to clear SceneWarnings here (not later)
-      to catch also all warnings raised during parsing of the file.
-      This causes a potential problem: if loading the scene will fail,
-      we should restore the old warnings (if the old scene will be
-      preserved) or clear them (if the clear scene will be loaded
-      --- LoadClearScene will clear them). }
-    SavedSceneWarnings := TSceneWarnings.Create;
-    try
-      SavedSceneWarnings.Assign(SceneWarnings);
-      SceneWarnings.Clear;
-
-      {$ifdef CATCH_EXCEPTIONS}
-      try
-      {$endif CATCH_EXCEPTIONS}
-        Load3DSequence(ASceneURL, true,
-          RootNodes, Times, ScenesPerTime, EqualityEpsilon,
-          TimeLoop, TimeBackwards);
-      {$ifdef CATCH_EXCEPTIONS}
-      except
-        on E: Exception do
-        begin
-          LoadErrorMessage('Error while loading scene from "' +ASceneURL+ '": ' +
-            E.Message);
-          { In this case we can preserve current scene. }
-          SceneWarnings.Assign(SavedSceneWarnings);
-          Exit;
-        end;
-      end;
-      {$endif CATCH_EXCEPTIONS}
-    finally FreeAndNil(SavedSceneWarnings) end;
+    SavedSceneWarnings.Assign(SceneWarnings);
+    SceneWarnings.Clear;
 
     {$ifdef CATCH_EXCEPTIONS}
     try
     {$endif CATCH_EXCEPTIONS}
-      LoadSceneCore(
-        RootNodes, Times,
-        ScenesPerTime, EqualityEpsilon,
-        TimeLoop, TimeBackwards,
-        ASceneURL, SceneChanges, ACameraRadius, InitializeCamera);
+      RootNode := Load3D(ASceneURL, true);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
       begin
-        { In this case we cannot preserve old scene, because
-          LoadSceneCore does FreeScene when it exits with exception
-          (and that's because LoadSceneCore modifies some global scene variables
-          when it works --- so when something fails inside LoadSceneCore,
-          we are left with some partially-initiaized state,
-          that is not usable; actually, LoadSceneCore
-          also does FreeScene when it starts it's work --- to start
-          with a clean state).
-
-          We call LoadClearScene before we call MessageOK, this way
-          our Render routine works OK when it's called to draw background
-          under MessageOK. }
-        LoadClearScene;
-        LoadErrorMessage('Error while loading scene from "' + ASceneURL + '": ' +
+        LoadErrorMessage('Error while loading scene from "' +ASceneURL+ '": ' +
           E.Message);
+        { In this case we can preserve current scene. }
+        SceneWarnings.Assign(SavedSceneWarnings);
         Exit;
       end;
     end;
     {$endif CATCH_EXCEPTIONS}
+  finally FreeAndNil(SavedSceneWarnings) end;
 
-    { For batch operation (making screenshots), do not save the scene
-      on "recent files" menu. This also applies when using view3dscene
-      as a thumbnailer. }
-    if not MakingScreenShot then
-      RecentMenu.Add(ASceneURL);
+  {$ifdef CATCH_EXCEPTIONS}
+  try
+  {$endif CATCH_EXCEPTIONS}
+    LoadSceneCore(RootNode, ASceneURL, SceneChanges, ACameraRadius, InitializeCamera);
+  {$ifdef CATCH_EXCEPTIONS}
+  except
+    on E: Exception do
+    begin
+      { In this case we cannot preserve old scene, because
+        LoadSceneCore does FreeScene when it exits with exception
+        (and that's because LoadSceneCore modifies some global scene variables
+        when it works --- so when something fails inside LoadSceneCore,
+        we are left with some partially-initiaized state,
+        that is not usable; actually, LoadSceneCore
+        also does FreeScene when it starts it's work --- to start
+        with a clean state).
 
-    { We call PrepareResources to make SceneAnimation.PrepareResources to gather
-      warnings (because some warnings, e.g. invalid texture URL,
-      are reported only from SceneAnimation.PrepareResources).
-      Also, this allows us to show first PrepareResources with progress bar. }
-    PrepareResources(true);
-    WarningsButtonEnabled := true;
-    UpdateWarningsButton;
-  finally
-    FreeAndNil(RootNodes);
-    FreeAndNil(Times);
+        We call LoadClearScene before we call MessageOK, this way
+        our Render routine works OK when it's called to draw background
+        under MessageOK. }
+      LoadClearScene;
+      LoadErrorMessage('Error while loading scene from "' + ASceneURL + '": ' +
+        E.Message);
+      Exit;
+    end;
   end;
+  {$endif CATCH_EXCEPTIONS}
+
+  { For batch operation (making screenshots), do not save the scene
+    on "recent files" menu. This also applies when using view3dscene
+    as a thumbnailer. }
+  if not MakingScreenShot then
+    RecentMenu.Add(ASceneURL);
+
+  { We call PrepareResources to make Scene.PrepareResources to gather
+    warnings (because some warnings, e.g. invalid texture URL,
+    are reported only from Scene.PrepareResources).
+    Also, this allows us to show first PrepareResources with progress bar. }
+  PrepareResources(true);
+  WarningsButtonEnabled := true;
+  UpdateWarningsButton;
 end;
 
-{ This should be used to load special "clear" and "welcome" scenes.
+{ Load special "clear" and "welcome" scenes.
   This loads a scene directly from TX3DNode, and assumes that
   LoadSceneCore will not fail. }
-procedure LoadSimpleScene(Node: TX3DNode;
-  UseInitialVars: boolean = true);
-var
-  RootNodes: TX3DNodeList;
-  Times: TSingleList;
-  ScenesPerTime: Cardinal;
-  EqualityEpsilon: Single;
-  TimeLoop, TimeBackwards: boolean;
+procedure LoadSimpleScene(Node: TX3DRootNode; UseInitialVars: boolean = true);
 begin
-  RootNodes := TX3DNodeList.Create(false);
-  Times := TSingleList.Create;
-  try
-    RootNodes.Add(Node);
-    Times.Add(0);
-
-    ScenesPerTime := 1;      { doesn't matter }
-    EqualityEpsilon := 0.0;  { doesn't matter }
-    TimeLoop := false;      { doesn't matter }
-    TimeBackwards := false; { doesn't matter }
-
-    SceneWarnings.Clear;
-    LoadSceneCore(
-      RootNodes, Times,
-      ScenesPerTime,
-      EqualityEpsilon,
-      TimeLoop, TimeBackwards,
-      '', [], 1.0, true,
-      UseInitialVars);
-  finally
-    FreeAndNil(RootNodes);
-    FreeAndNil(Times);
-  end;
+  SceneWarnings.Clear;
+  LoadSceneCore(Node, '', [], 1.0, true, UseInitialVars);
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1306,7 +1157,7 @@ end;
 procedure LoadClearScene;
 begin
   { As a clear scene, I'm simply loading an empty 3D model.
-    This way everything seems normal: SceneAnimation is Loaded,
+    This way everything seems normal: Scene is Loaded,
     FirstScene is available and FirstScene.RootNode is non-nil.
 
     The other idea was to use some special state like Loaded = @false
@@ -1465,7 +1316,7 @@ begin
     This isn't needed for batch mode screenshots, but it doesn't hurt
     to be clean. }
   OldProgressUserInterface := Progress.UserInterface;
-  OldTime := SceneAnimation.Time;
+  OldTime := Scene.Time;
   try
     SceneManager.BeforeRender;
 
@@ -1483,7 +1334,7 @@ begin
       try
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
-          SceneAnimation.ResetTime(ScreenShotsList[I].UseTime(J));
+          Scene.ResetTime(ScreenShotsList[I].UseTime(J));
           Image := RenderAndSaveScreen(ImageClass, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseURL(J));
@@ -1498,7 +1349,7 @@ begin
 
   finally
     Progress.UserInterface := OldProgressUserInterface;
-    SceneAnimation.ResetTime(OldTime);
+    Scene.ResetTime(OldTime);
   end;
 end;
 
@@ -1719,25 +1570,25 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     Value: Single;
   begin
-    Value := SceneAnimation.Attributes.PointSize;
+    Value := Scene.Attributes.PointSize;
     if MessageInputQuery(Window, 'Change point size:', Value) then
-      SceneAnimation.Attributes.PointSize := Max(Value, 0.01);
+      Scene.Attributes.PointSize := Max(Value, 0.01);
   end;
 
   procedure ChangeLineWidth;
   var
     Value: Single;
   begin
-    Value := SceneAnimation.Attributes.LineWidth;
+    Value := Scene.Attributes.LineWidth;
     if MessageInputQuery(Window, 'Change line width:', Value) then
-      SceneAnimation.Attributes.LineWidth := Max(Value, 0.01);
+      Scene.Attributes.LineWidth := Max(Value, 0.01);
   end;
 
-  procedure ChangeAnimationTimeSpeed;
+  procedure ChangeTimeSpeed;
   var
     S: Single;
   begin
-    S := SceneAnimation.TimePlayingSpeed;
+    S := Scene.TimePlayingSpeed;
     if MessageInputQuery(Window,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
       '0.5 makes playing animation two times slower,' +nl+
@@ -1745,7 +1596,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       nl+
       'Note that this is the "on display" playing speed.' +nl+
       nl+
-      '- For pracalculated ' +
+      '- For baked ' +
       'animations (like from Kanim or MD3 files), this means ' +
       'that internally number of precalculated animation frames ' +
       'doesn''t change. Which means that slowing this speed too much ' +
@@ -1756,10 +1607,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       'animation always remains smooth.' +nl+
       nl+
       'New "on display" playing speed:', S) then
-      SceneAnimation.TimePlayingSpeed := S;
+      Scene.TimePlayingSpeed := S;
   end;
 
-  procedure ChangeAnimationTimeSpeedWhenLoading;
+(*
+  TODO: this should control only baking setting, like default ScenesPerTime for TNodeInterpolator.
+
+  procedure ChangeTimeSpeedWhenLoading;
   begin
     MessageInputQuery(Window,
       'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
@@ -1785,6 +1639,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       nl+
       'New "on loading" playing speed:', AnimationTimeSpeedWhenLoading);
   end;
+*)
 
   procedure SelectedShowInformation;
   var
@@ -1958,16 +1813,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure RemoveSelectedShape;
   begin
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      { We can't do this for animations, because we use
-        SelectedItem^.Geometry, so this is only for the frame where
-        octree is available. }
-      MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).');
-      Exit;
-    end;
-
     if SelectedItem = nil then
     begin
       ShowAndWrite('Nothing selected.');
@@ -1999,16 +1844,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       So it doesn't work on Cone, Cylinder etc. that are converted
       to IndexedFaceSet in Proxy. Reason: well, after changing the node
       the proxy is recreated, so any changes to it are lost. }
-
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      { We can't do this for animations, because we use
-        SelectedItem^.OriginalGeometry, so this is only for the frame where
-        octree is available. Moreover, we call
-        Scene.ChangedField. }
-      MessageOK(Window, 'This function is not available when you deal with precalculated animations (like from Kanim or MD3 files).');
-      Exit;
-    end;
 
     if SelectedItem = nil then
     begin
@@ -2111,17 +1946,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     Shape: TAbstractShapeNode;
   begin
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      { We can't do this for animations, because we use
-        SelectedItem.State, so this is only for the frame where
-        octree is available. Moreover, we call
-        Scene.ChangedField. }
-      MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).');
-      Exit(false);
-    end;
-
     if (SelectedItem = nil) then
     begin
       ShowAndWrite('Nothing selected.');
@@ -2256,8 +2080,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     Position, Direction, Up, GravityUp: TVector3Single;
   begin
-    CameraViewpointForWholeScene(SceneAnimation.BoundingBox,
-      WantedDirection, WantedUp,
+    CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
     Scene.CameraTransition(Camera, Position, Direction, Up, GravityUp);
@@ -2266,8 +2089,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   procedure RemoveNodesWithMatchingName;
   var
     Wildcard: string;
-    RemovedNumber, RemovedNumberOther: Cardinal;
-    I: Integer;
+    RemovedNumber: Cardinal;
   begin
     Wildcard := '';
     if MessageInputQuery(Window,
@@ -2275,19 +2097,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       'the expression below to match many node names. The input is ' +
       'case sensitive (like all VRML/X3D).', Wildcard) then
     begin
-      SceneAnimation.BeforeNodesFree;
-
+      Scene.BeforeNodesFree;
       RemovedNumber := Scene.RootNode.
         RemoveChildrenWithMatchingName(Wildcard, false);
-      for I := 1 to SceneAnimation.ScenesCount - 1 do
-      begin
-        RemovedNumberOther := SceneAnimation.Scenes[I].RootNode.
-          RemoveChildrenWithMatchingName(Wildcard, false);
-        Assert(RemovedNumberOther = RemovedNumber);
-      end;
-
-      SceneAnimation.ChangedAll;
-
+      Scene.ChangedAll;
       MessageOK(Window, Format('Removed %d node instances.', [RemovedNumber]));
     end;
   end;
@@ -2300,17 +2113,11 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     R: TGamePlaceholdersRemover;
   begin
-    if SceneAnimation.ScenesCount <> 1 then
-    begin
-      MessageOK(Window, 'This is not possible with a precalculated animation (like loaded from Kanim or MD3 file).');
-      Exit;
-    end;
-
     R := TGamePlaceholdersRemover.Create;
     try
-      SceneAnimation.BeforeNodesFree;
-      SceneAnimation.FirstScene.RootNode.EnumerateReplaceChildren(@R.Remove);
-      SceneAnimation.ChangedAll;
+      Scene.BeforeNodesFree;
+      Scene.RootNode.EnumerateReplaceChildren(@R.Remove);
+      Scene.ChangedAll;
       MessageOK(Window, Format('Removed %d nodes.', [R.Count]));
     finally FreeAndNil(R) end;
   end;
@@ -2407,9 +2214,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       previously. }
     if FillMode <> fmSilhouetteBorderEdges then
     begin
-      SceneAnimation.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
-      SceneAnimation.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
-      SceneAnimation.Attributes.Mode            := FillModes[FillMode].Mode;
+      Scene.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
+      Scene.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
+      Scene.Attributes.Mode            := FillModes[FillMode].Mode;
     end;
   end;
 
@@ -2420,7 +2227,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     URLPattern: string;
     Range: TRangeScreenShot;
   begin
-    TimeBegin := SceneAnimation.Time;
+    TimeBegin := Scene.Time;
     TimeStep := 0.04;
     FramesCount := 25;
     URLPattern := 'image@counter(4).png';
@@ -2460,6 +2267,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             ScreenShotsList.Clear;
           end;
   end;
+
+(*
+  TODO: Reimplement this without TCastlePrecalculatedAnimation.
 
   procedure PrecalculateAnimationFromEvents;
   var
@@ -2544,6 +2354,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       THelper.ViewpointsChanged(Scene);
     end;
   end;
+*)
 
   procedure SelectedShapeOctreeStat;
   var
@@ -2745,16 +2556,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       makes TCastleSceneCore.ChangedShapeFields which releases the very Coordinate
       node and fields that were changed... }
 
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      { We can't do this for animations, because we use
-        SelectedItem^.Shape.GeometryOriginal, so this is only for the frame where
-        octree is available. }
-      MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).');
-      Exit;
-    end;
-
     if SelectedItem = nil then
     begin
       MessageOk(Window, 'Nothing selected.');
@@ -2793,13 +2594,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     Vis: THumanoidVisualization;
   begin
-    if SceneAnimation.ScenesCount > 1 then
-    begin
-      MessageOK(Window, 'This function is not available when you deal with ' +
-        'precalculated animations (like from Kanim or MD3 files).');
-      Exit;
-    end;
-
     Vis := THumanoidVisualization.Create;
     try
       Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
@@ -2825,14 +2619,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   begin
     SaveVersion := Save3DVersion(Scene.RootNode);
     Conversion := Save3DWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
-
-    if SceneAnimation.ScenesCount > 1 then
-      if Conversion then
-      begin
-        MessageOK(Window, 'This is a precalculated animation (like from Kanim or MD3 file). Converting it from VRML to X3D is not supported.');
-        Exit;
-      end else
-        MessageOK(Window, 'Warning: this is a precalculated animation (like from Kanim or MD3 file). Saving it as VRML/X3D will only save it''s first frame.');
 
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
@@ -2927,25 +2713,25 @@ begin
 
   21: WarningsButton.DoClick;
 
-  31: ChangeAnimation([scNoNormals], SceneAnimation);
-  32: ChangeAnimation([scNoSolidObjects], SceneAnimation);
-  33: ChangeAnimation([scNoConvexFaces], SceneAnimation);
+  31: ChangeScene([scNoNormals], Scene);
+  32: ChangeScene([scNoSolidObjects], Scene);
+  33: ChangeScene([scNoConvexFaces], Scene);
 
   34: RemoveNodesWithMatchingName;
   38: RemoveGamePlaceholders;
 
   42: VisualizeHumanoids;
 
-  3500: with SceneAnimation do ShadowMaps := not ShadowMaps;
-  3510..3519: SceneAnimation.Attributes.ShadowSampling :=
+  3500: with Scene do ShadowMaps := not ShadowMaps;
+  3510..3519: Scene.Attributes.ShadowSampling :=
     TShadowSampling(Ord(MenuItem.IntData) - 3510);
-  3520: with SceneAnimation.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
+  3520: with Scene.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
   3530:
     begin
-      C := SceneAnimation.ShadowMapsDefaultSize;
+      C := Scene.ShadowMapsDefaultSize;
       if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C) then
       begin
-        SceneAnimation.ShadowMapsDefaultSize := C;
+        Scene.ShadowMapsDefaultSize := C;
       end;
     end;
 
@@ -2980,15 +2766,15 @@ begin
 
   82: ShowBBox := not ShowBBox;
   84: if Window.ColorDialog(BGColor) then BGColorChanged;
-  86: with SceneAnimation.Attributes do Blending := not Blending;
-  88: with SceneAnimation.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
-  90: with SceneAnimation.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
-  891: with SceneAnimation.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
+  86: with Scene.Attributes do Blending := not Blending;
+  88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
+  90: with Scene.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
+  891: with Scene.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
-  91: with SceneAnimation.Attributes do Lighting := not Lighting;
+  91: with Scene.Attributes do Lighting := not Lighting;
   92: with Scene do HeadLightOn := not HeadLightOn;
-  93: with SceneAnimation.Attributes do UseSceneLights := not UseSceneLights;
-  94: with SceneAnimation.Attributes do EnableTextures := not EnableTextures;
+  93: with Scene.Attributes do UseSceneLights := not UseSceneLights;
+  94: with Scene.Attributes do EnableTextures := not EnableTextures;
   95: ChangeLightModelAmbient;
   96: ShowFrustum := not ShowFrustum;
   180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
@@ -3036,8 +2822,8 @@ begin
        end;
 }
 
-  109: WriteBoundingBox(SceneAnimation.BoundingBox);
-  110: WriteBoundingBox(SceneAnimation.CurrentScene.BoundingBox);
+  109: WriteBoundingBox(Scene.BoundingBox);
+  110: WriteBoundingBox(Scene.BoundingBox);
 
   111: begin
          if Camera.NavigationType = High(TNavigationType) then
@@ -3057,21 +2843,21 @@ begin
   121: begin
          ShowAndWrite(
            'Scene "' + SceneURL + '" information:' + NL + NL +
-           SceneAnimation.Info(true, true, false));
+           Scene.Info(true, true, false));
        end;
   122: begin
          ShowStatus := not ShowStatus;
          UpdateStatusToolbarVisible;
        end;
-  123: SetCollisions(not SceneAnimation.Collides, false);
+  123: SetCollisions(not Scene.Collides, false);
   124: ChangeGravityUp;
   125: Raytrace;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
   128: Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
   129: begin
-         ShowAndWrite(SceneAnimation.Info(false, false, true));
-         SceneAnimation.FreeResources([frManifoldAndBorderEdges]);
+         ShowAndWrite(Scene.Info(false, false, true));
+         Scene.FreeResources([frManifoldAndBorderEdges]);
        end;
 
   131: begin
@@ -3112,19 +2898,18 @@ begin
 
   220: begin
          AnimationTimePlaying := not AnimationTimePlaying;
-         SceneAnimation.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
+         Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
        end;
-  221: SceneAnimation.ResetTimeAtLoad(true);
-  222: ChangeAnimationTimeSpeed;
-  223: ChangeAnimationTimeSpeedWhenLoading;
+  222: ChangeTimeSpeed;
+  //223: ChangeTimeSpeedWhenLoading;
 
   224: begin
          ProcessEventsWanted := not ProcessEventsWanted;
-         SceneAnimation.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
-         UpdateProcessEvents;
+         Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
+         Scene.ProcessEvents := ProcessEventsWanted;
        end;
 
-  225: PrecalculateAnimationFromEvents;
+//  225: PrecalculateAnimationFromEvents;
 
   300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
@@ -3182,20 +2967,20 @@ begin
   2010: EnableNetwork := not EnableNetwork;
 
   1100..1199: SetMinificationFilter(
-    TMinificationFilter  (MenuItem.IntData-1100), SceneAnimation);
+    TMinificationFilter  (MenuItem.IntData-1100), Scene);
   1200..1299: SetMagnificationFilter(
-    TMagnificationFilter  (MenuItem.IntData-1200), SceneAnimation);
+    TMagnificationFilter  (MenuItem.IntData-1200), Scene);
   1300..1399:
     begin
       Camera.NavigationType := TNavigationType(MenuItem.IntData - 1300);
       ViewportsSetNavigationType(Camera.NavigationType);
       UpdateCameraUI;
     end;
-  1400..1499: SceneAnimation.Attributes.BumpMapping :=
+  1400..1499: Scene.Attributes.BumpMapping :=
     TBumpMapping(MenuItem.IntData - 1400);
   3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
     V3DSceneWindow.Window, SceneManager);
-  4000..4010: SceneAnimation.Attributes.Shaders :=
+  4000..4010: Scene.Attributes.Shaders :=
     TShadersRendering(MenuItem.IntData - 4000);
   else raise EInternalError.Create('not impl menu item');
  end;
@@ -3203,7 +2988,7 @@ begin
  { This may be called when headlight on / off state changes,
    so prVisibleSceneNonGeometry is possible.
    For safety, pass also prVisibleSceneGeometry now. }
- SceneAnimation.CurrentScene.VisibleChangeHere(
+ Scene.VisibleChangeHere(
    [vcVisibleGeometry, vcVisibleNonGeometry]);
 end;
 
@@ -3305,19 +3090,19 @@ begin
     M.Append(TMenuSeparator.Create);
     M2 := TMenu.Create('Shaders');
       M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
-        4000, Ord(SceneAnimation.Attributes.Shaders), true);
+        4000, Ord(Scene.Attributes.Shaders), true);
       M.Append(M2);
     M2 := TMenu.Create('Bump mapping');
       M2.AppendRadioGroup(BumpMappingNames, 1400,
-        Ord(SceneAnimation.Attributes.BumpMapping), true);
+        Ord(Scene.Attributes.BumpMapping), true);
       M.Append(M2);
     M2 := TMenu.Create('Shadow Maps');
-      M2.Append(TMenuItemChecked.Create('Enable', 3500, SceneAnimation.ShadowMaps, true));
+      M2.Append(TMenuItemChecked.Create('Enable', 3500, Scene.ShadowMaps, true));
       M2.Append(TMenuSeparator.Create);
       M2.AppendRadioGroup(ShadowSamplingNames, 3510,
-        Ord(SceneAnimation.Attributes.ShadowSampling), true);
+        Ord(Scene.Attributes.ShadowSampling), true);
       M2.Append(TMenuSeparator.Create);
-      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, SceneAnimation.Attributes.VisualizeDepthMap, true));
+      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, Scene.Attributes.VisualizeDepthMap, true));
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
@@ -3330,16 +3115,16 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
       '_Lighting Calculation',         91,
-      SceneAnimation.Attributes.Lighting, true));
+      Scene.Attributes.Lighting, true));
     MenuHeadlight := TMenuItemChecked.Create('_Headlight', 92, CtrlH,
       (Scene <> nil) and Scene.HeadlightOn, true);
     M.Append(MenuHeadlight);
     M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
-      SceneAnimation.Attributes.UseSceneLights, true));
+      Scene.Attributes.UseSceneLights, true));
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
-      SceneAnimation.Attributes.EnableTextures, true));
+      Scene.Attributes.EnableTextures, true));
     M2 := TMenu.Create('Texture Minification Method');
       MenuAppendMinificationFilters(M2, 1100);
       M.Append(M2);
@@ -3348,14 +3133,14 @@ begin
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Blending',                86,
-      SceneAnimation.Attributes.Blending, true));
+      Scene.Attributes.Blending, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
-      SceneAnimation.Attributes.UseOcclusionQuery, true));
+      Scene.Attributes.UseOcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
-      SceneAnimation.Attributes.UseHierarchicalOcclusionQuery, true));
+      Scene.Attributes.UseHierarchicalOcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
-      SceneAnimation.Attributes.DebugHierOcclusionQueryResults, true));
+      Scene.Attributes.DebugHierOcclusionQueryResults, true));
     M2 := TMenu.Create('Frustum visualization');
       M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
         ShowFrustum, true));
@@ -3415,24 +3200,21 @@ begin
       M.Append(M2);
     MenuCollisions := TMenuItemChecked.Create(
       '_Collision Detection and Picking',                123, CtrlC,
-        SceneAnimation.Collides, true);
+        Scene.Collides, true);
     M.Append(MenuCollisions);
     Result.Append(M);
   M := TMenu.Create('_Animation');
     MenuAnimationTimePlaying := TMenuItemChecked.Create(
       '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
     M.Append(MenuAnimationTimePlaying);
-    M.Append(TMenuItem.Create('Rewind to Beginning', 221));
-    M.Append(TMenuSeparator.Create);
     CreateMenuNamedAnimations;
     M.Append(MenuNamedAnimations);
-    M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
-    M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
-    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Playing Speed...', 222));
+    //M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
+    //M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
     M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
-    M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
+    // M.Append(TMenuSeparator.Create);
+    // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
     Result.Append(M);
   M := TMenu.Create('_Edit');
     MenuRemoveSelectedShape :=
@@ -3586,8 +3368,8 @@ begin
   CollisionsButton.OnClick := @THelper(nil).CollisionsButtonClick;
   CollisionsButton.MinImageHeight := MinImageHeight;
   CollisionsButton.Toggle := true;
-  if SceneAnimation <> nil then
-    CollisionsButton.Pressed := SceneAnimation.Collides else
+  if Scene <> nil then
+    CollisionsButton.Pressed := Scene.Collides else
     CollisionsButton.Pressed := true { default value };
   Window.Controls.InsertFront(CollisionsButton);
 
@@ -3698,7 +3480,7 @@ var
   URL: string;
 begin
   URL := SceneURL;
-  if Window.FileDialog('Open file', URL, true, Load3DSequence_FileFilters) then
+  if Window.FileDialog('Open file', URL, true, Load3D_FileFilters) then
     LoadScene(URL, [], 0.0, true);
 end;
 
@@ -3711,7 +3493,7 @@ end;
 
 class procedure THelper.CollisionsButtonClick(Sender: TObject);
 begin
-  SetCollisions(not SceneAnimation.Collides, true);
+  SetCollisions(not Scene.Collides, true);
 end;
 
 class procedure THelper.ScreenshotButtonClick(Sender: TObject);
@@ -4027,14 +3809,14 @@ begin
     Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to initial empty values }
-    SceneAnimation := TCastlePrecalculatedAnimation.Create(nil);
+    Scene := TCastleScene.Create(nil);
     try
-      SceneAnimation.TryFirstSceneDynamic := true;
-      AttributesLoadFromConfig(SceneAnimation.Attributes);
-      SceneManager.Items.Add(SceneAnimation);
+      AttributesLoadFromConfig(Scene.Attributes);
+      SceneManager.Items.Add(Scene);
+      SceneManager.MainScene := Scene;
 
       InitCameras(SceneManager);
-      InitTextureFilters(SceneAnimation);
+      InitTextureFilters(Scene);
 
       { init "scene global variables" to non-null values }
       LoadClearScene;
@@ -4082,13 +3864,13 @@ begin
         Application.Run;
       finally FreeScene end;
 
-      AttributesSaveToConfig(SceneAnimation.Attributes);
+      AttributesSaveToConfig(Scene.Attributes);
 
       SoundEngine.SaveToConfig(UserConfig);
       RecentMenu.SaveToConfig(UserConfig);
       UserConfig.Save;
     finally
-      FreeAndNil(SceneAnimation);
+      FreeAndNil(Scene);
       FreeAndNil(RecentMenu);
     end;
   finally

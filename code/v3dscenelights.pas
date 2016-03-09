@@ -30,28 +30,25 @@ unit V3DSceneLights;
 
 interface
 
-uses CastleVectors, SysUtils, CastlePrecalculatedAnimation, CastleUtils, X3DNodes;
+uses CastleVectors, SysUtils, CastleScene, CastleUtils, X3DNodes;
 
 var
   SceneLightsCount: Cardinal;
 
 { Inits SceneLightsCount. }
-procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
-  NavigationNode: TNavigationInfoNode);
+procedure SceneInitLights(Scene: TCastleScene; NavigationNode: TNavigationInfoNode);
 
 implementation
 
 uses CastleGL, CastleGLUtils, CastleParameters, V3DSceneFillMode;
 
-procedure SceneInitLights(SceneAnimation: TCastlePrecalculatedAnimation;
-  NavigationNode: TNavigationInfoNode);
+procedure SceneInitLights(Scene: TCastleScene; NavigationNode: TNavigationInfoNode);
 begin
-  if not SceneAnimation.Loaded then
+  if (Scene = nil) or (Scene.RootNode = nil) then
     SceneLightsCount := 0 else
     { If Loaded, then 1st scene exists and has RootNode <> nil
       (that's because loaded animation always has at least one RootNode) }
-    SceneLightsCount := SceneAnimation.Scenes[0].RootNode.
-      NodesCount(TAbstractLightNode, true);
+    SceneLightsCount := Scene.RootNode.NodesCount(TAbstractLightNode, true);
 end;
 
 end.

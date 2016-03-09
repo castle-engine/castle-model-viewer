@@ -25,7 +25,7 @@ unit V3DSceneSceneChanges;
 
 interface
 
-uses X3DNodes, CastleUtils, CastlePrecalculatedAnimation;
+uses X3DNodes, CastleUtils, CastleScene;
 
 type
   { When adding new item to TSceneChange you can also consider adding
@@ -47,7 +47,7 @@ type
 procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
 
 { Transforms all scenes inside the animation as appropriate. }
-procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TCastlePrecalculatedAnimation);
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TCastleScene);
 
 implementation
 
@@ -199,17 +199,14 @@ begin
       SCFunctions[SC](Node);
 end;
 
-procedure ChangeAnimation(SceneChanges: TSceneChanges; Scene: TCastlePrecalculatedAnimation);
-var
-  I: Integer;
+procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TCastleScene);
 begin
   { Check SceneChanges, to avoid expensive ChangedAll (that also invalidates
     all data prepared in shapes, like octrees) when not needed. }
-  if SceneChanges <> [] then
+  if (SceneChanges <> []) and (Scene.RootNode <> nil) then
   begin
     Scene.BeforeNodesFree;
-    for I := 0 to Scene.ScenesCount - 1 do
-      ChangeNode(SceneChanges, Scene.Scenes[I].RootNode);
+    ChangeNode(SceneChanges, Scene.RootNode);
     Scene.ChangedAll;
   end;
 end;

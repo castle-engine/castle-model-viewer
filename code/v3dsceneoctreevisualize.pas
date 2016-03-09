@@ -27,7 +27,7 @@ unit V3DSceneOctreeVisualize;
 
 interface
 
-uses CastleOctree, CastlePrecalculatedAnimation, CastleWindow;
+uses CastleOctree, CastleWindow, CastleScene;
 
 type
   TOctreeDisplay = object
@@ -57,7 +57,7 @@ var
   OctreeVisibleShapesDisplay: TOctreeDisplay;
   OctreeCollidableShapesDisplay: TOctreeDisplay;
 
-procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
+procedure OctreeDisplay(Scene: TCastleScene);
 
 function OctreeDisplayStatus: string;
 
@@ -117,7 +117,7 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
+procedure OctreeDisplay(Scene: TCastleScene);
 {$ifndef OpenGLES} //TODO-es
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
@@ -152,10 +152,9 @@ procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
       So we have to carefully check here whether appropriate things
       are initialized. }
 
-    if (SceneAnimation <> nil) and
-       (SceneAnimation.ScenesCount <> 0) then
+    if Scene <> nil then
     begin
-      SI := TShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      SI := TShapeTreeIterator.Create(Scene.Shapes, true);
       try
         while SI.GetNext do
           if SI.Current.OctreeTriangles <> nil then
@@ -201,10 +200,9 @@ procedure OctreeDisplay(SceneAnimation: TCastlePrecalculatedAnimation);
       So we have to carefully check here whether appropriate things
       are initialized. }
 
-    if (SceneAnimation <> nil) and
-       (SceneAnimation.ScenesCount <> 0) then
+    if Scene <> nil then
     begin
-      SI := TShapeTreeIterator.Create(SceneAnimation.FirstScene.Shapes, true);
+      SI := TShapeTreeIterator.Create(Scene.Shapes, true);
       try
         while SI.GetNext do
           if SI.Current.OctreeTriangles <> nil then
@@ -233,24 +231,24 @@ begin
   if OctreeVisibleShapesDisplay.Whole then
   begin
     glColorv(Blue);
-    DisplayOctreeWhole(SceneAnimation.FirstScene.OctreeRendering.TreeRoot);
+    DisplayOctreeWhole(Scene.OctreeRendering.TreeRoot);
   end else
   if OctreeVisibleShapesDisplay.Depth >= 0 then
   begin
     glColorv(Blue);
-    DisplayOctreeDepth(SceneAnimation.FirstScene.OctreeRendering.TreeRoot,
+    DisplayOctreeDepth(Scene.OctreeRendering.TreeRoot,
       OctreeVisibleShapesDisplay.Depth);
   end;
 
   if OctreeCollidableShapesDisplay.Whole then
   begin
     glColorv(Red);
-    DisplayOctreeWhole(SceneAnimation.FirstScene.OctreeDynamicCollisions.TreeRoot);
+    DisplayOctreeWhole(Scene.OctreeDynamicCollisions.TreeRoot);
   end else
   if OctreeCollidableShapesDisplay.Depth >= 0 then
   begin
     glColorv(Red);
-    DisplayOctreeDepth(SceneAnimation.FirstScene.OctreeDynamicCollisions.TreeRoot,
+    DisplayOctreeDepth(Scene.OctreeDynamicCollisions.TreeRoot,
       OctreeCollidableShapesDisplay.Depth);
   end;
 {$else}

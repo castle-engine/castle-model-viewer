@@ -26,8 +26,7 @@ unit V3DSceneViewpoints;
 interface
 
 uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
-  CastleSceneCore, CastlePrecalculatedAnimation, CastleScene,
-  CastleSceneManager, CastleKeysMouse, V3DSceneCaptions;
+  CastleSceneCore, CastleScene, CastleSceneManager, CastleKeysMouse, V3DSceneCaptions;
 
 type
   { Menu item referring to a viewpoint.
@@ -108,7 +107,7 @@ var
 procedure ViewpointsParseParameters;
 
 { Apply --viewpoint command-line option to the next loaded scenes. }
-procedure SetInitialViewpoint(SceneAnimation: TCastlePrecalculatedAnimation;
+procedure SetInitialViewpoint(Scene: TCastleScene;
   const EnableNonStandardValue: boolean);
 
 { Switch camera to given viewpoint. This only switches the 3D camera,
@@ -403,18 +402,18 @@ begin
   Parameters.Parse(Options, @OptionProc, nil, true);
 end;
 
-procedure SetInitialViewpoint(SceneAnimation: TCastlePrecalculatedAnimation;
+procedure SetInitialViewpoint(Scene: TCastleScene;
   const EnableNonStandardValue: boolean);
 begin
   if EnableNonStandardValue and UseInitialViewpoint then
   begin
     UseInitialViewpoint := false;
-    SceneAnimation.InitialViewpointIndex := InitialViewpointIndex;
-    SceneAnimation.InitialViewpointName := InitialViewpointName;
+    Scene.InitialViewpointIndex := InitialViewpointIndex;
+    Scene.InitialViewpointName := InitialViewpointName;
   end else
   begin
-    SceneAnimation.InitialViewpointIndex := 0;
-    SceneAnimation.InitialViewpointName := '';
+    Scene.InitialViewpointIndex := 0;
+    Scene.InitialViewpointName := '';
   end;
 end;
 
