@@ -520,6 +520,17 @@ begin
   if not ProcessEventsWanted then
     S += ' (paused, not processing VRML/X3D events)';
   Text.Append(S);
+
+(*// nice to debug ShadowVolumeRenderer optimizations.
+  // Too cryptic to show normal users:)
+  S := Format('No shadow %d + zpass %d + zfail (no l cap) %d + zfail (l cap) %d = all %d',
+    [ SceneManager.ShadowVolumeRenderer.CountShadowsNotVisible,
+      SceneManager.ShadowVolumeRenderer.CountZPass,
+      SceneManager.ShadowVolumeRenderer.CountZFailNoLightCap,
+      SceneManager.ShadowVolumeRenderer.CountZFailAndLightCap,
+      SceneManager.ShadowVolumeRenderer.CountCasters ]);
+  Text.Append(S);
+*)
 end;
 
 { TCastleWindowCustom callbacks --------------------------------------------------------- }
