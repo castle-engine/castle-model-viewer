@@ -2857,7 +2857,7 @@ begin
   128: Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
   129: begin
          ShowAndWrite(Scene.Info(false, false, true));
-         Scene.FreeResources([frManifoldAndBorderEdges]);
+         Scene.FreeResources([frShadowVolume]);
        end;
 
   131: begin
