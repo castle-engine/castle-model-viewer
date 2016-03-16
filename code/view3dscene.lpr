@@ -1654,7 +1654,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure SelectedShowInformation;
   var
-    s, TextureDescription: string;
+    S, S1, S2, S3, S4, S5, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M1: TMaterialNode_1;
     M2: TMaterialNode;
@@ -1753,10 +1753,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       begin
         M1 := SelectedItem^.State.LastNodes.Material;
 
-        {$ifdef VER3_1_1}
-        {$warning Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr}
-        {$else}
-
+        { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
+        {
         S += Format(
             'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
@@ -1771,8 +1769,21 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
               VectorToNiceStr(M1.SpecularColor3Single(0)),
               FloatToNiceStr(M1.Shininess(0)),
               FloatToNiceStr(M1.Transparency(0)) ]);
-
-        {$endif}
+        }
+        S1 := VectorToNiceStr(M1.AmbientColor3Single(0));
+        S2 := VectorToNiceStr(M1.DiffuseColor3Single(0));
+        S3 := VectorToNiceStr(M1.SpecularColor3Single(0));
+        S4 := FloatToNiceStr(M1.Shininess(0));
+        S5 := FloatToNiceStr(M1.Transparency(0));
+        S += Format(
+            'Material (VRML 1.0 / Inventor):' +nl+
+            '  name : %s' +nl+
+            '  ambientColor[0] : %s' +nl+
+            '  diffuseColor[0] : %s' +nl+
+            '  specularColor[0] : %s' +nl+
+            '  shininess[0] : %s' +nl+
+            '  transparency[0] : %s',
+            [M1.NodeName, S1, S2, S3, S4, S5]);
       end;
     end;
     ShowAndWrite(S);
@@ -2179,14 +2190,14 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
+  var
+    S1, S2, S3, S4: string;
   begin
     if Box.IsEmpty then
       MessageOK(Window, 'The bounding box is empty.') else
     begin
-      {$ifdef VER3_1_1}
-      {$warning Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr}
-      {$else}
-
+      { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
+      (*
       Writeln(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
@@ -2213,8 +2224,34 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]),
           FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]),
           FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]) ]));
+      *)
 
-      {$endif}
+      S1 := VectorToRawStr(Box.Middle);
+      S2 := FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]);
+      S3 := FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]);
+      S4 := FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]);
+      Writeln(Format(
+        '# ----------------------------------------' +nl+
+        '# BoundingBox %s:' +nl+
+        '# Version for VRML 1.0' +nl+
+        'DEF BoundingBox Separator {' +nl+
+        '  Translation {' +nl+
+        '    translation %s' +nl+
+        '  }' +nl+
+        '  Cube {' +nl+
+        '    width %s' +nl+
+        '    height %s' +nl+
+        '    depth %s' +nl+
+        '  } }' +nl+
+        nl+
+        '# Version for VRML 2.0 / X3D' +nl+
+        'DEF BoundingBox Transform {' +nl+
+        '  translation %1:s' +nl+
+        '  children Shape {' +nl+
+        '    geometry Box {' +nl+
+        '      size %2:s %3:s %4:s' +nl+
+        '    } } }',
+        [Box.ToNiceStr, S1, S2, S3, S4]));
     end;
   end;
 
