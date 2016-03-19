@@ -334,7 +334,7 @@ begin
       Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
       try
         RayTracer.Image := CallData.Image;
-        RayTracer.Octree := Scene.OctreeVisibleTriangles;
+        RayTracer.Octree := Scene.InternalOctreeVisibleTriangles;
         RayTracer.CamPosition := CamPosition;
         RayTracer.CamDirection := CamDir;
         RayTracer.CamUp := CamUp;

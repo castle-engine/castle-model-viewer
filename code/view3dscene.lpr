@@ -314,16 +314,16 @@ end;
 function SceneOctreeCollisions: TBaseTrianglesOctree;
 begin
   if (Scene <> nil) and
-     (Scene.OctreeCollisions <> nil) then
-    Result := Scene.OctreeCollisions else
+     (Scene.InternalOctreeCollisions <> nil) then
+    Result := Scene.InternalOctreeCollisions else
     Result := nil;
 end;
 
 function SceneOctreeRendering: TShapeOctree;
 begin
   if (Scene <> nil) and
-     (Scene.OctreeRendering <> nil) then
-    Result := Scene.OctreeRendering else
+     (Scene.InternalOctreeRendering <> nil) then
+    Result := Scene.InternalOctreeRendering else
     Result := nil;
 end;
 
@@ -352,7 +352,7 @@ begin
     CollisionsButton.Pressed := Value;
     if NeedMenuUpdate then
       MenuCollisions.Checked := Value;
-    if Scene.Collides and (Scene.OctreeCollisions = nil) then
+    if Scene.Collides and (Scene.InternalOctreeCollisions = nil) then
       SceneOctreeCreate;
   end;
 end;
@@ -2414,10 +2414,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     end else
     begin
       Shape := TShape(SelectedItem^.Shape);
-      if Shape.OctreeTriangles = nil then
+      if Shape.InternalOctreeTriangles = nil then
         MessageOk(Window, 'No collision octree was initialized for this shape.') else
       begin
-        Writeln(Shape.OctreeTriangles.Statistics);
+        Writeln(Shape.InternalOctreeTriangles.Statistics);
       end;
     end;
   end;

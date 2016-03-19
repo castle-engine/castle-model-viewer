@@ -157,11 +157,11 @@ procedure OctreeDisplay(Scene: TCastleScene);
       SI := TShapeTreeIterator.Create(Scene.Shapes, true);
       try
         while SI.GetNext do
-          if SI.Current.OctreeTriangles <> nil then
+          if SI.Current.InternalOctreeTriangles <> nil then
           begin
             glPushMatrix;
               glMultMatrix(SI.Current.State.Transform);
-              DisplayOctreeDepth(SI.Current.OctreeTriangles.TreeRoot,
+              DisplayOctreeDepth(SI.Current.InternalOctreeTriangles.TreeRoot,
                 OctreeDisplayDepth);
             glPopMatrix;
           end;
@@ -205,11 +205,11 @@ procedure OctreeDisplay(Scene: TCastleScene);
       SI := TShapeTreeIterator.Create(Scene.Shapes, true);
       try
         while SI.GetNext do
-          if SI.Current.OctreeTriangles <> nil then
+          if SI.Current.InternalOctreeTriangles <> nil then
           begin
             glPushMatrix;
               glMultMatrix(SI.Current.State.Transform);
-              DisplayOctreeWhole(SI.Current.OctreeTriangles.TreeRoot);
+              DisplayOctreeWhole(SI.Current.InternalOctreeTriangles.TreeRoot);
             glPopMatrix;
           end;
       finally FreeAndNil(SI) end;
@@ -231,24 +231,24 @@ begin
   if OctreeVisibleShapesDisplay.Whole then
   begin
     glColorv(Blue);
-    DisplayOctreeWhole(Scene.OctreeRendering.TreeRoot);
+    DisplayOctreeWhole(Scene.InternalOctreeRendering.TreeRoot);
   end else
   if OctreeVisibleShapesDisplay.Depth >= 0 then
   begin
     glColorv(Blue);
-    DisplayOctreeDepth(Scene.OctreeRendering.TreeRoot,
+    DisplayOctreeDepth(Scene.InternalOctreeRendering.TreeRoot,
       OctreeVisibleShapesDisplay.Depth);
   end;
 
   if OctreeCollidableShapesDisplay.Whole then
   begin
     glColorv(Red);
-    DisplayOctreeWhole(Scene.OctreeDynamicCollisions.TreeRoot);
+    DisplayOctreeWhole(Scene.InternalOctreeDynamicCollisions.TreeRoot);
   end else
   if OctreeCollidableShapesDisplay.Depth >= 0 then
   begin
     glColorv(Red);
-    DisplayOctreeDepth(Scene.OctreeDynamicCollisions.TreeRoot,
+    DisplayOctreeDepth(Scene.InternalOctreeDynamicCollisions.TreeRoot,
       OctreeCollidableShapesDisplay.Depth);
   end;
 {$else}
