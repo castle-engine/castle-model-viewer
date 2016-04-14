@@ -371,6 +371,7 @@ procedure TExtendedStatusText.CalculateText;
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
+  ValueColor = '8888ff';
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
@@ -487,15 +488,17 @@ begin
   Text.Append(S); }
 
   Camera.GetView(Pos, Dir, Up);
-  Text.Append(Format('Camera: pos %s, dir %s, up %s',
-    [ VectorToNiceStr(Pos), VectorToNiceStr(Dir), VectorToNiceStr(Up) ]));
+  Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
+    [ ValueColor, VectorToNiceStr(Pos),
+      ValueColor, VectorToNiceStr(Dir),
+      ValueColor, VectorToNiceStr(Up) ]));
 
   if Camera.NavigationClass = ncWalk then
   begin
-    Text.Append(Format('Move speed (per sec) : %f, Avatar height: %f (last height above the ground: %s)',
-      [ Camera.Walk.MoveSpeed,
-        Camera.Walk.PreferredHeight,
-        CurrentAboveHeight ]));
+    Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
+      [ ValueColor, Camera.Walk.MoveSpeed,
+        ValueColor, Camera.Walk.PreferredHeight,
+        ValueColor, CurrentAboveHeight ]));
   end;
 
   { if SceneLightsCount = 0 then
@@ -505,16 +508,19 @@ begin
 
   if Scene.Attributes.UseOcclusionQuery or
      Scene.Attributes.UseHierarchicalOcclusionQuery then
-    S := Format(' (+ %d boxes to occl query)', [Statistics.BoxesOcclusionQueriedCount]) else
+    S := Format(' (+ <font color="#%s">%d boxes</font> to occl query)',
+           [ ValueColor, Statistics.BoxesOcclusionQueriedCount ]) else
     S := '';
-  Text.Append(Format('Rendered Shapes : %d%s of %d ',
-    [ Statistics.ShapesRendered, S,
+  Text.Append(Format('Rendered Shapes : <font color="#%s">%d%s of %d</font> ',
+    [ ValueColor,
+      Statistics.ShapesRendered, S,
       Statistics.ShapesVisible ]) + OctreeDisplayStatus);
 
   if Scene.TimeAtLoad = 0.0 then
-    S := Format('World time: %d', [Trunc(Scene.Time)]) else
-    S := Format('World time: load time + %d = %d',
-      [Trunc(Scene.Time - Scene.TimeAtLoad), Trunc(Scene.Time)]);
+    S := Format('World time: <font color="#%s">%d</font>',
+      [ValueColor, Trunc(Scene.Time)]) else
+    S := Format('World time: <font color="#%s">load time + %d = %d</font>',
+      [ValueColor, Trunc(Scene.Time - Scene.TimeAtLoad), Trunc(Scene.Time)]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   if not ProcessEventsWanted then

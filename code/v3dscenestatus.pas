@@ -64,7 +64,7 @@ uses SysUtils, CastleTextureFont_DejaVuSansMonoBold_15,
 constructor TStatusText.Create(AOwner: TComponent);
 begin
   inherited;
-  Tags := true;
+  Html := true;
   Left := 5;
   Bottom := 5;
   Color := Yellow;
