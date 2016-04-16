@@ -371,7 +371,7 @@ procedure TExtendedStatusText.CalculateText;
 const
   HighlightBegin = '<font color="#ffffff">';
   HighlightEnd = '</font>';
-  ValueColor = '8888ff';
+  ValueColor = 'ffffff';
 
   { Describe pointing-device sensors (active and under the mouse). }
   procedure DescribeSensors;
