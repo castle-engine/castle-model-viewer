@@ -374,13 +374,13 @@ begin
   if Lights <> nil then
   begin
     for I := 0 to Lights.Count - 1 do
-      Lights[I].DestructionNotifications.Remove(@DestructionNotification);
+      Lights[I].RemoveDestructionNotification(@DestructionNotification);
   end;
   FreeAndNil(Lights);
 
   if Headlight <> nil then
   begin
-    Headlight.DestructionNotifications.Remove(@DestructionNotification);
+    Headlight.RemoveDestructionNotification(@DestructionNotification);
     Headlight := nil;
   end;
 
@@ -400,12 +400,12 @@ begin
   begin
     for I := 0 to Lights.Count - 1 do
       if Node <> Lights[I] then
-        Lights[I].DestructionNotifications.Remove(@DestructionNotification);
+        Lights[I].RemoveDestructionNotification(@DestructionNotification);
     Lights.Clear;
   end;
 
   if (Headlight <> nil) and (Node <> Headlight) then
-    Headlight.DestructionNotifications.Remove(@DestructionNotification);
+    Headlight.RemoveDestructionNotification(@DestructionNotification);
   Headlight := nil;
 
   { At one point I tried here to return to LightsMenu,
@@ -427,7 +427,7 @@ begin
   if Lights.IndexOf(Node) = -1 then
   begin
     Lights.Add(Node);
-    Node.DestructionNotifications.Add(@DestructionNotification);
+    Node.AddDestructionNotification(@DestructionNotification);
   end;
 end;
 
@@ -469,9 +469,9 @@ begin
     if Headlight <> NewHeadlight then
     begin
       if Headlight <> nil then
-        Headlight.DestructionNotifications.Remove(@DestructionNotification);
+        Headlight.RemoveDestructionNotification(@DestructionNotification);
       Headlight := NewHeadlight;
-      Headlight.DestructionNotifications.Add(@DestructionNotification);
+      Headlight.AddDestructionNotification(@DestructionNotification);
     end;
   end else
     MessageOK(Window, 'No headlight in level.' +NL+ NL+
