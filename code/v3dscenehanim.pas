@@ -126,7 +126,7 @@ begin
         read from file and created by code. So we either try to
         set to zero all PositionInParent, or we try to set them good. }
       CenterRoute.PositionInParent := 1000 * 1000 + I;
-      HumanoidNode.Routes.Add(CenterRoute);
+      HumanoidNode.AddRoute(CenterRoute);
 
       JointTransform.FdChildren.Add(SphereShape);
 
