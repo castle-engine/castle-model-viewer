@@ -920,6 +920,10 @@ end;
 
 procedure LoadClearScene; forward;
 
+type
+  TLoadSceneOption = (lsoCommandLineCustomization);
+  TLoadSceneOptions = set of TLoadSceneOption;
+
 { Calls FreeScene and then inits "scene global variables".
   Pass here ACameraRadius = 0.0 to say that CameraRadius should be
   somehow calculated (guessed) based on loaded Scene data.
@@ -958,16 +962,16 @@ procedure LoadClearScene; forward;
   problem with passing pointers to global variables
   (ASceneURL is a pointer) as local vars.
 
-  If UseInitialVars then we will use and reset
-  InitialNavigationType and InitialViewpoint*.
+  If lsoCommandLineCustomization in Options,
+  then we will use (and clear) the command-line customizations
+  of navigation info type and viewpoint.
   This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNode: TX3DRootNode;
   ASceneURL: string;
   const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  InitializeCamera: boolean;
-  UseInitialVars: boolean = true);
+  const Options: TLoadSceneOptions);
 var
   NewCaption: string;
   I: Integer;
@@ -979,7 +983,7 @@ begin
     SceneURL := ASceneURL;
 
     { set InitialViewpoint* before Scene.Load }
-    SetInitialViewpoint(Scene, UseInitialVars);
+    SetInitialViewpoint(Scene, lsoCommandLineCustomization in Options);
 
     Scene.Load(RootNode, true);
 
@@ -988,24 +992,19 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    if UseInitialVars then
+    if lsoCommandLineCustomization in Options then
     begin
-      ForceNavigationType := InitialNavigationType;
-      InitialNavigationType := '';
+      ForceNavigationType := NavigationTypeCommandLine;
+      NavigationTypeCommandLine := '';
     end else
       ForceNavigationType := '';
 
-    if InitializeCamera then
-    begin
-      Scene.CameraFromNavigationInfo(Camera,
-        Scene.BoundingBox, ForceNavigationType, ACameraRadius);
-      Scene.CameraFromViewpoint(Camera, false, false);
-      for I := 0 to High(Viewports) do
-        AssignCamera(Viewports[I], SceneManager, SceneManager, false);
-      Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
-    end else
-      { No CameraFromViewpoint of this scene callled, so no viewpoint bound }
-      Viewpoints.BoundViewpoint := nil;
+    Scene.CameraFromNavigationInfo(Camera,
+      Scene.BoundingBox, ForceNavigationType, ACameraRadius);
+    Scene.CameraFromViewpoint(Camera, false, false);
+    for I := 0 to High(Viewports) do
+      AssignCamera(Viewports[I], SceneManager, SceneManager, false);
+    Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
 
     SceneInitLights(Scene, NavigationNode);
 
@@ -1073,8 +1072,7 @@ end;
   changes, it may even cause suddenly invalid pointer --- yeah,
   I experienced it). }
 procedure LoadScene(ASceneURL: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
-  InitializeCamera: boolean);
+  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
 
 { It's useful to undefine it only for debug purposes:
   FPC dumps then backtrace of where exception happened,
@@ -1119,7 +1117,7 @@ begin
   {$ifdef CATCH_EXCEPTIONS}
   try
   {$endif CATCH_EXCEPTIONS}
-    LoadSceneCore(RootNode, ASceneURL, SceneChanges, ACameraRadius, InitializeCamera);
+    LoadSceneCore(RootNode, ASceneURL, SceneChanges, ACameraRadius, [lsoCommandLineCustomization]);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -1162,10 +1160,11 @@ end;
 { Load special "clear" and "welcome" scenes.
   This loads a scene directly from TX3DNode, and assumes that
   LoadSceneCore will not fail. }
-procedure LoadSimpleScene(Node: TX3DRootNode; UseInitialVars: boolean = true);
+procedure LoadSimpleScene(Node: TX3DRootNode;
+  const Options: TLoadSceneOptions);
 begin
   SceneWarnings.Clear;
-  LoadSceneCore(Node, '', [], 1.0, true, UseInitialVars);
+  LoadSceneCore(Node, '', [], 1.0, Options);
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1189,14 +1188,14 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML/X3D and then auto-generate
     xxx_scene.inc file to load scene from a simple string. }
-  LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), false);
+  LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), []);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(LoadX3DClassicFromString({$I welcome_scene.inc}, ''));
+  LoadSimpleScene(LoadX3DClassicFromString({$I welcome_scene.inc}, ''), []);
 end;
 
 const
@@ -1221,7 +1220,7 @@ end;
 
 class procedure THelper.OpenRecent(const URL: string);
 begin
-  LoadScene(URL, [], 0.0, true);
+  LoadScene(URL, [], 0.0);
 end;
 
 procedure DropFiles(Container: TUIContainer; const FileNames: array of string);
@@ -1232,7 +1231,7 @@ begin
   begin
     URL := FilenameToURISafe(FileNames[0]);
     if URL <> '' then
-      LoadScene(URL, [], 0.0, true);
+      LoadScene(URL, [], 0.0);
   end;
 end;
 
@@ -2741,7 +2740,29 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       ') and paste (' + PasteStr +
       ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
       'URL:', URL) then
-      LoadScene(URL, [], 0.0, true);
+      LoadScene(URL, [], 0.0);
+  end;
+
+  procedure Reopen;
+  var
+    Pos, Dir, Up: TVector3Single;
+    NavigationType: TNavigationType;
+  begin
+    { reopen saves/restores camera view and navigation type,
+      this makes it more useful }
+    NavigationType := Camera.NavigationType;
+    Camera.GetView(Pos, Dir, Up{, GravityUp});
+
+    LoadScene(SceneURL, [], 0.0);
+
+    { restore view, without GravityUp (trying to preserve it goes wrong
+      in case we're in Examine mode, then "reopen", then switch to "Walk"
+      --- original scene's gravity is then lost) }
+    Camera.SetView(Pos, Dir, Up{, GravityUp});
+    { restore NavigationType }
+    Camera.NavigationType := NavigationType;
+    ViewportsSetNavigationType(Camera.NavigationType);
+    UpdateCameraUI;
   end;
 
 var
@@ -2753,13 +2774,7 @@ begin
 
   12: Window.Close;
 
-  15: begin
-        { When reopening, then InitializeCamera parameter is false.
-          In fact, this was the purpose of this InitializeCamera
-          parameter: to set it to false when reopening, as this makes
-          reopening more useful. }
-        LoadScene(SceneURL, [], 0.0, false);
-      end;
+  15: Reopen;
 
   900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
   905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
@@ -3535,7 +3550,7 @@ var
 begin
   URL := SceneURL;
   if Window.FileDialog('Open file', URL, true, Load3D_FileFilters) then
-    LoadScene(URL, [], 0.0, true);
+    LoadScene(URL, [], 0.0);
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
@@ -3906,7 +3921,7 @@ begin
         Window.Open(@RetryOpen);
 
         if WasParam_SceneURL then
-          LoadScene(Param_SceneURL, Param_SceneChanges, Param_CameraRadius, true) else
+          LoadScene(Param_SceneURL, Param_SceneChanges, Param_CameraRadius) else
           LoadWelcomeScene;
 
         if MakingScreenShot then

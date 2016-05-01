@@ -53,9 +53,9 @@ procedure UpdateCameraNavigationTypeUI;
 procedure CamerasParseParameters;
 
 var
-  { When loading scene, check InitialNavigationType, and if non-empty:
+  { When loading scene, check NavigationTypeCommandLine, and if non-empty:
     use it, and reset to empty. }
-  InitialNavigationType: string;
+  NavigationTypeCommandLine: string;
 
 var
   { Same as your SceneManager.Camera after InitCameras. }
@@ -107,7 +107,7 @@ end;
     const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
   begin
     Assert(OptionNum = 0);
-    InitialNavigationType := Argument;
+    NavigationTypeCommandLine := Argument;
   end;
 
 procedure CamerasParseParameters;

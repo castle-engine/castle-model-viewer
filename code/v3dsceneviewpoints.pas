@@ -106,9 +106,11 @@ var
 { Parse --viewpoint command-line option, if exists. }
 procedure ViewpointsParseParameters;
 
-{ Apply --viewpoint command-line option to the next loaded scenes. }
+{ Set Scene.InitialViewpoint values.
+  If EnableCommandLineCustomization then (only for the 1st time it's used)
+  applies the --viewpoint command-line option effect. }
 procedure SetInitialViewpoint(Scene: TCastleScene;
-  const EnableNonStandardValue: boolean);
+  const EnableCommandLineCustomization: boolean);
 
 { Switch camera to given viewpoint. This only switches the 3D camera,
   does not update the "Viewpoints" menu state (for this, see
@@ -374,7 +376,7 @@ end;
 { command-line options ------------------------------------------------------- }
 
 var
-  UseInitialViewpoint: boolean = false;
+  HasCommandLineViewpoint: boolean = false;
   InitialViewpointIndex: Integer;
   InitialViewpointName: string;
 
@@ -382,7 +384,7 @@ procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
   const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
 begin
   Assert(OptionNum = 0);
-  UseInitialViewpoint := true;
+  HasCommandLineViewpoint := true;
   InitialViewpointIndex := 0;
   InitialViewpointName := '';
 
@@ -403,11 +405,11 @@ begin
 end;
 
 procedure SetInitialViewpoint(Scene: TCastleScene;
-  const EnableNonStandardValue: boolean);
+  const EnableCommandLineCustomization: boolean);
 begin
-  if EnableNonStandardValue and UseInitialViewpoint then
+  if EnableCommandLineCustomization and HasCommandLineViewpoint then
   begin
-    UseInitialViewpoint := false;
+    HasCommandLineViewpoint := false;
     Scene.InitialViewpointIndex := InitialViewpointIndex;
     Scene.InitialViewpointName := InitialViewpointName;
   end else
