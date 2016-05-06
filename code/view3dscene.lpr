@@ -2765,6 +2765,53 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     UpdateCameraUI;
   end;
 
+  function SceneVertexTriangleInfo(const Scene: TCastleScene): string;
+  const
+    SSceneInfoTriVertCounts_Same = 'Scene contains %d triangles and %d ' +
+      'vertices (with and without over-triangulating).';
+    SSceneInfoTriVertCounts_1 =
+      'When we don''t use over-triangulating (e.g. when we do collision '+
+      'detection or ray tracing) scene has %d triangles and %d vertices.';
+    SSceneInfoTriVertCounts_2 =
+      'When we use over-triangulating (e.g. when we do OpenGL rendering) '+
+      'scene has %d triangles and %d vertices.';
+  begin
+    if (Scene.VerticesCount(false) = Scene.VerticesCount(true)) and
+       (Scene.TrianglesCount(false) = Scene.TrianglesCount(true)) then
+      Result := Format(SSceneInfoTriVertCounts_Same,
+        [Scene.TrianglesCount(false), Scene.VerticesCount(false)]) + NL else
+    begin
+      Result :=
+        Format(SSceneInfoTriVertCounts_1,
+          [Scene.TrianglesCount(false), Scene.VerticesCount(false)]) + NL +
+        Format(SSceneInfoTriVertCounts_2,
+          [Scene.TrianglesCount(true), Scene.VerticesCount(true)]) + NL;
+    end;
+  end;
+
+  function SceneBoundingBoxInfo(const Scene: TCastleScene): string;
+  var
+    BBox: TBox3D;
+  begin
+    BBox := Scene.BoundingBox;
+    Result := 'Bounding box : ' + BBox.ToNiceStr;
+    if not BBox.IsEmpty then
+    begin
+      Result += ', average size : ' + FloatToNiceStr(BBox.AverageSize);
+    end;
+    Result += NL;
+  end;
+
+  function ManifoldEdgesInfo(const Scene: TCastleScene): string;
+  var
+    ManifoldEdges, BorderEdges: Cardinal;
+  begin
+    Scene.EdgesCount(ManifoldEdges, BorderEdges);
+    Result := Format('Edges detection: all edges split into %d manifold edges and %d border edges. Remember that for shadow volumes, only the shapes that are perfect manifold (have zero border edges) can cast shadows.',
+      [ManifoldEdges, BorderEdges]);
+    Scene.FreeResources([frShadowVolume]);
+  end;
+
 var
   C: Cardinal;
 begin
@@ -2909,11 +2956,9 @@ begin
 
   120: Writeln(TextureMemoryProfiler.Summary);
 
-  121: begin
-         ShowAndWrite(
-           'Scene "' + SceneURL + '" information:' + NL + NL +
-           Scene.Info(true, true, false));
-       end;
+  121: ShowAndWrite('Scene "' + SceneURL + '" information:' + NL + NL +
+         SceneVertexTriangleInfo(Scene) + NL +
+         SceneBoundingBoxInfo(Scene));
   122: begin
          ShowStatus := not ShowStatus;
          UpdateStatusToolbarVisible;
@@ -2924,10 +2969,7 @@ begin
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
   128: Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
-  129: begin
-         ShowAndWrite(Scene.Info(false, false, true));
-         Scene.FreeResources([frShadowVolume]);
-       end;
+  129: ShowAndWrite(ManifoldEdgesInfo(Scene));
 
   131: begin
          ShowAndWrite(
