@@ -186,11 +186,11 @@ begin
   if NavigationType = ntExamine then
   begin
     if ImageExamine_TooltipGL = nil then
-      ImageExamine_TooltipGL := TGLImage.Create(Examine_Tooltip, false);
+      ImageExamine_TooltipGL := TGLImage.Create(Examine_Tooltip, false, false);
     if ImageWalk_Fly_TooltipGL = nil then
-      ImageWalk_Fly_TooltipGL := TGLImage.Create(Walk_Fly_Tooltip, false);
+      ImageWalk_Fly_TooltipGL := TGLImage.Create(Walk_Fly_Tooltip, false, false);
     if ImageTooltipArrow = nil then
-      ImageTooltipArrow := TGLImage.Create(TooltipArrow, false);
+      ImageTooltipArrow := TGLImage.Create(TooltipArrow, false, false);
   end;
 end;
 
