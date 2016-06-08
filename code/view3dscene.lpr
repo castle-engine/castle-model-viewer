@@ -56,7 +56,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
-  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos,
+  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos, CastleTextureImages,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
@@ -3647,7 +3647,7 @@ var
   Param_ScreenshotTransparent: boolean = false;
 
 const
-  Options: array [0..21] of TOption =
+  Options: array [0..22] of TOption =
   (
     (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
@@ -3663,6 +3663,7 @@ const
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-videos'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log-textures'; Argument: oaNone),
     (Short:  #0; Long: 'anti-alias'; Argument: oaRequired),
     (Short: 'H'; Long: 'hide-extras'; Argument: oaNone),
     (Short:  #0; Long: 'write'; Argument: oaNone),
@@ -3827,26 +3828,30 @@ const
             LogVideosCache := true;
           end;
       14: begin
+            InitializeLog(Version);
+            LogTextureCache := true;
+          end;
+      15: begin
             Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
               Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
             if AntiAliasingMenu[Window.AntiAliasing] <> nil then
               AntiAliasingMenu[Window.AntiAliasing].Checked := true;
           end;
-      15: begin
+      16: begin
             ShowBBox := false;
             ShowStatus := false;
             UpdateStatusToolbarVisible;
           end;
-      16: WasParam_Write := true;
-      17: if SameText(Argument, 'classic') then
+      17: WasParam_Write := true;
+      18: if SameText(Argument, 'classic') then
             Param_WriteEncoding := xeClassic else
           if SameText(Argument, 'xml') then
             Param_WriteEncoding := xeXML else
             raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-      18: Param_WriteForceX3D := true;
-      19: Param_HideMenu := true;
-      20: TextureMemoryProfiler.Enabled := true;
-      21: Param_ScreenshotTransparent := true;
+      19: Param_WriteForceX3D := true;
+      20: Param_HideMenu := true;
+      21: TextureMemoryProfiler.Enabled := true;
+      22: Param_ScreenshotTransparent := true;
       else raise EInternalError.Create('OptionProc');
     end;
   end;
