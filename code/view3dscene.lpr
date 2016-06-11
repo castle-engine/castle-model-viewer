@@ -673,7 +673,7 @@ begin
   begin
     { Use Scene.Attributes.LineWidth for our visualizations as well }
     glLineWidth(Scene.Attributes.LineWidth);
-    RenderSilhouetteBorderEdges(Camera.GetPosition, MainScene);
+    RenderSilhouetteBorderEdges(Camera.Position, MainScene);
     RenderVisualizations;
   end else
   begin
@@ -718,7 +718,7 @@ begin
   if FillMode = fmSilhouetteBorderEdges then
   begin
     RenderVisualizations;
-    RenderSilhouetteBorderEdges(Camera.GetPosition, GetMainScene);
+    RenderSilhouetteBorderEdges(Camera.Position, GetMainScene);
   end else
   begin
     inherited;
@@ -2470,7 +2470,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.GetPosition,
+          GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.Position,
             @TV3DSceneManager(SceneManager).RenderFromViewEverything,
             SceneManager.Projection.ProjectionNear,
             SceneManager.Projection.ProjectionFar);
@@ -2537,7 +2537,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
-        Composite := GLCaptureCubeMapComposite(Size, SceneManager.Camera.GetPosition,
+        Composite := GLCaptureCubeMapComposite(Size, SceneManager.Camera.Position,
           @TV3DSceneManager(SceneManager).RenderFromViewEverything,
           SceneManager.Projection.ProjectionNear,
           SceneManager.Projection.ProjectionFar);
