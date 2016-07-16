@@ -27,7 +27,7 @@ unit V3DSceneScreenEffects;
 interface
 
 uses Classes, CastleUtils, CastleUIControls, CastleWindow, CastleGLShaders,
-  CastleSceneManager;
+  CastleSceneManager, CastleScreenEffects;
 
 type
   { Screen effects predefined in view3dscene.
@@ -45,7 +45,7 @@ type
   TScreenEffects = class(TUIControl)
   private
     MenuItems: array [TScreenEffect] of TMenuItemChecked;
-    Shaders: array [TScreenEffect] of TGLSLProgram;
+    Shaders: array [TScreenEffect] of TGLSLScreenEffect;
     FActiveEffectsCount: Integer;
   public
     Menu: TMenu;
@@ -66,8 +66,7 @@ var
 
 implementation
 
-uses SysUtils, CastleGLUtils, CastleWarnings, CastleRenderer, CastleKeysMouse,
-  CastleScreenEffects;
+uses SysUtils, CastleGLUtils, CastleWarnings, CastleRenderer, CastleKeysMouse;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
@@ -188,13 +187,10 @@ begin
       if TGLSLProgram.ClassSupport <> gsNone then
       begin
         try
-          Shaders[SE] := TGLSLProgram.Create;
-          Shaders[SE].AttachVertexShader(ScreenEffectVertex);
-          Shaders[SE].AttachFragmentShader(
-            ScreenEffectFragment(ScreenEffectsInfo[SE].NeedsDepth) +
-            ScreenEffectsInfo[SE].Code);
-          Shaders[SE].Link(true);
-          Shaders[SE].UniformNotFoundAction := uaIgnore;
+          Shaders[SE] := TGLSLScreenEffect.Create;
+          Shaders[SE].NeedsDepth := ScreenEffectsInfo[SE].NeedsDepth;
+          Shaders[SE].ScreenEffectShader := ScreenEffectsInfo[SE].Code;
+          Shaders[SE].Link;
         except
           on E: EGLSLError do
           begin
