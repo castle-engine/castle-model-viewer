@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses SysUtils, CastleGLUtils, CastleWarnings, CastleRenderer, CastleKeysMouse;
+uses SysUtils, CastleGLUtils, CastleLog, CastleRenderer, CastleKeysMouse;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
@@ -194,7 +194,7 @@ begin
         except
           on E: EGLSLError do
           begin
-            OnWarning(wtMinor, 'GLSL', 'Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
+            WritelnWarning('GLSL', 'Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
             FreeAndNil(Shaders[SE]);
           end;
         end;

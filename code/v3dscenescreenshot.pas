@@ -108,7 +108,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleProgress, CastleFilesUtils,
-  CastleWarnings, CastleVideos, CastleURIUtils;
+  CastleVideos, CastleURIUtils, CastleLog;
 
 function MakingScreenShot: boolean;
 begin
@@ -218,7 +218,7 @@ begin
 
     if Executable = '' then
     begin
-      OnWarning(wtMinor, 'Video', Format('You must have "ffmpeg" program from ' +
+      WritelnWarning('Video', Format('You must have "ffmpeg" program from ' +
         '[http://ffmpeg.mplayerhq.hu/] installed and available on $PATH to be able to ' +
         'create movie files". Leaving generated temporary images "%s"',
         [TemporaryImagesPattern]));

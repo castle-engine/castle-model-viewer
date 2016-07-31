@@ -30,9 +30,10 @@
 
 program tovrmlx3d;
 
-uses SysUtils, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
-  CastleParameters, V3DSceneVersion, CastleWarnings, CastleFilesUtils,
-  CastleURIUtils;
+uses SysUtils,
+  CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters,
+  CastleFilesUtils, CastleURIUtils, CastleApplicationProperties,
+  V3DSceneVersion;
 
 var
   Encoding: TX3DEncoding = xeClassic;
@@ -95,7 +96,7 @@ begin
   Parameters.CheckHigh(1);
   URL := Parameters[1];
 
-  OnWarning := @OnWarningWrite;
+  ApplicationProperties.OnWarning.Add(@ApplicationProperties.WriteWarningOnConsole);
 
   Node := Load3D(URL, true);
   try

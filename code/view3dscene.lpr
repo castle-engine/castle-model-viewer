@@ -51,12 +51,13 @@ program view3dscene;
 {$endif}
 
 uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
-  CastleTriangles,
+  CastleTriangles, CastleApplicationProperties,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
-  CastleWarnings, CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
-  CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine, CastleUIControls, CastleColors,
-  CastleKeysMouse, CastleDownload, CastleURIUtils, CastleRays, CastleVideos, CastleTextureImages,
+  CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
+  CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine,
+  CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
+  CastleRays, CastleVideos, CastleTextureImages,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
@@ -173,6 +174,7 @@ type
     class procedure OpenButtonClick(Sender: TObject);
     class procedure CollisionsButtonClick(Sender: TObject);
     class procedure ScreenshotButtonClick(Sender: TObject);
+    class procedure OnWarningHandle(Sender: TObject; const Category, S: string);
   end;
 
 { SceneManager and viewport ------------------------------------------------ }
@@ -835,7 +837,7 @@ begin
     Window.Container.EventResize; { update WarningsButton.Left }
 end;
 
-procedure OnWarningHandle(const AType: TWarningType; const Category, S: string);
+class procedure THelper.OnWarningHandle(Sender: TObject; const Category, S: string);
 begin
   { Write to ErrOutput, not normal Output, since when --write is used,
     we write to output VRML/X3D contents. }
@@ -1394,7 +1396,7 @@ begin
       if glGetInteger(GL_ALPHA_BITS) = 0 then
         { In case FBO is not available, and main context doesn't have alpha
           bits either. }
-        OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
+        WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end;
 
     try
@@ -1479,7 +1481,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       if glGetInteger(GL_ALPHA_BITS) = 0 then
         { In case FBO is not available, and main context doesn't have alpha
           bits either. }
-        OnWarning(wtMinor, 'OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
+        WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end else
     begin
       ReadBuffer := Window.SaveScreenBuffer;
@@ -3905,7 +3907,7 @@ begin
 
   SceneWarnings := TSceneWarnings.Create;
   try
-    OnWarning := @OnWarningHandle;
+    ApplicationProperties.OnWarning.Add(@THelper(nil).OnWarningHandle);
 
     if WasParam_Write then
     begin

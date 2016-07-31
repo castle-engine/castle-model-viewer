@@ -37,7 +37,7 @@ procedure RefreshNamedAnimations(const Scene: TCastleScene);
 implementation
 
 uses SysUtils, Classes,
-  CastleWarnings, CastleSceneCore,
+  CastleLog, CastleSceneCore,
   V3DSceneCaptions;
 
 const
@@ -79,7 +79,7 @@ function TMenuItemAnimation.DoClick: boolean;
 begin
   inherited;
   if not Scene.PlayAnimation(AnimationName, Looping) then
-    OnWarning(wtMajor, 'Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
+    WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
       [AnimationName]));
   Result := true;
 end;
