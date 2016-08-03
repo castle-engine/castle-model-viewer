@@ -2555,7 +2555,6 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
     procedure DoSave(const URL: string);
     var
-      PackData: TPackNotAlignedData;
       Image: TGrayscaleImage;
     begin
       { Just like TCastleWindowCustom.SaveScreen, we have to force redisplay now
@@ -2567,11 +2566,11 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
       Image := TGrayscaleImage.Create(Window.Width, Window.Height);
       try
-        BeforePackImage(PackData, Image);
+        BeforePackImage(Image);
         try
           glReadPixels(0, 0, Window.Width, Window.Height, GL_DEPTH_COMPONENT,
             ImageGLType(Image), Image.RawPixels);
-        finally AfterPackImage(PackData, Image) end;
+        finally AfterPackImage(Image) end;
 
         SaveImage(Image, URL);
       finally FreeAndNil(Image) end;
