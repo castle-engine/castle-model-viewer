@@ -56,7 +56,7 @@ procedure RenderSilhouetteBorderEdges(
 
 implementation
 
-uses CastleGL;
+uses CastleGL, CastleGLUtils;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 var
@@ -85,8 +85,10 @@ end;
 
 procedure RenderSilhouetteBorderEdges(
   const ObserverPos: TVector4Single; Scene: TCastleScene);
+{$ifndef OpenGLES} //TODO-es
+var
+  PreviousLineWidth: Single;
 begin
-  {$ifndef OpenGLES} //TODO-es
   glPushAttrib(GL_ENABLE_BIT);
     { Draw BorderEdges first, with thicker width. And draw all without depth
       test.
@@ -99,16 +101,18 @@ begin
     glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
 
     glColor4f(0, 0, 1, 0.3);
-    glPushAttrib(GL_LINE_BIT);
-      glLineWidth(5); { saved by GL_LINE_BIT }
-      Scene.RenderBorderEdges(IdentityMatrix4Single);
-    glPopAttrib;
+    PreviousLineWidth := RenderContext.LineWidth;
+    RenderContext.LineWidth := 5;
+    Scene.RenderBorderEdges(IdentityMatrix4Single);
+    RenderContext.LineWidth := PreviousLineWidth;
 
     glColor4f(1, 1, 0, 0.3);
     Scene.RenderSilhouetteEdges(ObserverPos, IdentityMatrix4Single);
 
   glPopAttrib;
-  {$endif}
+{$else}
+begin
+{$endif}
 end;
 
 end.

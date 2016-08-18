@@ -103,7 +103,7 @@ begin
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
-  GLClear([cbColor], Black);
+  RenderContext.Clear([cbColor], Black);
   GLImage := TGLImage.Create(Image, false, false);
   try
     GLImage.Draw(0, 0);

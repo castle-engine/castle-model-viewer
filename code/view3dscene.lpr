@@ -580,7 +580,7 @@ begin
     glEnable(GL_DEPTH_TEST);
 
     { Use Scene.Attributes.LineWidth for our visualizations as well }
-    glLineWidth(Scene.Attributes.LineWidth);
+    RenderContext.LineWidth := Scene.Attributes.LineWidth;
 
     OctreeDisplay(Scene);
 
@@ -629,14 +629,14 @@ begin
         glDisable(GL_BLEND);
         glColorv(Vector4Single(1, 1, 1, 1));
 
-        glLineWidth(2.0);
+        RenderContext.LineWidth := 2.0;
         glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
           glVertexv(SelectedItem^.World.Triangle[0]);
           glVertexv(SelectedItem^.World.Triangle[1]);
           glVertexv(SelectedItem^.World.Triangle[2]);
         glEnd;
 
-        glPointSize(5.0);
+        RenderContext.PointSize := 5.0;
         glDisable(GL_DEPTH_TEST);
         glBegin(GL_POINTS);     // draw hit point, visible through
           glVertexv(SelectedPointWorld);
@@ -674,7 +674,7 @@ begin
   if FillMode = fmSilhouetteBorderEdges then
   begin
     { Use Scene.Attributes.LineWidth for our visualizations as well }
-    glLineWidth(Scene.Attributes.LineWidth);
+    RenderContext.LineWidth := Scene.Attributes.LineWidth;
     RenderSilhouetteBorderEdges(Camera.Position, MainScene);
     RenderVisualizations;
   end else
