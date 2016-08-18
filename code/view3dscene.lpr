@@ -2098,9 +2098,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     C: TVector3Single;
   begin
-    C := GlobalAmbient;
+    C := RenderContext.GlobalAmbient;
     if Window.ColorDialog(C) then
-      GlobalAmbient := C;
+      RenderContext.GlobalAmbient := C;
   end;
 
   procedure SetViewpointForWholeScene(

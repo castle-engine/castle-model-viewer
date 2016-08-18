@@ -343,7 +343,7 @@ begin
 
   Lights := TX3DNodeList.Create(false);
 
-  AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, GlobalAmbient);
+  AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, RenderContext.GlobalAmbient);
   AmbientColorSlider.OnChange := @AmbientColorChanged;
 
   SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
@@ -487,7 +487,7 @@ end;
 
 procedure TLightsMenu.AmbientColorChanged(Sender: TObject);
 begin
-  GlobalAmbient := AmbientColorSlider.Value;
+  RenderContext.GlobalAmbient := AmbientColorSlider.Value;
 
   { TODO: We just directly set global paramater now.
     Default is equal to 0.2, 0.2, 0.2 default.
