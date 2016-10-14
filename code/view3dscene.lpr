@@ -98,6 +98,9 @@ var
     This way we're preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
   Scene: TCastleScene;
+  SceneBoundingBox: TCastleScene;
+  SceneBoundingBoxTransform: TTransformNode;
+  SceneBoundingBoxBox: TBoxNode;
   SceneURL: string;
 
   SelectedItem: PTriangle;
@@ -584,13 +587,13 @@ begin
 
     OctreeDisplay(Scene);
 
-    if ShowBBox then
+    SceneBoundingBox.Exists := ShowBBox and not Scene.BoundingBox.IsEmpty;
+    if SceneBoundingBox.Exists then
     begin
-      {$ifndef OpenGLES} //TODO-es
-      glColorv(Green);
-      if not Scene.BoundingBox.IsEmpty then
-        glDrawBox3DWire(Scene.BoundingBox);
-      {$endif}
+      { Use Scene.Attributes.LineWidth for our visualizations as well }
+      SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
+      SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Middle;
+      SceneBoundingBoxBox.Size := Scene.BoundingBox.Sizes;
     end;
 
     { Note that there is no sense in showing viewing frustum in
@@ -649,6 +652,9 @@ begin
       glDrawCornerMarkers(SelectedShape.BoundingBox);
       {$endif}
     end;
+  end else
+  begin
+    SceneBoundingBox.Exists := false;
   end;
 end;
 
@@ -846,6 +852,32 @@ begin
   UpdateWarningsButton;
   if Window <> nil then
     Window.Invalidate;
+end;
+
+procedure InitializeSceneBoundingBox;
+var
+  RootNode: TX3DRootNode;
+  Shape: TShapeNode;
+  Material: TMaterialNode;
+begin
+  SceneBoundingBoxBox := TBoxNode.Create;
+
+  Material := TMaterialNode.Create;
+  Material.ForcePureEmissive;
+  Material.EmissiveColor := GreenRGB;
+
+  Shape := TShapeNode.Create;
+  Shape.Geometry := SceneBoundingBoxBox;
+  Shape.Shading := shWireframe;
+  Shape.Material := Material;
+
+  SceneBoundingBoxTransform := TTransformNode.Create;
+  SceneBoundingBoxTransform.FdChildren.Add(Shape);
+
+  RootNode := TX3DRootNode.Create;
+  RootNode.FdChildren.Add(SceneBoundingBoxTransform);
+
+  SceneBoundingBox.Load(RootNode, true);
 end;
 
 procedure SceneOctreeCreate;
@@ -3931,6 +3963,10 @@ begin
       AttributesLoadFromConfig(Scene.Attributes);
       SceneManager.Items.Add(Scene);
       SceneManager.MainScene := Scene;
+
+      SceneBoundingBox := TCastleScene.Create(Scene);
+      SceneManager.Items.Add(SceneBoundingBox);
+      InitializeSceneBoundingBox;
 
       InitCameras(SceneManager);
       InitTextureFilters(Scene);
