@@ -3567,8 +3567,8 @@ var
   NextLeft, ButtonsHeight, ButtonsBottom: Integer;
 begin
   ButtonsHeight := Max(
-    CameraButtons[ntExamine { any button }].Height,
-    WarningsButton.Height);
+    CameraButtons[ntExamine { any button }].CalculatedHeight,
+    WarningsButton.CalculatedHeight);
   ButtonsBottom := Window.Height - ButtonsHeight - ToolbarMargin;
 
   NextLeft := ToolbarMargin;
@@ -3584,7 +3584,7 @@ begin
 
     OpenButton.Left := NextLeft;
     OpenButton.Bottom := ButtonsBottom;
-    NextLeft += OpenButton.Width + ButtonsSeparatorsMargin;
+    NextLeft += OpenButton.CalculatedWidth + ButtonsSeparatorsMargin;
 
     ToolbarPanel.VerticalSeparators[0] := NextLeft;
     NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
@@ -3596,7 +3596,7 @@ begin
       begin
         CameraButtons[NT].Left := NextLeft;
         CameraButtons[NT].Bottom := ButtonsBottom;
-        NextLeft += CameraButtons[NT].Width + ButtonsMargin;
+        NextLeft += CameraButtons[NT].CalculatedWidth + ButtonsMargin;
       end;
     NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
 
@@ -3605,15 +3605,15 @@ begin
 
     CollisionsButton.Left := NextLeft;
     CollisionsButton.Bottom := ButtonsBottom;
-    NextLeft += CollisionsButton.Width + ButtonsMargin;
+    NextLeft += CollisionsButton.CalculatedWidth + ButtonsMargin;
 
     ScreenshotButton.Left := NextLeft;
     ScreenshotButton.Bottom := ButtonsBottom;
-    NextLeft += ScreenshotButton.Width + ButtonsMargin;
+    NextLeft += ScreenshotButton.CalculatedWidth + ButtonsMargin;
   end;
 
   WarningsButton.Left := Max(NextLeft,
-    Window.Width - WarningsButton.Width - ToolbarMargin);
+    Window.Width - WarningsButton.CalculatedWidth - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
 
   ResizeViewports(V3DSceneWindow.Window, SceneManager);
