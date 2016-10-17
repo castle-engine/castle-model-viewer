@@ -878,6 +878,8 @@ begin
   RootNode.FdChildren.Add(SceneBoundingBoxTransform);
 
   SceneBoundingBox.Load(RootNode, true);
+  SceneBoundingBox.Collides := false;
+  SceneBoundingBox.Pickable := false;
 end;
 
 procedure SceneOctreeCreate;
