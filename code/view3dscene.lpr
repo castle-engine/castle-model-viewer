@@ -65,7 +65,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
-  CastleSceneCore, X3DNodesDetailOptions, X3DCameraUtils, CastleBackground,
+  CastleSceneCore, X3DCameraUtils, CastleBackground,
   CastleRenderer, CastleShapes, CastleRenderingCamera, X3DShadowMaps, CastleSceneManager,
   CastleMaterialProperties,
   { view3dscene-specific units: }
@@ -3822,7 +3822,6 @@ const
              '                        Set initial navigation style.' +NL+
              '                        Deprecated, consider using NavigationInfo node' +NL+
              '                        inside your scene instead.' +NL+
-             X3DNodesDetailOptionsHelp +NL+
              NL+
              SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
            Halt;
@@ -3914,7 +3913,6 @@ begin
   SoundEngine.ParseParameters;
   CamerasParseParameters;
   ViewpointsParseParameters;
-  X3DNodesDetailOptionsParse;
   Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : URL to load }
   if Parameters.High > 1 then
