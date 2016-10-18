@@ -191,7 +191,7 @@ var
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
 begin
-  Window.Controls.MakeSingle(TCastleOnScreenMenu, NewValue, false);
+  Window.Controls.MakeSingle(TCastleOnScreenMenu, NewValue, true);
 end;
 
 function LightsEditorIsOpen: boolean;
