@@ -5,3 +5,5 @@ view3dscene
 view3dscene.exe
 tovrmlx3d
 tovrmlx3d.exe
+automatic-windows-resources.res
+code/*.or
