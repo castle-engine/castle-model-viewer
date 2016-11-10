@@ -168,7 +168,7 @@ procedure TNavigationTypeButton.TooltipRender;
     Theme.Draw(R, tiTooltip);
     GLImage.Draw(R.Left + ImageMargin, R.Bottom + ImageMargin);
     { we decrease R.Top to overdraw the tooltip image border }
-    ImageTooltipArrow.Draw(Left + (Width - ImageTooltipArrow.Width) div 2, R.Top - 1);
+    ImageTooltipArrow.Draw(Left + (CalculatedWidth - ImageTooltipArrow.Width) div 2, R.Top - 1);
   end;
 
 begin
