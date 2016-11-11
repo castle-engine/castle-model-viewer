@@ -32,7 +32,7 @@ program tovrmlx3d;
 
 uses SysUtils,
   CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters,
-  CastleFilesUtils, CastleURIUtils, CastleApplicationProperties,
+  CastleFilesUtils, CastleURIUtils, CastleApplicationProperties, CastleLog,
   V3DSceneVersion;
 
 var
@@ -40,12 +40,13 @@ var
   ForceX3D: boolean = false;
 
 const
-  Options: array [0..3] of TOption =
+  Options: array [0..4] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'encoding'; Argument: oaRequired),
-    (Short:  #0; Long: 'force-x3d'; Argument: oaNone)
+    (Short:  #0; Long: 'force-x3d'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-log'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -83,6 +84,7 @@ begin
          Encoding := xeXML else
          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
     3: ForceX3D := true;
+    4: InitializeLog(Version);
     else raise EInternalError.Create('OptionProc');
   end;
 end;
