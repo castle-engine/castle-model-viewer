@@ -175,13 +175,15 @@
     <glob pattern="*.geo"/>
   </mime-type>
 
-  <!-- MIME type invented by Kambi. Kanim is my format,
-       see [http://castle-engine.sourceforge.net/kanim_format.php],
-       so we can invent any mime type I want here. -->
-  <mime-type type="application/x-kanim">
+  <!-- MIME type invented by Michalis Kamburelis.
+       castle-anim-frames is my format,
+       see [http://castle-engine.sourceforge.net/castle_animations_frames.php],
+       so we can invent any mime type we want here. -->
+  <mime-type type="application/x-castle-anim-frames">
     <sub-class-of type="text/xml"/>
     <comment>Castle Game Engine animation</comment>
     <glob pattern="*.kanim"/>
+    <glob pattern="*.castle-anim-frames"/>
   </mime-type>
 
   <!-- view3dscene also handles Spine animations in *.json,

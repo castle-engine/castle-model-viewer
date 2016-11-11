@@ -1649,7 +1649,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       'Note that this is the "on display" playing speed.' +nl+
       nl+
       '- For baked ' +
-      'animations (like from Kanim or MD3 files), this means ' +
+      'animations (like from castle-anim-frames or MD3 files), this means ' +
       'that internally number of precalculated animation frames ' +
       'doesn''t change. Which means that slowing this speed too much ' +
       'leads to noticeably "jagged" animations.' +nl+
@@ -1678,7 +1678,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       'loaded animation).' +nl+
       nl+
       '- For pracalculated ' +
-      'animations (like from Kanim or MD3 files), changing this actually changes ' +
+      'animations (like from castle-anim-frames or MD3 files), changing this actually changes ' +
       'the density of precalculated animation frames. Which means that ' +
       'this is the more resource-consuming, but also better ' +
       'method of changing animation speed: even if you slow down ' +
@@ -2370,7 +2370,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   begin
     if SceneAnimation.ScenesCount <> 1 then
     begin
-      MessageOK(Window, 'This is not possible when you already have a precalculated animation (like loaded from Kanim or MD3 file).');
+      MessageOK(Window, 'This is not possible when you already have a precalculated animation (like loaded from castle-anim-frames or MD3 file).');
       Exit;
     end;
 

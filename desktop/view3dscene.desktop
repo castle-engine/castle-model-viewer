@@ -10,4 +10,4 @@ Categories=Graphics;3DGraphics;
 Comment=View 3D models in various formats, play with VRML / X3D worlds
 Comment[it]=Visualizzatore di modelli 3D in vari formati e visore di mondi VRML / X3D
 Comment[pl]=Przeglądanie modeli 3D w różnych formatach, operowanie na światach VRML / X3D
-MimeType=model/vrml;image/x-3ds;model/x3d+vrml;model/x3d+xml;application/x-collada;application/x-inventor;application/x-md3;application/x-wavefront-obj;application/x-geo;application/x-kanim;application/json
+MimeType=model/vrml;image/x-3ds;model/x3d+vrml;model/x3d+xml;application/x-collada;application/x-inventor;application/x-md3;application/x-wavefront-obj;application/x-geo;application/x-castle-anim-frames;application/json

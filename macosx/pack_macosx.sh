@@ -181,9 +181,27 @@ create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
       <string>kanim</string>
     </array>
     <key>CFBundleTypeMIMETypes</key>
-    <string>application/x-kanim</string>
+    <string>application/x-castle-anim-frames</string>
     <key>CFBundleTypeName</key>
-    <string>Castle Game Engine animation</string>
+    <string>Castle Animation Frames</string>
+    <key>CFBundleTypeIconFile</key>
+    <string>view3dscene</string>
+    <key>CFBundleTypeOSTypes</key>
+    <array>
+      <string>****</string>
+    </array>
+    <key>CFBundleTypeRole</key>
+    <string>Viewer</string>
+  </dict>
+  <dict>
+    <key>CFBundleTypeExtensions</key>
+    <array>
+      <string>castle-anim-frames</string>
+    </array>
+    <key>CFBundleTypeMIMETypes</key>
+    <string>application/x-castle-anim-frames</string>
+    <key>CFBundleTypeName</key>
+    <string>Castle Animation Frames</string>
     <key>CFBundleTypeIconFile</key>
     <string>view3dscene</string>
     <key>CFBundleTypeOSTypes</key>

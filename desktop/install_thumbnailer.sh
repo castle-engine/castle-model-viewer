@@ -36,7 +36,7 @@ install_single_thumbnailer 'application/x-inventor'
 install_single_thumbnailer 'application/x-md3'
 install_single_thumbnailer 'application/x-wavefront-obj'
 install_single_thumbnailer 'application/x-geo'
-install_single_thumbnailer 'application/x-kanim'
+install_single_thumbnailer 'application/x-castle-anim-frames'
 install_single_thumbnailer 'application/json'
 
 echo '----------'
