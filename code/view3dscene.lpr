@@ -1566,34 +1566,16 @@ end;
 
 procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
-  procedure ChangeGravityUp;
-  var Answer: string;
-      NewUp: TVector3Single;
+  procedure MakeGravityUp(const NewUp: TVector3Single);
+  var
+    Pos, Dir, Up, GravityUp: TVector3Single;
   begin
-   if Camera.NavigationClass = ncWalk then
-   begin
-    Answer := '';
-    if MessageInputQuery(Window,
-      'Input new camera up vector (three float values).' +nl+nl+
-      'This vector will be used as new gravity upward vector. ' +
-      'This vector must not be zero vector.', Answer) then
-    begin
-
-     try
-      NewUp := Vector3SingleFromStr(Answer);
-     except
-      on E: EConvertError do
-      begin
-       MessageOK(Window, 'Incorrect vector value : '+E.Message);
-       Exit;
-      end;
-     end;
-
-     Camera.Walk.GravityUp := NewUp;
-     Window.Invalidate;
-    end;
-   end else
-    MessageOK(Window, SNavigationClassWalkNeeded);
+    Camera.GetView(Pos, Dir, Up, GravityUp);
+    if VectorsParallel(Dir, NewUp) then
+      Dir := AnyOrthogonalVector(NewUp);
+    Up := NewUp;
+    GravityUp := NewUp;
+    Camera.SetView(Pos, Dir, Up, GravityUp, false);
   end;
 
   procedure ChangeMoveSpeed;
@@ -2999,7 +2981,6 @@ begin
          UpdateStatusToolbarVisible;
        end;
   123: SetCollisions(not Scene.Collides, false);
-  124: ChangeGravityUp;
   125: Raytrace;
   150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
   151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
@@ -3111,6 +3092,9 @@ begin
 
   2000: SetLimitFPS;
   2010: EnableNetwork := not EnableNetwork;
+
+  3010: MakeGravityUp(Vector3Single(0, 1, 0));
+  3020: MakeGravityUp(Vector3Single(0, 0, 1));
 
   1100..1199: SetMinificationFilter(
     TMinificationFilter  (MenuItem.IntData-1100), Scene);
@@ -3341,9 +3325,10 @@ begin
         'Move with Respect to Gravity Vector',          203,
         Camera.Walk.PreferGravityUpForMoving, true);
       M2.Append(MenuPreferGravityUpForMoving);
-      M2.Append(TMenuItem.Create('Change Gravity Up Vector ...',  124));
       M2.Append(TMenuItem.Create('Change Move Speed...', 205));
       M.Append(M2);
+    M.Append(TMenuItem.Create('Make Up and Gravity Up +Y',  3010));
+    M.Append(TMenuItem.Create('Make Up and Gravity Up +Z',  3020));
     MenuCollisions := TMenuItemChecked.Create(
       '_Collision Detection and Picking',                123, CtrlC,
         Scene.Collides, true);
