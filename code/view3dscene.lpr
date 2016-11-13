@@ -3327,8 +3327,8 @@ begin
       M2.Append(MenuPreferGravityUpForMoving);
       M2.Append(TMenuItem.Create('Change Move Speed...', 205));
       M.Append(M2);
-    M.Append(TMenuItem.Create('Make Up and Gravity Up +Y',  3010));
-    M.Append(TMenuItem.Create('Make Up and Gravity Up +Z',  3020));
+    M.Append(TMenuItem.Create('Set Up (and Gravity Up) +Y',  3010));
+    M.Append(TMenuItem.Create('Set Up (and Gravity Up) +Z',  3020));
     MenuCollisions := TMenuItemChecked.Create(
       '_Collision Detection and Picking',                123, CtrlC,
         Scene.Collides, true);
