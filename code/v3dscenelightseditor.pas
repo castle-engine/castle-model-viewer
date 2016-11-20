@@ -40,9 +40,10 @@ procedure LightsEditorClose;
 
 implementation
 
-uses SysUtils, CastleVectors, Classes, X3DNodes, CastleOnScreenMenu, CastleBoxes,
-  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls, CastleRectangles,
-  CastleControls;
+uses SysUtils, Classes, CastleColors,
+  CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, Castle3D,
+  CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
+  CastleRectangles, CastleControls, CastleScene;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -114,7 +115,8 @@ type
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
-    procedure ClickBack(Sender: TObject);
+  strict protected
+    procedure ClickBack(Sender: TObject); virtual;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
@@ -123,9 +125,11 @@ type
   TPositionalLightMenu = class(TLightMenu)
   strict private
     Light: TAbstractPositionalLightNode;
-    PositionSlider, AttenuationSlider: TMenuVector3Sliders;
-    procedure PositionChanged(Sender: TObject);
+    LocationSlider, AttenuationSlider: TMenuVector3Sliders;
+    procedure LocationChanged(Sender: TObject);
     procedure AttenuationChanged(Sender: TObject);
+  strict protected
+    procedure ClickBack(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode); reintroduce;
   end;
@@ -188,6 +192,7 @@ var
   WindowMarginTop: Integer;
 
   LightsMenu: TLightsMenu;
+  GizmoTransform: T3DTransform;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
 begin
@@ -197,6 +202,59 @@ end;
 function LightsEditorIsOpen: boolean;
 begin
   Result := SceneManager <> nil;
+end;
+
+{ Enlarged scene manager bounding box, never empty. }
+function SceneManagerLargerBox(const SceneManager: TCastleSceneManager): TBox3D;
+const
+  DefaultSize = 10;
+var
+  BoxSizes: TVector3Single;
+begin
+  Result := SceneManager.Items.BoundingBox;
+  if Result.IsEmpty then
+    Result := Box3D(
+      Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
+      Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
+  begin
+    BoxSizes := Result.Sizes;
+    Result.Data[0] := Result.Data[0] - BoxSizes;
+    Result.Data[1] := Result.Data[1] + BoxSizes;
+  end;
+end;
+
+procedure IniitalizeGizmo;
+var
+  Gizmo: TCastleScene;
+  RootNode: TX3DRootNode;
+  Shape: TShapeNode;
+  Material: TMaterialNode;
+  Box: TBoxNode;
+  Size: Single;
+begin
+  Box := TBoxNode.Create;
+  Size := SceneManagerLargerBox(SceneManager).AverageSize / 100;
+  Box.Size := Vector3Single(Size, Size, Size);
+
+  Material := TMaterialNode.Create;
+  Material.ForcePureEmissive;
+  Material.EmissiveColor := YellowRGB;
+
+  Shape := TShapeNode.Create;
+  Shape.Geometry := Box;
+  Shape.Material := Material;
+
+  RootNode := TX3DRootNode.Create;
+  RootNode.FdChildren.Add(Shape);
+
+  Gizmo := TCastleScene.Create(Window);
+  Gizmo.Load(RootNode, true);
+  Gizmo.Collides := false;
+  Gizmo.Pickable := false;
+  Gizmo.CastShadowVolumes := false;
+
+  GizmoTransform := T3DTransform.Create(Window);
+  GizmoTransform.Add(Gizmo);
 end;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
@@ -211,6 +269,11 @@ begin
   LightsMenu := TLightsMenu.Create(nil);
   SetCurrentMenu(LightsMenu);
   MenuLightsEditor.Checked := true;
+
+  { create Gizmo on demand }
+  if Gizmo = nil then
+    IniitalizeGizmo;
+  SceneManager.Items.Add(GizmoTransform);
 end;
 
 procedure LightsEditorClose;
@@ -218,14 +281,17 @@ begin
   if SceneManager = nil then Exit;
 
   SetCurrentMenu(nil);
+  SceneManager.Items.Remove(GizmoTransform);
 
   { We don't immediately free here LightsMenu instance, because this is called
-    also by TLightsMenu.CickClose, and we should not free ourselves
+    also by TLightsMenu.ClickClose, and we should not free ourselves
     from our own method. So instead leave LightsMenu instance existing,
     but make sure (for speed) that it's not connected by DestructionNotifications
     to our scene. }
   if LightsMenu <> nil then
     LightsMenu.ClearLights;
+  if GizmoTransform <> nil then
+    GizmoTransform.Exists := false;
 
   SceneManager := nil;
   Window := nil;
@@ -604,47 +670,46 @@ end;
 { TPositionalLightMenu ------------------------------------------------------- }
 
 constructor TPositionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode);
-const
-  DefaultSize = 10;
 var
   Box: TBox3D;
-  BoxSizes: TVector3Single;
 begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
   { determine sensible lights positions.
-    Box doesn't depend on Light.FdLocation, to not change range each time
-    --- but this causes troubles, as Light.FdLocation may not fit within range,
+    Box doesn't depend on Light.Location, to not change range each time
+    --- but this causes troubles, as Light.Location may not fit within range,
     which is uncomfortable (works Ok, but not nice for user). }
-  Box := SceneManager.Items.BoundingBox;
-  if Box.IsEmpty then
-    Box := Box3D(Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
-                 Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
-  begin
-    BoxSizes := Box.Sizes;
-    Box.Data[0] := Box.Data[0] - BoxSizes;
-    Box.Data[1] := Box.Data[1] + BoxSizes;
-  end;
-  PositionSlider := TMenuVector3Sliders.Create(Self, Box, Light.FdLocation.Value);
-  PositionSlider.OnChange := @PositionChanged;
+  Box := SceneManagerLargerBox(SceneManager);
+  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.Location);
+  LocationSlider.OnChange := @LocationChanged;
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
     AttenuationRange, Light.FdAttenuation.Value);
   AttenuationSlider.OnChange := @AttenuationChanged;
 
-  PositionSlider.AddToMenu(Self, 'Position', 'X', 'Y', 'Z');
+  LocationSlider.AddToMenu(Self, 'Local Location', 'X', 'Y', 'Z');
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
+
+  GizmoTransform.Exists := true;
+  GizmoTransform.Translation := Light.Location;
 end;
 
-procedure TPositionalLightMenu.PositionChanged(Sender: TObject);
+procedure TPositionalLightMenu.LocationChanged(Sender: TObject);
 begin
-  Light.Location := PositionSlider.Value;
+  Light.Location := LocationSlider.Value;
+  GizmoTransform.Translation := MatrixMultPoint(Light.Transform, Light.Location);
 end;
 
 procedure TPositionalLightMenu.AttenuationChanged(Sender: TObject);
 begin
   Light.Attenuation := AttenuationSlider.Value;
+end;
+
+procedure TPositionalLightMenu.ClickBack(Sender: TObject);
+begin
+  GizmoTransform.Exists := false;
+  inherited;
 end;
 
 { TSpot1LightMenu ------------------------------------------------------- }

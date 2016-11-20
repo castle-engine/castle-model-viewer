@@ -880,6 +880,7 @@ begin
   SceneBoundingBox.Load(RootNode, true);
   SceneBoundingBox.Collides := false;
   SceneBoundingBox.Pickable := false;
+  SceneBoundingBox.CastShadowVolumes := false;
 end;
 
 procedure SceneOctreeCreate;
