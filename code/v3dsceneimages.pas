@@ -31,6 +31,9 @@ var
   TooltipArrow: TRGBAlphaImage;
 
 var
+  Light_gizmo: TGrayscaleAlphaImage;
+
+var
   Examine_tooltip: TRGBImage;
 
 var
@@ -69,6 +72,9 @@ initialization
   TooltipArrow := TRGBAlphaImage.Create(TooltipArrowWidth, TooltipArrowHeight, TooltipArrowDepth);
   Move(TooltipArrowPixels, TooltipArrow.RawPixels^, SizeOf(TooltipArrowPixels));
   TooltipArrow.URL := 'embedded-image:/TooltipArrow';
+  Light_gizmo := TGrayscaleAlphaImage.Create(Light_gizmoWidth, Light_gizmoHeight, Light_gizmoDepth);
+  Move(Light_gizmoPixels, Light_gizmo.RawPixels^, SizeOf(Light_gizmoPixels));
+  Light_gizmo.URL := 'embedded-image:/Light_gizmo';
   Examine_tooltip := TRGBImage.Create(Examine_tooltipWidth, Examine_tooltipHeight, Examine_tooltipDepth);
   Move(Examine_tooltipPixels, Examine_tooltip.RawPixels^, SizeOf(Examine_tooltipPixels));
   Examine_tooltip.URL := 'embedded-image:/Examine_tooltip';
@@ -83,6 +89,7 @@ finalization
   FreeAndNil(Open);
   FreeAndNil(Screenshot);
   FreeAndNil(TooltipArrow);
+  FreeAndNil(Light_gizmo);
   FreeAndNil(Examine_tooltip);
   FreeAndNil(Walk_fly_tooltip);
 end.
