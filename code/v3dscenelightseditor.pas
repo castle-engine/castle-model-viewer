@@ -270,8 +270,8 @@ begin
   SetCurrentMenu(LightsMenu);
   MenuLightsEditor.Checked := true;
 
-  { create Gizmo on demand }
-  if Gizmo = nil then
+  { create GizmoTransform on demand }
+  if GizmoTransform = nil then
     IniitalizeGizmo;
   SceneManager.Items.Add(GizmoTransform);
 end;
