@@ -193,6 +193,7 @@ var
   WindowMarginTop: Integer;
 
   LightsMenu: TLightsMenu;
+  Gizmo: TCastleScene;
   GizmoTransform: T3DTransform;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
@@ -228,7 +229,6 @@ procedure IniitalizeGizmo;
 const
   LightGizmoPivot: TVector2Single = (58.5, 146 - 58.5);
 var
-  Gizmo: TCastleScene;
   RootNode: TX3DRootNode;
   Billboard: TBillboardNode;
   Shape: TShapeNode;
@@ -241,7 +241,7 @@ var
   QuadTexCoords: TTextureCoordinateNode;
   Size: Single;
 begin
-  Size := SceneManagerLargerBox(SceneManager).AverageSize / 25;
+  Size := SceneManagerLargerBox(SceneManager).AverageSize / 50;
 
   QuadRect.Left   := - LightGizmoPivot[0];
   QuadRect.Bottom := - LightGizmoPivot[1];
@@ -271,6 +271,7 @@ begin
 
   Material := TMaterialNode.Create;
   Material.ForcePureEmissive;
+  Material.EmissiveColor := YellowRGB;
 
   Texture := TPixelTextureNode.Create;
   Texture.FdImage.Value := Light_Gizmo.MakeCopy;
@@ -326,7 +327,12 @@ begin
   if SceneManager = nil then Exit;
 
   SetCurrentMenu(nil);
-  SceneManager.Items.Remove(GizmoTransform);
+
+  { Just free Gizmo stuff, it will be recreated next time.
+    This makes sure we update gizmo Size when loading different scenes. }
+  // SceneManager.Items.Remove(GizmoTransform);
+  FreeAndNil(GizmoTransform);
+  FreeAndNil(Gizmo);
 
   { We don't immediately free here LightsMenu instance, because this is called
     also by TLightsMenu.ClickClose, and we should not free ourselves
@@ -335,8 +341,6 @@ begin
     to our scene. }
   if LightsMenu <> nil then
     LightsMenu.ClearLights;
-  if GizmoTransform <> nil then
-    GizmoTransform.Exists := false;
 
   SceneManager := nil;
   Window := nil;
@@ -737,6 +741,10 @@ begin
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
 
   GizmoTransform.Exists := true;
+  { Make sure camera information is updated, to update billboard orientation.
+    TODO: This should not be needed, should be handled on engine side to keep
+    billboards updated. See TODO in CastleSceneCore unit. }
+  GizmoTransform.CameraChanged(SceneManager.RequiredCamera);
   GizmoTransform.Translation := Light.Location;
 end;
 
