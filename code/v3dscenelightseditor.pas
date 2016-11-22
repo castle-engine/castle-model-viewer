@@ -43,7 +43,8 @@ implementation
 uses SysUtils, Classes, CastleColors,
   CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, Castle3D,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
-  CastleRectangles, CastleControls, CastleScene;
+  CastleRectangles, CastleControls, CastleScene,
+  V3DSceneImages;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -224,36 +225,80 @@ begin
 end;
 
 procedure IniitalizeGizmo;
+const
+  LightGizmoPivot: TVector2Single = (58.5, 146 - 58.5);
 var
   Gizmo: TCastleScene;
   RootNode: TX3DRootNode;
+  Billboard: TBillboardNode;
   Shape: TShapeNode;
+  Appearance: TAppearanceNode;
+  Texture: TPixelTextureNode;
   Material: TMaterialNode;
-  Box: TBoxNode;
+  Quad: TQuadSetNode;
+  QuadRect: TFloatRectangle;
+  QuadCoords: TCoordinateNode;
+  QuadTexCoords: TTextureCoordinateNode;
   Size: Single;
 begin
-  Box := TBoxNode.Create;
-  Size := SceneManagerLargerBox(SceneManager).AverageSize / 100;
-  Box.Size := Vector3Single(Size, Size, Size);
+  Size := SceneManagerLargerBox(SceneManager).AverageSize / 25;
+
+  QuadRect.Left   := - LightGizmoPivot[0];
+  QuadRect.Bottom := - LightGizmoPivot[1];
+  QuadRect.Width  := Light_Gizmo.Width;
+  QuadRect.Height := Light_Gizmo.Height;
+  QuadRect := QuadRect.ScaleAround0(Size / Light_Gizmo.Width);
+
+  QuadCoords := TCoordinateNode.Create;
+  QuadCoords.FdPoint.Items.AssignArray([
+    Vector3Single(QuadRect.Left , QuadRect.Bottom, 0),
+    Vector3Single(QuadRect.Right, QuadRect.Bottom, 0),
+    Vector3Single(QuadRect.Right, QuadRect.Top, 0),
+    Vector3Single(QuadRect.Left , QuadRect.Top, 0)
+  ]);
+
+  QuadTexCoords := TTextureCoordinateNode.Create;
+  QuadTexCoords.FdPoint.Items.AssignArray([
+    Vector2Single(0, 0),
+    Vector2Single(1, 0),
+    Vector2Single(1, 1),
+    Vector2Single(0, 1)
+  ]);
+
+  Quad := TQuadSetNode.Create;
+  Quad.FdCoord.Value := QuadCoords;
+  Quad.FdTexCoord.Value := QuadTexCoords;
 
   Material := TMaterialNode.Create;
   Material.ForcePureEmissive;
-  Material.EmissiveColor := YellowRGB;
+
+  Texture := TPixelTextureNode.Create;
+  Texture.FdImage.Value := Light_Gizmo.MakeCopy;
+
+  Appearance := TAppearanceNode.Create;
+  Appearance.Material := Material;
+  Appearance.Texture := Texture;
 
   Shape := TShapeNode.Create;
-  Shape.Geometry := Box;
-  Shape.Material := Material;
+  Shape.Geometry := Quad;
+  Shape.Appearance := Appearance;
+
+  Billboard := TBillboardNode.Create;
+  Billboard.AxisOfRotation := ZeroVector3Single;
+  Billboard.FdChildren.Add(Shape);
 
   RootNode := TX3DRootNode.Create;
-  RootNode.FdChildren.Add(Shape);
+  RootNode.FdChildren.Add(Billboard);
 
   Gizmo := TCastleScene.Create(Window);
   Gizmo.Load(RootNode, true);
   Gizmo.Collides := false;
   Gizmo.Pickable := false;
   Gizmo.CastShadowVolumes := false;
+  Gizmo.ProcessEvents := true; // for Billboard to work
 
   GizmoTransform := T3DTransform.Create(Window);
+  GizmoTransform.Exists := false; // initially not existing
   GizmoTransform.Add(Gizmo);
 end;
 
