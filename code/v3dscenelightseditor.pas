@@ -726,18 +726,19 @@ begin
   Light := ALight;
 
   { determine sensible lights positions.
-    Box doesn't depend on Light.Location, to not change range each time
-    --- but this causes troubles, as Light.Location may not fit within range,
+    Box doesn't depend on Light.SceneLocation, to not change range each time
+    --- but this causes troubles,
+    as Light.SceneLocation may not fit within range,
     which is uncomfortable (works Ok, but not nice for user). }
   Box := SceneManagerLargerBox(SceneManager);
-  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.Location);
+  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.SceneLocation);
   LocationSlider.OnChange := @LocationChanged;
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
     AttenuationRange, Light.FdAttenuation.Value);
   AttenuationSlider.OnChange := @AttenuationChanged;
 
-  LocationSlider.AddToMenu(Self, 'Local Location', 'X', 'Y', 'Z');
+  LocationSlider.AddToMenu(Self, 'Scene Location', 'X', 'Y', 'Z');
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
 
   GizmoTransform.Exists := true;
@@ -745,13 +746,13 @@ begin
     TODO: This should not be needed, should be handled on engine side to keep
     billboards updated. See TODO in CastleSceneCore unit. }
   GizmoTransform.CameraChanged(SceneManager.RequiredCamera);
-  GizmoTransform.Translation := Light.Location;
+  GizmoTransform.Translation := Light.SceneLocation;
 end;
 
 procedure TPositionalLightMenu.LocationChanged(Sender: TObject);
 begin
-  Light.Location := LocationSlider.Value;
-  GizmoTransform.Translation := MatrixMultPoint(Light.Transform, Light.Location);
+  Light.SceneLocation := LocationSlider.Value;
+  GizmoTransform.Translation := LocationSlider.Value;
 end;
 
 procedure TPositionalLightMenu.AttenuationChanged(Sender: TObject);
