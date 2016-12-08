@@ -2371,7 +2371,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     begin
       { Note: there's an inherent problem here since RootNode starts
         with state from current Time. This includes
-        TimeDependentNodeHandler state like IsActive, etc., but also
+        time-dependent nodes state like isActive, etc., but also
         the rest of VRML/X3D graph (e.g. if some events change some geometry
         or materials). While LoadFromEvents takes care to call
         SceneAnimation.ResetTime, this only resets time-dependent nodes and routes
@@ -3151,7 +3151,7 @@ function CreateMainMenu: TMenu;
     for I := 0 to SoundEngine.Devices.Count - 1 do
     begin
       Radio := TMenuItemRadio.Create(
-        SQuoteMenuEntryCaption(SoundEngine.Devices[I].NiceName),
+        SQuoteMenuEntryCaption(SoundEngine.Devices[I].Caption),
         BaseIntData + I, SoundEngine.Devices[I].Name = SoundEngine.Device, true);
       if RadioGroup = nil then
         RadioGroup := Radio.Group else
