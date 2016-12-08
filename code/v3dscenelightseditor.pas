@@ -52,6 +52,7 @@ type
   TV3DOnScreenMenu = class(TCastleOnScreenMenu)
   public
     constructor Create(AOwner: TComponent); override;
+    procedure AddTitle(const S: string);
   end;
 
   TLightMenu = class;
@@ -444,6 +445,13 @@ begin
 
   Anchor(hpLeft, 20);
   Anchor(vpTop, -WindowMarginTop - 20);
+
+  NonFocusableItemColor := Vector4Single(0.8, 0.8, 1, 1);
+end;
+
+procedure TV3DOnScreenMenu.AddTitle(const S: string);
+begin
+  Add(S);
 end;
 
 { TLightsMenu ------------------------------------------------------- }
@@ -463,6 +471,7 @@ begin
 
   SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
+  AddTitle('Lights Editor:');
   for I := 0 to Lights.Count - 1 do
   begin
     Light := Lights[I] as TAbstractLightNode;
@@ -651,6 +660,7 @@ begin
   ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
   ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
 
+  AddTitle(Light.NiceName + ':');
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
@@ -882,6 +892,8 @@ constructor THeadLightMenu.Create(AOwner: TComponent; AHeadlight: TAbstractLight
 begin
   inherited Create(AOwner);
   Headlight := AHeadlight;
+
+  AddTitle('Headlight:');
 
   AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
