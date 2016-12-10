@@ -107,16 +107,11 @@ type
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
     OnToggle: TCastleMenuToggle;
-    ShadowsToggle: TCastleMenuToggle;
-    ShadowVolumesToggle: TCastleMenuToggle;
-    ShadowVolumesMainToggle: TCastleMenuToggle;
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
     procedure ClickOn(Sender: TObject);
-    procedure ClickShadows(Sender: TObject);
-    procedure ClickShadowVolumes(Sender: TObject);
-    procedure ClickShadowVolumesMain(Sender: TObject);
+    procedure ClickShadowsMenu(Sender: TObject);
   strict protected
     procedure ClickBack(Sender: TObject); virtual;
   public
@@ -182,6 +177,73 @@ type
     procedure ClickBack(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; AHeadlight: TAbstractLightNode); reintroduce;
+  end;
+
+  TCastle2ExponentSlider = class(TCastleIntegerSlider)
+    function ValueToStr(const AValue: Integer): string; override;
+  end;
+
+  TShadowsMenu = class(TV3DOnScreenMenu)
+  strict private
+    Light: TAbstractLightNode;
+    ShadowsToggle: TCastleMenuToggle;
+    ShadowVolumesToggle: TCastleMenuToggle;
+    ShadowVolumesMainToggle: TCastleMenuToggle;
+    // TODO:
+    // SliderMapSizeExponent: TCastle2ExponentSlider;
+    // SliderMapBias: TCastleFloatSlider;
+    // SliderMapScale: TCastleFloatSlider;
+    procedure ClickShadows(Sender: TObject);
+    procedure ClickShadowVolumes(Sender: TObject);
+    procedure ClickShadowVolumesMain(Sender: TObject);
+    // TODO:
+    // procedure ClickProjectionNear(Sender: TObject);
+    // procedure ClickProjectionFar(Sender: TObject);
+    // procedure ClickProjectionUp(Sender: TObject);
+    // procedure MapSizeExponentChanged(Sender: TObject);
+    // procedure MapBiasChanged(Sender: TObject);
+    // procedure MapScaleChanged(Sender: TObject);
+    // function DefaultShadowMap(const WarnWhenNotExisting: boolean): TGeneratedShadowMapNode;
+    // function GetMapSizeExponent: Integer;
+    // procedure SetMapSizeExponent(const Value: Integer);
+    // function GetMapBias: Single;
+    // procedure SetMapBias(const Value: Single);
+    // function GetMapScale: Single;
+    // procedure SetMapScale(const Value: Single);
+  strict protected
+    procedure ClickBack(Sender: TObject); virtual;
+  public
+    ParentLightMenu: TLightMenu;
+    constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
+    procedure AfterCreate;
+    // TODO
+    // property MapSizeExponent: Integer read GetMapSizeExponent write SetMapSizeExponent;
+    // property MapBias: Single read GetMapBias write SetMapBias;
+    // property MapScale: Single read GetMapScale write SetMapScale;
+  end;
+
+  TSpotLightShadowsMenu = class(TShadowsMenu)
+  strict private
+    Light: TSpotLightNode;
+    // TODO
+    // ProjectionAngleSlider: TCastleFloatSlider;
+    // procedure ProjectionAngleChanged(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
+  end;
+
+  TDirectionalLightShadowsMenu = class(TShadowsMenu)
+  strict private
+    Light: TAbstractDirectionalLightNode;
+    // TODO: projectionRectangle, projectionLocation should also be initialized to sensible defaults
+    // (- internally, to work out-of-the-box when you turn on shadows on DirectionalLights,
+    //  - and possible to assign them expicitly in this menu too!)
+    // TODO: implement these menu items:
+    // ProjectionLocationSlider: TMenuVector3Sliders;
+    // procedure ClickProjectionRectangle(Sender: TObject);
+    // procedure ProjectionLocationChanged(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode); reintroduce;
   end;
 
 { global utils --------------------------------------------------------------- }
@@ -648,26 +710,12 @@ begin
   OnToggle.Pressed := Light.FdOn.Value;
   OnToggle.OnClick := @ClickOn;
 
-  ShadowsToggle := TCastleMenuToggle.Create(Self);
-  ShadowsToggle.Pressed := Light.FdShadows.Value;
-  ShadowsToggle.OnClick := @ClickShadows;
-
-  ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesToggle.Pressed := Light.FdShadowVolumes.Value;
-  ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
-
-  ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
-  ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
-
-  AddTitle(Light.NiceName + ':');
+  AddTitle('Edit ' + Light.NiceName + ':');
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
   Add('On', OnToggle);
-  Add('Shadows (Easy: By Shadow Maps)', ShadowsToggle);
-  Add('Shadow Volumes (Off In Shadows)', ShadowVolumesToggle);
-  Add('Shadow Volumes Main (Determines Shadows)', ShadowVolumesMainToggle);
+  Add('Shadows Settings...', @ClickShadowsMenu);
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -696,29 +744,20 @@ begin
   Light.IsOn := OnToggle.Pressed;
 end;
 
-procedure TLightMenu.ClickShadows(Sender: TObject);
+procedure TLightMenu.ClickShadowsMenu(Sender: TObject);
+var
+  ShadowsMenu: TShadowsMenu;
 begin
-  if (Light is TPointLightNode_1) or
-     (Light is TPointLightNode) then
-  begin
-    MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
-    Exit;
-  end;
-
-  ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
-  Light.Shadows := ShadowsToggle.Pressed;
-end;
-
-procedure TLightMenu.ClickShadowVolumes(Sender: TObject);
-begin
-  ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
-  Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
-end;
-
-procedure TLightMenu.ClickShadowVolumesMain(Sender: TObject);
-begin
-  ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
-  Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
+  if Light is TSpotLightNode then
+    ShadowsMenu := TSpotLightShadowsMenu.Create(Self, TSpotLightNode(Light))
+  else
+  if Light is TAbstractDirectionalLightNode then
+    ShadowsMenu := TDirectionalLightShadowsMenu.Create(Self, TAbstractDirectionalLightNode(Light))
+  else
+    ShadowsMenu := TShadowsMenu.Create(Self, Light);
+  ShadowsMenu.ParentLightMenu := Self;
+  ShadowsMenu.AfterCreate;
+  SetCurrentMenu(ShadowsMenu);
 end;
 
 procedure TLightMenu.ClickBack(Sender: TObject);
@@ -952,6 +991,257 @@ end;
 procedure THeadLightMenu.IntensityChanged(Sender: TObject);
 begin
   Headlight.Intensity := IntensitySlider.Value;
+end;
+
+{ TCastle2ExponentSlider ----------------------------------------------------- }
+
+function TCastle2ExponentSlider.ValueToStr(const AValue: Integer): string;
+begin
+  Result := IntToStr(2 shl (AValue - 1));
+end;
+
+{ TShadowsMenu --------------------------------------------------------------- }
+
+constructor TShadowsMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
+begin
+  inherited Create(AOwner);
+  Light := ALight;
+
+  ShadowsToggle := TCastleMenuToggle.Create(Self);
+  ShadowsToggle.Pressed := Light.FdShadows.Value;
+  ShadowsToggle.OnClick := @ClickShadows;
+
+  ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
+  ShadowVolumesToggle.Pressed := Light.FdShadowVolumes.Value;
+  ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
+
+  ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
+  ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
+  ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
+
+{ TODO:
+  SliderMapSizeExponent := TCastle2ExponentSlider.Create(Self);
+  SliderMapSizeExponent.Min := 4;
+  SliderMapSizeExponent.Max := 13;
+  SliderMapSizeExponent.Value := MapSizeExponent;
+  SliderMapSizeExponent.OnChange := @MapSizeExponentChanged;
+
+  SliderMapBias := TCastleFloatSlider.Create(Self);
+  SliderMapBias.Min := 0.0;
+  SliderMapBias.Max := 10.0;
+  SliderMapBias.Value := MapBias;
+  SliderMapBias.OnChange := @MapBiasChanged;
+
+  SliderMapScale := TCastleFloatSlider.Create(Self);
+  SliderMapScale.Min := 0.0;
+  SliderMapScale.Max := 10.0;
+  SliderMapScale.Value := MapScale;
+  SliderMapScale.OnChange := @MapScaleChanged;
+}
+
+  AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
+  AddTitle('  Shadow Volumes Settings:');
+  Add('    Main (Determines Shadows)', ShadowVolumesMainToggle);
+  Add('    Additional (Off In Shadows)', ShadowVolumesToggle);
+  AddTitle('  Shadow Maps Settings:');
+  Add('    Enable', ShadowsToggle);
+  // TODO:
+  // Add('    Projection Near (0 Means Autocalculate)', @ClickProjectionNear);
+  // Add('    Projection Far (0 Means Autocalculate)', @ClickProjectionFar);
+  // Add('    Projection Up (0 Means Autocalculate)', @ClickProjectionUp);
+  // Add('    Map Size', SliderMapSizeExponent);
+  // Add('    Map Bias (adjust to polygons slope)', SliderMapBias);
+  // Add('    Map Scale (adjust to polygons slope)', SliderMapScale);
+end;
+
+procedure TShadowsMenu.AfterCreate;
+begin
+  Add('Back', @ClickBack);
+end;
+
+procedure TShadowsMenu.ClickShadows(Sender: TObject);
+begin
+  if (Light is TPointLightNode_1) or
+     (Light is TPointLightNode) then
+  begin
+    MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
+    Exit;
+  end;
+
+  ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
+  Light.Shadows := ShadowsToggle.Pressed;
+end;
+
+procedure TShadowsMenu.ClickShadowVolumes(Sender: TObject);
+begin
+  ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
+  Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
+end;
+
+procedure TShadowsMenu.ClickShadowVolumesMain(Sender: TObject);
+begin
+  ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
+  Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
+end;
+
+procedure TShadowsMenu.ClickBack(Sender: TObject);
+begin
+  SetCurrentMenu(ParentLightMenu);
+end;
+
+(*
+  TODO: Implementing this is uneasy, due to complicated things that
+  X3DShadowMaps unit does. It replaces Light.DefaultShadowMap with nil,
+  and takes the original DefaultShadowMap value, and later frees it
+  when shadow maps are disabled DefaultShadowMap.
+
+function TShadowsMenu.DefaultShadowMap(const WarnWhenNotExisting: boolean): TGeneratedShadowMapNode;
+begin
+  { When enabled, OriginalDefaultShadowMap may be assigned.
+    Otherwise, DefaultShadowMap may be assigned. }
+  Result := Light.OriginalDefaultShadowMap;
+  if Result = nil then
+    Result := Light.DefaultShadowMap;
+  if WarnWhenNotExisting and (Result = nil) then
+    MessageOK(Window, 'For now, this feature works only if you assigned defaultShadowMap to the light node in X3D.');
+
+  { TODO: Due to the fact that X3DShadowMaps already processed this X3D graph,
+    changing the DefaultShadowMap is somewhat clumsy now.
+    To be reliable, we should revert the X3DShadowMaps changes,
+    then make the necessary changes,
+    then apply the X3DShadowMaps changes...
+    To be reliable *and* simple, the way X3DShadowMaps works must change,
+    it should not modify the X3D graph in place like that.
+  }
+
+  {
+  if Light.DefaultShadowMap = nil then
+  begin
+    Light.DefaultShadowMap := TGeneratedShadowMapNode.Create('', Light.BaseUrl);
+    // don't do this, would create a loop
+    //Light.DefaultShadowMap.Light := Light;
+    Light.DefaultShadowMap.Scene := Light.Scene;
+  end;
+  }
+end;
+
+function TShadowsMenu.GetMapSizeExponent: Integer;
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  Sm := DefaultShadowMap(false);
+  if Sm <> nil then
+    Result := Sm.Size
+  else
+    Result := TGeneratedShadowMapNode.DefaultSize;
+  Result := Biggest2Exponent(Result);
+end;
+
+procedure TShadowsMenu.SetMapSizeExponent(const Value: Integer);
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  if Value <> GetMapSizeExponent then
+  begin
+    Sm := DefaultShadowMap(true);
+    if Sm <> nil then
+      Sm.Size := 2 shl (Value - 1);
+  end;
+end;
+
+function TShadowsMenu.GetMapBias: Single;
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  Sm := DefaultShadowMap(false);
+  if Sm <> nil then
+    Result := Sm.Bias
+  else
+    Result := TGeneratedShadowMapNode.DefaultBias;
+end;
+
+procedure TShadowsMenu.SetMapBias(const Value: Single);
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  if Value <> GetMapBias then
+  begin
+    Sm := DefaultShadowMap(true);
+    if Sm <> nil then
+      Sm.Bias := Value;
+  end;
+end;
+
+function TShadowsMenu.GetMapScale: Single;
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  Sm := DefaultShadowMap(false);
+  if Sm <> nil then
+    Result := Sm.Scale
+  else
+    Result := TGeneratedShadowMapNode.DefaultScale;
+end;
+
+procedure TShadowsMenu.SetMapScale(const Value: Single);
+var
+  Sm: TGeneratedShadowMapNode;
+begin
+  if Value <> GetMapScale then
+  begin
+    Sm := DefaultShadowMap(true);
+    if Sm <> nil then
+      Sm.Scale := Value;
+  end;
+end;
+
+procedure TShadowsMenu.MapSizeExponentChanged(Sender: TObject);
+begin
+  MapSizeExponent := SliderMapSizeExponent.Value;
+end;
+
+procedure TShadowsMenu.MapBiasChanged(Sender: TObject);
+begin
+  MapBias := SliderMapBias.Value;
+end;
+
+procedure TShadowsMenu.MapScaleChanged(Sender: TObject);
+begin
+  MapScale := SliderMapScale.Value;
+end;
+*)
+
+{ TODO: Implementing these should be simple, just call dialog box:
+
+procedure TShadowsMenu.ClickProjectionNear(Sender: TObject);
+begin
+end;
+
+procedure TShadowsMenu.ClickProjectionFar(Sender: TObject);
+begin
+end;
+
+procedure TShadowsMenu.ClickProjectionUp(Sender: TObject);
+begin
+end;
+}
+
+{ TSpotLightShadowsMenu ------------------------------------------------------- }
+
+constructor TSpotLightShadowsMenu.Create(
+  AOwner: TComponent; ALight: TSpotLightNode);
+begin
+  inherited Create(AOwner, ALight);
+  Light := ALight;
+end;
+
+{ TDirectionalLightShadowsMenu ------------------------------------------------------- }
+
+constructor TDirectionalLightShadowsMenu.Create(
+  AOwner: TComponent; ALight: TAbstractDirectionalLightNode);
+begin
+  inherited Create(AOwner, ALight);
+  Light := ALight;
 end;
 
 finalization
