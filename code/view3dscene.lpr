@@ -546,7 +546,24 @@ end;
 
 { TCastleWindowCustom callbacks --------------------------------------------------------- }
 
-{ Render visualization of various stuff, like bounding box, octree and such. }
+{ Setup visibility of extra scenes, like bounding box. }
+procedure SetupExtraScenes;
+begin
+  SceneBoundingBox.Exists :=
+    (RenderingCamera.Target = rtScreen) and
+    (not MakingScreenShot) and
+    ShowBBox and
+    (not Scene.BoundingBox.IsEmpty);
+  if SceneBoundingBox.Exists then
+  begin
+    { Use Scene.Attributes.LineWidth for our visualizations as well }
+    SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
+    SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Middle;
+    SceneBoundingBoxBox.Size := Scene.BoundingBox.Sizes;
+  end;
+end;
+
+{ Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations;
 
   procedure RenderFrustum(AlwaysVisible: boolean);
@@ -586,15 +603,6 @@ begin
     RenderContext.LineWidth := Scene.Attributes.LineWidth;
 
     OctreeDisplay(Scene);
-
-    SceneBoundingBox.Exists := ShowBBox and not Scene.BoundingBox.IsEmpty;
-    if SceneBoundingBox.Exists then
-    begin
-      { Use Scene.Attributes.LineWidth for our visualizations as well }
-      SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
-      SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Middle;
-      SceneBoundingBoxBox.Size := Scene.BoundingBox.Sizes;
-    end;
 
     { Note that there is no sense in showing viewing frustum in
       Camera.NavigationClass <> ncExamine, since viewing frustum should
@@ -660,6 +668,7 @@ end;
 
 procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
 begin
+  SetupExtraScenes;
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
@@ -706,6 +715,7 @@ end;
 
 procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
+  SetupExtraScenes;
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
@@ -3902,8 +3912,7 @@ begin
   Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : URL to load }
   if Parameters.High > 1 then
-   raise EInvalidParams.Create('Excessive command-line parameters. '+
-     'Expected at most one URL to load') else
+    raise EInvalidParams.Create('Excessive command-line parameters. Expected at most one URL to load') else
   if Parameters.High = 1 then
   begin
     WasParam_SceneURL := true;
