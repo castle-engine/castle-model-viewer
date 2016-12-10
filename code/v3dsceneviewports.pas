@@ -241,7 +241,11 @@ var
   I: Integer;
 begin
   for I := 0 to High(Viewports) do
+  begin
     Viewports[I] := ViewportClass.Create(nil);
+    { do not use lights from Scene on other scenes }
+    Viewports[I].UseGlobalLights := false;
+  end;
   Background := TCastleSimpleBackground.Create(nil);
   Background.Color := Gray;
 end;

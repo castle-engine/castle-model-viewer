@@ -3911,6 +3911,8 @@ begin
   end;
 
   SceneManager := TV3DSceneManager.Create(nil);
+  { do not use lights from Scene on other scenes }
+  SceneManager.UseGlobalLights := false;
   Window.Controls.InsertBack(SceneManager);
   SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
   SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
