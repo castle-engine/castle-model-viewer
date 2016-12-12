@@ -189,10 +189,9 @@ type
     ShadowsToggle: TCastleMenuToggle;
     ShadowVolumesToggle: TCastleMenuToggle;
     ShadowVolumesMainToggle: TCastleMenuToggle;
-    // TODO:
-    // SliderMapSizeExponent: TCastle2ExponentSlider;
-    // SliderMapBias: TCastleFloatSlider;
-    // SliderMapScale: TCastleFloatSlider;
+    SliderMapSizeExponent: TCastle2ExponentSlider;
+    SliderMapBias: TCastleFloatSlider;
+    SliderMapScale: TCastleFloatSlider;
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
@@ -200,26 +199,25 @@ type
     // procedure ClickProjectionNear(Sender: TObject);
     // procedure ClickProjectionFar(Sender: TObject);
     // procedure ClickProjectionUp(Sender: TObject);
-    // procedure MapSizeExponentChanged(Sender: TObject);
-    // procedure MapBiasChanged(Sender: TObject);
-    // procedure MapScaleChanged(Sender: TObject);
-    // function DefaultShadowMap(const WarnWhenNotExisting: boolean): TGeneratedShadowMapNode;
-    // function GetMapSizeExponent: Integer;
-    // procedure SetMapSizeExponent(const Value: Integer);
-    // function GetMapBias: Single;
-    // procedure SetMapBias(const Value: Single);
-    // function GetMapScale: Single;
-    // procedure SetMapScale(const Value: Single);
+    function RequiredDefaultShadowMap: TGeneratedShadowMapNode;
+    procedure MapSizeExponentChanged(Sender: TObject);
+    procedure MapBiasChanged(Sender: TObject);
+    procedure MapScaleChanged(Sender: TObject);
+    function GetMapSizeExponent: Integer;
+    procedure SetMapSizeExponent(const Value: Integer);
+    function GetMapBias: Single;
+    procedure SetMapBias(const Value: Single);
+    function GetMapScale: Single;
+    procedure SetMapScale(const Value: Single);
+    property MapSizeExponent: Integer read GetMapSizeExponent write SetMapSizeExponent;
+    property MapBias: Single read GetMapBias write SetMapBias;
+    property MapScale: Single read GetMapScale write SetMapScale;
   strict protected
     procedure ClickBack(Sender: TObject); virtual;
   public
     ParentLightMenu: TLightMenu;
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
-    // TODO
-    // property MapSizeExponent: Integer read GetMapSizeExponent write SetMapSizeExponent;
-    // property MapBias: Single read GetMapBias write SetMapBias;
-    // property MapScale: Single read GetMapScale write SetMapScale;
   end;
 
   TSpotLightShadowsMenu = class(TShadowsMenu)
@@ -1019,7 +1017,6 @@ begin
   ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
   ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
 
-{ TODO:
   SliderMapSizeExponent := TCastle2ExponentSlider.Create(Self);
   SliderMapSizeExponent.Min := 4;
   SliderMapSizeExponent.Max := 13;
@@ -1037,21 +1034,20 @@ begin
   SliderMapScale.Max := 10.0;
   SliderMapScale.Value := MapScale;
   SliderMapScale.OnChange := @MapScaleChanged;
-}
 
   AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
   AddTitle('  Shadow Volumes Settings:');
   Add('    Main (Determines Shadows)', ShadowVolumesMainToggle);
-  Add('    Additional (Off In Shadows)', ShadowVolumesToggle);
+  Add('    Off In Shadows', ShadowVolumesToggle);
   AddTitle('  Shadow Maps Settings:');
   Add('    Enable', ShadowsToggle);
   // TODO:
   // Add('    Projection Near (0 Means Autocalculate)', @ClickProjectionNear);
   // Add('    Projection Far (0 Means Autocalculate)', @ClickProjectionFar);
   // Add('    Projection Up (0 Means Autocalculate)', @ClickProjectionUp);
-  // Add('    Map Size', SliderMapSizeExponent);
-  // Add('    Map Bias (adjust to polygons slope)', SliderMapBias);
-  // Add('    Map Scale (adjust to polygons slope)', SliderMapScale);
+  Add('    Map Size', SliderMapSizeExponent);
+  Add('    Map Bias (adjust to polygons slope)', SliderMapBias);
+  Add('    Map Scale (adjust to polygons slope)', SliderMapScale);
 end;
 
 procedure TShadowsMenu.AfterCreate;
@@ -1089,47 +1085,21 @@ begin
   SetCurrentMenu(ParentLightMenu);
 end;
 
-(*
-  TODO: Implementing this is uneasy, due to complicated things that
-  X3DShadowMaps unit does. It replaces Light.DefaultShadowMap with nil,
-  and takes the original DefaultShadowMap value, and later frees it
-  when shadow maps are disabled DefaultShadowMap.
-
-function TShadowsMenu.DefaultShadowMap(const WarnWhenNotExisting: boolean): TGeneratedShadowMapNode;
+function TShadowsMenu.RequiredDefaultShadowMap: TGeneratedShadowMapNode;
 begin
-  { When enabled, OriginalDefaultShadowMap may be assigned.
-    Otherwise, DefaultShadowMap may be assigned. }
-  Result := Light.OriginalDefaultShadowMap;
-  if Result = nil then
-    Result := Light.DefaultShadowMap;
-  if WarnWhenNotExisting and (Result = nil) then
-    MessageOK(Window, 'For now, this feature works only if you assigned defaultShadowMap to the light node in X3D.');
-
-  { TODO: Due to the fact that X3DShadowMaps already processed this X3D graph,
-    changing the DefaultShadowMap is somewhat clumsy now.
-    To be reliable, we should revert the X3DShadowMaps changes,
-    then make the necessary changes,
-    then apply the X3DShadowMaps changes...
-    To be reliable *and* simple, the way X3DShadowMaps works must change,
-    it should not modify the X3D graph in place like that.
-  }
-
-  {
   if Light.DefaultShadowMap = nil then
   begin
     Light.DefaultShadowMap := TGeneratedShadowMapNode.Create('', Light.BaseUrl);
-    // don't do this, would create a loop
-    //Light.DefaultShadowMap.Light := Light;
     Light.DefaultShadowMap.Scene := Light.Scene;
   end;
-  }
+  Result := Light.DefaultShadowMap;
 end;
 
 function TShadowsMenu.GetMapSizeExponent: Integer;
 var
   Sm: TGeneratedShadowMapNode;
 begin
-  Sm := DefaultShadowMap(false);
+  Sm := Light.DefaultShadowMap;
   if Sm <> nil then
     Result := Sm.Size
   else
@@ -1143,9 +1113,8 @@ var
 begin
   if Value <> GetMapSizeExponent then
   begin
-    Sm := DefaultShadowMap(true);
-    if Sm <> nil then
-      Sm.Size := 2 shl (Value - 1);
+    Sm := RequiredDefaultShadowMap;
+    Sm.Size := 2 shl (Value - 1);
   end;
 end;
 
@@ -1153,7 +1122,7 @@ function TShadowsMenu.GetMapBias: Single;
 var
   Sm: TGeneratedShadowMapNode;
 begin
-  Sm := DefaultShadowMap(false);
+  Sm := Light.DefaultShadowMap;
   if Sm <> nil then
     Result := Sm.Bias
   else
@@ -1166,9 +1135,8 @@ var
 begin
   if Value <> GetMapBias then
   begin
-    Sm := DefaultShadowMap(true);
-    if Sm <> nil then
-      Sm.Bias := Value;
+    Sm := RequiredDefaultShadowMap;
+    Sm.Bias := Value;
   end;
 end;
 
@@ -1176,7 +1144,7 @@ function TShadowsMenu.GetMapScale: Single;
 var
   Sm: TGeneratedShadowMapNode;
 begin
-  Sm := DefaultShadowMap(false);
+  Sm := Light.DefaultShadowMap;
   if Sm <> nil then
     Result := Sm.Scale
   else
@@ -1189,9 +1157,8 @@ var
 begin
   if Value <> GetMapScale then
   begin
-    Sm := DefaultShadowMap(true);
-    if Sm <> nil then
-      Sm.Scale := Value;
+    Sm := RequiredDefaultShadowMap;
+    Sm.Scale := Value;
   end;
 end;
 
@@ -1209,7 +1176,6 @@ procedure TShadowsMenu.MapScaleChanged(Sender: TObject);
 begin
   MapScale := SliderMapScale.Value;
 end;
-*)
 
 { TODO: Implementing these should be simple, just call dialog box:
 
