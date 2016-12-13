@@ -66,6 +66,8 @@ type
     Floats: array [0..2] of TCastleFloatSlider;
     FOnChange: TNotifyEvent;
     procedure ChildSliderChanged(Sender: TObject);
+    function GetValue: TVector3Single;
+    procedure SetValue(const AValue: TVector3Single);
   public
     constructor Create(const AOwner: TComponent;
       const Range: TBox3D; const AValue: TVector3Single); reintroduce; overload;
@@ -73,7 +75,7 @@ type
       const Min, Max: Single; const AValue: TVector3Single); reintroduce; overload;
     procedure AddToMenu(const Menu: TCastleOnScreenMenu;
       const TitleBase, Title0, Title1, Title2: string);
-    function Value: TVector3Single;
+    property Value: TVector3Single read GetValue write SetValue;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -107,6 +109,8 @@ type
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
     OnToggle: TCastleMenuToggle;
+    LocationSlider: TMenuVector3Sliders;
+    procedure LocationChanged(Sender: TObject);
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
@@ -117,16 +121,16 @@ type
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
+    procedure Update(const SecondsPassed: Single;
+      var HandleInput: boolean); override;
+    procedure UpdateLightLocation;
   end;
 
   TPositionalLightMenu = class(TLightMenu)
   strict private
     Light: TAbstractPositionalLightNode;
-    LocationSlider, AttenuationSlider: TMenuVector3Sliders;
-    procedure LocationChanged(Sender: TObject);
+    AttenuationSlider: TMenuVector3Sliders;
     procedure AttenuationChanged(Sender: TObject);
-  strict protected
-    procedure ClickBack(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode); reintroduce;
   end;
@@ -195,10 +199,7 @@ type
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
-    // TODO:
-    // procedure ClickProjectionNear(Sender: TObject);
-    // procedure ClickProjectionFar(Sender: TObject);
-    // procedure ClickProjectionUp(Sender: TObject);
+    procedure ClickRecalculateProjection(Sender: TObject);
     function RequiredDefaultShadowMap: TGeneratedShadowMapNode;
     procedure MapSizeExponentChanged(Sender: TObject);
     procedure MapBiasChanged(Sender: TObject);
@@ -218,14 +219,13 @@ type
     ParentLightMenu: TLightMenu;
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
+    procedure Update(const SecondsPassed: Single;
+      var HandleInput: boolean); override;
   end;
 
   TSpotLightShadowsMenu = class(TShadowsMenu)
   strict private
     Light: TSpotLightNode;
-    // TODO
-    // ProjectionAngleSlider: TCastleFloatSlider;
-    // procedure ProjectionAngleChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
   end;
@@ -233,13 +233,6 @@ type
   TDirectionalLightShadowsMenu = class(TShadowsMenu)
   strict private
     Light: TAbstractDirectionalLightNode;
-    // TODO: projectionRectangle, projectionLocation should also be initialized to sensible defaults
-    // (- internally, to work out-of-the-box when you turn on shadows on DirectionalLights,
-    //  - and possible to assign them expicitly in this menu too!)
-    // TODO: implement these menu items:
-    // ProjectionLocationSlider: TMenuVector3Sliders;
-    // procedure ClickProjectionRectangle(Sender: TObject);
-    // procedure ProjectionLocationChanged(Sender: TObject);
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode); reintroduce;
   end;
@@ -280,7 +273,7 @@ begin
       Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
       Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
   begin
-    BoxSizes := Result.Sizes;
+    BoxSizes := Result.Size;
     Result.Data[0] := Result.Data[0] - BoxSizes;
     Result.Data[1] := Result.Data[1] + BoxSizes;
   end;
@@ -481,12 +474,20 @@ begin
     Menu.Add(TitleBaseSpace + Title[I], Floats[I]);
 end;
 
-function TMenuVector3Sliders.Value: TVector3Single;
+function TMenuVector3Sliders.GetValue: TVector3Single;
 var
   I: Integer;
 begin
   for I := 0 to 2 do
     Result[I] := Floats[I].Value;
+end;
+
+procedure TMenuVector3Sliders.SetValue(const AValue: TVector3Single);
+var
+  I: Integer;
+begin
+  for I := 0 to 2 do
+    Floats[I].Value := AValue[I];
 end;
 
 procedure TMenuVector3Sliders.ChildSliderChanged(Sender: TObject);
@@ -684,6 +685,8 @@ end;
 { TLightMenu ---------------------------------------------------------- }
 
 constructor TLightMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
+var
+  Box: TBox3D;
 begin
   inherited Create(AOwner);
 
@@ -708,12 +711,29 @@ begin
   OnToggle.Pressed := Light.FdOn.Value;
   OnToggle.OnClick := @ClickOn;
 
+ { determine sensible lights positions.
+    Box doesn't depend on Light.SceneLocation, to not change range each time
+    --- but this causes troubles,
+    as Light.SceneLocation may not fit within range,
+    which is uncomfortable (works Ok, but not nice for user). }
+  Box := SceneManagerLargerBox(SceneManager);
+  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionSceneLocation);
+  LocationSlider.OnChange := @LocationChanged;
+
   AddTitle('Edit ' + Light.NiceName + ':');
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
   Add('On', OnToggle);
+  LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
   Add('Shadows Settings...', @ClickShadowsMenu);
+
+  GizmoTransform.Exists := true;
+  { Make sure camera information is updated, to update billboard orientation.
+    TODO: This should not be needed, should be handled on engine side to keep
+    billboards updated. See TODO in CastleSceneCore unit. }
+  GizmoTransform.CameraChanged(SceneManager.RequiredCamera);
+  GizmoTransform.Translation := Light.ProjectionSceneLocation;
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -758,59 +778,57 @@ begin
   SetCurrentMenu(ShadowsMenu);
 end;
 
+procedure TLightMenu.LocationChanged(Sender: TObject);
+begin
+  Light.ProjectionSceneLocation := LocationSlider.Value;
+  GizmoTransform.Translation := LocationSlider.Value;
+end;
+
+procedure TLightMenu.Update(const SecondsPassed: Single; var HandleInput: boolean);
+begin
+  inherited;
+  UpdateLightLocation;
+end;
+
+procedure TLightMenu.UpdateLightLocation;
+var
+  V: TVector3Single;
+begin
+  { light location may change due to various things
+    (it may be animated by X3D events, it may change when we turn on
+    shadows:=TRUE for DirectionalLight...).
+    So just update it continously. }
+  V := Light.ProjectionSceneLocation;
+  if not VectorsEqual(V, LocationSlider.Value) then
+  begin
+    LocationSlider.Value := V;
+    GizmoTransform.Translation := V;
+  end;
+end;
+
 procedure TLightMenu.ClickBack(Sender: TObject);
 begin
   SetCurrentMenu(LightsMenu);
+  GizmoTransform.Exists := false;
 end;
 
 { TPositionalLightMenu ------------------------------------------------------- }
 
 constructor TPositionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractPositionalLightNode);
-var
-  Box: TBox3D;
 begin
   inherited Create(AOwner, ALight);
   Light := ALight;
-
-  { determine sensible lights positions.
-    Box doesn't depend on Light.SceneLocation, to not change range each time
-    --- but this causes troubles,
-    as Light.SceneLocation may not fit within range,
-    which is uncomfortable (works Ok, but not nice for user). }
-  Box := SceneManagerLargerBox(SceneManager);
-  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.SceneLocation);
-  LocationSlider.OnChange := @LocationChanged;
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
     AttenuationRange, Light.FdAttenuation.Value);
   AttenuationSlider.OnChange := @AttenuationChanged;
 
-  LocationSlider.AddToMenu(Self, 'Scene Location', 'X', 'Y', 'Z');
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
-
-  GizmoTransform.Exists := true;
-  { Make sure camera information is updated, to update billboard orientation.
-    TODO: This should not be needed, should be handled on engine side to keep
-    billboards updated. See TODO in CastleSceneCore unit. }
-  GizmoTransform.CameraChanged(SceneManager.RequiredCamera);
-  GizmoTransform.Translation := Light.SceneLocation;
-end;
-
-procedure TPositionalLightMenu.LocationChanged(Sender: TObject);
-begin
-  Light.SceneLocation := LocationSlider.Value;
-  GizmoTransform.Translation := LocationSlider.Value;
 end;
 
 procedure TPositionalLightMenu.AttenuationChanged(Sender: TObject);
 begin
   Light.Attenuation := AttenuationSlider.Value;
-end;
-
-procedure TPositionalLightMenu.ClickBack(Sender: TObject);
-begin
-  GizmoTransform.Exists := false;
-  inherited;
 end;
 
 { TSpot1LightMenu ------------------------------------------------------- }
@@ -841,11 +859,11 @@ procedure TSpot1LightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  Vector := Light.FdDirection.Value;
+  Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.FdDirection.Send(Vector);
+    Light.ProjectionSceneDirection := Vector;
 end;
 
 procedure TSpot1LightMenu.CutOffAngleChanged(Sender: TObject);
@@ -886,11 +904,11 @@ procedure TSpotLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  Vector := Light.Direction;
+  Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.Direction := Vector;
+    Light.ProjectionSceneDirection := Vector;
 end;
 
 procedure TSpotLightMenu.CutOffAngleChanged(Sender: TObject);
@@ -916,11 +934,11 @@ procedure TDirectionalLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3Single;
 begin
-  Vector := Light.Direction;
+  Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.Direction := Vector;
+    Light.ProjectionSceneDirection := Vector;
 end;
 
 { THeadLightMenu --------------------------------------------------------- }
@@ -1036,18 +1054,15 @@ begin
   SliderMapScale.OnChange := @MapScaleChanged;
 
   AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
-  AddTitle('  Shadow Volumes Settings:');
-  Add('    Main (Determines Shadows)', ShadowVolumesMainToggle);
-  Add('    Off In Shadows', ShadowVolumesToggle);
-  AddTitle('  Shadow Maps Settings:');
-  Add('    Enable', ShadowsToggle);
-  // TODO:
-  // Add('    Projection Near (0 Means Autocalculate)', @ClickProjectionNear);
-  // Add('    Projection Far (0 Means Autocalculate)', @ClickProjectionFar);
-  // Add('    Projection Up (0 Means Autocalculate)', @ClickProjectionUp);
-  Add('    Map Size', SliderMapSizeExponent);
-  Add('    Map Bias (adjust to polygons slope)', SliderMapBias);
-  Add('    Map Scale (adjust to polygons slope)', SliderMapScale);
+  AddTitle('    Shadow Volumes Settings:');
+  Add('        Main (Determines Shadows)', ShadowVolumesMainToggle);
+  Add('        Off In Shadows', ShadowVolumesToggle);
+  AddTitle('    Shadow Maps Settings:');
+  Add('        Enable', ShadowsToggle);
+  Add('        Map Size', SliderMapSizeExponent);
+  Add('        Map Bias (adjust to polygons slope)', SliderMapBias);
+  Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
+  Add('        Recalculate Projection Parameters', @ClickRecalculateProjection);
 end;
 
 procedure TShadowsMenu.AfterCreate;
@@ -1066,6 +1081,29 @@ begin
 
   ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
   Light.Shadows := ShadowsToggle.Pressed;
+end;
+
+procedure TShadowsMenu.ClickRecalculateProjection(Sender: TObject);
+var
+  WasShadows: boolean;
+begin
+  if (Light is TPointLightNode_1) or
+     (Light is TPointLightNode) then
+  begin
+    MessageOK(Window, 'Shadow maps on point lights are not supported yet. Please speak up on "Castle Game Engine" forum and encourage Michalis to implement them, if you want! :) In the meantime, shadow maps work perfectly on other lights (spot and directional).');
+    Exit;
+  end;
+
+  WasShadows := Light.Shadows;
+  Light.Shadows := false;
+  Light.ProjectionNear := 0;
+  Light.ProjectionFar := 0;
+  if Light is TDirectionalLightNode then
+  begin
+    TDirectionalLightNode(Light).ProjectionLocationLocal := ZeroVector3Single;
+    TDirectionalLightNode(Light).ProjectionRectangle := ZeroVector4Single;
+  end;
+  Light.Shadows := WasShadows;
 end;
 
 procedure TShadowsMenu.ClickShadowVolumes(Sender: TObject);
@@ -1177,20 +1215,16 @@ begin
   MapScale := SliderMapScale.Value;
 end;
 
-{ TODO: Implementing these should be simple, just call dialog box:
-
-procedure TShadowsMenu.ClickProjectionNear(Sender: TObject);
+procedure TShadowsMenu.Update(const SecondsPassed: Single;
+  var HandleInput: boolean);
 begin
+  inherited;
+  { Let ParentLightMenu to update Gizmo, in case light moves.
+    Note that DirectionalLight.projectionLocation also may change
+    when turning on shadows. }
+  if ParentLightMenu <> nil then
+    ParentLightMenu.UpdateLightLocation;
 end;
-
-procedure TShadowsMenu.ClickProjectionFar(Sender: TObject);
-begin
-end;
-
-procedure TShadowsMenu.ClickProjectionUp(Sender: TObject);
-begin
-end;
-}
 
 { TSpotLightShadowsMenu ------------------------------------------------------- }
 
