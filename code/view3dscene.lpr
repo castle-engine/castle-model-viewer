@@ -558,8 +558,8 @@ begin
   begin
     { Use Scene.Attributes.LineWidth for our visualizations as well }
     SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
-    SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Middle;
-    SceneBoundingBoxBox.Size := Scene.BoundingBox.Sizes;
+    SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Center;
+    SceneBoundingBoxBox.Size := Scene.BoundingBox.Size;
   end;
 end;
 
@@ -2260,7 +2260,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]) ]));
       *)
 
-      S1 := VectorToRawStr(Box.Middle);
+      S1 := VectorToRawStr(Box.Center);
       S2 := FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]);
       S3 := FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]);
       S4 := FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]);
