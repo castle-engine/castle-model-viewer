@@ -880,6 +880,7 @@ begin
   Shape.Geometry := SceneBoundingBoxBox;
   Shape.Shading := shWireframe;
   Shape.Material := Material;
+  Shape.Appearance.ShadowCaster := false;
 
   SceneBoundingBoxTransform := TTransformNode.Create;
   SceneBoundingBoxTransform.FdChildren.Add(Shape);

@@ -333,6 +333,7 @@ begin
   Appearance := TAppearanceNode.Create;
   Appearance.Material := Material;
   Appearance.Texture := Texture;
+  Appearance.ShadowCaster := false;
 
   Shape := TShapeNode.Create;
   Shape.Geometry := Quad;
