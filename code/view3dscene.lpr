@@ -342,7 +342,8 @@ end;
 procedure PrepareResources(AllowProgress: boolean);
 begin
   if AllowProgress then
-    SceneManager.PrepareResources('Preparing animation') else
+    SceneManager.PrepareResources('Preparing animation')
+  else
     SceneManager.PrepareResources;
 end;
 
@@ -513,10 +514,10 @@ begin
 
   if Scene.Attributes.UseOcclusionQuery or
      Scene.Attributes.UseHierarchicalOcclusionQuery then
-    S := Format(' (+ <font color="#%s">%d boxes</font> to occl query)',
+    S := Format(' (+ <font color="#%s">%d boxes</font> for occlusion query)',
            [ ValueColor, Statistics.BoxesOcclusionQueriedCount ]) else
     S := '';
-  Text.Append(Format('Rendered Shapes : <font color="#%s">%d%s of %d</font> ',
+  Text.Append(Format('Rendered Shapes: <font color="#%s">%d%s / %d</font> ',
     [ ValueColor,
       Statistics.ShapesRendered, S,
       Statistics.ShapesVisible ]) + OctreeDisplayStatus);
@@ -524,8 +525,8 @@ begin
   if Scene.TimeAtLoad = 0.0 then
     S := Format('World time: <font color="#%s">%d</font>',
       [ValueColor, Trunc(Scene.Time)]) else
-    S := Format('World time: <font color="#%s">load time + %d = %d</font>',
-      [ValueColor, Trunc(Scene.Time - Scene.TimeAtLoad), Trunc(Scene.Time)]);
+    S := Format('World time: <font color="#%s">load time + %d</font>',
+      [ValueColor, Trunc(Scene.Time - Scene.TimeAtLoad)]);
   if not AnimationTimePlaying then
     S += ' (paused)';
   if not ProcessEventsWanted then
