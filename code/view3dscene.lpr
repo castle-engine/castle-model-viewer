@@ -1132,7 +1132,10 @@ procedure LoadScene(ASceneURL: string;
 var
   RootNode: TX3DRootNode;
   SavedSceneWarnings: TSceneWarnings;
+  StartTime, TimeLoadX3D, TimeLoadScene, TimePrepareResources: TProcessTimerResult;
 begin
+  StartTime := ProcessTimerNow;
+
   { We have to clear SceneWarnings here (not later)
     to catch also all warnings raised during parsing of the file.
     This causes a potential problem: if loading the scene will fail,
@@ -1162,6 +1165,8 @@ begin
     {$endif CATCH_EXCEPTIONS}
   finally FreeAndNil(SavedSceneWarnings) end;
 
+  TimeLoadX3D := ProcessTimerNow;
+
   {$ifdef CATCH_EXCEPTIONS}
   try
   {$endif CATCH_EXCEPTIONS}
@@ -1190,6 +1195,8 @@ begin
   end;
   {$endif CATCH_EXCEPTIONS}
 
+  TimeLoadScene := ProcessTimerNow;
+
   { For batch operation (making screenshots), do not save the scene
     on "recent files" menu. This also applies when using view3dscene
     as a thumbnailer. }
@@ -1203,6 +1210,20 @@ begin
   PrepareResources(true);
   WarningsButtonEnabled := true;
   UpdateWarningsButton;
+
+  TimePrepareResources := ProcessTimerNow;
+
+  WritelnLogMultiline('Loading', Format(
+    'Loaded "%s" with dependencies in %f seconds:' + NL +
+    '  %f to load from disk (create X3D graph)' + NL +
+    '  %f to initialize scene (initialize shapes tree, collisions...)' + NL +
+    '  %f to prepare resources (load textures, prepare OpenGL resources...)',
+    [ URIDisplay(ASceneURL),
+      ProcessTimerSeconds(TimePrepareResources, StartTime),
+      ProcessTimerSeconds(TimeLoadX3D, StartTime),
+      ProcessTimerSeconds(TimeLoadScene, TimeLoadX3D),
+      ProcessTimerSeconds(TimePrepareResources, TimeLoadScene)
+    ]));
 end;
 
 { Load special "clear" and "welcome" scenes.
