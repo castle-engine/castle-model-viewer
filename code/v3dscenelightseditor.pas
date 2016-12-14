@@ -196,6 +196,7 @@ type
     SliderMapSizeExponent: TCastle2ExponentSlider;
     SliderMapBias: TCastleFloatSlider;
     SliderMapScale: TCastleFloatSlider;
+    CurrentProjectionLabel: TCastleLabel;
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
@@ -215,6 +216,7 @@ type
     property MapScale: Single read GetMapScale write SetMapScale;
   strict protected
     procedure ClickBack(Sender: TObject); virtual;
+    procedure UpdateCurrentProjectionLabel(const ALabel: TCastleLabel); virtual;
   public
     ParentLightMenu: TLightMenu;
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
@@ -226,6 +228,8 @@ type
   TSpotLightShadowsMenu = class(TShadowsMenu)
   strict private
     Light: TSpotLightNode;
+  strict protected
+    procedure UpdateCurrentProjectionLabel(const ALabel: TCastleLabel); override;
   public
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
   end;
@@ -233,6 +237,8 @@ type
   TDirectionalLightShadowsMenu = class(TShadowsMenu)
   strict private
     Light: TAbstractDirectionalLightNode;
+  strict protected
+    procedure UpdateCurrentProjectionLabel(const ALabel: TCastleLabel); override;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractDirectionalLightNode); reintroduce;
   end;
@@ -1054,6 +1060,8 @@ begin
   SliderMapScale.Value := MapScale;
   SliderMapScale.OnChange := @MapScaleChanged;
 
+  CurrentProjectionLabel := TCastleLabel.Create(Self);
+
   AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
   AddTitle('    Shadow Volumes Settings:');
   Add('        Main (Determines Shadows)', ShadowVolumesMainToggle);
@@ -1064,11 +1072,18 @@ begin
   Add('        Map Bias (adjust to polygons slope)', SliderMapBias);
   Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
   Add('        Recalculate Projection Parameters', @ClickRecalculateProjection);
+  Add(CurrentProjectionLabel);
 end;
 
 procedure TShadowsMenu.AfterCreate;
 begin
   Add('Back', @ClickBack);
+
+  { We need to call it, to let OnScreenMenu calculate correct size.
+    But we cannot call it from constructor,
+    as it's virtual and may use Light in descendants, which was unset
+    in constructor. }
+  UpdateCurrentProjectionLabel(CurrentProjectionLabel);
 end;
 
 procedure TShadowsMenu.ClickShadows(Sender: TObject);
@@ -1223,8 +1238,16 @@ begin
   { Let ParentLightMenu to update Gizmo, in case light moves.
     Note that DirectionalLight.projectionLocation also may change
     when turning on shadows. }
-  if ParentLightMenu <> nil then
-    ParentLightMenu.UpdateLightLocation;
+  ParentLightMenu.UpdateLightLocation;
+  UpdateCurrentProjectionLabel(CurrentProjectionLabel);
+end;
+
+procedure TShadowsMenu.UpdateCurrentProjectionLabel(const ALabel: TCastleLabel);
+begin
+  ALabel.Text.Clear;
+  ALabel.Text.Add('        Currently used projection for shadow maps:');
+  ALabel.Text.Add(Format('          Near: %f', [Light.ProjectionNear]));
+  ALabel.Text.Add(Format('          Far: %f', [Light.ProjectionFar]));
 end;
 
 { TSpotLightShadowsMenu ------------------------------------------------------- }
@@ -1236,6 +1259,13 @@ begin
   Light := ALight;
 end;
 
+procedure TSpotLightShadowsMenu.UpdateCurrentProjectionLabel(
+  const ALabel: TCastleLabel);
+begin
+  inherited;
+  ALabel.Text.Add(Format('          Angle: %f', [Light.ProjectionAngle]));
+end;
+
 { TDirectionalLightShadowsMenu ------------------------------------------------------- }
 
 constructor TDirectionalLightShadowsMenu.Create(
@@ -1243,6 +1273,22 @@ constructor TDirectionalLightShadowsMenu.Create(
 begin
   inherited Create(AOwner, ALight);
   Light := ALight;
+end;
+
+procedure TDirectionalLightShadowsMenu.UpdateCurrentProjectionLabel(
+  const ALabel: TCastleLabel);
+var
+  ProjectionRectangle: TFloatRectangle;
+begin
+  inherited;
+  ALabel.Text.Add(Format('          Location: %s',
+    [VectorToNiceStr(Light.ProjectionLocation)]));
+  ProjectionRectangle := TFloatRectangle.FromX3DVector(Light.ProjectionRectangle);
+  ALabel.Text.Add(Format('          Rectangle: %fx%f %fx%f',
+    [ProjectionRectangle.Left,
+     ProjectionRectangle.Bottom,
+     ProjectionRectangle.Width,
+     ProjectionRectangle.Height]));
 end;
 
 finalization
