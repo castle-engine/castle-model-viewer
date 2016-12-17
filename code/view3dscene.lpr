@@ -1135,7 +1135,7 @@ var
   SavedSceneWarnings: TSceneWarnings;
   StartTime, TimeLoadX3D, TimeLoadScene, TimePrepareResources: TProcessTimerResult;
 begin
-  StartTime := ProcessTimerNow;
+  StartTime := ProcessTimer;
 
   { We have to clear SceneWarnings here (not later)
     to catch also all warnings raised during parsing of the file.
@@ -1166,7 +1166,7 @@ begin
     {$endif CATCH_EXCEPTIONS}
   finally FreeAndNil(SavedSceneWarnings) end;
 
-  TimeLoadX3D := ProcessTimerNow;
+  TimeLoadX3D := ProcessTimer;
 
   {$ifdef CATCH_EXCEPTIONS}
   try
@@ -1196,7 +1196,7 @@ begin
   end;
   {$endif CATCH_EXCEPTIONS}
 
-  TimeLoadScene := ProcessTimerNow;
+  TimeLoadScene := ProcessTimer;
 
   { For batch operation (making screenshots), do not save the scene
     on "recent files" menu. This also applies when using view3dscene
@@ -1212,7 +1212,7 @@ begin
   WarningsButtonEnabled := true;
   UpdateWarningsButton;
 
-  TimePrepareResources := ProcessTimerNow;
+  TimePrepareResources := ProcessTimer;
 
   WritelnLogMultiline('Loading', Format(
     'Loaded "%s" with dependencies in %f seconds:' + NL +
