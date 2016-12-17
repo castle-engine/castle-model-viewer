@@ -1658,56 +1658,31 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   begin
     S := Scene.TimePlayingSpeed;
     if MessageInputQuery(Window,
-      'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
-      '0.5 makes playing animation two times slower,' +nl+
-      '2.0 makes it two times faster etc.' +nl+
-      nl+
-      'Note that this is the "on display" playing speed.' +nl+
-      nl+
-      '- For baked ' +
-      'animations (like from castle-anim-frames or MD3 files), this means ' +
-      'that internally number of precalculated animation frames ' +
-      'doesn''t change. Which means that slowing this speed too much ' +
-      'leads to noticeably "jagged" animations.' +nl+
-      nl+
-      '- For interactive animations (played and calculated from a single ' +
-      'VRML / X3D file, e.g. by interpolators) this is perfect, ' +
-      'animation always remains smooth.' +nl+
-      nl+
-      'New "on display" playing speed:', S) then
+      'Adjust the playing speed to slow down, or make faster, the animation. For example, "0.5" makes playing animation two times slower,"2.0" makes it two times faster.' + NL +
+      NL +
+      'Note: Using this to slow down a "baked animation" (from castle-anim-frames or MD3 files) may look bad, as the same number of static frames will be just played slower. Increase "Baked Animation Smoothness" and reload the animation to counteract this.' + NL +
+      NL +
+      'New playing speed:', S) then
       Scene.TimePlayingSpeed := S;
   end;
 
-(*
-  TODO: this should control only baking setting, like default ScenesPerTime for TNodeInterpolator.
-
-  procedure ChangeTimeSpeedWhenLoading;
+  procedure ChangeBakedAnimationSmoothness;
+  var
+    S: Single;
   begin
-    MessageInputQuery(Window,
-      'Playing speed 1.0 means that 1 time unit is 1 second.' +nl+
-      '0.5 makes playing animation two times slower,' +nl+
-      '2.0 makes it two times faster etc.' +nl+
-      nl+
-      'Note that this is the "on loading" playing speed. Which means ' +
-      'it''s only applied when loading animation from file ' +
-      '(you can use "File -> Reopen" command to apply this to currently ' +
-      'loaded animation).' +nl+
-      nl+
-      '- For pracalculated ' +
-      'animations (like from castle-anim-frames or MD3 files), changing this actually changes ' +
-      'the density of precalculated animation frames. Which means that ' +
-      'this is the more resource-consuming, but also better ' +
-      'method of changing animation speed: even if you slow down ' +
-      'this playing speed much, the animation will remain smooth.' +nl+
-      nl+
-      '- For interactive animations (played and calculated from a single ' +
-      'VRML / X3D file, e.g. by interpolators) this has no effect, ' +
-      'as no frames are precalculated at loading. Use "on display" playing speed ' +
-      'instead.' +nl+
-      nl+
-      'New "on loading" playing speed:', AnimationTimeSpeedWhenLoading);
+    S := BakedAnimationSmoothness;
+    if MessageInputQuery(Window,
+      'Adjust the number of static frames generated when loading a "baked animation" (from castle-anim-frames or MD3 files). ' + NL +
+      NL +
+      'Increase this to improve the quality of baked animation (even when it''s slowed down by changing "playing speed"). But it costs memory, and the loading time will increase too. Lower this value to have faster loading, but worse quality.' + NL +
+      NL +
+      'This is only applied when loading animation from file. You can use "File -> Reopen" command to apply this to the currently loaded animation.' + NL +
+      NL +
+      'This has no effect on non-baked animations, like played from X3D or Spine JSON.' + NL+
+      NL +
+      'New baked animation smoothness:', S) then
+      BakedAnimationSmoothness := S;
   end;
-*)
 
   procedure SelectedShowInformation;
   var
@@ -3062,7 +3037,7 @@ begin
          Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
        end;
   222: ChangeTimeSpeed;
-  //223: ChangeTimeSpeedWhenLoading;
+  223: ChangeBakedAnimationSmoothness;
 
   224: begin
          ProcessEventsWanted := not ProcessEventsWanted;
@@ -3375,8 +3350,7 @@ begin
     CreateMenuNamedAnimations;
     M.Append(MenuNamedAnimations);
     M.Append(TMenuItem.Create('Playing Speed...', 222));
-    //M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on display) ...', 222));
-    //M.Append(TMenuItem.Create('Playing Speed Slower or Faster (on loading) ...', 223));
+    M.Append(TMenuItem.Create('Baked Animation Smoothness ...', 223));
     M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
     // M.Append(TMenuSeparator.Create);
     // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
