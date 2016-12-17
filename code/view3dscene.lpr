@@ -1490,8 +1490,8 @@ procedure TGamePlaceholdersRemover.Remove(
 
   function IsPlaceholder(const Prefix: string): boolean;
   begin
-    Result := IsPrefix(Prefix, Node.Name) or
-              IsPrefix('OB_' + Prefix, Node.Name);
+    Result := IsPrefix(Prefix, Node.NodeName) or
+              IsPrefix('OB_' + Prefix, Node.NodeName);
   end;
 
 begin
@@ -1502,16 +1502,16 @@ begin
      IsPlaceholder('CasSector') or
      { Below are special only on specific castle1 levels, see GameLevelSpecific.
        For historical reasons, they don't use 'Cas' prefix. }
-     (Node.Name = 'LevelExitBox') or
-     IsPrefix('WerewolfAppear_', Node.Name) or
-     (Node.Name = 'GateExitBox') or
-     (Node.Name = 'Teleport1Box') or
-     (Node.Name = 'Teleport2Box') or
-     (Node.Name = 'SacrilegeBox') or
-     IsPrefix('SacrilegeGhost_', Node.Name) or
-     IsPrefix('SwordGhost_', Node.Name) or
-     (Node.Name = 'Elevator49DownBox') or
-     (Node.Name = 'Elev9a9bPickBox') then
+     (Node.NodeName = 'LevelExitBox') or
+     IsPrefix('WerewolfAppear_', Node.NodeName) or
+     (Node.NodeName = 'GateExitBox') or
+     (Node.NodeName = 'Teleport1Box') or
+     (Node.NodeName = 'Teleport2Box') or
+     (Node.NodeName = 'SacrilegeBox') or
+     IsPrefix('SacrilegeGhost_', Node.NodeName) or
+     IsPrefix('SwordGhost_', Node.NodeName) or
+     (Node.NodeName = 'Elevator49DownBox') or
+     (Node.NodeName = 'Elev9a9bPickBox') then
   begin
     Node := nil;
     Inc(Count);
@@ -1710,7 +1710,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
            [VectorToNiceStr(SelectedPointWorld),
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
-            SelectedGeometry.Name,
+            SelectedGeometry.NodeName,
             SelectedShape.OriginalGeometry.X3DType,
             SelectedGeometry.X3DType,
             SelectedShape.GeometryParentNodeName,
@@ -1773,7 +1773,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
                  '  specular : %s' +nl+
                  '  shininess : %s' +nl+
                  '  transparency : %s',
-                 [ M2.Name,
+                 [ M2.NodeName,
                    FloatToNiceStr(M2.FdAmbientIntensity.Value),
                    VectorToNiceStr(M2.FdDiffuseColor.Value),
                    VectorToNiceStr(M2.FdSpecularColor.Value),
@@ -1815,7 +1815,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             '  specularColor[0] : %s' +nl+
             '  shininess[0] : %s' +nl+
             '  transparency[0] : %s',
-            [M1.Name, S1, S2, S3, S4, S5]);
+            [M1.NodeName, S1, S2, S3, S4, S5]);
       end;
     end;
     ShowAndWrite(S);
