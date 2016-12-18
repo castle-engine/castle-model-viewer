@@ -113,7 +113,7 @@ begin
       Inc(JointsProcessed);
 
       JointTransform := TTransformNode.Create(
-        Format('HAnimVisualization_JointTransform_%d_%s', [I, Joint.Name]),
+        Format('HAnimVisualization_JointTransform_%d_%s', [I, Joint.X3DName]),
           HumanoidNode.BaseUrl);
       JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
       HumanoidNode.FdSkin.Add(JointTransform);
