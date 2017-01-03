@@ -155,6 +155,7 @@ var
   MenuAnimationTimePlaying: TMenuItemChecked;
 
   ControlsOnScreenshot: boolean = false;
+  HideExtraScenesForScreenshot: boolean = false;
 
 { Helper class ---------------------------------------------------------------
 
@@ -552,7 +553,7 @@ procedure SetupExtraScenes;
 begin
   SceneBoundingBox.Exists :=
     (RenderingCamera.Target = rtScreen) and
-    (not MakingScreenShot) and
+    (not HideExtraScenesForScreenshot) and
     ShowBBox and
     (not Scene.BoundingBox.IsEmpty);
   if SceneBoundingBox.Exists then
@@ -594,7 +595,7 @@ procedure RenderVisualizations;
   end;
 
 begin
-  if (RenderingCamera.Target = rtScreen) and (not MakingScreenShot) then
+  if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
     { Visualization below depends on DEPTH_TEST enabled
       (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
@@ -1382,7 +1383,12 @@ begin
     Window.Container.EventRender;
   end else
   begin
-    ViewportsRender;
+    { Many controls are hidden simply because ViewportsRender doesn't render them.
+      But for extra 3D scenes within scene manager, we need to make sure
+      nearest SetupExtraScenes will hide them. }
+    HideExtraScenesForScreenshot := true;
+    ViewportsRender(Window.Container);
+    HideExtraScenesForScreenshot := false;
   end;
   Result := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
 end;

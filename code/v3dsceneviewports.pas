@@ -25,7 +25,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleSceneManager, CastleWindow, CastleCameras;
+uses CastleSceneManager, CastleWindow, CastleCameras, CastleGLContainer;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
@@ -66,13 +66,10 @@ procedure InitializeViewports(ViewportClass: TViewportClass);
 
   If some custom viewports are visible then redraw background and
   all viewports.
-
   Then does SceneManager.Render, as SceneManager is also another viewport.
 
-  Calls BeforeRender before all Render calls too (this makes
-  sure that render textures are generated, important for mirrors
-  for screenshots in batch mode). }
-procedure ViewportsRender;
+  This renders viewports for the off-screen rendering. }
+procedure ViewportsRender(const Container: TGLContainer);
 
 implementation
 
@@ -250,21 +247,17 @@ begin
   Background.Color := Gray;
 end;
 
-procedure ViewportsRender;
+procedure ViewportsRender(const Container: TGLContainer);
 var
   I: Integer;
 const
   Visible: array [TViewportsConfig] of Integer = (0, 1, 3);
 begin
   if ViewportsConfig <> vc1 then
-    Background.Render;
+    Container.RenderControl(Background, Container.Rect);
   for I := 0 to Visible[ViewportsConfig] - 1 do
-  begin
-    Viewports[I].BeforeRender;
-    Viewports[I].Render;
-  end;
-  SceneManager.BeforeRender;
-  SceneManager.Render;
+    Container.RenderControl(Viewports[I], Container.Rect);
+  Container.RenderControl(SceneManager, Container.Rect);
 end;
 
 procedure DoFinalization;
