@@ -64,7 +64,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleGLCubeMaps, CastleControls, CastleGLShaders,
   CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
-  X3DFields, CastleShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
+  X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleBackground,
   CastleRenderer, CastleShapes, CastleRenderingCamera, X3DShadowMaps, CastleSceneManager,
   CastleMaterialProperties,

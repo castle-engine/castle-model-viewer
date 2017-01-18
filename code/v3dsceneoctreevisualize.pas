@@ -27,7 +27,7 @@ unit V3DSceneOctreeVisualize;
 
 interface
 
-uses CastleOctree, CastleWindow, CastleScene;
+uses CastleInternalOctree, CastleWindow, CastleScene;
 
 type
   TOctreeDisplay = object
