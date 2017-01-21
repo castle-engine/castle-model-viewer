@@ -1,3 +1,9 @@
+tovrmlx3d: VRML/X3D warning: A node inside the field "GeneratedShadowMap.light" must be already used elsewhere (use USE clause, do not declare a new node here)
+tovrmlx3d: VRML/X3D warning: A node inside the field "GeneratedShadowMap.light" must be already used elsewhere (use USE clause, do not declare a new node here)
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
 tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
 tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
 tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
@@ -64,11 +70,11 @@ tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffu
 tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
 tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
 tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
 tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
 tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'Leg' (named '')
+tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
 tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Unknown X3D node type "Leg"
 tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
@@ -151,8 +157,8 @@ tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "RenderBefore" unde
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'ExtendedMaterial' (named '')
+tovrmlx3d: VRML/X3D warning: Unknown node of type "ExtendedMaterial" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "ExtendedMaterial" (named "")
 WARNING: input/output headers differ:
 Header on input is #VRML V2.0 utf8 CosmoWorlds V1.0
 Header on output is #VRML V2.0 utf8
@@ -190,34 +196,40 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
 tovrmlx3d: VRML/X3D warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: VRML/X3D warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
@@ -246,16 +258,16 @@ tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level o
 tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
 tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 292: Expected node type or DEF or USE, got "}"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 292: Expected node type or DEF or USE, got "}"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 305: Expected node type, got "{"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 305: Expected node type, got "{"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 298: Expected name, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 298: Expected name, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 310: Expected node type or DEF or USE, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 310: Expected node type or DEF or USE, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 311: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: VRML/X3D parse error at position 311: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 15: Expected node type, got "{"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 15: Expected node type, got "{"
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 8: Expected name, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 8: Expected name, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 21: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 21: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
 tovrmlx3d: VRML/X3D warning: Route source node name "InvalidNodeName" not found
 tovrmlx3d: VRML/X3D warning: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
 tovrmlx3d: VRML/X3D warning: Route destination specifies field "bboxCenter" (for node "XXX"), but this is not an exposed field (cannot generate/receive events)
@@ -280,43 +292,43 @@ tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionNotMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionLevelInfo' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionCircleMovingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
-tovrmlx3d: VRML/X3D warning: Unknown VRML node of type 'MalfunctionHuntingEnemy' (named '')
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
