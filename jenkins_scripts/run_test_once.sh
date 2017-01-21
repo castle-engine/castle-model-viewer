@@ -118,10 +118,12 @@ do_read_save ()
     local OUTPUT_HEADER="`head -n 1 \"$TEMP_FILE\"`"
 
     # trim both headers, to trim possibly different newlines
-    # (maybe they are stripped by ` already?)
+    # (or maybe they are stripped by ` already?)
     # and whitespace around.
-    local INPUT_HEADER="`stringoper Trim \"$INPUT_HEADER\"`"
-    local OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
+    # local INPUT_HEADER="`stringoper Trim \"$INPUT_HEADER\"`"
+    # local OUTPUT_HEADER="`stringoper Trim \"$OUTPUT_HEADER\"`"
+    local INPUT_HEADER="$(echo -e "${INPUT_HEADER}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    local OUTPUT_HEADER="$(echo -e "${OUTPUT_HEADER}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
       echo 'WARNING: input/output headers differ:'  > "${TEMP_PARTIAL_OUTPUT}"
