@@ -87,7 +87,7 @@ test_dir()
                   -iname '*.dae' ')' \
               -print0 ')' | \
   sort --zero-terminated | \
-  xargs -0 --max-args=1 ./run_test_once.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
+  xargs -0 --max-args=1 jenkins_scripts/run_test_once.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
   set -e
 }
 
@@ -105,5 +105,5 @@ rm -f "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 # files that should be correct.
 # test_dir ../www/htdocs/
 
-# Just test all models within our repository
+# Just test all models within our SVN trunk
 test_dir ../
