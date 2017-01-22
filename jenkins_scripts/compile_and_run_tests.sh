@@ -14,7 +14,7 @@ sed --in-place=.bak -e '/ALSA lib/d' -e '/AL lib/d' /tmp/view3dscene_run_tests_o
 # to make the result reproducible, regardless of the current directory.
 REPOSITORY_DIR="`pwd`"
 REPOSITORY_DIR="`dirname \"$REPOSITORY_DIR\"`"
-sed --in-place=.bak2 -e "s|${REPOSITORY_DIR}|DIR|" /tmp/view3dscene_run_tests_output.txt
+sed --in-place=.bak2 -e "s|${REPOSITORY_DIR}|DIR|g" /tmp/view3dscene_run_tests_output.txt
 
 # compare with last correct output
 diff -u /tmp/view3dscene_run_tests_output.txt jenkins_scripts/run_tests_valid_output.txt
