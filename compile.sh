@@ -22,12 +22,18 @@ if which castle-engine  > /dev/null; then
   castle-engine simple-compile ${CASTLE_ENGINE_TOOL_OPTIONS:-} tovrmlx3d.lpr
   cd ../
 
-  # move tovrmlx3d binaries up
-  if [ -f code/tovrmlx3d ]; then
-    mv -f code/tovrmlx3d .
-  fi
+  # Move tovrmlx3d binaries up.
+  #
+  # Note: move "xxx.exe" first, before the Unix binary "xxx".
+  # Otherwise, this fails on Windows + Cygwin, if the test program "["
+  # is from Cygwin (so it detects that "xxx" exists when in fact it's "xxx.exe"),
+  # while "mv" is from MinGW (distributed by FPC too), so it fails to find
+  # extension-less "xxx".
   if [ -f code/tovrmlx3d.exe ]; then
     mv -f code/tovrmlx3d.exe .
+  fi
+  if [ -f code/tovrmlx3d ]; then
+    mv -f code/tovrmlx3d .
   fi
 else
   # We must do cd ../castle_game_engine/ (and call FPC from that directory)
@@ -39,16 +45,16 @@ else
   cd ../view3dscene/
 
   # move binaries up
-  if [ -f code/view3dscene ]; then
-    mv -f code/view3dscene .
-  fi
   if [ -f code/view3dscene.exe ]; then
     mv -f code/view3dscene.exe .
   fi
-  if [ -f code/tovrmlx3d ]; then
-    mv -f code/tovrmlx3d .
+  if [ -f code/view3dscene ]; then
+    mv -f code/view3dscene .
   fi
   if [ -f code/tovrmlx3d.exe ]; then
     mv -f code/tovrmlx3d.exe .
+  fi
+  if [ -f code/tovrmlx3d ]; then
+    mv -f code/tovrmlx3d .
   fi
 fi
