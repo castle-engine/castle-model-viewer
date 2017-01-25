@@ -1,27 +1,31 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene / tovrmlx3d tests on 3D models inside ../demo_models/
-# (and some other dirs, see lower).
-# You can checkout demo_models from SVN, or download and unpack
-# from [http://castle-engine.sourceforge.net/demo_models.php],
-# such that it's a sibling of view3dscene.
-# This is designed to work with any 3D models, so feel free to use this
-# on your own private 3D models (add "test_dir" call lower,
-# or just call run_test_once.sh explicitly with your 3D model filename).
+# Run view3dscene / tovrmlx3d tests on 3D models inside the ../ directory.
 #
-# Requires at least:
+# We assume that ../ directory contains various Castle Game Engine-related
+# projects, like demo-models from https://github.com/castle-engine/demo-models .
+# You can either clone multiple GIT repositories alongside the view3dscene repository,
+# or you can grab the SVN trunk with various CGE projects
+# from https://sourceforge.net/projects/castle-engine/ .
+#
+# This script is designed to work with any 3D models, so feel free to use this
+# on your own private 3D models. Just modify the "test_dir" calls at the bottom.
+#
+# Running this requires:
 # - view3dscene and tovrmlx3d binaries compiled (either in current dir,
 #   or on the $PATH, see run_test_once.sh)
-# - stringoper binary compiled and available on $PATH
-#   (stringoper comes from ../castle_game_engine/examples/tools/stringoper.lpr)
+#
 # Some optional tests require also:
+#
 # - image_compare binary compiled and available on $PATH,
 #   only if you uncomment the "screenshot comparison" test in run_test_once.sh
 #   (image_compare comes from ../castle_game_engine/examples/images_videos/image_compare.lpr)
+#
 # - xmllint for basic XML validation (should be included in any
 #   popular Linux distribution; on Debian (and maybe derivatives),
 #   xmllint may be found in package libxml2-utils, see "dpkg -S xmllint").
+#
 # - for some optional comparisons (regression checking), it's useful
 #   to have alternative view3dscene / tovrmlx3d binaries installed.
 #   For example, if you test view3dscene from SVN, you may also install last
@@ -55,11 +59,10 @@ test_dir()
   # Explanation for some omitted files/dirs:
   # - errors subdirs in demo_models contains files that *should* fail when reading.
   # - *test_temporary* files are leftovers from interrupted previous tests.
-  # - ssao tests are not used for now, because fglrx is awfully slow
-  #   for them (like 1 frame for ~couple of minutes, using full cpu power;
-  #   seems like it falls back to software shaders implementation for this case).
+  # - ios_tests/CastleEngineTest/CastleEngineTest contains VRML with .wrl extension
+  #   but gzip compressed, out test script is not prepared for it now.
 
-  # The find output is run through sort and then xargs.
+  # The "find" output is run through sort and then xargs.
   # Otherwise, find prints files in an unpredictable order (from readdir),
   # which makes comparing two outputs from two different systems (like
   # comparing run_tests_valid_output.txt with output on michalis.ii snapshots)
@@ -70,10 +73,6 @@ test_dir()
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f -iwholename '*ios_tests/CastleEngineTest/CastleEngineTest*' ')' -or \
   '(' -type f -name '*test_temporary*' ')' -or \
-  '(' -type f -name 'ssao_barna29_0.x3dv' ')' -or \
-  '(' -type f -name 'ssao_stairs_with_test_plane.x3dv' ')' -or \
-  '(' -type f -name 'ssao_stairs.x3dv' ')' -or \
-  '(' -type f -name 'twoboxes_ssao.x3dv' ')' -or \
   '(' -type f '(' -iname '*.wrl' -or \
                   -iname '*.wrz' -or \
                   -iname '*.wrl.gz' -or \
@@ -100,10 +99,9 @@ rm -f "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 # test_dir ../demo_models/
 # test_dir ../castle/data/
 # test_dir ../castle_game_engine/
-
 # This dir has fallback_prototypes in VRML 97 and X3D, two really important
 # files that should be correct.
 # test_dir ../www/htdocs/
 
-# Just test all models within our SVN trunk
+# Just test all models within ../
 test_dir ../
