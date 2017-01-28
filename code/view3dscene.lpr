@@ -1980,7 +1980,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
                     SelectedItem^.Face.IndexBegin + 1;
 
       Coords.DeleteRange(IndexBegin, IndexCount);
-      Scene.ChangedField(CoordsField);
+      CoordsField.Changed;
 
       { Texture coordinates, if not empty, have always (both in VRML 1.0
         and VRML 2.0 / X3D IndexedFaceSet nodes, and in IndexedTriangleMesh
@@ -1990,7 +1990,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if TexCoords <> nil then
       begin
         TexCoords.DeleteRange(IndexBegin, IndexCount);
-        Scene.ChangedField(TexCoordsField);
+        TexCoordsField.Changed;
       end;
     finally Dec(DisableAutoDynamicGeometry) end;
   end;
