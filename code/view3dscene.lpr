@@ -98,7 +98,7 @@ var
     This way we're preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
   Scene: TCastleScene;
-  SceneBoundingBox: TCastleScene;
+  SceneBoundingBox: TInternalScene;
   SceneBoundingBoxTransform: TTransformNode;
   SceneBoundingBoxBox: TBoxNode;
   SceneURL: string;
@@ -891,9 +891,6 @@ begin
   RootNode.FdChildren.Add(SceneBoundingBoxTransform);
 
   SceneBoundingBox.Load(RootNode, true);
-  SceneBoundingBox.Collides := false;
-  SceneBoundingBox.Pickable := false;
-  SceneBoundingBox.CastShadowVolumes := false;
 end;
 
 procedure SceneOctreeCreate;
@@ -3964,7 +3961,7 @@ begin
       SceneManager.Items.Add(Scene);
       SceneManager.MainScene := Scene;
 
-      SceneBoundingBox := TCastleScene.Create(Scene);
+      SceneBoundingBox := TInternalScene.Create(Scene);
       SceneManager.Items.Add(SceneBoundingBox);
       InitializeSceneBoundingBox;
 

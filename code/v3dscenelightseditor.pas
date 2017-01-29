@@ -27,7 +27,12 @@ unit V3DSceneLightsEditor;
 
 interface
 
-uses CastleWindow, CastleSceneManager;
+uses Classes, CastleWindow, CastleSceneManager, CastleScene;
+
+type
+  TInternalScene = class(TCastleScene)
+    constructor Create(AOwner: TComponent); override;
+  end;
 
 var
   MenuLightsEditor: TMenuItemChecked;
@@ -40,11 +45,20 @@ procedure LightsEditorClose;
 
 implementation
 
-uses SysUtils, Classes, CastleColors,
+uses SysUtils, CastleColors,
   CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, Castle3D,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
-  CastleRectangles, CastleControls, CastleScene,
+  CastleRectangles, CastleControls,
   V3DSceneImages;
+
+constructor TInternalScene.Create(AOwner: TComponent);
+begin
+  inherited;
+  Collides := false;
+  Pickable := false;
+  CastShadowVolumes := false;
+  ExcludeFromStatistics := true;
+end;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -253,7 +267,7 @@ var
   WindowMarginTop: Integer;
 
   LightsMenu: TLightsMenu;
-  Gizmo: TCastleScene;
+  Gizmo: TInternalScene;
   GizmoTransform: T3DTransform;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
@@ -352,11 +366,8 @@ begin
   RootNode := TX3DRootNode.Create;
   RootNode.FdChildren.Add(Billboard);
 
-  Gizmo := TCastleScene.Create(Window);
+  Gizmo := TInternalScene.Create(Window);
   Gizmo.Load(RootNode, true);
-  Gizmo.Collides := false;
-  Gizmo.Pickable := false;
-  Gizmo.CastShadowVolumes := false;
   Gizmo.ProcessEvents := true; // for Billboard to work
 
   GizmoTransform := T3DTransform.Create(Window);
