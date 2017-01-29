@@ -1072,7 +1072,6 @@ begin
     Scene.OnGeometryChanged := @THelper(nil).GeometryChanged;
     Scene.OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
     Scene.OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
-    Assert(Scene.Static = false);
     Scene.ProcessEvents := ProcessEventsWanted;
 
     { Make initial CameraChanged to make initial events to
