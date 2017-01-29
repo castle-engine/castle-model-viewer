@@ -1,5 +1,5 @@
 The view3dscene icon (created together with old Castle Game Engine icon) are
-Copyright 2008-2016 Katarzyna Obrycka, Michalis Kamburelis.
+Copyright 2008-2017 Katarzyna Obrycka, Michalis Kamburelis.
 
 Distributed on GNU GPL >= 2 license,
 just like the view3dscene code itself.
