@@ -89,6 +89,7 @@ begin
   end;
 end;
 
+procedure Run;
 var
   URL: string;
   Node: TX3DNode;
@@ -105,4 +106,20 @@ begin
     Save3D(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
       ExtractURIName(URL), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
+end;
+
+begin
+  try
+    Run;
+  except
+    on E: TObject do
+    begin
+      { In case of exception, write nice message and exit with non-zero status,
+        without dumping any stack trace (because it's normal to
+        exit with exception in case of project/environment error, not a bug,
+        and the stack trace is mostly useless for end-users in -dRELEASE mode). }
+      Writeln(ErrOutput, ExceptMessage(E));
+      Halt(1);
+    end;
+  end;
 end.

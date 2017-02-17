@@ -3704,187 +3704,188 @@ const
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone)
   );
 
-  procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
-    const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
-  var
-    SingleScreenShot: TSingleScreenShot;
-    RangeScreenShot: TRangeScreenShot;
-  begin
-    case OptionNum of
-      0 : Param_CameraRadius := StrToFloat(Argument);
-      1 : Include(Param_SceneChanges, scNoNormals);
-      2 : Include(Param_SceneChanges, scNoSolidObjects);
-      3 : Include(Param_SceneChanges, scNoConvexFaces);
-      4 : begin
-            WasParam_Write := true;
-            Param_WriteEncoding := xeClassic;
-          end;
-      5 : begin
-           InfoWrite(
-             'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
-             'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
-             'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
-             'You can also convert models in other formats to VRML/X3D.' +NL+
-             NL+
-             'Call as' +NL+
-             '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
-             NL+
-             'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
-             'As usual, dash (-) means that standard input will be read' +NL+
-             '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
-             NL+
-             'Available options are:' +NL+
-             HelpOptionHelp +NL+
-             VersionOptionHelp +NL+
-             '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
-             '                        or toolbar or bounding box) when program starts.' +NL+
-             '                        Show only the 3D world.' +NL+
-             '  --hide-menu           Hide menu bar.' +NL+
-             '  --write               Load the scene,'+NL+
-             '                        optionally process by --scene-change-xxx,' +NL+
-             '                        save it as VRML/X3D to the standard output,' +NL+
-             '                        exit. Use --write-encoding to choose encoding.' +NL+
-             '  --write-encoding classic|xml' +NL+
-             '                        Choose X3D encoding to use with --write option.' +NL+
-             '                        Default is "classic".' +NL+
-             '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
-             '                        Note that if you choose XML encoding' +NL+
-             '                        (by --write-encoding=xml), this is automatic.' +NL+
-             '                        Note that this works sensibly only for VRML 2.0' +NL+
-             '                        (not for older Inventor/VRML 1.0,' +NL+
-             '                        we cannot convert them to valid X3D for now).' +NL+
-             '  --screenshot TIME IMAGE-FILE-NAME' +NL+
-             '                        Take a screenshot of the loaded scene' +NL+
-             '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
-             '                        You most definitely want to pass 3D model' +NL+
-             '                        file to load at command-line too, otherwise' +NL+
-             '                        we''ll just make a screenshot of the default' +NL+
-             '                        black scene.' +NL+
-             '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' +NL+
-             '                        Take a FRAMES-COUNT number of screenshots from' +NL+
-             '                        TIME-BEGIN by step TIME-STEP. Save them to' +NL+
-             '                        a single movie file (like .avi) (ffmpeg must' +NL+
-             '                        be installed and available on $PATH for this)' +NL+
-             '                        or to a sequence of image files (FILE-NAME' +NL+
-             '                        must then be specified like image@counter(4).png).' +NL+
-             '  --screenshot-transparent' +NL+
-             '                        Screenshots background is transparent.' +NL+
-             '                        Useful only together' +NL+
-             '                        with --screenshot-range or --screenshot options.' +NL+
-             '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
-             '                        Especially useful to make a screenshot from given viewpoint.' +NL+
-             '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
-             '                        Argument AMOUNT is an integer >= 0.' +NL+
-             '                        Exact 0 means "no anti-aliasing",' +NL+
-             '                        this is the default. Each successive integer' +NL+
-             '                        generally makes method one step better.' +NL+
-             '                        Especially useful to make a screenshot with' +NL+
-             '                        anti-aliasing quality.' +NL+
-             SoundEngine.ParseParametersHelp + NL+
-             NL+
-             TCastleWindowCustom.ParseParametersHelp(StandardParseOptions, true) +NL+
-             NL+
-             'Debug options:' +NL+
-             '  --debug-log           Write log info to stdout.' +NL+
-             '  --debug-log-cache     Write log info, including cache.' +nl+
-             '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
-             '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
-             '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
-             '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
-             NL+
-             'Deprecated options:' +NL+
-             '  --scene-change-no-normals' +NL+
-             '                        Remove normals information from the loaded scene.' +NL+
-             '                        Forces automatic calculation of normal vectors.' +NL+
-             '                        Deprecated, doing this from command-line is not' +NL+
-             '                        usually useful.' +NL+
-             '  --scene-change-no-solid-objects' +NL+
-             '                        Make all shapes not solid in the loaded scene.' +NL+
-             '                        Disables backface culling.' +NL+
-             '                        Deprecated, doing this from command-line is not' +NL+
-             '                        usually useful.' +NL+
-             '  --scene-change-no-convex-faces' +NL+
-             '                        Treat all faces as potentially concave in the loaded scene.' +NL+
-             '                        Deprecated, doing this from command-line is not' +NL+
-             '                        usually useful.' +NL+
-             '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
-             '  --camera-radius RADIUS' +NL+
-             '                        Set camera sphere radius used for collisions' +NL+
-             '                        and determinig moving speed.' +NL+
-             '                        Deprecated, consider using NavigationInfo node' +NL+
-             '                        inside your scene instead.' +NL+
-             '  --navigation EXAMINE|WALK|FLY...'+nl+
-             '                        Set initial navigation style.' +NL+
-             '                        Deprecated, consider using NavigationInfo node' +NL+
-             '                        inside your scene instead.' +NL+
-             NL+
-             SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
-           Halt;
-          end;
-      6 : begin
-           Writeln(Version);
-           Halt;
-          end;
-      7 : begin
-            SingleScreenShot := TSingleScreenShot.Create;
-            SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
-            SingleScreenShot.URLPattern := SeparateArgs[2];
-            ScreenShotsList.Add(SingleScreenShot);
-          end;
-      8 : begin
-            RangeScreenShot := TRangeScreenShot.Create;
-            RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
-            RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
-            RangeScreenShot.FramesCount := StrToInt(SeparateArgs[3]);
-            RangeScreenShot.URLPattern := SeparateArgs[4];
-            ScreenShotsList.Add(RangeScreenShot);
-          end;
-      9 : InitializeLog(Version);
-      10: begin
-            InitializeLog(Version);
-            LogChanges := true;
-          end;
-      11: begin
-            InitializeLog(Version);
-            LogRendererCache := true;
-          end;
-      12: begin
-            InitializeLog(Version);
-            LogShaders := true;
-          end;
-      13: begin
-            InitializeLog(Version);
-            LogVideosCache := true;
-          end;
-      14: begin
-            InitializeLog(Version);
-            LogTextureCache := true;
-          end;
-      15: begin
-            Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
-              Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
-            if AntiAliasingMenu[Window.AntiAliasing] <> nil then
-              AntiAliasingMenu[Window.AntiAliasing].Checked := true;
-          end;
-      16: begin
-            ShowBBox := false;
-            ShowStatus := false;
-            UpdateStatusToolbarVisible;
-          end;
-      17: WasParam_Write := true;
-      18: if SameText(Argument, 'classic') then
-            Param_WriteEncoding := xeClassic else
-          if SameText(Argument, 'xml') then
-            Param_WriteEncoding := xeXML else
-            raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-      19: Param_WriteForceX3D := true;
-      20: Param_HideMenu := true;
-      21: TextureMemoryProfiler.Enabled := true;
-      22: Param_ScreenshotTransparent := true;
-      else raise EInternalError.Create('OptionProc');
-    end;
+procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
+  const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
+var
+  SingleScreenShot: TSingleScreenShot;
+  RangeScreenShot: TRangeScreenShot;
+begin
+  case OptionNum of
+    0 : Param_CameraRadius := StrToFloat(Argument);
+    1 : Include(Param_SceneChanges, scNoNormals);
+    2 : Include(Param_SceneChanges, scNoSolidObjects);
+    3 : Include(Param_SceneChanges, scNoConvexFaces);
+    4 : begin
+          WasParam_Write := true;
+          Param_WriteEncoding := xeClassic;
+        end;
+    5 : begin
+         InfoWrite(
+           'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
+           'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
+           'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
+           'You can also convert models in other formats to VRML/X3D.' +NL+
+           NL+
+           'Call as' +NL+
+           '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
+           NL+
+           'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
+           'As usual, dash (-) means that standard input will be read' +NL+
+           '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
+           NL+
+           'Available options are:' +NL+
+           HelpOptionHelp +NL+
+           VersionOptionHelp +NL+
+           '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
+           '                        or toolbar or bounding box) when program starts.' +NL+
+           '                        Show only the 3D world.' +NL+
+           '  --hide-menu           Hide menu bar.' +NL+
+           '  --write               Load the scene,'+NL+
+           '                        optionally process by --scene-change-xxx,' +NL+
+           '                        save it as VRML/X3D to the standard output,' +NL+
+           '                        exit. Use --write-encoding to choose encoding.' +NL+
+           '  --write-encoding classic|xml' +NL+
+           '                        Choose X3D encoding to use with --write option.' +NL+
+           '                        Default is "classic".' +NL+
+           '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
+           '                        Note that if you choose XML encoding' +NL+
+           '                        (by --write-encoding=xml), this is automatic.' +NL+
+           '                        Note that this works sensibly only for VRML 2.0' +NL+
+           '                        (not for older Inventor/VRML 1.0,' +NL+
+           '                        we cannot convert them to valid X3D for now).' +NL+
+           '  --screenshot TIME IMAGE-FILE-NAME' +NL+
+           '                        Take a screenshot of the loaded scene' +NL+
+           '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
+           '                        You most definitely want to pass 3D model' +NL+
+           '                        file to load at command-line too, otherwise' +NL+
+           '                        we''ll just make a screenshot of the default' +NL+
+           '                        black scene.' +NL+
+           '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' +NL+
+           '                        Take a FRAMES-COUNT number of screenshots from' +NL+
+           '                        TIME-BEGIN by step TIME-STEP. Save them to' +NL+
+           '                        a single movie file (like .avi) (ffmpeg must' +NL+
+           '                        be installed and available on $PATH for this)' +NL+
+           '                        or to a sequence of image files (FILE-NAME' +NL+
+           '                        must then be specified like image@counter(4).png).' +NL+
+           '  --screenshot-transparent' +NL+
+           '                        Screenshots background is transparent.' +NL+
+           '                        Useful only together' +NL+
+           '                        with --screenshot-range or --screenshot options.' +NL+
+           '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
+           '                        Especially useful to make a screenshot from given viewpoint.' +NL+
+           '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
+           '                        Argument AMOUNT is an integer >= 0.' +NL+
+           '                        Exact 0 means "no anti-aliasing",' +NL+
+           '                        this is the default. Each successive integer' +NL+
+           '                        generally makes method one step better.' +NL+
+           '                        Especially useful to make a screenshot with' +NL+
+           '                        anti-aliasing quality.' +NL+
+           SoundEngine.ParseParametersHelp + NL+
+           NL+
+           TCastleWindowCustom.ParseParametersHelp(StandardParseOptions, true) +NL+
+           NL+
+           'Debug options:' +NL+
+           '  --debug-log           Write log info to stdout.' +NL+
+           '  --debug-log-cache     Write log info, including cache.' +nl+
+           '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
+           '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
+           '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
+           '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
+           NL+
+           'Deprecated options:' +NL+
+           '  --scene-change-no-normals' +NL+
+           '                        Remove normals information from the loaded scene.' +NL+
+           '                        Forces automatic calculation of normal vectors.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --scene-change-no-solid-objects' +NL+
+           '                        Make all shapes not solid in the loaded scene.' +NL+
+           '                        Disables backface culling.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --scene-change-no-convex-faces' +NL+
+           '                        Treat all faces as potentially concave in the loaded scene.' +NL+
+           '                        Deprecated, doing this from command-line is not' +NL+
+           '                        usually useful.' +NL+
+           '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
+           '  --camera-radius RADIUS' +NL+
+           '                        Set camera sphere radius used for collisions' +NL+
+           '                        and determinig moving speed.' +NL+
+           '                        Deprecated, consider using NavigationInfo node' +NL+
+           '                        inside your scene instead.' +NL+
+           '  --navigation EXAMINE|WALK|FLY...'+nl+
+           '                        Set initial navigation style.' +NL+
+           '                        Deprecated, consider using NavigationInfo node' +NL+
+           '                        inside your scene instead.' +NL+
+           NL+
+           SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
+         Halt;
+        end;
+    6 : begin
+         Writeln(Version);
+         Halt;
+        end;
+    7 : begin
+          SingleScreenShot := TSingleScreenShot.Create;
+          SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
+          SingleScreenShot.URLPattern := SeparateArgs[2];
+          ScreenShotsList.Add(SingleScreenShot);
+        end;
+    8 : begin
+          RangeScreenShot := TRangeScreenShot.Create;
+          RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
+          RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
+          RangeScreenShot.FramesCount := StrToInt(SeparateArgs[3]);
+          RangeScreenShot.URLPattern := SeparateArgs[4];
+          ScreenShotsList.Add(RangeScreenShot);
+        end;
+    9 : InitializeLog(Version);
+    10: begin
+          InitializeLog(Version);
+          LogChanges := true;
+        end;
+    11: begin
+          InitializeLog(Version);
+          LogRendererCache := true;
+        end;
+    12: begin
+          InitializeLog(Version);
+          LogShaders := true;
+        end;
+    13: begin
+          InitializeLog(Version);
+          LogVideosCache := true;
+        end;
+    14: begin
+          InitializeLog(Version);
+          LogTextureCache := true;
+        end;
+    15: begin
+          Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
+            Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
+          if AntiAliasingMenu[Window.AntiAliasing] <> nil then
+            AntiAliasingMenu[Window.AntiAliasing].Checked := true;
+        end;
+    16: begin
+          ShowBBox := false;
+          ShowStatus := false;
+          UpdateStatusToolbarVisible;
+        end;
+    17: WasParam_Write := true;
+    18: if SameText(Argument, 'classic') then
+          Param_WriteEncoding := xeClassic else
+        if SameText(Argument, 'xml') then
+          Param_WriteEncoding := xeXML else
+          raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
+    19: Param_WriteForceX3D := true;
+    20: Param_HideMenu := true;
+    21: TextureMemoryProfiler.Enabled := true;
+    22: Param_ScreenshotTransparent := true;
+    else raise EInternalError.Create('OptionProc');
   end;
+end;
 
+procedure Run;
 begin
   Window := TCastleWindowCustom.Create(Application);
 
@@ -4025,5 +4026,21 @@ begin
   finally
     FreeAndNil(SceneWarnings);
     FreeAndNil(SceneManager);
+  end;
+end;
+
+begin
+  try
+    Run;
+  except
+    on E: TObject do
+    begin
+      { In case of exception, write nice message and exit with non-zero status,
+        without dumping any stack trace (because it's normal to
+        exit with exception in case of project/environment error, not a bug,
+        and the stack trace is mostly useless for end-users in -dRELEASE mode). }
+      Writeln(ErrOutput, ExceptMessage(E));
+      Halt(1);
+    end;
   end;
 end.
