@@ -4,7 +4,7 @@ set -eu
 # Create Mac OS X bundle, and then dmg (disk image) file to distribute view3dscene.
 # Compile the view3dscene (and tovrmlx3d) binaries before calling this.
 
-. ../../scripts/create_macosx_bundle.sh
+. ../../cge-scripts/create_macosx_bundle.sh
 
 create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
 '  <dict>
@@ -219,17 +219,21 @@ cp ../tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
 # add libraries from fink
 cd view3dscene.app/Contents/MacOS/
 
-cp_fink_lib libpng14.14.dylib
-cp_fink_lib libvorbisfile.3.dylib
-cp_fink_lib libvorbis.0.dylib
-cp_fink_lib libogg.0.dylib
+# TODO: for now, I don't have fink available.
+# Lack of the libraries below means that sound will not work.
+# (lack of png is harmless now, we read PNG without it)
 
-install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0.dylib libvorbisfile.3.dylib
-install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
-install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
+# cp_fink_lib libpng14.14.dylib
+# cp_fink_lib libvorbisfile.3.dylib
+# cp_fink_lib libvorbis.0.dylib
+# cp_fink_lib libogg.0.dylib
+
+# install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0.dylib libvorbisfile.3.dylib
+# install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
+# install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
 
 check_libs_not_depending_on_fink view3dscene tovrmlx3d
 
 cd ../../../
 
-make -f ../../scripts/macosx_dmg.makefile NAME=view3dscene
+make -f ../../cge-scripts/macosx_dmg.makefile NAME=view3dscene
