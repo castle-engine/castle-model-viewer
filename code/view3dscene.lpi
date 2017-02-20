@@ -16,7 +16,6 @@
     <VersionInfo>
       <Language Value=""/>
       <CharSet Value=""/>
-      <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
@@ -174,6 +173,9 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <Target>
+      <Filename Value="../view3dscene"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="../castle_game_engine/src/base"/>
     </SearchPaths>
