@@ -176,9 +176,6 @@
     <Target>
       <Filename Value="../view3dscene"/>
     </Target>
-    <SearchPaths>
-      <IncludeFiles Value="../castle_game_engine/src/base"/>
-    </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
