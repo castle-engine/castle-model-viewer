@@ -3011,7 +3011,7 @@ begin
        end;
   132: if not OpenURL(View3dsceneURL) then
          Window.MessageOk(SCannotOpenURL, mtError);
-  134: if not OpenURL(DonateURL) then
+  134: if not OpenURL(SupportURL) then
          Window.MessageOk(SCannotOpenURL, mtError);
 
   171: SelectedShowInformation;
@@ -3441,7 +3441,7 @@ begin
     M.Append(TMenuItem.Create('OpenGL Information',                 173));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Visit view3dscene website',          132));
-    M.Append(TMenuItem.Create('Donate to view3dscene',              134));
+    M.Append(TMenuItem.Create('Support the development of view3dscene', 134));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('About view3dscene',                  131));
     Result.Append(M);

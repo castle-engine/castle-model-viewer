@@ -3,7 +3,7 @@ unit V3DSceneVersion;
 interface
 const
   Version = '3.16.0';
-  View3dsceneURL = 'http://castle-engine.sourceforge.net/view3dscene.php';
-  DonateURL = 'http://castle-engine.sourceforge.net/donate.php';
+  View3dsceneURL = 'https://castle-engine.sourceforge.io/view3dscene.php';
+  SupportURL = 'https://castle-engine.sourceforge.io/donate.php';
 implementation
 end.
