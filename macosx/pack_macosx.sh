@@ -219,8 +219,8 @@ cp ../tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
 # add libraries from fink
 cd view3dscene.app/Contents/MacOS/
 
-# TODO: for now, I don't have fink available.
-# Lack of the libraries below means that sound will not work.
+# TODO: For now, I don't have fink available.
+# Lack of the libraries below means that OggVorbis loading will not work.
 # (lack of png is harmless now, we read PNG without it)
 
 # cp_fink_lib libpng14.14.dylib
