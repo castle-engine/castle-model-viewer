@@ -4,41 +4,41 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are avilable
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are avilable
+tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
