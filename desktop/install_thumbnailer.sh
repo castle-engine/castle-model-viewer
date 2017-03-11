@@ -45,3 +45,14 @@ echo ''
 echo 'Remember to call also ./install.sh (before or after ./install_thumbnailer.sh),'
 echo 'to make the thumbnailer actually be used for appropriate MIME types.'
 echo '----------'
+
+# Alternative installation method, following
+# http://web.archive.org/web/20111228010551/http://thunar.xfce.org/documentation/C/customizing-thunar.html
+# and using view3dscene-thumbnailer.desktop
+
+# Use share directory from parameter. By default use user-local directory
+# (this makes this script useful for normal users, documented on view3dscene website).
+#
+# SHARE_PREFIX="${1:-${HOME}/.local/share}"
+# install -d "$SHARE_PREFIX"/thumbnailers/
+# install view3dscene-thumbnailer.desktop "$SHARE_PREFIX"/thumbnailers/

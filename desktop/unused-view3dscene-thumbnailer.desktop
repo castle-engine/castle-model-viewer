@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=X-Thumbnailer
+Name=view3dscene Thumbnailer
+MimeType=model/vrml;image/x-3ds;model/x3d+vrml;model/x3d+xml;application/x-collada;application/x-inventor;application/x-md3;application/x-wavefront-obj;application/x-geo;application/x-castle-anim-frames
+X-Thumbnailer-Exec=view3dscene %i --screenshot 0 %o --geometry %sx%s
