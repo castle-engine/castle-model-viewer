@@ -59,7 +59,7 @@ type
   TSceneChangesDo = class
   public
     class procedure NoNormal_Indexed_1(node: TX3DNode);
-    class procedure NoNormal_IFS(node: TX3DNode);
+    class procedure NoNormal_ComposedGeometryNode(node: TX3DNode);
     class procedure NoNormal_ElevationGrid(node: TX3DNode);
 
     class procedure NoSolid_ShapeHints(node: TX3DNode);
@@ -74,13 +74,9 @@ begin
   (Node as TAbstractIndexedNode_1).FdNormalIndex.Items.Clear;
 end;
 
-class procedure TSceneChangesDo.NoNormal_IFS(node: TX3DNode);
+class procedure TSceneChangesDo.NoNormal_ComposedGeometryNode(node: TX3DNode);
 begin
-  (Node as TIndexedFaceSetNode).FdNormal.Value := nil;
-  { Note that normalIndex is actually harmless (ignored) when normal = nil
-    for VRML >= 2 nodes.
-    But it serves no purpose, so clear it, to make saved file smaller. }
-  (Node as TIndexedFaceSetNode).FdNormalIndex.Items.Clear;
+  (Node as TAbstractComposedGeometryNode).FdNormal.Value := nil;
 end;
 
 class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
@@ -143,14 +139,14 @@ procedure SceneChange_NoNormals(Node: TX3DRootNode);
 begin
   Node.EnumerateNodes(TAbstractIndexedNode_1,
     @TSceneChangesDo(nil).NoNormal_Indexed_1, false);
-  Node.EnumerateNodes(TIndexedFaceSetNode,
-    @TSceneChangesDo(nil).NoNormal_IFS, false);
+  Node.EnumerateNodes(TAbstractComposedGeometryNode,
+    @TSceneChangesDo(nil).NoNormal_ComposedGeometryNode, false);
   Node.EnumerateNodes(TElevationGridNode,
     @TSceneChangesDo(nil).NoNormal_ElevationGrid, false);
 
   { Do this at the end.
-    Note that for VRML >= 2.0, Normal nodes were already removed by
-    NoNormal_IFS (in more intelligent way). }
+    Note that for VRML >= 2.0, most of the Normal nodes were already removed
+    by NoNormal_ComposedGeometryNode and NoNormal_ElevationGrid anyway. }
   RemoveNodeClass(Node, TNormalNode, false);
   RemoveNodeClass(Node, TNormalBindingNode_1, false);
 end;
