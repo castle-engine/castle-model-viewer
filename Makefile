@@ -28,14 +28,17 @@ DATADIR=$(DATAROOTDIR)
 
 .PHONY: install
 install:
+	install -d $(BINDIR)
 	install view3dscene $(BINDIR)
 	install tovrmlx3d $(BINDIR)
+	install -d  $(DATADIR)
 	cd desktop/ && ./install.sh "$(DATADIR)"
 
 .PHONY: uninstall
 uninstall:
 	rm -f $(BINDIR)/view3dscene \
 	      $(BINDIR)/tovrmlx3d
+	cd desktop/ && ./uninstall.sh "$(DATADIR)"
 
 # code generation ------------------------------------------------------------
 
