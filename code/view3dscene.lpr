@@ -1991,14 +1991,16 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     finally Dec(DisableAutoDynamicGeometry) end;
   end;
 
-  { Returns @true and sets M1 and M2 (exactly one to @nil, one to non-nil)
+  { Returns @true and sets M1, M2, SurfaceShader
+    (exactly one to non-nil, others to non-nil)
     if success. Produces message to user and returns @false on failure.
 
     Note that SelectedItem is not necessarily correct anymore. Use only
-    M1 and M2 pointers after this. }
+    M1, M2, SurfaceShader pointers after this. }
   function ChangeMaterialInit(
     out M1: TMaterialNode_1;
-    out M2: TMaterialNode): boolean;
+    out M2: TMaterialNode;
+    out SurfaceShader: TCommonSurfaceShaderNode): boolean;
   var
     Shape: TAbstractShapeNode;
   begin
@@ -2010,28 +2012,33 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
     M1 := nil;
     M2 := nil;
+    SurfaceShader := nil;
     Shape := SelectedItem^.State.ShapeNode;
     if Shape <> nil then
     begin
-      M2 := Shape.Material;
-      if M2 = nil then
+      SurfaceShader := Shape.CommonSurfaceShader;
+      if SurfaceShader = nil then
       begin
-        if MessageYesNo(Window, 'No material present. Add material to this node and then edit it?') then
+        M2 := Shape.Material;
+        if M2 = nil then
         begin
-          { Note that this may remove old Shape.FdAppearance.Value,
-            but only if Shape.Appearance = nil, indicating that
-            something wrong was specified for "appearance" field.
+          if MessageYesNo(Window, 'No Material or CommonSurfaceShader node present. Add material to this node and then edit it?') then
+          begin
+            { Note that this may remove old Shape.FdAppearance.Value,
+              but only if Shape.Appearance = nil, indicating that
+              something wrong was specified for "appearance" field.
 
-            Similar, it may remove old Shape.Appearance.FdMaterial.Value,
-            but only if Shape.Material was nil, and together
-            this indicates that something incorrect was placed in "material"
-            field. }
+              Similar, it may remove old Shape.Appearance.FdMaterial.Value,
+              but only if Shape.Material was nil, and together
+              this indicates that something incorrect was placed in "material"
+              field. }
 
-          M2 := TMaterialNode.Create('', Shape.BaseUrl);
-          Shape.Material := M2;
-          Scene.ChangedAll;
-        end else
-          Exit(false);
+            M2 := TMaterialNode.Create('', Shape.BaseUrl);
+            Shape.Material := M2;
+            Scene.ChangedAll;
+          end else
+            Exit(false);
+        end;
       end;
     end else
     begin
@@ -2045,29 +2052,34 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     M1: TMaterialNode_1;
     M2: TMaterialNode;
+    SurfaceShader: TCommonSurfaceShaderNode;
     Color: TVector3Single;
   begin
-    if not ChangeMaterialInit(M1, M2) then Exit;
+    if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
 
+    if SurfaceShader <> nil then
+      Color := SurfaceShader.DiffuseFactor
+    else
     if M2 <> nil then
-      Color := M2.FdDiffuseColor.Value else
+      Color := M2.DiffuseColor
+    else
     begin
       Assert(M1 <> nil);
       if M1.FdDiffuseColor.Count > 0 then
-        Color := M1.FdDiffuseColor.Items.L[0] else
-        Color := DefaultMaterialDiffuseColor;
+        Color := M1.FdDiffuseColor.Items.L[0]
+      else
+        Color := TMaterialInfo.DefaultDiffuseColor;
     end;
 
     if Window.ColorDialog(Color) then
     begin
+      if SurfaceShader <> nil then
+        SurfaceShader.DiffuseFactor := Color
+      else
       if M2 <> nil then
-      begin
-        M2.DiffuseColor := Color;
-      end else
-      begin
-        Assert(M1 <> nil);
+        M2.DiffuseColor := Color
+      else
         M1.FdDiffuseColor.Send([Color]);
-      end;
     end;
   end;
 
@@ -2075,29 +2087,34 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     M1: TMaterialNode_1;
     M2: TMaterialNode;
+    SurfaceShader: TCommonSurfaceShaderNode;
     Color: TVector3Single;
   begin
-    if not ChangeMaterialInit(M1, M2) then Exit;
+    if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
 
+    if SurfaceShader <> nil then
+      Color := SurfaceShader.SpecularFactor
+    else
     if M2 <> nil then
-      Color := M2.FdSpecularColor.Value else
+      Color := M2.SpecularColor
+    else
     begin
       Assert(M1 <> nil);
       if M1.FdSpecularColor.Count > 0 then
-        Color := M1.FdSpecularColor.Items.L[0] else
-        Color := DefaultMaterialSpecularColor;
+        Color := M1.FdSpecularColor.Items.L[0]
+      else
+        Color := TMaterialInfo.DefaultSpecularColor;
     end;
 
     if Window.ColorDialog(Color) then
     begin
+      if SurfaceShader <> nil then
+        SurfaceShader.SpecularFactor := Color
+      else
       if M2 <> nil then
-      begin
-        M2.SpecularColor := Color;
-      end else
-      begin
-        Assert(M1 <> nil);
+        M2.SpecularColor := Color
+      else
         M1.FdSpecularColor.Send([Color]);
-      end;
     end;
   end;
 
