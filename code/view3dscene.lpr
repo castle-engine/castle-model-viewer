@@ -1751,7 +1751,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       end;
 
       { calculate Tex }
-      Tex := SelectedItem^.State.Texture;
+      Tex := SelectedItem^.State.DiffuseAlphaTexture;
 
       { calculate TextureDescription }
       if Tex = nil then
