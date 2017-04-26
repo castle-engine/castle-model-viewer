@@ -196,12 +196,6 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "King
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
 tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
 tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
 tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
@@ -284,6 +278,12 @@ tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (l
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
 tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
 tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
