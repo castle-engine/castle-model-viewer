@@ -11,6 +11,12 @@
   So this file will eventually disappear.
 }
 
+{$ifndef PASDOC} // Avoid Pasdoc warnings, as Pasdoc cannot calculate $if below
+  {$if defined(iPHONESIM) or (defined(DARWIN) and (defined(CPUARM) or defined(CPUARM64)))}
+    {$define iOS}
+  {$endif}
+{$endif}
+
 { Whether we use OpenGL ES or normal OpenGL.
   OpenGL ES is generally for mobile devices.
   For testing, you can also use OpenGL ES on normal desktop OSes
