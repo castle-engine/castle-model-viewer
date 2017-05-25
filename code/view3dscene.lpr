@@ -2221,10 +2221,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           [SceneManager.Projection.PerspectiveAngles[0]]);
       ptOrthographic:
         S += Format('    --ortho %f %f %f %f', [
-          SceneManager.Projection.OrthoDimensions.Left,
-          SceneManager.Projection.OrthoDimensions.Bottom,
-          SceneManager.Projection.OrthoDimensions.Right,
-          SceneManager.Projection.OrthoDimensions.Top ]);
+          SceneManager.Projection.Dimensions.Left,
+          SceneManager.Projection.Dimensions.Bottom,
+          SceneManager.Projection.Dimensions.Right,
+          SceneManager.Projection.Dimensions.Top ]);
       else raise EInternalError.Create('PrintRayhunterCommand:ProjectionType?');
     end;
 
