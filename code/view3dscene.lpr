@@ -57,7 +57,7 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
-  CastleRays, CastleVideos, CastleTextureImages,
+  CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
   { OpenGL related units: }
   CastleGL, CastleWindow, CastleGLUtils,
   CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,

@@ -26,7 +26,7 @@ unit V3DSceneRaytrace;
 
 interface
 
-uses CastleVectors, X3DNodes, CastleColors, CastleRays,
+uses CastleVectors, X3DNodes, CastleColors, CastleProjection,
   CastleFilesUtils, CastleStringUtils, CastleSceneCore, CastleUIControls;
 
 const
