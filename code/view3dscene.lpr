@@ -1785,7 +1785,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           S += 'Material: NULL';
       end else
       begin
-        M1 := SelectedItem^.State.LastNodes.Material;
+        M1 := SelectedItem^.State.VRML1State.Material;
 
         { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
         {
@@ -2042,7 +2042,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       end;
     end else
     begin
-      M1 := SelectedItem^.State.LastNodes.Material;
+      M1 := SelectedItem^.State.VRML1State.Material;
     end;
 
     Result := true;
