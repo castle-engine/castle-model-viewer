@@ -15,7 +15,7 @@
     <dependency name="Sound" /> <!-- make sound -->
     <dependency name="OggVorbis" /> <!-- read .ogg  -->
   </dependencies>
-  <version value="3.16.1" code="3" />
+  <version value="3.17.0" code="4" />
   <package>
     <include path="COPYING.GPL2.txt" />
   </package>
