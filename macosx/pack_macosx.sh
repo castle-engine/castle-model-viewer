@@ -237,3 +237,5 @@ check_libs_not_depending_on_fink view3dscene tovrmlx3d
 cd ../../../
 
 make -f ../../cge-scripts/macosx_dmg.makefile NAME=view3dscene
+
+echo 'Done OK'
