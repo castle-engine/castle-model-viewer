@@ -4,6 +4,7 @@ set -eu
 # Run from view3dscene main directory
 cd ../
 
+. /usr/local/fpclazarus/bin/setup.sh default
 ./compile.sh
 jenkins_scripts/run_tests.sh /tmp/view3dscene_run_tests_output.txt /tmp/view3dscene_run_tests_output_verbose.txt
 
