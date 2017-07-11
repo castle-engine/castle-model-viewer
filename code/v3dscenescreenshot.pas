@@ -25,7 +25,7 @@ unit V3DSceneScreenShot;
 
 interface
 
-uses Classes, FGL,
+uses Classes, Generics.Collections,
   CastleUtils, CastleClassUtils, CastleTimeUtils, CastleParameters;
 
 type
@@ -89,7 +89,7 @@ type
     procedure EndCapture(Success: boolean); override;
   end;
 
-  TScreenShotList = class(specialize TFPGObjectList<TScreenShot>)
+  TScreenShotList = class(specialize TObjectList<TScreenShot>)
   private
     ScreenShotCounter: Cardinal;
   public
