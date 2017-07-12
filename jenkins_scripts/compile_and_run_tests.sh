@@ -9,7 +9,13 @@ cd ../
 jenkins_scripts/run_tests.sh /tmp/view3dscene_run_tests_output.txt /tmp/view3dscene_run_tests_output_verbose.txt
 
 # remove OpenAL trash from outpt
-sed --in-place=.bak -e '/ALSA lib/d' -e '/AL lib/d' /tmp/view3dscene_run_tests_output.txt
+sed --in-place=.bak \
+  -e '/ALSA lib/d' \
+  -e '/AL lib/d' \
+  -e '/jack server is not running or cannot be started/d' \
+  -e '/JackShmReadWritePtr/d' \
+  -e '/Cannot connect to server/d' \
+  /tmp/view3dscene_run_tests_output.txt
 
 # replace current dir (present in some output messages) with string "DIR",
 # to make the result reproducible, regardless of the current directory.
