@@ -74,22 +74,22 @@ type
 
   TString3 = array [0..2] of string;
 
-  { Three float sliders to control TVector3Single value. }
+  { Three float sliders to control TVector3 value. }
   TMenuVector3Sliders = class(TComponent)
   strict private
     Floats: array [0..2] of TCastleFloatSlider;
     FOnChange: TNotifyEvent;
     procedure ChildSliderChanged(Sender: TObject);
-    function GetValue: TVector3Single;
-    procedure SetValue(const AValue: TVector3Single);
+    function GetValue: TVector3;
+    procedure SetValue(const AValue: TVector3);
   public
     constructor Create(const AOwner: TComponent;
-      const Range: TBox3D; const AValue: TVector3Single); reintroduce; overload;
+      const Range: TBox3D; const AValue: TVector3); reintroduce; overload;
     constructor Create(const AOwner: TComponent;
-      const Min, Max: Single; const AValue: TVector3Single); reintroduce; overload;
+      const Min, Max: Single; const AValue: TVector3); reintroduce; overload;
     procedure AddToMenu(const Menu: TCastleOnScreenMenu;
       const TitleBase, Title0, Title1, Title2: string);
-    property Value: TVector3Single read GetValue write SetValue;
+    property Value: TVector3 read GetValue write SetValue;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -285,13 +285,13 @@ function SceneManagerLargerBox(const SceneManager: TCastleSceneManager): TBox3D;
 const
   DefaultSize = 10;
 var
-  BoxSizes: TVector3Single;
+  BoxSizes: TVector3;
 begin
   Result := SceneManager.Items.BoundingBox;
   if Result.IsEmpty then
     Result := Box3D(
-      Vector3Single(-DefaultSize, -DefaultSize, -DefaultSize),
-      Vector3Single( DefaultSize,  DefaultSize,  DefaultSize)) else
+      Vector3(-DefaultSize, -DefaultSize, -DefaultSize),
+      Vector3( DefaultSize,  DefaultSize,  DefaultSize)) else
   begin
     BoxSizes := Result.Size;
     Result.Data[0] := Result.Data[0] - BoxSizes;
@@ -301,7 +301,7 @@ end;
 
 procedure IniitalizeGizmo;
 const
-  LightGizmoPivot: TVector2Single = (Data: (58.5, 146 - 58.5));
+  LightGizmoPivot: TVector2 = (Data: (58.5, 146 - 58.5));
 var
   RootNode: TX3DRootNode;
   Billboard: TBillboardNode;
@@ -325,18 +325,18 @@ begin
 
   QuadCoords := TCoordinateNode.Create;
   QuadCoords.FdPoint.Items.Assign([
-    Vector3Single(QuadRect.Left , QuadRect.Bottom, 0),
-    Vector3Single(QuadRect.Right, QuadRect.Bottom, 0),
-    Vector3Single(QuadRect.Right, QuadRect.Top, 0),
-    Vector3Single(QuadRect.Left , QuadRect.Top, 0)
+    Vector3(QuadRect.Left , QuadRect.Bottom, 0),
+    Vector3(QuadRect.Right, QuadRect.Bottom, 0),
+    Vector3(QuadRect.Right, QuadRect.Top, 0),
+    Vector3(QuadRect.Left , QuadRect.Top, 0)
   ]);
 
   QuadTexCoords := TTextureCoordinateNode.Create;
   QuadTexCoords.FdPoint.Items.Assign([
-    Vector2Single(0, 0),
-    Vector2Single(1, 0),
-    Vector2Single(1, 1),
-    Vector2Single(0, 1)
+    Vector2(0, 0),
+    Vector2(1, 0),
+    Vector2(1, 1),
+    Vector2(0, 1)
   ]);
 
   Quad := TQuadSetNode.Create;
@@ -360,7 +360,7 @@ begin
   Shape.Appearance := Appearance;
 
   Billboard := TBillboardNode.Create;
-  Billboard.AxisOfRotation := ZeroVector3Single;
+  Billboard.AxisOfRotation := TVector3.Zero;
   Billboard.FdChildren.Add(Shape);
 
   RootNode := TX3DRootNode.Create;
@@ -421,9 +421,9 @@ end;
 
 function MessageInputQueryDirection(
   Window: TCastleWindowCustom; const Title: string;
-  var Value: TVector3Single): boolean;
+  var Value: TVector3): boolean;
 var
-  Pos, Up: TVector3Single;
+  Pos, Up: TVector3;
   s: string;
 begin
   Result := false;
@@ -433,7 +433,7 @@ begin
     try
       if LowerCase(Trim(S)) = 'c' then
         SceneManager.Camera.GetView(Pos, Value, Up) else
-        Value := Vector3SingleFromStr(s);
+        Value := Vector3FromStr(s);
       Result := true;
     except
       on E: EConvertError do
@@ -453,7 +453,7 @@ const
 { TMenuVector3Sliders -------------------------------------------------------- }
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
-  const Range: TBox3D; const AValue: TVector3Single);
+  const Range: TBox3D; const AValue: TVector3);
 var
   I: Integer;
 begin
@@ -469,10 +469,10 @@ begin
 end;
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
-  const Min, Max: Single; const AValue: TVector3Single);
+  const Min, Max: Single; const AValue: TVector3);
 begin
   Create(AOwner,
-    Box3D(Vector3Single(Min, Min, Min), Vector3Single(Max, Max, Max)), AValue);
+    Box3D(Vector3(Min, Min, Min), Vector3(Max, Max, Max)), AValue);
 end;
 
 procedure TMenuVector3Sliders.AddToMenu(const Menu: TCastleOnScreenMenu;
@@ -492,7 +492,7 @@ begin
     Menu.Add(TitleBaseSpace + Title[I], Floats[I]);
 end;
 
-function TMenuVector3Sliders.GetValue: TVector3Single;
+function TMenuVector3Sliders.GetValue: TVector3;
 var
   I: Integer;
 begin
@@ -500,7 +500,7 @@ begin
     Result[I] := Floats[I].Value;
 end;
 
-procedure TMenuVector3Sliders.SetValue(const AValue: TVector3Single);
+procedure TMenuVector3Sliders.SetValue(const AValue: TVector3);
 var
   I: Integer;
 begin
@@ -525,7 +525,7 @@ begin
   Anchor(hpLeft, 20);
   Anchor(vpTop, -WindowMarginTop - 20);
 
-  NonFocusableItemColor := Vector4Single(0.8, 0.8, 1, 1);
+  NonFocusableItemColor := Vector4(0.8, 0.8, 1, 1);
 end;
 
 procedure TV3DOnScreenMenu.AddTitle(const S: string);
@@ -810,14 +810,14 @@ end;
 
 procedure TLightMenu.UpdateLightLocation;
 var
-  V: TVector3Single;
+  V: TVector3;
 begin
   { light location may change due to various things
     (it may be animated by X3D events, it may change when we turn on
     shadows:=TRUE for DirectionalLight...).
     So just update it continously. }
   V := Light.ProjectionSceneLocation;
-  if not VectorsEqual(V, LocationSlider.Value) then
+  if not TVector3.Equals(V, LocationSlider.Value) then
   begin
     LocationSlider.Value := V;
     GizmoTransform.Translation := V;
@@ -875,7 +875,7 @@ end;
 
 procedure TSpot1LightMenu.ClickDirection(Sender: TObject);
 var
-  Vector: TVector3Single;
+  Vector: TVector3;
 begin
   Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
@@ -920,7 +920,7 @@ end;
 
 procedure TSpotLightMenu.ClickDirection(Sender: TObject);
 var
-  Vector: TVector3Single;
+  Vector: TVector3;
 begin
   Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
@@ -950,7 +950,7 @@ end;
 
 procedure TDirectionalLightMenu.ClickDirection(Sender: TObject);
 var
-  Vector: TVector3Single;
+  Vector: TVector3;
 begin
   Vector := Light.ProjectionSceneDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
@@ -1127,8 +1127,8 @@ begin
   Light.ProjectionFar := 0;
   if Light is TDirectionalLightNode then
   begin
-    TDirectionalLightNode(Light).ProjectionLocationLocal := ZeroVector3Single;
-    TDirectionalLightNode(Light).ProjectionRectangle := ZeroVector4Single;
+    TDirectionalLightNode(Light).ProjectionLocationLocal := TVector3.Zero;
+    TDirectionalLightNode(Light).ProjectionRectangle := TVector4.Zero;
   end;
   Light.Shadows := WasShadows;
 end;
@@ -1293,7 +1293,7 @@ var
 begin
   inherited;
   ALabel.Text.Add(Format('          Location: %s',
-    [VectorToNiceStr(Light.ProjectionLocation)]));
+    [Light.ProjectionLocation.ToString]));
   ProjectionRectangle := TFloatRectangle.FromX3DVector(Light.ProjectionRectangle);
   ALabel.Text.Add(Format('          Rectangle: %fx%f %fx%f',
     [ProjectionRectangle.Left,

@@ -84,7 +84,7 @@ var
 procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
 var
-  Pos, Dir, Up, GravityUp: TVector3Single;
+  Pos, Dir, Up, GravityUp: TVector3;
 begin
   if Target.Camera = nil then
   begin

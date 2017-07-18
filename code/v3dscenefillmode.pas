@@ -14,7 +14,7 @@ const
     Name: string;
     Mode: TRenderingMode;
     WireframeEffect: TWireframeEffect;
-    WireframeColor: TVector3Single;
+    WireframeColor: TVector3;
     BackgroundWireframe: boolean;
   end =
   ( (Name: 'Normal'                               ; Mode: rmFull        ; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
@@ -36,8 +36,8 @@ const
       BackgroundWireframe: false)
   );
 
-  PureGeometryColor: TVector3Single = (Data: (1, 1, 1));
-  PureGeometryShadowedColor: TVector3Single = (Data: (0.5, 0.5, 0.5));
+  PureGeometryColor: TVector3 = (Data: (1, 1, 1));
+  PureGeometryShadowedColor: TVector3 = (Data: (0.5, 0.5, 0.5));
 
 var
   FillMode: TFillMode = 0;
@@ -50,9 +50,9 @@ const
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3Single; Scene: TCastleScene);
+  const ObserverPos: TVector3; Scene: TCastleScene);
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4Single; Scene: TCastleScene);
+  const ObserverPos: TVector4; Scene: TCastleScene);
 
 implementation
 
@@ -78,13 +78,13 @@ begin
 end;
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3Single; Scene: TCastleScene);
+  const ObserverPos: TVector3; Scene: TCastleScene);
 begin
-  RenderSilhouetteBorderEdges(Vector4Single(ObserverPos, 1), Scene);
+  RenderSilhouetteBorderEdges(Vector4(ObserverPos, 1), Scene);
 end;
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4Single; Scene: TCastleScene);
+  const ObserverPos: TVector4; Scene: TCastleScene);
 {$ifndef OpenGLES} //TODO-es
 var
   PreviousLineWidth: Single;
@@ -103,11 +103,11 @@ begin
     glColor4f(0, 0, 1, 0.3);
     PreviousLineWidth := RenderContext.LineWidth;
     RenderContext.LineWidth := 5;
-    Scene.RenderBorderEdges(IdentityMatrix4Single);
+    Scene.RenderBorderEdges(TMatrix4.Identity);
     RenderContext.LineWidth := PreviousLineWidth;
 
     glColor4f(1, 1, 0, 0.3);
-    Scene.RenderSilhouetteEdges(ObserverPos, IdentityMatrix4Single);
+    Scene.RenderSilhouetteEdges(ObserverPos, TMatrix4.Identity);
 
   glPopAttrib;
 {$else}

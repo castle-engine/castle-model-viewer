@@ -90,7 +90,7 @@ procedure TStatusText.CalculateText;
 begin
   if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
   begin
-    Text.Append('<font color="#' + ColorToHex(Vector4Single(1, 1, 0,
+    Text.Append('<font color="#' + ColorToHex(Vector4(1, 1, 0,
       1 - (Time - FlashTime) / FlashDelay)) + '">' + FlashText + '</font>');
     Text.Append('');
   end;

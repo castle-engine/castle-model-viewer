@@ -422,7 +422,7 @@ end;
 procedure JumpToViewpoint(const SceneManager: TCastleSceneManager;
   const Viewpoint: TAbstractViewpointNode);
 var
-  Pos, Dir, Up, GravityUp: TVector3Single;
+  Pos, Dir, Up, GravityUp: TVector3;
   Scene: TCastleScene;
 begin
   StatusText.Flash('Switching to viewpoint: ' + NodeToCaption(Viewpoint));

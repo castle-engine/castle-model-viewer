@@ -108,7 +108,7 @@ var
     and it's meaningless when SelectedItem = nil.
     World is in world coords,
     local in local shape (SelectedItem^.State.Transform) coords. }
-  SelectedPointWorld, SelectedPointLocal: TVector3Single;
+  SelectedPointWorld, SelectedPointLocal: TVector3;
   { SelectedShape is always SelectedItem^.Shape.
     Except in GeometryChanged, when SelectedItem may be already freed,
     and then SelectedShape variable is useful to compare with OnlyShapeChanged. }
@@ -481,7 +481,7 @@ const
 var
   s: string;
   Statistics: TRenderStatistics;
-  Pos, Dir, Up: TVector3Single;
+  Pos, Dir, Up: TVector3;
 begin
   inherited;
 
@@ -496,9 +496,9 @@ begin
 
   Camera.GetView(Pos, Dir, Up);
   Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
-    [ ValueColor, VectorToNiceStr(Pos),
-      ValueColor, VectorToNiceStr(Dir),
-      ValueColor, VectorToNiceStr(Up) ]));
+    [ ValueColor, Pos.ToString,
+      ValueColor, Dir.ToString,
+      ValueColor, Up.ToString ]));
 
   if Camera.NavigationClass = ncWalk then
   begin
@@ -620,18 +620,18 @@ begin
       SelectedShape := TShape(SelectedItem^.Shape);
       glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-        glColorv(Vector4Single(0.5, 0.3, 0.3, 1));
+        glColorv(Vector4(0.5, 0.3, 0.3, 1));
         glDrawCornerMarkers(SelectedShape.BoundingBox);   // draw red selection corner markers, visible through geometry
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);  { saved by GL_ENABLE_BIT }
-        glColorv(Vector4Single(0.5, 0.3, 0.3, 0.5));
+        glColorv(Vector4(0.5, 0.3, 0.3, 0.5));
         glBegin(GL_TRIANGLES);   // draw face back in red, visible through geometry
           glVertexv(SelectedItem^.World.Triangle.Data[0]);
           glVertexv(SelectedItem^.World.Triangle.Data[2]);
           glVertexv(SelectedItem^.World.Triangle.Data[1]);
         glEnd;
-        glColorv(Vector4Single(0.4, 0.4, 1, 0.4));
+        glColorv(Vector4(0.4, 0.4, 1, 0.4));
         glBegin(GL_TRIANGLES);  // draw face front in blue,  visible through geometry
           glVertexv(SelectedItem^.World.Triangle.Data[0]);
           glVertexv(SelectedItem^.World.Triangle.Data[1]);
@@ -640,7 +640,7 @@ begin
 
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
-        glColorv(Vector4Single(1, 1, 1, 1));
+        glColorv(Vector4(1, 1, 1, 1));
 
         RenderContext.LineWidth := 2.0;
         glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
@@ -658,7 +658,7 @@ begin
       // draw blue corner markers, these overwrite the red markers, but only when infront
       // so corners infront are blue, those behind are red.
       // gives depth impression and is generally visible against various geometry .
-      glColorv(Vector4Single(0.2, 0.2, 1, 1));
+      glColorv(Vector4(0.2, 0.2, 1, 1));
       glDrawCornerMarkers(SelectedShape.BoundingBox);
       {$endif}
     end;
@@ -779,8 +779,8 @@ begin
     begin
       SelectedShape := TShape(SelectedItem^.Shape);
       try
-        SelectedPointLocal := MatrixMultPoint(
-          SelectedItem^.State.InvertedTransform, SelectedPointWorld);
+        SelectedPointLocal :=
+          SelectedItem^.State.InvertedTransform.MultPoint(SelectedPointWorld);
       except
         on ETransformedResultInvalid do
           SelectedItem := nil;
@@ -1324,7 +1324,7 @@ begin
       SelectedPointLocal to world coords by new trasform.
       This is the main reason why we keep SelectedPointLocal recorded. }
     try
-      SelectedPointWorld := MatrixMultPoint(SelectedItem^.State.Transform,
+      SelectedPointWorld := SelectedItem^.State.Transform.MultPoint(
         SelectedPointLocal);
     except
       on ETransformedResultInvalid do
@@ -1602,9 +1602,9 @@ end;
 
 procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
-  procedure MakeGravityUp(const NewUp: TVector3Single);
+  procedure MakeGravityUp(const NewUp: TVector3);
   var
-    Pos, Dir, Up, GravityUp: TVector3Single;
+    Pos, Dir, Up, GravityUp: TVector3;
   begin
     Camera.GetView(Pos, Dir, Up, GravityUp);
     if VectorsParallel(Dir, NewUp) then
@@ -1709,7 +1709,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
            'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node name: "%s", grand-parent node name: "%s", grand-grand-parent node name: "%s".' +nl+
            nl+
            'Node''s bounding box is %s. ',
-           [VectorToNiceStr(SelectedPointWorld),
+           [SelectedPointWorld.ToString,
             TriangleToNiceStr(SelectedItem^.World.Triangle),
             PointerToStr(SelectedItem),
             SelectedGeometry.X3DName,
@@ -1777,8 +1777,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
                  '  transparency : %s',
                  [ M2.X3DName,
                    FloatToNiceStr(M2.FdAmbientIntensity.Value),
-                   VectorToNiceStr(M2.FdDiffuseColor.Value),
-                   VectorToNiceStr(M2.FdSpecularColor.Value),
+                   M2.FdDiffuseColor.Value.ToString,
+                   M2.FdSpecularColor.Value.ToString,
                    FloatToNiceStr(M2.FdShininess.Value),
                    FloatToNiceStr(M2.FdTransparency.Value) ]);
         end else
@@ -2053,7 +2053,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     M1: TMaterialNode_1;
     M2: TMaterialNode;
     SurfaceShader: TCommonSurfaceShaderNode;
-    Color: TVector3Single;
+    Color: TVector3;
   begin
     if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
 
@@ -2088,7 +2088,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     M1: TMaterialNode_1;
     M2: TMaterialNode;
     SurfaceShader: TCommonSurfaceShaderNode;
-    Color: TVector3Single;
+    Color: TVector3;
   begin
     if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
 
@@ -2140,7 +2140,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure ChangeLightModelAmbient;
   var
-    C: TVector3Single;
+    C: TVector3;
   begin
     C := RenderContext.GlobalAmbient;
     if Window.ColorDialog(C) then
@@ -2151,7 +2151,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     const WantedDirection, WantedUp: Integer;
     const WantedDirectionPositive, WantedUpPositive: boolean);
   var
-    Position, Direction, Up, GravityUp: TVector3Single;
+    Position, Direction, Up, GravityUp: TVector3;
   begin
     CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
@@ -2210,9 +2210,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
          Window.Width, Window.Height,
          SceneURL,
          ChangeURIExt(ExtractURIName(SceneURL), '-rt.png'),
-         VectorToRawStr(Camera.Walk.Position),
-         VectorToRawStr(Camera.Walk.Direction),
-         VectorToRawStr(Camera.Walk.Up),
+         Camera.Walk.Position.ToRawString,
+         Camera.Walk.Direction.ToRawString,
+         Camera.Walk.Up.ToRawString,
          BGColor[0], BGColor[1], BGColor[2] ]);
 
     case SceneManager.Projection.ProjectionType of
@@ -2234,7 +2234,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   procedure WritelnCameraSettings(const Version: TX3DCameraVersion;
     const Xml: boolean);
   var
-    Pos, Dir, Up, GravityUp: TVector3Single;
+    Pos, Dir, Up, GravityUp: TVector3;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
     Writeln(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
@@ -2271,13 +2271,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         '      size %2:s %3:s %4:s' +nl+
         '    } } }',
         [ Box.ToNiceStr,
-          VectorToRawStr(Box.Middle),
+          Box.Middle.ToRawString,
           FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]),
           FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]),
           FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]) ]));
       *)
 
-      S1 := VectorToRawStr(Box.Center);
+      S1 := Box.Center.ToRawString;
       S2 := FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]);
       S3 := FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]);
       S4 := FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]);
@@ -2634,7 +2634,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure Raytrace;
   var
-    Pos, Dir, Up: TVector3Single;
+    Pos, Dir, Up: TVector3;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
     RaytraceToWin(SceneManager.BaseLights, Scene,
@@ -2790,7 +2790,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure Reopen;
   var
-    Pos, Dir, Up: TVector3Single;
+    Pos, Dir, Up: TVector3;
     NavigationType: TNavigationType;
   begin
     { reopen saves/restores camera view and navigation type,
@@ -2970,16 +2970,16 @@ begin
          Writeln(
            'Current camera frustum planes :' +nl+
            '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-           '  Left   : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpLeft]) +nl+
-           '  Right  : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpRight]) +nl+
-           '  Bottom : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpBottom]) +nl+
-           '  Top    : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpTop]) +nl+
-           '  Near   : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpNear]));
+           '  Left   : ' + SceneManager.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
+           '  Right  : ' + SceneManager.Camera.Frustum.Planes[fpRight].ToRawString +nl+
+           '  Bottom : ' + SceneManager.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
+           '  Top    : ' + SceneManager.Camera.Frustum.Planes[fpTop].ToRawString +nl+
+           '  Near   : ' + SceneManager.Camera.Frustum.Planes[fpNear].ToRawString);
          if SceneManager.Camera.Frustum.ZFarInfinity then
            Writeln(
            '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
            Writeln(
-           '  Far    : ' + VectorToRawStr(SceneManager.Camera.Frustum.Planes[fpFar]));
+           '  Far    : ' + SceneManager.Camera.Frustum.Planes[fpFar].ToRawString);
        end;
 }
 
@@ -3121,8 +3121,8 @@ begin
   2000: SetLimitFPS;
   2010: EnableNetwork := not EnableNetwork;
 
-  3010: MakeGravityUp(Vector3Single(0, 1, 0));
-  3020: MakeGravityUp(Vector3Single(0, 0, 1));
+  3010: MakeGravityUp(Vector3(0, 1, 0));
+  3020: MakeGravityUp(Vector3(0, 0, 1));
 
   1100..1199: SetMinificationFilter(
     TMinificationFilter  (MenuItem.IntData-1100), Scene);
