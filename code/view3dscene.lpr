@@ -2378,7 +2378,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     TimeBegin, TimeEnd: Single;
     RootNode: TX3DRootNode;
   const
-    EqualityEpsilon = 0.0001;
+    Epsilon = 0.0001;
   begin
     if SceneAnimation.ScenesCount <> 1 then
     begin
@@ -2432,7 +2432,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
       { Root node will be owned by LoadFromEvents, so it will be freed }
       SceneAnimation.LoadFromEvents(RootNode, true,
-        TimeBegin, TimeEnd, ScenesPerTime, EqualityEpsilon,
+        TimeBegin, TimeEnd, ScenesPerTime, Epsilon,
         'Precalculating animation');
 
       { Otherwise, current time is huge and it doesn't work reliably
