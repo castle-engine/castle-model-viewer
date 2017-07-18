@@ -339,7 +339,7 @@ begin
         RayTracer.CamDirection := CamDir;
         RayTracer.CamUp := CamUp;
         RayTracer.Projection := Projection;
-        RayTracer.SceneBGColor := Vector3SingleCut(SceneBGColor);
+        RayTracer.SceneBGColor := SceneBGColor.XYZ;
         RayTracer.Background := Scene.BackgroundStack.Top;
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
 

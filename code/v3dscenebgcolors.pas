@@ -28,7 +28,7 @@ interface
 uses CastleColors, CastleSceneManager, V3DSceneViewports;
 
 const
-  DefaultBGColor: TCastleColor = (0, 0, 0, 1);
+  DefaultBGColor: TCastleColor = (Data: (0, 0, 0, 1));
 
 var
   BGColor: TCastleColor;

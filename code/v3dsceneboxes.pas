@@ -76,8 +76,10 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
   end;
 
 begin
-  glDrawCorners(Box.Data[0,0], Box.Data[0,1], Box.Data[0,2],
-                Box.Data[1,0], Box.Data[1,1], Box.Data[1,2]);
+  glDrawCorners(
+    Box.Data[0].Data[0], Box.Data[0].Data[1], Box.Data[0].Data[2],
+    Box.Data[1].Data[0], Box.Data[1].Data[1], Box.Data[1].Data[2]
+  );
 end;
 
 {$endif}

@@ -571,7 +571,7 @@ procedure RenderVisualizations;
   procedure RenderFrustum(AlwaysVisible: boolean);
   {$ifndef OpenGLES} //TODO-es
   var
-    FrustumPoints: TFrustumPointsDouble;
+    FrustumPoints: TFrustumPoints;
   begin
     if AlwaysVisible then
     begin
@@ -582,7 +582,7 @@ procedure RenderVisualizations;
       (Camera as TUniversalCamera).Walk.Frustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(4, GL_DOUBLE, 0, @FrustumPoints);
+        glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
         glDrawElements(GL_LINES, 12 * 2, GL_UNSIGNED_INT,
           @FrustumPointsLinesIndexes);
       glDisableClientState(GL_VERTEX_ARRAY);
@@ -627,15 +627,15 @@ begin
         glEnable(GL_CULL_FACE);  { saved by GL_ENABLE_BIT }
         glColorv(Vector4Single(0.5, 0.3, 0.3, 0.5));
         glBegin(GL_TRIANGLES);   // draw face back in red, visible through geometry
-          glVertexv(SelectedItem^.World.Triangle[0]);
-          glVertexv(SelectedItem^.World.Triangle[2]);
-          glVertexv(SelectedItem^.World.Triangle[1]);
+          glVertexv(SelectedItem^.World.Triangle.Data[0]);
+          glVertexv(SelectedItem^.World.Triangle.Data[2]);
+          glVertexv(SelectedItem^.World.Triangle.Data[1]);
         glEnd;
         glColorv(Vector4Single(0.4, 0.4, 1, 0.4));
         glBegin(GL_TRIANGLES);  // draw face front in blue,  visible through geometry
-          glVertexv(SelectedItem^.World.Triangle[0]);
-          glVertexv(SelectedItem^.World.Triangle[1]);
-          glVertexv(SelectedItem^.World.Triangle[2]);
+          glVertexv(SelectedItem^.World.Triangle.Data[0]);
+          glVertexv(SelectedItem^.World.Triangle.Data[1]);
+          glVertexv(SelectedItem^.World.Triangle.Data[2]);
         glEnd;
 
         glEnable(GL_DEPTH_TEST);
@@ -644,9 +644,9 @@ begin
 
         RenderContext.LineWidth := 2.0;
         glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
-          glVertexv(SelectedItem^.World.Triangle[0]);
-          glVertexv(SelectedItem^.World.Triangle[1]);
-          glVertexv(SelectedItem^.World.Triangle[2]);
+          glVertexv(SelectedItem^.World.Triangle.Data[0]);
+          glVertexv(SelectedItem^.World.Triangle.Data[1]);
+          glVertexv(SelectedItem^.World.Triangle.Data[2]);
         glEnd;
 
         RenderContext.PointSize := 5.0;
@@ -2272,15 +2272,15 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         '    } } }',
         [ Box.ToNiceStr,
           VectorToRawStr(Box.Middle),
-          FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]),
-          FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]),
-          FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]) ]));
+          FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]),
+          FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]),
+          FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]) ]));
       *)
 
       S1 := VectorToRawStr(Box.Center);
-      S2 := FloatToRawStr(Box.Data[1, 0] - Box.Data[0, 0]);
-      S3 := FloatToRawStr(Box.Data[1, 1] - Box.Data[0, 1]);
-      S4 := FloatToRawStr(Box.Data[1, 2] - Box.Data[0, 2]);
+      S2 := FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]);
+      S3 := FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]);
+      S4 := FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]);
       Writeln(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
