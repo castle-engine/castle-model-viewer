@@ -475,7 +475,7 @@ const
       Result := 'no gravity' else
     if not Camera.Walk.IsAbove then
       Result := 'no ground beneath' else
-      Result := FloatToNiceStr(Camera.Walk.AboveHeight);
+      Result := Format('%f', [Camera.Walk.AboveHeight]);
   end;
 
 var
@@ -1704,13 +1704,15 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       SelectedShape := TShape(SelectedItem^.Shape);
       SelectedGeometry := SelectedShape.Geometry;
       s := Format(
-           'Selected point %s from triangle %s (triangle id: %s).' +nl+
+           'Selected point %s from triangle'+ NL +
+           '%s' +
+           '(triangle id: %s).' +nl+
            nl+
            'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node name: "%s", grand-parent node name: "%s", grand-grand-parent node name: "%s".' +nl+
            nl+
            'Node''s bounding box is %s. ',
            [SelectedPointWorld.ToString,
-            TriangleToNiceStr(SelectedItem^.World.Triangle),
+            SelectedItem^.World.Triangle.ToString,
             PointerToStr(SelectedItem),
             SelectedGeometry.X3DName,
             SelectedShape.OriginalGeometry.X3DType,
@@ -1718,7 +1720,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             SelectedShape.GeometryParentNodeName,
             SelectedShape.GeometryGrandParentNodeName,
             SelectedShape.GeometryGrandGrandParentNodeName,
-            SelectedShape.BoundingBox.ToNiceStr]);
+            SelectedShape.BoundingBox.ToString]);
 
       if (SelectedItem^.Face.IndexBegin <> -1) and
          (SelectedItem^.Face.IndexEnd <> -1) then
@@ -1770,17 +1772,17 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
           S += Format(
                  'Material (VRML 2.0 / X3D):' +nl+
                  '  name : %s' +nl+
-                 '  ambientIntensity : %s' +nl+
+                 '  ambientIntensity : %f' +nl+
                  '  diffuseColor : %s' +nl+
                  '  specular : %s' +nl+
-                 '  shininess : %s' +nl+
-                 '  transparency : %s',
+                 '  shininess : %f' +nl+
+                 '  transparency : %f',
                  [ M2.X3DName,
-                   FloatToNiceStr(M2.FdAmbientIntensity.Value),
-                   M2.FdDiffuseColor.Value.ToString,
-                   M2.FdSpecularColor.Value.ToString,
-                   FloatToNiceStr(M2.FdShininess.Value),
-                   FloatToNiceStr(M2.FdTransparency.Value) ]);
+                   M2.AmbientIntensity,
+                   M2.DiffuseColor.ToString,
+                   M2.SpecularColor.ToString,
+                   M2.Shininess,
+                   M2.Transparency ]);
         end else
           S += 'Material: NULL';
       end else
@@ -1804,11 +1806,11 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
               FloatToNiceStr(M1.Shininess(0)),
               FloatToNiceStr(M1.Transparency(0)) ]);
         }
-        S1 := VectorToNiceStr(M1.AmbientColor3Single(0));
-        S2 := VectorToNiceStr(M1.DiffuseColor3Single(0));
-        S3 := VectorToNiceStr(M1.SpecularColor3Single(0));
-        S4 := FloatToNiceStr(M1.Shininess(0));
-        S5 := FloatToNiceStr(M1.Transparency(0));
+        S1 := M1.AmbientColor3Single(0).ToString;
+        S2 := M1.DiffuseColor3Single(0).ToString;
+        S3 := M1.SpecularColor3Single(0).ToString;
+        S4 := Format('%f', [M1.Shininess(0)]);
+        S5 := Format('%f', [M1.Transparency(0)]);
         S += Format(
             'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
@@ -1857,7 +1859,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
          if ShadowingItem <> nil then
          begin
           s += Format('no, this light is blocked by triangle %s from shape %s.',
-            [ TriangleToNiceStr(ShadowingItem^.World.Triangle),
+            [ ShadowingItem^.World.Triangle.ToString,
               TShape(ShadowingItem^.Shape).NiceName ])
          end else
           s += 'yes, no object blocks this light, it shines on selected point.';
@@ -2278,9 +2280,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       *)
 
       S1 := Box.Center.ToRawString;
-      S2 := FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]);
-      S3 := FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]);
-      S4 := FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]);
+      S2 := Format('%g', [Box.Data[1].Data[0] - Box.Data[0].Data[0]]);
+      S3 := Format('%g', [Box.Data[1].Data[1] - Box.Data[0].Data[1]]);
+      S4 := Format('%g', [Box.Data[1].Data[2] - Box.Data[0].Data[2]]);
       Writeln(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
@@ -2302,7 +2304,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         '    geometry Box {' +nl+
         '      size %2:s %3:s %4:s' +nl+
         '    } } }',
-        [Box.ToNiceStr, S1, S2, S3, S4]));
+        [Box.ToString, S1, S2, S3, S4]));
     end;
   end;
 
@@ -2754,7 +2756,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       'This is only an approximation of desired FPS. Usually it''s quite precise, but on some systems some values may be actually capped by monitor refresh rate.' +NL+
       NL+
       'Special value 0 means "do not limit FPS".',
-      F, FloatToNiceStr(F)) then
+      F, Format('%f', [F])) then
       Application.LimitFPS := Max(F, 0.0);
   end;
 
@@ -2839,10 +2841,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     BBox: TBox3D;
   begin
     BBox := Scene.BoundingBox;
-    Result := 'Bounding box : ' + BBox.ToNiceStr;
+    Result := 'Bounding box : ' + BBox.ToString;
     if not BBox.IsEmpty then
     begin
-      Result += ', average size : ' + FloatToNiceStr(BBox.AverageSize);
+      Result += Format(', average size : %f', [BBox.AverageSize]);
     end;
     Result += NL;
   end;
