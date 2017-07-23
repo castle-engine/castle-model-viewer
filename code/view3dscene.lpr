@@ -3024,9 +3024,10 @@ begin
            'Version ' + Version + '.' + NL +
            'By Michalis Kamburelis.' + NL +
            NL +
-           '[' + View3dsceneURL + ']' + NL +
+           'See ' + View3dsceneURL + ' .' + NL +
            NL +
-           'Compiled with ' + SCompilerDescription +'.');
+           'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
+           'Compiled with ' + SCompilerDescription + '.');
        end;
   132: if not OpenURL(View3dsceneURL) then
          Window.MessageOk(SCannotOpenURL, mtError);
