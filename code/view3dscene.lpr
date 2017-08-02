@@ -59,10 +59,10 @@ uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtil
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
   { OpenGL related units: }
-  CastleGL, CastleWindow, CastleGLUtils,
-  CastleMessages, CastleWindowProgress, CastleWindowRecentFiles, CastleGLImages,
-  CastleGLCubeMaps, CastleControls, CastleGLShaders,
-  CastleControlsImages, CastleGLBoxes,
+  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
+  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
+  CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps,
+  CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleBackground,
@@ -407,10 +407,10 @@ const
           Result := Description;
         if Anchor.FdUrl.Count <> 0 then
         begin
-          Result += ' [' + URIDisplay(Anchor.FdUrl.Items[0]);
+          Result := Result + (' [' + URIDisplay(Anchor.FdUrl.Items[0]));
           for J := 1 to Anchor.FdUrl.Count - 1 do
-            Result += ', ' + URIDisplay(Anchor.FdUrl.Items[J]);
-          Result += ']';
+            Result := Result + (', ' + URIDisplay(Anchor.FdUrl.Items[J]));
+          Result := Result + ']';
         end;
       end;
 
@@ -491,7 +491,7 @@ begin
 
   { S := Format('Collision detection: %s', [ BoolToStrOO[Scene.Collides] ]);
   if SceneOctreeCollisions = nil then
-    S += ' (octree resources released)';
+    S := S + ' (octree resources released)';
   Text.Append(S); }
 
   Camera.GetView(Pos, Dir, Up);
@@ -529,9 +529,9 @@ begin
     S := Format('World time: <font color="#%s">load time + %d</font>',
       [ValueColor, Trunc(Scene.Time - Scene.TimeAtLoad)]);
   if not AnimationTimePlaying then
-    S += ' (paused)';
+    S := S + ' (paused)';
   if not ProcessEventsWanted then
-    S += ' (paused, not processing VRML/X3D events)';
+    S := S + (' (paused, not processing VRML/X3D events)');
   Text.Append(S);
 
 (*// nice to debug ShadowVolumeRenderer optimizations.
@@ -1057,7 +1057,8 @@ begin
 
     { update MenuHeadlight.Checked now, and make it always updated. }
     THelper.HeadlightOnChanged(Scene);
-    Scene.OnHeadlightOnChanged := @THelper(nil).HeadlightOnChanged;
+    Scene.OnHeadlightOnChanged :=
+      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).HeadlightOnChanged;
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
@@ -1069,9 +1070,12 @@ begin
 
     SceneOctreeCreate;
 
-    Scene.OnGeometryChanged := @THelper(nil).GeometryChanged;
-    Scene.OnViewpointsChanged := @THelper(nil).ViewpointsChanged;
-    Scene.OnPointingDeviceSensorsChange := @THelper(nil).PointingDeviceSensorsChange;
+    Scene.OnGeometryChanged :=
+      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).GeometryChanged;
+    Scene.OnViewpointsChanged :=
+      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ViewpointsChanged;
+    Scene.OnPointingDeviceSensorsChange :=
+      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
     Scene.ProcessEvents := ProcessEventsWanted;
 
     { Make initial CameraChanged to make initial events to
@@ -1725,7 +1729,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if (SelectedItem^.Face.IndexBegin <> -1) and
          (SelectedItem^.Face.IndexEnd <> -1) then
       begin
-        S += Format('Face containing the selected triangle spans from %d to' +
+        S := S + Format('Face containing the selected triangle spans from %d to' +
           ' %d coordIndex entries. ',
           [ SelectedItem^.Face.IndexBegin,
             SelectedItem^.Face.IndexEnd ]);
@@ -1738,13 +1742,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
       if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
       begin
-       s += Format(
+       s := s + Format(
               'Node has %d vertices and %d triangles '+
               '(with and without over-triangulating).',
               [VCNotOver, TCNotOver]);
       end else
       begin
-       s += Format(
+       s := s + Format(
               'When we don''t use over-triangulating (e.g. for raytracing and '+
               'collision-detection) node has %d vertices and %d triangles. '+
               'When we use over-triangulating (e.g. for real-time rendering) '+
@@ -1760,16 +1764,16 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         TextureDescription := 'none' else
         TextureDescription := Tex.TextureDescription;
 
-      S += Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
+      S := S + Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
 
-      S += nl+ nl;
+      S := S + nl+ nl;
       if SelectedItem^.State.ShapeNode <> nil then
       begin
         { This is VRML 2.0 / X3D node }
         M2 := SelectedItem^.State.ShapeNode.Material;
         if M2 <> nil then
         begin
-          S += Format(
+          S := S + Format(
                  'Material (VRML 2.0 / X3D):' +nl+
                  '  name : %s' +nl+
                  '  ambientIntensity : %f' +nl+
@@ -1784,14 +1788,14 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
                    M2.Shininess,
                    M2.Transparency ]);
         end else
-          S += 'Material: NULL';
+          S := S + 'Material: NULL';
       end else
       begin
         M1 := SelectedItem^.State.VRML1State.Material;
 
         { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
         {
-        S += Format(
+        S := S + Format(
             'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
             '  ambientColor[0] : %s' +nl+
@@ -1811,7 +1815,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         S3 := M1.SpecularColor3Single(0).ToString;
         S4 := Format('%f', [M1.Shininess(0)]);
         S5 := Format('%f', [M1.Transparency(0)]);
-        S += Format(
+        S := S + Format(
             'Material (VRML 1.0 / Inventor):' +nl+
             '  name : %s' +nl+
             '  ambientColor[0] : %s' +nl+
@@ -1849,20 +1853,20 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if Lights <> nil then
         for i := 0 to Lights.Count - 1 do
         begin
-         s += NL + NL + Format('Light %d: %s: ',
-           [ I, Lights.L[i].Node.NiceName ]);
+         S := S + NL + NL + Format('Light %d: %s: ',
+           [ I, Lights.List^[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-           SelectedPointWorld, Lights.L[i].Location,
+           SelectedPointWorld, Lights.List^[i].Location,
              false, SelectedItem, true, nil);
 
          if ShadowingItem <> nil then
          begin
-          s += Format('no, this light is blocked by triangle %s from shape %s.',
+          s := s + Format('no, this light is blocked by triangle %s from shape %s.',
             [ ShadowingItem^.World.Triangle.ToString,
               TShape(ShadowingItem^.Shape).NiceName ])
          end else
-          s += 'yes, no object blocks this light, it shines on selected point.';
+          s := s + 'yes, no object blocks this light, it shines on selected point.';
         end;
     end;
 
@@ -2068,7 +2072,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdDiffuseColor.Count > 0 then
-        Color := M1.FdDiffuseColor.Items.L[0]
+        Color := M1.FdDiffuseColor.Items.List^[0]
       else
         Color := TMaterialInfo.DefaultDiffuseColor;
     end;
@@ -2103,7 +2107,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     begin
       Assert(M1 <> nil);
       if M1.FdSpecularColor.Count > 0 then
-        Color := M1.FdSpecularColor.Items.L[0]
+        Color := M1.FdSpecularColor.Items.List^[0]
       else
         Color := TMaterialInfo.DefaultSpecularColor;
     end;
@@ -2191,7 +2195,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     R := TGamePlaceholdersRemover.Create;
     try
       Scene.BeforeNodesFree;
-      Scene.RootNode.EnumerateReplaceChildren(@R.Remove);
+      Scene.RootNode.EnumerateReplaceChildren(
+        {$ifdef CASTLE_OBJFPC}@{$endif} R.Remove);
       Scene.ChangedAll;
       MessageOK(Window, Format('Removed %d nodes.', [R.Count]));
     finally FreeAndNil(R) end;
@@ -2219,10 +2224,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
     case SceneManager.Projection.ProjectionType of
       ptPerspective:
-        S += Format('    --view-angle-x %f',
+        S := S + Format('    --view-angle-x %f',
           [SceneManager.Projection.PerspectiveAngles[0]]);
       ptOrthographic:
-        S += Format('    --ortho %f %f %f %f', [
+        S := S + Format('    --ortho %f %f %f %f', [
           SceneManager.Projection.Dimensions.Left,
           SceneManager.Projection.Dimensions.Bottom,
           SceneManager.Projection.Dimensions.Right,
@@ -2519,7 +2524,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
           GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.Position,
-            @TV3DSceneManager(SceneManager).RenderFromViewEverything,
+            {$ifdef CASTLE_OBJFPC}@{$endif} TV3DSceneManager(SceneManager).RenderFromViewEverything,
             SceneManager.Projection.ProjectionNear,
             SceneManager.Projection.ProjectionFar);
           glViewport(Window.Rect);
@@ -2586,7 +2591,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
         Composite := GLCaptureCubeMapComposite(Size, SceneManager.Camera.Position,
-          @TV3DSceneManager(SceneManager).RenderFromViewEverything,
+          {$ifdef CASTLE_OBJFPC}@{$endif} TV3DSceneManager(SceneManager).RenderFromViewEverything,
           SceneManager.Projection.ProjectionNear,
           SceneManager.Projection.ProjectionFar);
         try
@@ -2701,7 +2706,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
         Vis.JointVisualizationSize) then
       begin
         Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
-          @Vis.VisualizeHumanoid, false);
+          {$ifdef CASTLE_OBJFPC}@{$endif} Vis.VisualizeHumanoid, false);
         MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
           [Vis.HumanoidsProcessed, Vis.JointsProcessed]));
         if Vis.HumanoidsProcessed <> 0 then
@@ -2844,9 +2849,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
     Result := 'Bounding box : ' + BBox.ToString;
     if not BBox.IsEmpty then
     begin
-      Result += Format(', average size : %f', [BBox.AverageSize]);
+      Result := Result + Format(', average size : %f', [BBox.AverageSize]);
     end;
-    Result += NL;
+    Result := Result + NL;
   end;
 
   function ManifoldEdgesInfo(const Scene: TCastleScene): string;
@@ -3518,7 +3523,7 @@ begin
 
   OpenButton := TCastleButton.Create(Application);
   OpenButton.Caption := 'Open';
-  OpenButton.OnClick := @THelper(nil).OpenButtonClick;
+  OpenButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OpenButtonClick;
   OpenButton.Image := V3DSceneImages.Open;
   OpenButton.ImageAlphaTest := true;
   OpenButton.MinImageHeight := MinImageHeight;
@@ -3526,7 +3531,7 @@ begin
 
   CollisionsButton := TCastleButton.Create(Application);
   CollisionsButton.Caption := 'Collisions';
-  CollisionsButton.OnClick := @THelper(nil).CollisionsButtonClick;
+  CollisionsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).CollisionsButtonClick;
   CollisionsButton.MinImageHeight := MinImageHeight;
   CollisionsButton.Toggle := true;
   if Scene <> nil then
@@ -3536,7 +3541,7 @@ begin
 
   ScreenshotButton := TCastleButton.Create(Application);
   ScreenshotButton.Caption := 'Screenshot';
-  ScreenshotButton.OnClick := @THelper(nil).ScreenshotButtonClick;
+  ScreenshotButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ScreenshotButtonClick;
   ScreenshotButton.Image := V3DSceneImages.Screenshot;
   ScreenshotButton.ImageAlphaTest := true;
   ScreenshotButton.MinImageHeight := MinImageHeight;
@@ -3544,7 +3549,7 @@ begin
 
   WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
-  WarningsButton.OnClick := @THelper(nil).WarningsButtonClick;
+  WarningsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).WarningsButtonClick;
   WarningsButton.Image := Warning_icon;
   WarningsButton.MinImageHeight := MinImageHeight;
   Window.Controls.InsertFront(WarningsButton);
@@ -3561,7 +3566,7 @@ begin
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       CameraButtons[NT].Caption := CameraNames[NT];
-      CameraButtons[NT].OnClick := @THelper(nil).NavigationTypeButtonClick;
+      CameraButtons[NT].OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).NavigationTypeButtonClick;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
       Window.Controls.InsertFront(CameraButtons[NT]);
@@ -3601,10 +3606,10 @@ begin
 
     OpenButton.Left := NextLeft;
     OpenButton.Bottom := ButtonsBottom;
-    NextLeft += OpenButton.CalculatedWidth + ButtonsSeparatorsMargin;
+    NextLeft := NextLeft + OpenButton.CalculatedWidth + ButtonsSeparatorsMargin;
 
     ToolbarPanel.VerticalSeparators[0] := NextLeft;
-    NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+    NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     for NT := Low(NT) to High(NT) do
       { check with <> nil, since for ntNone or not StableNavigationType
@@ -3613,20 +3618,20 @@ begin
       begin
         CameraButtons[NT].Left := NextLeft;
         CameraButtons[NT].Bottom := ButtonsBottom;
-        NextLeft += CameraButtons[NT].CalculatedWidth + ButtonsMargin;
+        NextLeft := NextLeft + CameraButtons[NT].CalculatedWidth + ButtonsMargin;
       end;
-    NextLeft += -ButtonsMargin + ButtonsSeparatorsMargin;
+    NextLeft := NextLeft + -ButtonsMargin + ButtonsSeparatorsMargin;
 
     ToolbarPanel.VerticalSeparators[1] := NextLeft;
-    NextLeft += ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
+    NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     CollisionsButton.Left := NextLeft;
     CollisionsButton.Bottom := ButtonsBottom;
-    NextLeft += CollisionsButton.CalculatedWidth + ButtonsMargin;
+    NextLeft := NextLeft + CollisionsButton.CalculatedWidth + ButtonsMargin;
 
     ScreenshotButton.Left := NextLeft;
     ScreenshotButton.Bottom := ButtonsBottom;
-    NextLeft += ScreenshotButton.CalculatedWidth + ButtonsMargin;
+    NextLeft := NextLeft + ScreenshotButton.CalculatedWidth + ButtonsMargin;
   end;
 
   WarningsButton.Left := Max(NextLeft,
@@ -3921,7 +3926,7 @@ begin
 
   { initialize RecentMenu }
   RecentMenu := TWindowRecentFiles.Create(nil);
-  RecentMenu.OnOpenRecent := @THelper(nil).OpenRecent;
+  RecentMenu.OnOpenRecent := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OpenRecent;
   RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
@@ -3943,8 +3948,10 @@ begin
   { do not use lights from Scene on other scenes }
   SceneManager.UseGlobalLights := false;
   Window.Controls.InsertBack(SceneManager);
-  SceneManager.OnBoundViewpointChanged := @THelper(nil).BoundViewpointChanged;
-  SceneManager.OnBoundNavigationInfoChanged := @THelper(nil).BoundNavigationInfoChanged;
+  SceneManager.OnBoundViewpointChanged :=
+    {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundViewpointChanged;
+  SceneManager.OnBoundNavigationInfoChanged :=
+    {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
 
   InitializeViewports(TV3DViewport);
   BGColorChanged;
@@ -3955,7 +3962,8 @@ begin
 
   SceneWarnings := TSceneWarnings.Create;
   try
-    ApplicationProperties.OnWarning.Add(@THelper(nil).OnWarningHandle);
+    ApplicationProperties.OnWarning.Add(
+      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OnWarningHandle);
 
     if WasParam_Write then
     begin

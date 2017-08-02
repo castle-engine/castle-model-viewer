@@ -63,8 +63,9 @@ function OctreeDisplayStatus: string;
 
 implementation
 
-uses CastleGL, CastleColors, CastleGLUtils, CastleShapes, SysUtils,
-  CastleGLBoxes, V3DSceneBoxes;
+uses SysUtils,
+  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
+  CastleColors, CastleGLUtils, CastleShapes, CastleGLBoxes, V3DSceneBoxes;
 
 { TOctreeDisplay ------------------------------------------------------------- }
 

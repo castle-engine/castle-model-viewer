@@ -40,7 +40,7 @@ procedure SceneInitLights(Scene: TCastleScene; NavigationNode: TNavigationInfoNo
 
 implementation
 
-uses CastleGL, CastleGLUtils, CastleParameters, V3DSceneFillMode;
+uses CastleGLUtils, CastleParameters, V3DSceneFillMode;
 
 procedure SceneInitLights(Scene: TCastleScene; NavigationNode: TNavigationInfoNode);
 begin

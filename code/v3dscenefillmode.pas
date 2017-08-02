@@ -56,7 +56,9 @@ procedure RenderSilhouetteBorderEdges(
 
 implementation
 
-uses CastleGL, CastleGLUtils;
+uses
+  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
+  CastleGLUtils;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 var
