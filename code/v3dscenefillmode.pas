@@ -50,9 +50,9 @@ const
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3; Scene: TCastleScene);
+  const ObserverPos: TVector3; Scene: TCastleScene); overload;
 procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4; Scene: TCastleScene);
+  const ObserverPos: TVector4; Scene: TCastleScene); overload;
 
 implementation
 
