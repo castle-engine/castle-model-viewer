@@ -1692,10 +1692,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
   procedure SelectedShowInformation;
   var
-    S, S1, S2, S3, S4, S5, TextureDescription: string;
+    S, TextureDescription: string;
     VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
-    M1: TMaterialNode_1;
-    M2: TMaterialNode;
+    M: TMaterialInfo;
     SelectedShape: TShape;
     SelectedGeometry: TAbstractGeometryNode;
     Tex: TAbstractTextureNode;
@@ -1709,15 +1708,13 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       SelectedGeometry := SelectedShape.Geometry;
       s := Format(
            'Selected point %s from triangle'+ NL +
-           '%s' +
-           '(triangle id: %s).' +nl+
+           '%s.' +nl+
            nl+
            'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node name: "%s", grand-parent node name: "%s", grand-grand-parent node name: "%s".' +nl+
            nl+
            'Node''s bounding box is %s. ',
            [SelectedPointWorld.ToString,
             SelectedItem^.World.Triangle.ToString,
-            PointerToStr(SelectedItem),
             SelectedGeometry.X3DName,
             SelectedShape.OriginalGeometry.X3DType,
             SelectedGeometry.X3DType,
@@ -1767,64 +1764,25 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       S := S + Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
 
       S := S + nl+ nl;
-      if SelectedItem^.State.ShapeNode <> nil then
+      M := SelectedItem^.State.MaterialInfo;
+      if M <> nil then
       begin
-        { This is VRML 2.0 / X3D node }
-        M2 := SelectedItem^.State.ShapeNode.Material;
-        if M2 <> nil then
-        begin
-          S := S + Format(
-                 'Material (VRML 2.0 / X3D):' +nl+
-                 '  name : %s' +nl+
-                 '  ambientIntensity : %f' +nl+
-                 '  diffuseColor : %s' +nl+
-                 '  specular : %s' +nl+
-                 '  shininess : %f' +nl+
-                 '  transparency : %f',
-                 [ M2.X3DName,
-                   M2.AmbientIntensity,
-                   M2.DiffuseColor.ToString,
-                   M2.SpecularColor.ToString,
-                   M2.Shininess,
-                   M2.Transparency ]);
-        end else
-          S := S + 'Material: NULL';
+        S := S + Format(
+               'Material:' +nl+
+               '  type and name : %s (%s)' +nl+
+               '  ambient : %s' +nl+
+               '  diffuse : %s' +nl+
+               '  specular : %s' +nl+
+               '  shininess : %f' +nl+
+               '  transparency : %f',
+               [ M.Node.NiceName, M.Node.ClassName,
+                 M.AmbientColor.ToString,
+                 M.DiffuseColor.ToString,
+                 M.SpecularColor.ToString,
+                 M.Shininess,
+                 M.Transparency ]);
       end else
-      begin
-        M1 := SelectedItem^.State.VRML1State.Material;
-
-        { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
-        {
-        S := S + Format(
-            'Material (VRML 1.0 / Inventor):' +nl+
-            '  name : %s' +nl+
-            '  ambientColor[0] : %s' +nl+
-            '  diffuseColor[0] : %s' +nl+
-            '  specularColor[0] : %s' +nl+
-            '  shininess[0] : %s' +nl+
-            '  transparency[0] : %s',
-            [ M1.Name,
-              VectorToNiceStr(M1.AmbientColor3Single(0)),
-              VectorToNiceStr(M1.DiffuseColor3Single(0)),
-              VectorToNiceStr(M1.SpecularColor3Single(0)),
-              FloatToNiceStr(M1.Shininess(0)),
-              FloatToNiceStr(M1.Transparency(0)) ]);
-        }
-        S1 := M1.AmbientColor3Single(0).ToString;
-        S2 := M1.DiffuseColor3Single(0).ToString;
-        S3 := M1.SpecularColor3Single(0).ToString;
-        S4 := Format('%f', [M1.Shininess(0)]);
-        S5 := Format('%f', [M1.Transparency(0)]);
-        S := S + Format(
-            'Material (VRML 1.0 / Inventor):' +nl+
-            '  name : %s' +nl+
-            '  ambientColor[0] : %s' +nl+
-            '  diffuseColor[0] : %s' +nl+
-            '  specularColor[0] : %s' +nl+
-            '  shininess[0] : %s' +nl+
-            '  transparency[0] : %s',
-            [M1.X3DName, S1, S2, S3, S4, S5]);
-      end;
+        S := S + 'No material (unlit)';
     end;
     ShowAndWrite(S);
   end;
