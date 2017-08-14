@@ -50,7 +50,9 @@ program view3dscene;
   {$R *.res}
 {$endif}
 
-uses CastleUtils, SysUtils, CastleVectors, CastleBoxes, Classes, CastleClassUtils,
+uses SysUtils, Math, Classes,
+  { CGE units }
+  CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,

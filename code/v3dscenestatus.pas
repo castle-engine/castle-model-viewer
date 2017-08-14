@@ -56,7 +56,8 @@ var
 
 implementation
 
-uses SysUtils, CastleTextureFont_DejaVuSansMonoBold_15,
+uses SysUtils, Math,
+  CastleTextureFont_DejaVuSansMonoBold_15,
   CastleVectors, CastleUtils, CastleColors;
 
 { TStatusText ---------------------------------------------------------------- }
