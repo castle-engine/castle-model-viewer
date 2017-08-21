@@ -340,8 +340,8 @@ begin
   ]);
 
   Quad := TQuadSetNode.Create;
-  Quad.FdCoord.Value := QuadCoords;
-  Quad.FdTexCoord.Value := QuadTexCoords;
+  Quad.Coord := QuadCoords;
+  Quad.TexCoord := QuadTexCoords;
 
   Material := TMaterialNode.Create;
   Material.ForcePureEmissive;
@@ -361,10 +361,10 @@ begin
 
   Billboard := TBillboardNode.Create;
   Billboard.AxisOfRotation := TVector3.Zero;
-  Billboard.FdChildren.Add(Shape);
+  Billboard.AddChildren(Shape);
 
   RootNode := TX3DRootNode.Create;
-  RootNode.FdChildren.Add(Billboard);
+  RootNode.AddChildren(Billboard);
 
   Gizmo := TInternalScene.Create(Window);
   Gizmo.Load(RootNode, true);

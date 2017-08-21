@@ -2629,7 +2629,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 
     Shape := TShape(SelectedItem^.Shape);
 
-    if not Shape.OriginalGeometry.Coord(Shape.OriginalState, Coord) then
+    if not Shape.OriginalGeometry.InternalCoord(Shape.OriginalState, Coord) then
     begin
       MessageOK(Window, 'Selected geometry node doesn''t have a coordinate field. Nothing to merge.');
       Exit;
