@@ -115,7 +115,7 @@ begin
       JointTransform := TTransformNode.Create(
         Format('HAnimVisualization_JointTransform_%d_%s', [I, Joint.X3DName]),
           HumanoidNode.BaseUrl);
-      JointTransform.FdTranslation.Value := Joint.FdCenter.Value;
+      JointTransform.Translation := Joint.Center;
       HumanoidNode.FdSkin.Add(JointTransform);
 
       CenterRoute := TX3DRoute.Create;
@@ -128,18 +128,18 @@ begin
       CenterRoute.PositionInParent := 1000 * 1000 + I;
       HumanoidNode.AddRoute(CenterRoute);
 
-      JointTransform.FdChildren.Add(SphereShape);
+      JointTransform.AddChildren(SphereShape);
 
       TextShape := TShapeNode.Create('', HumanoidNode.BaseUrl);
-      JointTransform.FdChildren.Add(TextShape);
+      JointTransform.AddChildren(TextShape);
 
       TextGeometry := TTextNode.Create('', HumanoidNode.BaseUrl);
-      TextGeometry.FdString.Items.Add(Joint.FdName.Value);
-      TextShape.FdGeometry.Value := TextGeometry;
+      TextGeometry.SetString([Joint.NameField]);
+      TextShape.Geometry := TextGeometry;
 
       FontStyle := TFontStyleNode.Create('', HumanoidNode.BaseUrl);
-      FontStyle.FdSize.Value := JointVisualizationSize;
-      TextGeometry.FdFontStyle.Value := FontStyle;
+      FontStyle.Size := JointVisualizationSize;
+      TextGeometry.FontStyle := FontStyle;
     end;
 
   SphereShape.FreeIfUnused;

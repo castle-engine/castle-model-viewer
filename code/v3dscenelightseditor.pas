@@ -324,7 +324,7 @@ begin
   QuadRect := QuadRect.ScaleAround0(Size / Light_Gizmo.Width);
 
   QuadCoords := TCoordinateNode.Create;
-  QuadCoords.FdPoint.Items.Assign([
+  QuadCoords.SetPoint([
     Vector3(QuadRect.Left , QuadRect.Bottom, 0),
     Vector3(QuadRect.Right, QuadRect.Bottom, 0),
     Vector3(QuadRect.Right, QuadRect.Top, 0),
@@ -332,7 +332,7 @@ begin
   ]);
 
   QuadTexCoords := TTextureCoordinateNode.Create;
-  QuadTexCoords.FdPoint.Items.Assign([
+  QuadTexCoords.SetPoint([
     Vector2(0, 0),
     Vector2(1, 0),
     Vector2(1, 1),
@@ -710,23 +710,23 @@ begin
 
   Light := ALight;
 
-  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.FdColor.Value);
+  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.Color);
   ColorSlider.OnChange := @ColorChanged;
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 1;
-  IntensitySlider.Value := Light.FdIntensity.Value;
+  IntensitySlider.Value := Light.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
 
   AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
-  AmbientIntensitySlider.Value := Light.FdAmbientIntensity.Value;
+  AmbientIntensitySlider.Value := Light.AmbientIntensity;
   AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
 
   OnToggle := TCastleMenuToggle.Create(Self);
-  OnToggle.Pressed := Light.FdOn.Value;
+  OnToggle.Pressed := Light.IsOn;
   OnToggle.OnClick := @ClickOn;
 
  { determine sensible lights positions.
@@ -838,7 +838,7 @@ begin
   Light := ALight;
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
-    AttenuationRange, Light.FdAttenuation.Value);
+    AttenuationRange, Light.Attenuation);
   AttenuationSlider.OnChange := @AttenuationChanged;
 
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
@@ -886,12 +886,12 @@ end;
 
 procedure TSpot1LightMenu.CutOffAngleChanged(Sender: TObject);
 begin
-  Light.FdCutOffAngle.Send(CutOffAngleSlider.Value);
+  Light.FdCutOffAngle.Value := CutOffAngleSlider.Value;
 end;
 
 procedure TSpot1LightMenu.DropOffRateChanged(Sender: TObject);
 begin
-  Light.FdDropOffRate.Send(DropOffRateSlider.Value);
+  Light.FdDropOffRate.Value := DropOffRateSlider.Value;
 end;
 
 { TSpotLightMenu ------------------------------------------------------- }
@@ -904,13 +904,13 @@ begin
   CutOffAngleSlider := TCastleFloatSlider.Create(Self);
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
-  CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
+  CutOffAngleSlider.Value := Light.CutOffAngle;
   CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
   BeamWidthSlider := TCastleFloatSlider.Create(Self);
   BeamWidthSlider.Min := 0.01;
   BeamWidthSlider.Max := Pi/2;
-  BeamWidthSlider.Value := Light.FdBeamWidth.Value;
+  BeamWidthSlider.Value := Light.BeamWidth;
   BeamWidthSlider.OnChange := @BeamWidthChanged;
 
   Add('Direction ...', @ClickDirection);
@@ -971,18 +971,18 @@ begin
   AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
-  AmbientIntensitySlider.Value := Headlight.FdAmbientIntensity.Value;
+  AmbientIntensitySlider.Value := Headlight.AmbientIntensity;
   AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
   Add('Ambient Intensity', AmbientIntensitySlider);
 
-  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Headlight.FdColor.Value);
+  ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Headlight.Color);
   ColorSlider.OnChange := @ColorChanged;
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 1;
-  IntensitySlider.Value := Headlight.FdIntensity.Value;
+  IntensitySlider.Value := Headlight.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
   Add('Intensity', IntensitySlider);
 
@@ -994,7 +994,7 @@ begin
         'To use this function, you need to use our KambiNavigationInfo.headlightNode extension inside your VRML/X3D scene source, to indicate that you want headlight to be a PointLight or SpotLight. See the documentation of VRML/X3D extensions in "Castle Game Engine" for examples and details.'); }
 
     AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
-      TAbstractPositionalLightNode(Headlight).FdAttenuation.Value);
+      TAbstractPositionalLightNode(Headlight).Attenuation);
     AttenuationSlider.OnChange := @AttenuationChanged;
     AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
   end;
@@ -1042,15 +1042,15 @@ begin
   Light := ALight;
 
   ShadowsToggle := TCastleMenuToggle.Create(Self);
-  ShadowsToggle.Pressed := Light.FdShadows.Value;
+  ShadowsToggle.Pressed := Light.Shadows;
   ShadowsToggle.OnClick := @ClickShadows;
 
   ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesToggle.Pressed := Light.FdShadowVolumes.Value;
+  ShadowVolumesToggle.Pressed := Light.ShadowVolumes;
   ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
 
   ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesMainToggle.Pressed := Light.FdShadowVolumesMain.Value;
+  ShadowVolumesMainToggle.Pressed := Light.ShadowVolumesMain;
   ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
 
   SliderMapSizeExponent := TCastle2ExponentSlider.Create(Self);

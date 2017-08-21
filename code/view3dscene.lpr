@@ -396,7 +396,7 @@ const
       if Sensor is TAbstractPointingDeviceSensorNode then
       begin
         { use description instead, if any provided }
-        Description := Trim(TAbstractPointingDeviceSensorNode(Sensor).FdDescription.Value);
+        Description := Trim(TAbstractPointingDeviceSensorNode(Sensor).Description);
         if Description <> '' then
           Result := Description;
       end else
@@ -404,7 +404,7 @@ const
       begin
         Anchor := TAnchorNode(Sensor);
         { use description instead, if any provided }
-        Description := Trim(Anchor.FdDescription.Value);
+        Description := Trim(Anchor.Description);
         if Description <> '' then
           Result := Description;
         if Anchor.FdUrl.Count <> 0 then
@@ -887,10 +887,10 @@ begin
   Shape.Appearance.ShadowCaster := false;
 
   SceneBoundingBoxTransform := TTransformNode.Create;
-  SceneBoundingBoxTransform.FdChildren.Add(Shape);
+  SceneBoundingBoxTransform.AddChildren(Shape);
 
   RootNode := TX3DRootNode.Create;
-  RootNode.FdChildren.Add(SceneBoundingBoxTransform);
+  RootNode.AddChildren(SceneBoundingBoxTransform);
 
   SceneBoundingBox.Load(RootNode, true);
 end;

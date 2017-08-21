@@ -182,7 +182,7 @@ function TMenuViewpoints.AddViewpoint(
     begin
       if Info^.Node is TViewpointGroupNode then
       begin
-        if not TViewpointGroupNode(Info^.Node).FdDisplayed.Value then
+        if not TViewpointGroupNode(Info^.Node).Displayed then
           Exit(false);
         AddViewpointGroups.Insert(0, Info^.Node);
       end;
