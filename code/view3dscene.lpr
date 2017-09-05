@@ -124,7 +124,7 @@ var
   MenuRemoveSelectedFace: TMenuItem;
   MenuEditMaterial: TMenu;
   MenuMergeCloseVertexes: TMenuItem;
-  MenuHeadlight, MenuGravity: TMenuItemChecked;
+  MenuHeadlight, MenuGravity, MenuMouseLook: TMenuItemChecked;
   MenuPreferGravityUpForRotations: TMenuItemChecked;
   MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
@@ -298,14 +298,28 @@ end;
 
 { Update menu items and buttons that reflect Camera properties }
 procedure UpdateCameraUI;
+var
+  WalkCamera: TWalkCamera;
 begin
   UpdateCameraNavigationTypeUI;
+
+  if SceneManager <> nil then
+    WalkCamera := SceneManager.WalkCamera(false)
+  else
+    WalkCamera := nil;
+
+  if MenuMouseLook <> nil then
+    MenuMouseLook.Checked :=
+      (WalkCamera <> nil) and WalkCamera.MouseLook;
   if MenuGravity <> nil then
-    MenuGravity.Checked := Camera.Walk.Gravity;
+    MenuGravity.Checked :=
+      (WalkCamera <> nil) and WalkCamera.Gravity;
   if MenuPreferGravityUpForRotations <> nil then
-    MenuPreferGravityUpForRotations.Checked := Camera.Walk.PreferGravityUpForRotations;
+    MenuPreferGravityUpForRotations.Checked :=
+      (WalkCamera <> nil) and WalkCamera.PreferGravityUpForRotations;
   if MenuPreferGravityUpForMoving <> nil then
-    MenuPreferGravityUpForMoving.Checked := Camera.Walk.PreferGravityUpForMoving;
+    MenuPreferGravityUpForMoving.Checked :=
+      (WalkCamera <> nil) and WalkCamera.PreferGravityUpForMoving;
 end;
 
 { Return currently used collisions octree.
@@ -469,21 +483,25 @@ const
     end;
   end;
 
-  function CurrentAboveHeight: string;
+  function CurrentAboveHeight(WalkCamera: TWalkCamera): string;
   begin
     if SceneOctreeCollisions = nil then
-      Result := 'no collisions' else
-    if not Camera.Walk.Gravity then
-      Result := 'no gravity' else
-    if not Camera.Walk.IsAbove then
-      Result := 'no ground beneath' else
-      Result := Format('%f', [Camera.Walk.AboveHeight]);
+      Result := 'no collisions'
+    else
+    if not WalkCamera.Gravity then
+      Result := 'no gravity'
+    else
+    if not WalkCamera.IsAbove then
+      Result := 'no ground beneath'
+    else
+      Result := Format('%f', [WalkCamera.AboveHeight]);
   end;
 
 var
   s: string;
   Statistics: TRenderStatistics;
   Pos, Dir, Up: TVector3;
+  WalkCamera: TWalkCamera;
 begin
   inherited;
 
@@ -502,12 +520,13 @@ begin
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  if Camera.NavigationClass = ncWalk then
+  WalkCamera := SceneManager.WalkCamera(false);
+  if WalkCamera <> nil then
   begin
     Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, Camera.Walk.MoveSpeed,
-        ValueColor, Camera.Walk.PreferredHeight,
-        ValueColor, CurrentAboveHeight ]));
+      [ ValueColor, WalkCamera.MoveSpeed,
+        ValueColor, WalkCamera.PreferredHeight,
+        ValueColor, CurrentAboveHeight(WalkCamera) ]));
   end;
 
   { if SceneLightsCount = 0 then
@@ -570,6 +589,7 @@ end;
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations;
 
+(*
   procedure RenderFrustum(AlwaysVisible: boolean);
   {$ifndef OpenGLES} //TODO-es
   var
@@ -581,7 +601,7 @@ procedure RenderVisualizations;
       glDisable(GL_DEPTH_TEST);
     end;
     try
-      (Camera as TUniversalCamera).Walk.Frustum.CalculatePoints(FrustumPoints);
+      // TODO: LastWalkFrustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
@@ -595,6 +615,7 @@ procedure RenderVisualizations;
   begin
   {$endif}
   end;
+*)
 
 begin
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
@@ -613,8 +634,9 @@ begin
       be never visible then (or should be just at the exact borders
       or visibility, so it's actually unspecified whether OpenGL would
       show it or not). }
-    if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
-      RenderFrustum(ShowFrustumAlwaysVisible);
+    // TODO: LastWalkFrustum not saved now
+    // if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
+    //   RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
     begin
@@ -1607,6 +1629,8 @@ begin
 end;
 
 procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
+var
+  WalkCamera: TWalkCamera;
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
@@ -1624,16 +1648,12 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   var
     MoveSpeed: Single;
   begin
-    if Camera.NavigationClass = ncWalk then
+    MoveSpeed := Camera.MoveSpeed;
+    if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
     begin
-      MoveSpeed := Camera.Walk.MoveSpeed;
-      if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
-      begin
-        Camera.Walk.MoveSpeed := MoveSpeed;
-        Window.Invalidate;
-      end;
-    end else
-      MessageOK(Window, SNavigationClassWalkNeeded);
+      Camera.MoveSpeed := MoveSpeed;
+      Window.Invalidate;
+    end;
   end;
 
   procedure ShowAndWrite(const S: string);
@@ -2165,7 +2185,10 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   procedure PrintRayhunterCommand;
   var
     S: string;
+    Pos, Dir, Up: TVector3;
   begin
+    Camera.GetView(Pos, Dir, Up);
+
     S := Format(
        'Call rayhunter like this to render this view :' +nl+
        '  rayhunter classic %d %d %d "%s" "%s" \' +nl+
@@ -2177,9 +2200,9 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
          Window.Width, Window.Height,
          SceneURL,
          ChangeURIExt(ExtractURIName(SceneURL), '-rt.png'),
-         Camera.Walk.Position.ToRawString,
-         Camera.Walk.Direction.ToRawString,
-         Camera.Walk.Up.ToRawString,
+         Pos.ToRawString,
+         Dir.ToRawString,
+         Up.ToRawString,
          BGColor[0], BGColor[1], BGColor[2] ]);
 
     case SceneManager.Projection.ProjectionType of
@@ -2762,7 +2785,7 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
   begin
     { reopen saves/restores camera view and navigation type,
       this makes it more useful }
-    NavigationType := Camera.NavigationType;
+    NavigationType := SceneManager.NavigationType;
     Camera.GetView(Pos, Dir, Up{, GravityUp});
 
     LoadScene(SceneURL, [], 0.0);
@@ -2772,8 +2795,8 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
       --- original scene's gravity is then lost) }
     Camera.SetView(Pos, Dir, Up{, GravityUp});
     { restore NavigationType }
-    Camera.NavigationType := NavigationType;
-    ViewportsSetNavigationType(Camera.NavigationType);
+    SceneManager.NavigationType := NavigationType;
+    ViewportsSetNavigationType(SceneManager.NavigationType);
     UpdateCameraUI;
   end;
 
@@ -2827,295 +2850,304 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 var
   C: Cardinal;
 begin
- case MenuItem.IntData of
-  10: THelper.OpenButtonClick(nil);
-  11: OpenSceneURL;
+  WalkCamera := SceneManager.WalkCamera(false);
 
-  12: Window.Close;
+  case MenuItem.IntData of
+    10: THelper.OpenButtonClick(nil);
+    11: OpenSceneURL;
 
-  15: Reopen;
+    12: Window.Close;
 
-  900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
-  905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
-  910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption), true { doesn't matter });
+    15: Reopen;
 
-  21: WarningsButton.DoClick;
+    900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
+    905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
+    910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption), true { doesn't matter });
 
-  31: ChangeScene([scNoNormals], Scene);
-  32: ChangeScene([scNoSolidObjects], Scene);
-  33: ChangeScene([scNoConvexFaces], Scene);
+    21: WarningsButton.DoClick;
 
-  34: RemoveNodesWithMatchingName;
-  38: RemoveGamePlaceholders;
+    31: ChangeScene([scNoNormals], Scene);
+    32: ChangeScene([scNoSolidObjects], Scene);
+    33: ChangeScene([scNoConvexFaces], Scene);
 
-  42: VisualizeHumanoids;
+    34: RemoveNodesWithMatchingName;
+    38: RemoveGamePlaceholders;
 
-  3500: with Scene do ShadowMaps := not ShadowMaps;
-  3510..3519: Scene.Attributes.ShadowSampling :=
-    TShadowSampling(Ord(MenuItem.IntData) - 3510);
-  3520: with Scene.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
-  3530:
-    begin
-      C := Scene.ShadowMapsDefaultSize;
-      if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C) then
+    42: VisualizeHumanoids;
+
+    3500: with Scene do ShadowMaps := not ShadowMaps;
+    3510..3519: Scene.Attributes.ShadowSampling :=
+      TShadowSampling(Ord(MenuItem.IntData) - 3510);
+    3520: with Scene.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
+    3530:
       begin
-        Scene.ShadowMapsDefaultSize := C;
+        C := Scene.ShadowMapsDefaultSize;
+        if MessageInputQueryCardinal(Window, 'Input default shadow map size :' + NL + '(should be a power of 2)', C) then
+        begin
+          Scene.ShadowMapsDefaultSize := C;
+        end;
       end;
-    end;
 
-  36: RemoveSelectedShape;
-  37: RemoveSelectedFace;
+    36: RemoveSelectedShape;
+    37: RemoveSelectedFace;
 
-  51: Scene.CameraTransition(Camera,
-        DefaultX3DCameraPosition[cvVrml1_Inventor],
-        DefaultX3DCameraDirection,
-        DefaultX3DCameraUp,
-        DefaultX3DGravityUp);
-  52: Scene.CameraTransition(Camera,
-        DefaultX3DCameraPosition[cvVrml2_X3d],
-        DefaultX3DCameraDirection,
-        DefaultX3DCameraUp,
-        DefaultX3DGravityUp);
+    51: Scene.CameraTransition(Camera,
+          DefaultX3DCameraPosition[cvVrml1_Inventor],
+          DefaultX3DCameraDirection,
+          DefaultX3DCameraUp,
+          DefaultX3DGravityUp);
+    52: Scene.CameraTransition(Camera,
+          DefaultX3DCameraPosition[cvVrml2_X3d],
+          DefaultX3DCameraDirection,
+          DefaultX3DCameraUp,
+          DefaultX3DGravityUp);
 
-  53: SetViewpointForWholeScene(2, 1, false, true);
-  54: SetViewpointForWholeScene(2, 1, true , true);
-  55: SetViewpointForWholeScene(0, 1, false, true);
-  56: SetViewpointForWholeScene(0, 1, true , true);
+    53: SetViewpointForWholeScene(2, 1, false, true);
+    54: SetViewpointForWholeScene(2, 1, true , true);
+    55: SetViewpointForWholeScene(0, 1, false, true);
+    56: SetViewpointForWholeScene(0, 1, true , true);
 
-  57: SetViewpointForWholeScene(0, 2, false, true);
-  58: SetViewpointForWholeScene(0, 2, true , true);
-  59: SetViewpointForWholeScene(1, 2, false, true);
-  60: SetViewpointForWholeScene(1, 2, true , true);
+    57: SetViewpointForWholeScene(0, 2, false, true);
+    58: SetViewpointForWholeScene(0, 2, true , true);
+    59: SetViewpointForWholeScene(1, 2, false, true);
+    60: SetViewpointForWholeScene(1, 2, true , true);
 
-  65: Viewpoints.Initial(SceneManager);
-  66: Viewpoints.Previous(SceneManager);
-  67: Viewpoints.Next(SceneManager);
-  68: Viewpoints.Final(SceneManager);
+    65: Viewpoints.Initial(SceneManager);
+    66: Viewpoints.Previous(SceneManager);
+    67: Viewpoints.Next(SceneManager);
+    68: Viewpoints.Final(SceneManager);
 
-  82: ShowBBox := not ShowBBox;
-  84: if Window.ColorDialog(BGColor) then BGColorChanged;
-  86: with Scene.Attributes do Blending := not Blending;
-  88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
-  90: with Scene.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
-  891: with Scene.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
+    82: ShowBBox := not ShowBBox;
+    84: if Window.ColorDialog(BGColor) then BGColorChanged;
+    86: with Scene.Attributes do Blending := not Blending;
+    88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
+    90: with Scene.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
+    891: with Scene.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
-  91: with Scene.Attributes do Lighting := not Lighting;
-  92: with Scene do HeadLightOn := not HeadLightOn;
-  93: with Scene.Attributes do UseSceneLights := not UseSceneLights;
-  94: with Scene.Attributes do EnableTextures := not EnableTextures;
-  95: ChangeLightModelAmbient;
-  96: ShowFrustum := not ShowFrustum;
-  180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
+    91: with Scene.Attributes do Lighting := not Lighting;
+    92: with Scene do HeadLightOn := not HeadLightOn;
+    93: with Scene.Attributes do UseSceneLights := not UseSceneLights;
+    94: with Scene.Attributes do EnableTextures := not EnableTextures;
+    95: ChangeLightModelAmbient;
+    96: ShowFrustum := not ShowFrustum;
+    180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
 
-  97: OctreeTrianglesDisplay.DoMenuToggleWhole;
-  98: OctreeTrianglesDisplay.DoMenuIncDepth;
-  99: OctreeTrianglesDisplay.DoMenuDecDepth;
+    97: OctreeTrianglesDisplay.DoMenuToggleWhole;
+    98: OctreeTrianglesDisplay.DoMenuIncDepth;
+    99: OctreeTrianglesDisplay.DoMenuDecDepth;
 
-  190: OctreeVisibleShapesDisplay.DoMenuToggleWhole;
-  191: OctreeVisibleShapesDisplay.DoMenuIncDepth;
-  192: OctreeVisibleShapesDisplay.DoMenuDecDepth;
+    190: OctreeVisibleShapesDisplay.DoMenuToggleWhole;
+    191: OctreeVisibleShapesDisplay.DoMenuIncDepth;
+    192: OctreeVisibleShapesDisplay.DoMenuDecDepth;
 
-  195: OctreeCollidableShapesDisplay.DoMenuToggleWhole;
-  196: OctreeCollidableShapesDisplay.DoMenuIncDepth;
-  197: OctreeCollidableShapesDisplay.DoMenuDecDepth;
+    195: OctreeCollidableShapesDisplay.DoMenuToggleWhole;
+    196: OctreeCollidableShapesDisplay.DoMenuIncDepth;
+    197: OctreeCollidableShapesDisplay.DoMenuDecDepth;
 
-  100: SelectedShapeOctreeStat;
-  101: if SceneOctreeCollisions <> nil then
-         Writeln(SceneOctreeCollisions.Statistics) else
-         MessageOk(Window, SOnlyWhenOctreeAvailable);
-  103: if SceneOctreeRendering <> nil then
-         Writeln(SceneOctreeRendering.Statistics) else
-         MessageOk(Window, SOnlyWhenOctreeAvailable);
+    100: SelectedShapeOctreeStat;
+    101: if SceneOctreeCollisions <> nil then
+           Writeln(SceneOctreeCollisions.Statistics) else
+           MessageOk(Window, SOnlyWhenOctreeAvailable);
+    103: if SceneOctreeRendering <> nil then
+           Writeln(SceneOctreeRendering.Statistics) else
+           MessageOk(Window, SOnlyWhenOctreeAvailable);
 
-  105: PrintRayhunterCommand;
+    105: PrintRayhunterCommand;
 
-  106: WritelnCameraSettings(cvVrml1_Inventor, false);
-  107: WritelnCameraSettings(cvVrml2_X3d, false);
-  108: WritelnCameraSettings(cvVrml2_X3d, true);
+    106: WritelnCameraSettings(cvVrml1_Inventor, false);
+    107: WritelnCameraSettings(cvVrml2_X3d, false);
+    108: WritelnCameraSettings(cvVrml2_X3d, true);
 
-{ Only for debugging:
-         Writeln(
-           'Current camera frustum planes :' +nl+
-           '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-           '  Left   : ' + SceneManager.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
-           '  Right  : ' + SceneManager.Camera.Frustum.Planes[fpRight].ToRawString +nl+
-           '  Bottom : ' + SceneManager.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
-           '  Top    : ' + SceneManager.Camera.Frustum.Planes[fpTop].ToRawString +nl+
-           '  Near   : ' + SceneManager.Camera.Frustum.Planes[fpNear].ToRawString);
-         if SceneManager.Camera.Frustum.ZFarInfinity then
+  { Only for debugging:
            Writeln(
-           '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
-           Writeln(
-           '  Far    : ' + SceneManager.Camera.Frustum.Planes[fpFar].ToRawString);
-       end;
-}
-
-  109: WriteBoundingBox(Scene.BoundingBox);
-  110: WriteBoundingBox(Scene.BoundingBox);
-
-  111: begin
-         if Camera.NavigationType = High(TNavigationType) then
-           Camera.NavigationType := Low(TNavigationType) else
-         begin
-           Camera.NavigationType := Succ(Camera.NavigationType);
-           { skip over navigation types that are not stable }
-           if not (Camera.NavigationType in StableNavigationType) then
-             Camera.NavigationType := Succ(Camera.NavigationType);
+             'Current camera frustum planes :' +nl+
+             '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
+             '  Left   : ' + SceneManager.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
+             '  Right  : ' + SceneManager.Camera.Frustum.Planes[fpRight].ToRawString +nl+
+             '  Bottom : ' + SceneManager.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
+             '  Top    : ' + SceneManager.Camera.Frustum.Planes[fpTop].ToRawString +nl+
+             '  Near   : ' + SceneManager.Camera.Frustum.Planes[fpNear].ToRawString);
+           if SceneManager.Camera.Frustum.ZFarInfinity then
+             Writeln(
+             '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
+             Writeln(
+             '  Far    : ' + SceneManager.Camera.Frustum.Planes[fpFar].ToRawString);
          end;
-         ViewportsSetNavigationType(Camera.NavigationType);
-         UpdateCameraUI;
-       end;
+  }
 
-  120: Writeln(TextureMemoryProfiler.Summary);
+    109: WriteBoundingBox(Scene.BoundingBox);
+    110: WriteBoundingBox(Scene.BoundingBox);
 
-  121: ShowAndWrite('Scene "' + SceneURL + '" information:' + NL + NL +
-         SceneVertexTriangleInfo(Scene) + NL +
-         SceneBoundingBoxInfo(Scene));
-  122: begin
-         ShowStatus := not ShowStatus;
-         UpdateStatusToolbarVisible;
-       end;
-  123: SetCollisions(not Scene.Collides, false);
-  125: Raytrace;
-  150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
-  151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
-  128: Camera.Walk.MouseLook := not Camera.Walk.MouseLook;
-  129: ShowAndWrite(ManifoldEdgesInfo(Scene));
+    111: begin
+           if SceneManager.NavigationType = High(TNavigationType) then
+             SceneManager.NavigationType := Low(TNavigationType) else
+           begin
+             SceneManager.NavigationType := Succ(SceneManager.NavigationType);
+             { skip over navigation types that are not stable }
+             if not (SceneManager.NavigationType in StableNavigationType) then
+               SceneManager.NavigationType := Succ(SceneManager.NavigationType);
+           end;
+           ViewportsSetNavigationType(SceneManager.NavigationType);
+           UpdateCameraUI;
+         end;
 
-  131: begin
-         ShowAndWrite(
-           'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' +nl+
-           'Formats: X3D, VRML 1.0 and 2.0 (aka VRML 97), 3DS, MD3, Wavefront OBJ, Collada.' + NL +
-           'Version ' + Version + '.' + NL +
-           'By Michalis Kamburelis.' + NL +
-           NL +
-           'See ' + View3dsceneURL + ' .' + NL +
-           NL +
-           'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
-           'Compiled with ' + SCompilerDescription + '.');
-       end;
-  132: if not OpenURL(View3dsceneURL) then
-         Window.MessageOk(SCannotOpenURL, mtError);
-  134: if not OpenURL(SupportURL) then
-         Window.MessageOk(SCannotOpenURL, mtError);
+    120: Writeln(TextureMemoryProfiler.Summary);
 
-  171: SelectedShowInformation;
-  172: SelectedShowLightsInformation;
-  173: ShowAndWrite(GLInformationString);
+    121: ShowAndWrite('Scene "' + SceneURL + '" information:' + NL + NL +
+           SceneVertexTriangleInfo(Scene) + NL +
+           SceneBoundingBoxInfo(Scene));
+    122: begin
+           ShowStatus := not ShowStatus;
+           UpdateStatusToolbarVisible;
+         end;
+    123: SetCollisions(not Scene.Collides, false);
+    125: Raytrace;
+    150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
+    151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
+    128: if WalkCamera <> nil then
+         begin
+           WalkCamera.MouseLook := not WalkCamera.MouseLook;
+           UpdateCameraUI;
+         end;
+    129: ShowAndWrite(ManifoldEdgesInfo(Scene));
 
-  182: ChangePointSize;
+    131: begin
+           ShowAndWrite(
+             'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' +nl+
+             'Formats: X3D, VRML 1.0 and 2.0 (aka VRML 97), 3DS, MD3, Wavefront OBJ, Collada.' + NL +
+             'Version ' + Version + '.' + NL +
+             'By Michalis Kamburelis.' + NL +
+             NL +
+             'See ' + View3dsceneURL + ' .' + NL +
+             NL +
+             'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
+             'Compiled with ' + SCompilerDescription + '.');
+         end;
+    132: if not OpenURL(View3dsceneURL) then
+           Window.MessageOk(SCannotOpenURL, mtError);
+    134: if not OpenURL(SupportURL) then
+           Window.MessageOk(SCannotOpenURL, mtError);
 
-  201: begin
-         Camera.Walk.Gravity := not Camera.Walk.Gravity;
-         UpdateCameraNavigationTypeUI;
-       end;
-  202: begin
-         Camera.Walk.PreferGravityUpForRotations := not Camera.Walk.PreferGravityUpForRotations;
-         UpdateCameraNavigationTypeUI;
-       end;
-  203: begin
-         Camera.Walk.PreferGravityUpForMoving := not Camera.Walk.PreferGravityUpForMoving;
-         UpdateCameraNavigationTypeUI;
-       end;
-  205: ChangeMoveSpeed;
+    171: SelectedShowInformation;
+    172: SelectedShowLightsInformation;
+    173: ShowAndWrite(GLInformationString);
 
-  220: begin
-         AnimationTimePlaying := not AnimationTimePlaying;
-         Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
-       end;
-  222: ChangeTimeSpeed;
-  223: ChangeBakedAnimationSmoothness;
+    182: ChangePointSize;
 
-  224: begin
-         ProcessEventsWanted := not ProcessEventsWanted;
-         Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
-         Scene.ProcessEvents := ProcessEventsWanted;
-       end;
+    201: if WalkCamera <> nil then
+         begin
+           WalkCamera.Gravity := not WalkCamera.Gravity;
+           UpdateCameraUI;
+         end;
+    202: if WalkCamera <> nil then
+         begin
+           WalkCamera.PreferGravityUpForRotations := not WalkCamera.PreferGravityUpForRotations;
+           UpdateCameraUI;
+         end;
+    203: if WalkCamera <> nil then
+         begin
+           WalkCamera.PreferGravityUpForMoving := not WalkCamera.PreferGravityUpForMoving;
+           UpdateCameraUI;
+         end;
+    205: ChangeMoveSpeed;
 
-//  225: PrecalculateAnimationFromEvents;
+    220: begin
+           AnimationTimePlaying := not AnimationTimePlaying;
+           Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
+         end;
+    222: ChangeTimeSpeed;
+    223: ChangeBakedAnimationSmoothness;
 
-  300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
+    224: begin
+           ProcessEventsWanted := not ProcessEventsWanted;
+           Scene.TimePlaying := AnimationTimePlaying and ProcessEventsWanted;
+           Scene.ProcessEvents := ProcessEventsWanted;
+         end;
 
-  340: SwitchScreenSpaceAmbientOcclusion;
-  350..370:
-    begin
-      ScreenEffects.ActiveEffectsRecalculate;
-      { All that is needed to actually render with the new effect is to
-        actually redisplay. }
-      Window.Invalidate;
-    end;
+  //  225: PrecalculateAnimationFromEvents;
 
-  500..519:
-    begin
-      SetFillMode(MenuItem.IntData - 500);
-      { appropriate Checked will be set automatically }
-    end;
-  520:
-    begin
-      SetFillMode((FillMode + 1) mod (High(FillMode) + 1));
-      FillModesMenu[FillMode].Checked := true;
-    end;
+    300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
-  530: ChangeLineWidth;
+    340: SwitchScreenSpaceAmbientOcclusion;
+    350..370:
+      begin
+        ScreenEffects.ActiveEffectsRecalculate;
+        { All that is needed to actually render with the new effect is to
+          actually redisplay. }
+        Window.Invalidate;
+      end;
 
-  540: ScreenShotToVideo(false);
-  542: ScreenShotToVideo(true);
-  550: ScreenShotToCubeMap;
-  555: ScreenShotToCubeMapComposite;
-  560: ScreenShotDepthToImage;
-  570: ControlsOnScreenshot := not ControlsOnScreenshot;
+    500..519:
+      begin
+        SetFillMode(MenuItem.IntData - 500);
+        { appropriate Checked will be set automatically }
+      end;
+    520:
+      begin
+        SetFillMode((FillMode + 1) mod (High(FillMode) + 1));
+        FillModesMenu[FillMode].Checked := true;
+      end;
 
-  600..649: Window.AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
+    530: ChangeLineWidth;
 
-  710: ChangeMaterialDiffuse;
-  720: ChangeMaterialSpecular;
-  722: LoadMaterialProperties;
-  723: CleanMaterialProperties;
-  725: if LightsEditorIsOpen then
-         LightsEditorClose else
-         LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
-  730: MergeCloseVertexes;
+    540: ScreenShotToVideo(false);
+    542: ScreenShotToVideo(true);
+    550: ScreenShotToCubeMap;
+    555: ScreenShotToCubeMapComposite;
+    560: ScreenShotDepthToImage;
+    570: ControlsOnScreenshot := not ControlsOnScreenshot;
 
-  750: ShadowVolumes := not ShadowVolumes;
-  760: ShadowVolumesRender := not ShadowVolumesRender;
+    600..649: Window.AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
 
-  770: InitialShowBBox := not InitialShowBBox;
-  771: InitialShowStatus := not InitialShowStatus;
+    710: ChangeMaterialDiffuse;
+    720: ChangeMaterialSpecular;
+    722: LoadMaterialProperties;
+    723: CleanMaterialProperties;
+    725: if LightsEditorIsOpen then
+           LightsEditorClose else
+           LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
+    730: MergeCloseVertexes;
 
-  801: SoundEngine.Enabled := not SoundEngine.Enabled;
-  810..850: SoundEngine.Device :=
-    SoundEngine.Devices[MenuItem.IntData - 810].Name;
+    750: ShadowVolumes := not ShadowVolumes;
+    760: ShadowVolumesRender := not ShadowVolumesRender;
 
-  2000: SetLimitFPS;
-  2010: EnableNetwork := not EnableNetwork;
+    770: InitialShowBBox := not InitialShowBBox;
+    771: InitialShowStatus := not InitialShowStatus;
 
-  3010: MakeGravityUp(Vector3(0, 1, 0));
-  3020: MakeGravityUp(Vector3(0, 0, 1));
+    801: SoundEngine.Enabled := not SoundEngine.Enabled;
+    810..850: SoundEngine.Device :=
+      SoundEngine.Devices[MenuItem.IntData - 810].Name;
 
-  1100..1199: SetMinificationFilter(
-    TMinificationFilter  (MenuItem.IntData-1100), Scene);
-  1200..1299: SetMagnificationFilter(
-    TMagnificationFilter  (MenuItem.IntData-1200), Scene);
-  1300..1399:
-    begin
-      Camera.NavigationType := TNavigationType(MenuItem.IntData - 1300);
-      ViewportsSetNavigationType(Camera.NavigationType);
-      UpdateCameraUI;
-    end;
-  1400..1499: Scene.Attributes.BumpMapping :=
-    TBumpMapping(MenuItem.IntData - 1400);
-  3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
-    V3DSceneWindow.Window, SceneManager);
-  4000..4010: Scene.Attributes.Shaders :=
-    TShadersRendering(MenuItem.IntData - 4000);
-  else raise EInternalError.Create('not impl menu item');
- end;
+    2000: SetLimitFPS;
+    2010: EnableNetwork := not EnableNetwork;
 
- { This may be called when headlight on / off state changes,
-   so prVisibleSceneNonGeometry is possible.
-   For safety, pass also prVisibleSceneGeometry now. }
- Scene.VisibleChangeHere(
-   [vcVisibleGeometry, vcVisibleNonGeometry]);
+    3010: MakeGravityUp(Vector3(0, 1, 0));
+    3020: MakeGravityUp(Vector3(0, 0, 1));
+
+    1100..1199: SetMinificationFilter(
+      TMinificationFilter  (MenuItem.IntData-1100), Scene);
+    1200..1299: SetMagnificationFilter(
+      TMagnificationFilter  (MenuItem.IntData-1200), Scene);
+    1300..1399:
+      begin
+        SceneManager.NavigationType := TNavigationType(MenuItem.IntData - 1300);
+        ViewportsSetNavigationType(SceneManager.NavigationType);
+        UpdateCameraUI;
+      end;
+    1400..1499: Scene.Attributes.BumpMapping :=
+      TBumpMapping(MenuItem.IntData - 1400);
+    3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
+      V3DSceneWindow.Window, SceneManager);
+    4000..4010: Scene.Attributes.Shaders :=
+      TShadersRendering(MenuItem.IntData - 4000);
+    else raise EInternalError.Create('not impl menu item');
+  end;
+
+  { This may be called when headlight on / off state changes,
+    so prVisibleSceneNonGeometry is possible.
+    For safety, pass also prVisibleSceneGeometry now. }
+  Scene.VisibleChangeHere(
+    [vcVisibleGeometry, vcVisibleNonGeometry]);
 end;
 
 function CreateMainMenu: TMenu;
@@ -3125,7 +3157,7 @@ function CreateMainMenu: TMenu;
     Mode: TNavigationType;
     Group: TMenuItemRadioGroup;
   begin
-    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(Camera.NavigationType), true);
+    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(SceneManager.NavigationType), true);
     for Mode := Low(Mode) to High(Mode) do
       CameraRadios[Mode] := Group[Ord(Mode)];
   end;
@@ -3158,7 +3190,10 @@ function CreateMainMenu: TMenu;
 var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
+  WalkCamera: TWalkCamera;
 begin
+  WalkCamera := SceneManager.WalkCamera(false);
+
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
     M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
@@ -3306,20 +3341,21 @@ begin
     M.Append(TMenuItem.Create('Next Navigation Type', 111, CtrlN));
     M.Append(TMenuSeparator.Create);
     M2 := TMenu.Create('Walk and Fly Settings');
-      M2.Append(TMenuItemChecked.Create(
+      MenuMouseLook := TMenuItemChecked.Create(
         '_Use Mouse Look',                       128, CtrlM,
-          Camera.Walk.MouseLook, true));
+        (WalkCamera <> nil) and WalkCamera.MouseLook, false);
+      M2.Append(MenuMouseLook);
       MenuGravity := TMenuItemChecked.Create(
         '_Gravity',                              201, CtrlG,
-        Camera.Walk.Gravity, true);
+        (WalkCamera <> nil) and WalkCamera.Gravity, false);
       M2.Append(MenuGravity);
       MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
         'Rotate with Respect to Gravity Vector',      202,
-        Camera.Walk.PreferGravityUpForRotations, true);
+        (WalkCamera <> nil) and WalkCamera.PreferGravityUpForRotations, false);
       M2.Append(MenuPreferGravityUpForRotations);
       MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
         'Move with Respect to Gravity Vector',          203,
-        Camera.Walk.PreferGravityUpForMoving, true);
+        (WalkCamera <> nil) and WalkCamera.PreferGravityUpForMoving, false);
       M2.Append(MenuPreferGravityUpForMoving);
       M2.Append(TMenuItem.Create('Change Move Speed...', 205));
       M.Append(M2);
@@ -3612,8 +3648,8 @@ end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
 begin
-  Camera.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
-  ViewportsSetNavigationType(Camera.NavigationType);
+  SceneManager.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
+  ViewportsSetNavigationType(SceneManager.NavigationType);
   UpdateCameraUI;
 end;
 

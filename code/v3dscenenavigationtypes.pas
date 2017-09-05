@@ -57,9 +57,6 @@ var
     use it, and reset to empty. }
   NavigationTypeCommandLine: string;
 
-var
-  { Same as your SceneManager.Camera after InitCameras. }
-  Camera: TUniversalCamera;
 
 type
   TNavigationTypeButton = class(TCastleButton)
@@ -73,6 +70,9 @@ type
     procedure GLContextClose; override;
   end;
 
+{ Same as SceneManager.Camera, where SceneManager was given to InitCameras. }
+function Camera: TCamera;
+
 implementation
 
 uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages,
@@ -82,25 +82,31 @@ var
   ImageExamine_TooltipGL: TGLImage;
   ImageWalk_Fly_TooltipGL: TGLImage;
   ImageTooltipArrow: TGLImage;
+  { Saved SceneManager from InitCameras. }
+  FSceneManager: TCastleSceneManager;
 
 procedure UpdateCameraNavigationTypeUI;
 var
   NT: TNavigationType;
 begin
-  if CameraRadios[Camera.NavigationType] <> nil then
-    CameraRadios[Camera.NavigationType].Checked := true;
+  if CameraRadios[FSceneManager.NavigationType] <> nil then
+    CameraRadios[FSceneManager.NavigationType].Checked := true;
   for NT := Low(NT) to High(NT) do
     { check <> nil, since for ntNone and not StableNavigationType
       we don't show buttons }
     if CameraButtons[NT] <> nil then
-      CameraButtons[NT].Pressed := NT = Camera.NavigationType;
+      CameraButtons[NT].Pressed := NT = FSceneManager.NavigationType;
 end;
 
 procedure InitCameras(SceneManager: TCastleSceneManager);
 begin
-  { init SceneManager.Camera }
-  SceneManager.Camera := Camera;
+  FSceneManager := SceneManager;
   UpdateCameraNavigationTypeUI;
+end;
+
+function Camera: TCamera;
+begin
+  Result := FSceneManager.Camera;
 end;
 
   procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -208,7 +214,4 @@ end;
 initialization
   Theme.Images[tiTooltip] := TooltipRounded;
   Theme.Corners[tiTooltip] := Vector4Integer(9, 9, 9, 9);
-  Camera := TUniversalCamera.Create(nil);
-finalization
-  FreeAndNil(Camera);
 end.

@@ -40,6 +40,8 @@ const
 var
   ViewportsConfig: TViewportsConfig;
 
+  { SceneManager, used also by all viewports.
+    Set this before calling InitializeViewports. }
   SceneManager: TCastleSceneManager;
 
   { Custom viewports. Remember that also SceneManager acts as the first viewport,
@@ -83,28 +85,11 @@ var
 
 procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
-var
-  Pos, Dir, Up, GravityUp: TVector3;
 begin
-  if Target.Camera = nil then
-  begin
-    if CreateIfNeeded then
-      Target.Camera := Target.CreateDefaultCamera else
-      Exit;
-  end;
-
-  SceneManager.MainScene.CameraFromNavigationInfo(Target.Camera,
-    SceneManager.Items.BoundingBox);
-  SceneManager.MainScene.CameraFromViewpoint(Target.Camera,
-    false, false);
-
-  Source.Camera.GetView(Pos, Dir, Up, GravityUp);
-  Target.Camera.SetView(Pos, Dir, Up, GravityUp);
-
-  if (Source.Camera is TUniversalCamera) and
-     (Target.Camera is TUniversalCamera) then
-    TUniversalCamera(Target.Camera).NavigationType :=
-      TUniversalCamera(Source.Camera).NavigationType;
+  if (Target.Camera = nil) and (not CreateIfNeeded) then
+    Exit;
+  Target.NavigationType := Source.NavigationType;
+  Target.RequiredCamera.Assign(Source.RequiredCamera);
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
@@ -112,7 +97,6 @@ procedure SetViewportsConfig(const Value: TViewportsConfig;
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
-    Viewport.SceneManager := SceneManager;
     Viewport.FullSize := false;
     Window.Controls.InsertBackIfNotExists(Viewport);
   end;
@@ -228,9 +212,7 @@ var
   I: Integer;
 begin
   for I := 0 to High(Viewports) do
-    if (Viewports[I].Camera <> nil) and
-       (Viewports[I].Camera is TUniversalCamera) then
-      TUniversalCamera(Viewports[I].Camera).NavigationType := NavigationType;
+    Viewports[I].NavigationType := NavigationType;
 end;
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
@@ -242,6 +224,7 @@ begin
     Viewports[I] := ViewportClass.Create(nil);
     { do not use lights from Scene on other scenes }
     Viewports[I].UseGlobalLights := false;
+    Viewports[I].SceneManager := SceneManager;
   end;
   Background := TCastleSimpleBackground.Create(nil);
   Background.Color := Gray;
