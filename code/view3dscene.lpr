@@ -996,8 +996,6 @@ type
   TLoadSceneOptions = set of TLoadSceneOption;
 
 { Calls FreeScene and then inits "scene global variables".
-  Pass here ACameraRadius = 0.0 to say that CameraRadius should be
-  somehow calculated (guessed) based on loaded Scene data.
 
   Camera settings for scene are inited from VRML/X3D defaults and
   from camera node in scene.
@@ -1035,18 +1033,16 @@ type
 
   If lsoCommandLineCustomization in Options,
   then we will use (and clear) the command-line customizations
-  of navigation info type and viewpoint.
-  This should be @false if you're only loading
+  of viewpoint. This should be @false if you're only loading
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNode: TX3DRootNode;
   ASceneURL: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single;
+  const SceneChanges: TSceneChanges;
   const Options: TLoadSceneOptions);
 var
   NewCaption: string;
   I: Integer;
-  ForceNavigationType: string;
 begin
   FreeScene;
 
@@ -1063,15 +1059,7 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    if lsoCommandLineCustomization in Options then
-    begin
-      ForceNavigationType := NavigationTypeCommandLine;
-      NavigationTypeCommandLine := '';
-    end else
-      ForceNavigationType := '';
-
-    Scene.CameraFromNavigationInfo(Camera,
-      Scene.BoundingBox, ForceNavigationType, ACameraRadius);
+    Scene.CameraFromNavigationInfo(Camera, Scene.BoundingBox);
     Scene.CameraFromViewpoint(Camera, false, false);
     for I := 0 to High(Viewports) do
       AssignCamera(Viewports[I], SceneManager, SceneManager, false);
@@ -1146,7 +1134,7 @@ end;
   changes, it may even cause suddenly invalid pointer --- yeah,
   I experienced it). }
 procedure LoadScene(ASceneURL: string;
-  const SceneChanges: TSceneChanges; const ACameraRadius: Single);
+  const SceneChanges: TSceneChanges);
 
 { It's useful to undefine it only for debug purposes:
   FPC dumps then backtrace of where exception happened,
@@ -1196,7 +1184,7 @@ begin
   {$ifdef CATCH_EXCEPTIONS}
   try
   {$endif CATCH_EXCEPTIONS}
-    LoadSceneCore(RootNode, ASceneURL, SceneChanges, ACameraRadius, [lsoCommandLineCustomization]);
+    LoadSceneCore(RootNode, ASceneURL, SceneChanges, [lsoCommandLineCustomization]);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -1259,7 +1247,7 @@ procedure LoadSimpleScene(Node: TX3DRootNode;
   const Options: TLoadSceneOptions);
 begin
   SceneWarnings.Clear;
-  LoadSceneCore(Node, '', [], 1.0, Options);
+  LoadSceneCore(Node, '', [], Options);
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1315,7 +1303,7 @@ end;
 
 class procedure THelper.OpenRecent(const URL: string);
 begin
-  LoadScene(URL, [], 0.0);
+  LoadScene(URL, []);
 end;
 
 procedure DropFiles(Container: TUIContainer; const FileNames: array of string);
@@ -1326,7 +1314,7 @@ begin
   begin
     URL := FilenameToURISafe(FileNames[0]);
     if URL <> '' then
-      LoadScene(URL, [], 0.0);
+      LoadScene(URL, []);
   end;
 end;
 
@@ -2775,7 +2763,7 @@ var
       ') and paste (' + PasteStr +
       ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
       'URL:', URL) then
-      LoadScene(URL, [], 0.0);
+      LoadScene(URL, []);
   end;
 
   procedure Reopen;
@@ -2788,7 +2776,7 @@ var
     NavigationType := SceneManager.NavigationType;
     Camera.GetView(Pos, Dir, Up{, GravityUp});
 
-    LoadScene(SceneURL, [], 0.0);
+    LoadScene(SceneURL, []);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
@@ -3643,7 +3631,7 @@ var
 begin
   URL := SceneURL;
   if Window.FileDialog('Open file', URL, true, Load3D_FileFilters) then
-    LoadScene(URL, [], 0.0);
+    LoadScene(URL, []);
 end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
@@ -3687,7 +3675,6 @@ end;
 { main --------------------------------------------------------------------- }
 
 var
-  Param_CameraRadius: Single = 0.0;
   WasParam_Write: boolean = false;
   Param_WriteEncoding: TX3DEncoding = xeClassic;
   Param_WriteForceX3D: boolean = false;
@@ -3698,9 +3685,8 @@ var
   Param_ScreenshotTransparent: boolean = false;
 
 const
-  Options: array [0..22] of TOption =
+  Options: array [0..21] of TOption =
   (
-    (Short:  #0; Long: 'camera-radius'; Argument: oaRequired),
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-convex-faces'; Argument: oaNone),
@@ -3732,15 +3718,14 @@ var
   RangeScreenShot: TRangeScreenShot;
 begin
   case OptionNum of
-    0 : Param_CameraRadius := StrToFloat(Argument);
-    1 : Include(Param_SceneChanges, scNoNormals);
-    2 : Include(Param_SceneChanges, scNoSolidObjects);
-    3 : Include(Param_SceneChanges, scNoConvexFaces);
-    4 : begin
+    0 : Include(Param_SceneChanges, scNoNormals);
+    1 : Include(Param_SceneChanges, scNoSolidObjects);
+    2 : Include(Param_SceneChanges, scNoConvexFaces);
+    3 : begin
           WasParam_Write := true;
           Param_WriteEncoding := xeClassic;
         end;
-    5 : begin
+    4 : begin
          InfoWrite(
            'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
            'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
@@ -3829,30 +3814,21 @@ begin
            '                        Deprecated, doing this from command-line is not' +NL+
            '                        usually useful.' +NL+
            '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
-           '  --camera-radius RADIUS' +NL+
-           '                        Set camera sphere radius used for collisions' +NL+
-           '                        and determinig moving speed.' +NL+
-           '                        Deprecated, consider using NavigationInfo node' +NL+
-           '                        inside your scene instead.' +NL+
-           '  --navigation EXAMINE|WALK|FLY...'+nl+
-           '                        Set initial navigation style.' +NL+
-           '                        Deprecated, consider using NavigationInfo node' +NL+
-           '                        inside your scene instead.' +NL+
            NL+
            SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
          Halt;
         end;
-    6 : begin
+    5 : begin
          Writeln(Version);
          Halt;
         end;
-    7 : begin
+    6 : begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
           SingleScreenShot.URLPattern := SeparateArgs[2];
           ScreenShotsList.Add(SingleScreenShot);
         end;
-    8 : begin
+    7 : begin
           RangeScreenShot := TRangeScreenShot.Create;
           RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
           RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
@@ -3860,48 +3836,48 @@ begin
           RangeScreenShot.URLPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
-    9 : InitializeLog(Version);
-    10: begin
+    8 : InitializeLog(Version);
+    9 : begin
           InitializeLog(Version);
           LogChanges := true;
         end;
-    11: begin
+    10: begin
           InitializeLog(Version);
           LogRendererCache := true;
         end;
-    12: begin
+    11: begin
           InitializeLog(Version);
           LogShaders := true;
         end;
-    13: begin
+    12: begin
           InitializeLog(Version);
           LogVideosCache := true;
         end;
-    14: begin
+    13: begin
           InitializeLog(Version);
           LogTextureCache := true;
         end;
-    15: begin
+    14: begin
           Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
             Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
           if AntiAliasingMenu[Window.AntiAliasing] <> nil then
             AntiAliasingMenu[Window.AntiAliasing].Checked := true;
         end;
-    16: begin
+    15: begin
           ShowBBox := false;
           ShowStatus := false;
           UpdateStatusToolbarVisible;
         end;
-    17: WasParam_Write := true;
-    18: if SameText(Argument, 'classic') then
+    16: WasParam_Write := true;
+    17: if SameText(Argument, 'classic') then
           Param_WriteEncoding := xeClassic else
         if SameText(Argument, 'xml') then
           Param_WriteEncoding := xeXML else
           raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-    19: Param_WriteForceX3D := true;
-    20: Param_HideMenu := true;
-    21: TextureMemoryProfiler.Enabled := true;
-    22: Param_ScreenshotTransparent := true;
+    18: Param_WriteForceX3D := true;
+    19: Param_HideMenu := true;
+    20: TextureMemoryProfiler.Enabled := true;
+    21: Param_ScreenshotTransparent := true;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -3928,7 +3904,6 @@ begin
   { parse parameters }
   Window.ParseParameters(StandardParseOptions);
   SoundEngine.ParseParameters;
-  CamerasParseParameters;
   ViewpointsParseParameters;
   Parameters.Parse(Options, @OptionProc, nil);
   { the most important param : URL to load }
@@ -4026,7 +4001,7 @@ begin
         Window.Open(@RetryOpen);
 
         if WasParam_SceneURL then
-          LoadScene(Param_SceneURL, Param_SceneChanges, Param_CameraRadius) else
+          LoadScene(Param_SceneURL, Param_SceneChanges) else
           LoadWelcomeScene;
 
         if MakingScreenShot then

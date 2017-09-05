@@ -45,19 +45,6 @@ var
 
 procedure UpdateCameraNavigationTypeUI;
 
-{ Interpret and remove from ParStr(1) ... ParStr(ParCount)
-  some params specific for this unit.
-  Those params are documented in CamerasOptionsHelp.
-
-  Call this @italic(before) InitCameras. }
-procedure CamerasParseParameters;
-
-var
-  { When loading scene, check NavigationTypeCommandLine, and if non-empty:
-    use it, and reset to empty. }
-  NavigationTypeCommandLine: string;
-
-
 type
   TNavigationTypeButton = class(TCastleButton)
   public
@@ -107,21 +94,6 @@ end;
 function Camera: TCamera;
 begin
   Result := FSceneManager.Camera;
-end;
-
-  procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
-    const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
-  begin
-    Assert(OptionNum = 0);
-    NavigationTypeCommandLine := Argument;
-  end;
-
-procedure CamerasParseParameters;
-const
-  Options: array[0..0]of TOption =
-  ((Short:#0; Long:'navigation'; Argument: oaRequired));
-begin
-  Parameters.Parse(Options, @OptionProc, nil, true);
 end;
 
 { TNavigationTypeButton ------------------------------------------------------ }
