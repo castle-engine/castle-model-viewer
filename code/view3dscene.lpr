@@ -589,7 +589,6 @@ end;
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations;
 
-(*
   procedure RenderFrustum(AlwaysVisible: boolean);
   {$ifndef OpenGLES} //TODO-es
   var
@@ -601,7 +600,7 @@ procedure RenderVisualizations;
       glDisable(GL_DEPTH_TEST);
     end;
     try
-      // TODO: LastWalkFrustum.CalculatePoints(FrustumPoints);
+      SceneManager.InternalWalkCamera.Frustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
@@ -615,7 +614,6 @@ procedure RenderVisualizations;
   begin
   {$endif}
   end;
-*)
 
 begin
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
@@ -629,14 +627,11 @@ begin
 
     OctreeDisplay(Scene);
 
-    { Note that there is no sense in showing viewing frustum in
-      Camera.NavigationClass <> ncExamine, since viewing frustum should
-      be never visible then (or should be just at the exact borders
-      or visibility, so it's actually unspecified whether OpenGL would
-      show it or not). }
-    // TODO: LastWalkFrustum not saved now
-    // if ShowFrustum and ((Camera as TUniversalCamera).NavigationClass = ncExamine) then
-    //   RenderFrustum(ShowFrustumAlwaysVisible);
+    { Note that there is no sense in showing viewing frustum if
+      Camera is TWalkCamera, since InternalWalkCamera.Frustum should not
+      be visible then (as it's just the *currently used* frustum in this case). }
+    if ShowFrustum and not (Camera is TWalkCamera) then
+      RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
     begin
