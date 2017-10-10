@@ -40,9 +40,13 @@ tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float value
 tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
 tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
+tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
