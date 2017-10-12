@@ -3121,8 +3121,7 @@ begin
       TBumpMapping(MenuItem.IntData - 1400);
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, SceneManager);
-    4000..4010: Scene.Attributes.Shaders :=
-      TShadersRendering(MenuItem.IntData - 4000);
+    4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
     else raise EInternalError.Create('not impl menu item');
   end;
 
@@ -3232,10 +3231,7 @@ begin
       M.Append(M2);
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
-    M2 := TMenu.Create('Shaders');
-      M2.AppendRadioGroup(['Disable', 'Enable When Required', 'Enable For Everything'],
-        4000, Ord(Scene.Attributes.Shaders), true);
-      M.Append(M2);
+    M.Append(TMenuItemChecked.Create('Force Phong Shading', 4000, Scene.Attributes.PhongShading, true));
     M2 := TMenu.Create('Bump mapping');
       M2.AppendRadioGroup(BumpMappingNames, 1400,
         Ord(Scene.Attributes.BumpMapping), true);
