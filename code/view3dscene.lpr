@@ -3231,7 +3231,7 @@ begin
       M.Append(M2);
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItemChecked.Create('Force Phong Shading', 4000, Scene.Attributes.PhongShading, true));
+    M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.Attributes.PhongShading, true));
     M2 := TMenu.Create('Bump mapping');
       M2.AppendRadioGroup(BumpMappingNames, 1400,
         Ord(Scene.Attributes.BumpMapping), true);
