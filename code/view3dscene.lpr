@@ -3976,6 +3976,7 @@ begin
         Window.OnResize := @Resize;
         Window.OnPress := @Press;
         Window.OnDropFiles := @DropFiles;
+        Window.AutoRedisplay := false;
 
         if MakingScreenShot then
         begin
