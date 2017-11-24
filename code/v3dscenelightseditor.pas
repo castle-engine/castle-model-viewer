@@ -46,7 +46,7 @@ procedure LightsEditorClose;
 implementation
 
 uses SysUtils, CastleColors,
-  CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, Castle3D,
+  CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, CastleTransform,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
   CastleRectangles, CastleControls,
   V3DSceneImages;
@@ -268,7 +268,6 @@ var
 
   LightsMenu: TLightsMenu;
   Gizmo: TInternalScene;
-  GizmoTransform: T3DTransform;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
 begin
@@ -369,10 +368,7 @@ begin
   Gizmo := TInternalScene.Create(Window);
   Gizmo.Load(RootNode, true);
   Gizmo.ProcessEvents := true; // for Billboard to work
-
-  GizmoTransform := T3DTransform.Create(Window);
-  GizmoTransform.Exists := false; // initially not existing
-  GizmoTransform.Add(Gizmo);
+  Gizmo.Exists := false; // initially not existing
 end;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
@@ -388,10 +384,10 @@ begin
   SetCurrentMenu(LightsMenu);
   MenuLightsEditor.Checked := true;
 
-  { create GizmoTransform on demand }
-  if GizmoTransform = nil then
+  { create Gizmo on demand }
+  if Gizmo = nil then
     IniitalizeGizmo;
-  SceneManager.Items.Add(GizmoTransform);
+  SceneManager.Items.Add(Gizmo);
 end;
 
 procedure LightsEditorClose;
@@ -402,8 +398,6 @@ begin
 
   { Just free Gizmo stuff, it will be recreated next time.
     This makes sure we update gizmo Size when loading different scenes. }
-  // SceneManager.Items.Remove(GizmoTransform);
-  FreeAndNil(GizmoTransform);
   FreeAndNil(Gizmo);
 
   { We don't immediately free here LightsMenu instance, because this is called
@@ -746,12 +740,12 @@ begin
   LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
   Add('Shadows Settings...', @ClickShadowsMenu);
 
-  GizmoTransform.Exists := true;
+  Gizmo.Exists := true;
   { Make sure camera information is updated, to update billboard orientation.
     TODO: This should not be needed, should be handled on engine side to keep
     billboards updated. See TODO in CastleSceneCore unit. }
-  GizmoTransform.CameraChanged(SceneManager.RequiredCamera);
-  GizmoTransform.Translation := Light.ProjectionSceneLocation;
+  Gizmo.CameraChanged(SceneManager.RequiredCamera);
+  Gizmo.Translation := Light.ProjectionSceneLocation;
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -799,7 +793,7 @@ end;
 procedure TLightMenu.LocationChanged(Sender: TObject);
 begin
   Light.ProjectionSceneLocation := LocationSlider.Value;
-  GizmoTransform.Translation := LocationSlider.Value;
+  Gizmo.Translation := LocationSlider.Value;
 end;
 
 procedure TLightMenu.Update(const SecondsPassed: Single; var HandleInput: boolean);
@@ -820,14 +814,14 @@ begin
   if not TVector3.Equals(V, LocationSlider.Value) then
   begin
     LocationSlider.Value := V;
-    GizmoTransform.Translation := V;
+    Gizmo.Translation := V;
   end;
 end;
 
 procedure TLightMenu.ClickBack(Sender: TObject);
 begin
   SetCurrentMenu(LightsMenu);
-  GizmoTransform.Exists := false;
+  Gizmo.Exists := false;
 end;
 
 { TPositionalLightMenu ------------------------------------------------------- }
