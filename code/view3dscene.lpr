@@ -3677,6 +3677,7 @@ var
   Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
+  Param_EnableFixedFunction: boolean = false;
 
 const
   Options: array [0..22] of TOption =
@@ -3703,7 +3704,7 @@ const
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-disable-fixed-function'; Argument: oaNone)
+    (Short:  #0; Long: 'debug-enable-fixed-function'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3792,7 +3793,7 @@ begin
            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
            '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
            '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
-           OptionDescription('--debug-disable-fixed-function', 'Disable OpenGL fixed-function pipeline.') +NL+
+           OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') +NL+
            NL+
            'Deprecated options:' +NL+
            '  --scene-change-no-normals' +NL+
@@ -3874,7 +3875,7 @@ begin
     19: Param_HideMenu := true;
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
-    22: EnableFixedFunction := false;
+    22: Param_EnableFixedFunction := true;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -4001,6 +4002,9 @@ begin
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges) else
           LoadWelcomeScene;
+
+        if Param_EnableFixedFunction then
+          GLFeatures.EnableFixedFunction := true;
 
         if MakingScreenShot then
         begin
