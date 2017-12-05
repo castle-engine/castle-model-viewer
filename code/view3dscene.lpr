@@ -2606,11 +2606,21 @@ var
   end;
 
   procedure Raytrace;
+
+    function LightsForRaytracer: TLightInstancesList;
+    var
+      HI: TLightInstance;
+    begin
+      Result := TLightInstancesList.Create;
+      if SceneManager.HeadlightInstance(HI) then
+        Result.Add(HI);
+    end;
+
   var
     Pos, Dir, Up: TVector3;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(SceneManager.BaseLights, Scene,
+    RaytraceToWin(LightsForRaytracer, Scene,
       Pos, Dir, Up, SceneManager.Projection, BGColor);
   end;
 
