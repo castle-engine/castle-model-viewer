@@ -119,6 +119,12 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure OctreeDisplay(Scene: TCastleScene);
+(*
+This should be rewritten to construct a TCastleScene with TLineSet inside.
+Rendering using glDrawBox3DWire relies on OpenGL immediate mode,
+not possible under OpenGLES,
+not possible under modern OpenGL with EnabledFixedFunction = false.
+
 {$ifndef OpenGLES} //TODO-es
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
@@ -255,6 +261,9 @@ begin
 {$else}
 begin
 {$endif}
+*)
+
+begin
 end;
 
 function OctreeDisplayStatus: string;

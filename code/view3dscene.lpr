@@ -3301,6 +3301,11 @@ begin
         'Show it Over All Other Objects (no depth test)', 180,
         ShowFrustumAlwaysVisible, true));
       M.Append(M2);
+
+    (*
+    This is not yet implemented for modern OpenGL (with EnableFixedFunction=false)
+    or OpenGLES.
+
     M2 := TMenu.Create('Octree visualization');
       OctreeTrianglesDisplay.MenuWhole :=
         TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
@@ -3323,7 +3328,10 @@ begin
       M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
       M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
       M.Append(M2);
+    *)
+
     Result.Append(M);
+
   M := TMenu.Create('_Navigation');
     Viewpoints.Recalculate(Scene);
     M.Append(Viewpoints);
