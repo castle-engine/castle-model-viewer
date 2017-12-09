@@ -589,8 +589,37 @@ end;
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations;
 
+  { TODO:
+    Rendering below for now uses OpenGL fixed-function pipeline,
+    and it requires fixed-function matrix set up. }
+  {$ifndef OpenGLES}
+  procedure PushMatrix;
+  var
+    CameraMatrix: PMatrix4;
+  begin
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix;
+    glLoadMatrix(RenderContext.ProjectionMatrix);
+
+    if RenderingCamera.RotationOnly then
+      CameraMatrix := @RenderingCamera.RotationMatrix
+    else
+      CameraMatrix := @RenderingCamera.Matrix;
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix;
+    glLoadMatrix(CameraMatrix^);
+  end;
+
+  procedure PopMatrix;
+  begin
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix;
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix;
+  end;
+
   procedure RenderFrustum(AlwaysVisible: boolean);
-  {$ifndef OpenGLES} //TODO-es
   var
     FrustumPoints: TFrustumPoints;
   begin
@@ -610,14 +639,15 @@ procedure RenderVisualizations;
     finally
       if AlwaysVisible then glPopAttrib;
     end;
-  {$else}
-  begin
-  {$endif}
   end;
+  {$endif not OpenGLES}
 
 begin
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
+    {$ifndef OpenGLES}
+    PushMatrix;
+
     { Visualization below depends on DEPTH_TEST enabled
       (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
     glEnable(GL_DEPTH_TEST);
@@ -635,7 +665,6 @@ begin
 
     if SelectedItem <> nil then
     begin
-      {$ifndef OpenGLES} //TODO-es
       SelectedShape := TShape(SelectedItem^.Shape);
       glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
@@ -679,8 +708,10 @@ begin
       // gives depth impression and is generally visible against various geometry .
       glColorv(Vector4(0.2, 0.2, 1, 1));
       glDrawCornerMarkers(SelectedShape.BoundingBox);
-      {$endif}
     end;
+
+    PopMatrix;
+    {$endif not OpenGLES}
   end else
   begin
     SceneBoundingBox.Exists := false;
@@ -3301,11 +3332,6 @@ begin
         'Show it Over All Other Objects (no depth test)', 180,
         ShowFrustumAlwaysVisible, true));
       M.Append(M2);
-
-    (*
-    This is not yet implemented for modern OpenGL (with EnableFixedFunction=false)
-    or OpenGLES.
-
     M2 := TMenu.Create('Octree visualization');
       OctreeTrianglesDisplay.MenuWhole :=
         TMenuItemChecked.Create('Show Whole Collisions (Triangle) Octrees',
@@ -3328,10 +3354,7 @@ begin
       M2.Append(TMenuItem.Create('Show _Upper Level of Collidable Shapes Octree', 196));
       M2.Append(TMenuItem.Create('Show _Lower Level of Collidable Shapes Octree', 197));
       M.Append(M2);
-    *)
-
     Result.Append(M);
-
   M := TMenu.Create('_Navigation');
     Viewpoints.Recalculate(Scene);
     M.Append(Viewpoints);
