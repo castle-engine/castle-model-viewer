@@ -741,10 +741,6 @@ begin
   Add('Shadows Settings...', @ClickShadowsMenu);
 
   Gizmo.Exists := true;
-  { Make sure camera information is updated, to update billboard orientation.
-    TODO: This should not be needed, should be handled on engine side to keep
-    billboards updated. See TODO in CastleSceneCore unit. }
-  Gizmo.CameraChanged(SceneManager.RequiredCamera);
   Gizmo.Translation := Light.ProjectionSceneLocation;
 end;
 
