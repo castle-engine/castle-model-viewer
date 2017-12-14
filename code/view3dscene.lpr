@@ -2649,10 +2649,13 @@ var
 
   var
     Pos, Dir, Up: TVector3;
+    BaseLights: TLightInstancesList;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    RaytraceToWin(LightsForRaytracer, Scene,
-      Pos, Dir, Up, SceneManager.Projection, BGColor);
+    BaseLights := LightsForRaytracer;
+    try
+      RaytraceToWin(BaseLights, Scene, Pos, Dir, Up, SceneManager.Projection, BGColor);
+    finally FreeAndNil(BaseLights) end;
   end;
 
   procedure MergeCloseVertexes;
