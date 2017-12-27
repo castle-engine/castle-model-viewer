@@ -84,7 +84,7 @@ begin
          Encoding := xeXML else
          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
     3: ForceX3D := true;
-    4: InitializeLog(Version);
+    4: InitializeLog;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -94,6 +94,8 @@ var
   URL: string;
   Node: TX3DNode;
 begin
+  ApplicationProperties.Version := Version;
+
   { parse command-line }
   Parameters.Parse(Options, @OptionProc, nil);
   Parameters.CheckHigh(1);

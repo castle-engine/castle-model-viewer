@@ -3877,25 +3877,25 @@ begin
           RangeScreenShot.URLPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
-    8 : InitializeLog(Version);
+    8 : InitializeLog;
     9 : begin
-          InitializeLog(Version);
+          InitializeLog;
           LogChanges := true;
         end;
     10: begin
-          InitializeLog(Version);
+          InitializeLog;
           LogRendererCache := true;
         end;
     11: begin
-          InitializeLog(Version);
+          InitializeLog;
           LogShaders := true;
         end;
     12: begin
-          InitializeLog(Version);
+          InitializeLog;
           LogVideosCache := true;
         end;
     13: begin
-          InitializeLog(Version);
+          InitializeLog;
           LogTextureCache := true;
         end;
     14: begin
@@ -3926,6 +3926,8 @@ end;
 
 procedure Run;
 begin
+  ApplicationProperties.Version := Version;
+
   Window := TCastleWindowCustom.Create(Application);
 
   Application.MainWindow := Window;
