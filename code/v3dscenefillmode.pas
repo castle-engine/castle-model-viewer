@@ -41,18 +41,12 @@ const
 
 var
   FillMode: TFillMode = 0;
-
   FillModesMenu: array [TFillMode] of TMenuItemRadio;
 
 const
   fmSilhouetteBorderEdges = 8;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
-
-procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3; Scene: TCastleScene); overload;
-procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4; Scene: TCastleScene); overload;
 
 implementation
 
@@ -77,44 +71,6 @@ begin
       FillModesMenu[FM].Group := RadioGroup;
     M.Append(FillModesMenu[FM]);
   end;
-end;
-
-procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector3; Scene: TCastleScene);
-begin
-  RenderSilhouetteBorderEdges(Vector4(ObserverPos, 1), Scene);
-end;
-
-procedure RenderSilhouetteBorderEdges(
-  const ObserverPos: TVector4; Scene: TCastleScene);
-{$ifndef OpenGLES} //TODO-es
-var
-  PreviousLineWidth: Single;
-begin
-  glPushAttrib(GL_ENABLE_BIT);
-    { Draw BorderEdges first, with thicker width. And draw all without depth
-      test.
-
-      This way if some edge is both in BorderEdges and ManifoldEdges
-      (e.g. it's present 3 times in data), this will be visible here.
-      Otherwise RenderSilhouetteEdges would hide this edge, and we would
-      not see that it's a both manifold and border edge. }
-
-    glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-
-    glColor4f(0, 0, 1, 0.3);
-    PreviousLineWidth := RenderContext.LineWidth;
-    RenderContext.LineWidth := 5;
-    Scene.RenderBorderEdges(TMatrix4.Identity);
-    RenderContext.LineWidth := PreviousLineWidth;
-
-    glColor4f(1, 1, 0, 0.3);
-    Scene.RenderSilhouetteEdges(ObserverPos, TMatrix4.Identity);
-
-  glPopAttrib;
-{$else}
-begin
-{$endif}
 end;
 
 end.

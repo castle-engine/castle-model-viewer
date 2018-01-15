@@ -29,11 +29,6 @@ interface
 
 uses Classes, CastleWindow, CastleSceneManager, CastleScene;
 
-type
-  TInternalScene = class(TCastleScene)
-    constructor Create(AOwner: TComponent); override;
-  end;
-
 var
   MenuLightsEditor: TMenuItemChecked;
 
@@ -49,16 +44,7 @@ uses SysUtils, CastleColors,
   CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, CastleTransform,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
   CastleRectangles, CastleControls,
-  V3DSceneImages;
-
-constructor TInternalScene.Create(AOwner: TComponent);
-begin
-  inherited;
-  Collides := false;
-  Pickable := false;
-  CastShadowVolumes := false;
-  ExcludeFromStatistics := true;
-end;
+  V3DSceneImages, V3DSceneInternalScenes;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 

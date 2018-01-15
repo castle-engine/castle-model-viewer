@@ -78,7 +78,7 @@ uses SysUtils, Math, Classes,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
-  V3DSceneBoxes;
+  V3DSceneBoxes, V3DSceneInternalScenes;
 
 var
   ShowFrustum: boolean = false;
@@ -100,9 +100,8 @@ var
     This way we're preserving values of all Attributes.Xxx when opening new scene
     from "Open" menu item. }
   Scene: TCastleScene;
-  SceneBoundingBox: TInternalScene;
-  SceneBoundingBoxTransform: TTransformNode;
-  SceneBoundingBoxBox: TBoxNode;
+  SceneBoundingBox: TBoundingBoxScene;
+  SceneDebugEdges: TDebugEdgesScene;
   SceneURL: string;
 
   SelectedItem: PTriangle;
@@ -569,20 +568,18 @@ end;
 
 { TCastleWindowCustom callbacks --------------------------------------------------------- }
 
-{ Setup visibility of extra scenes, like bounding box. }
-procedure SetupExtraScenes;
+{ Update SceneBoundingBox look. }
+procedure SceneBoundingBoxUpdate;
 begin
   SceneBoundingBox.Exists :=
     (RenderingCamera.Target = rtScreen) and
     (not HideExtraScenesForScreenshot) and
-    ShowBBox and
-    (not Scene.BoundingBox.IsEmpty);
+    ShowBBox;
   if SceneBoundingBox.Exists then
   begin
     { Use Scene.Attributes.LineWidth for our visualizations as well }
     SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
-    SceneBoundingBoxTransform.Translation := Scene.BoundingBox.Center;
-    SceneBoundingBoxBox.Size := Scene.BoundingBox.Size;
+    SceneBoundingBox.UpdateBox(Scene.BoundingBox);
   end;
 end;
 
@@ -720,7 +717,7 @@ end;
 
 procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
 begin
-  SetupExtraScenes;
+  SceneBoundingBoxUpdate;
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
@@ -738,17 +735,14 @@ begin
     should always work with MainScene = nil. }
   if MainScene = nil then Exit;
 
-  if FillMode = fmSilhouetteBorderEdges then
-  begin
-    { Use Scene.Attributes.LineWidth for our visualizations as well }
-    RenderContext.LineWidth := Scene.Attributes.LineWidth;
-    RenderSilhouetteBorderEdges(Camera.Position, MainScene);
-    RenderVisualizations;
-  end else
-  begin
-    inherited;
-    { inherited will call Render3D that will call RenderVisualizations }
-  end;
+  { do not render GetMainScene if SceneDebugEdges is to be visible }
+  GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
+  SceneDebugEdges.Visible := FillMode = fmSilhouetteBorderEdges;
+  if SceneDebugEdges.Exists then
+    SceneDebugEdges.UpdateEdges(Scene);
+
+  inherited;
+  { inherited will call Render3D that will call RenderVisualizations }
 end;
 
 procedure TV3DSceneManager.BeforeRender;
@@ -767,7 +761,7 @@ end;
 
 procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
-  SetupExtraScenes;
+  SceneBoundingBoxUpdate;
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
@@ -785,15 +779,11 @@ begin
     should always work with MainScene = nil. }
   if GetMainScene = nil then Exit;
 
-  if FillMode = fmSilhouetteBorderEdges then
-  begin
-    RenderVisualizations;
-    RenderSilhouetteBorderEdges(Camera.Position, GetMainScene);
-  end else
-  begin
-    inherited;
-    { inherited will call Render3D that will call RenderVisualizations }
-  end;
+  GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
+  SceneDebugEdges.Visible := FillMode = fmSilhouetteBorderEdges;
+
+  inherited;
+  { inherited will call Render3D that will call RenderVisualizations }
 end;
 
 procedure TV3DViewport.BeforeRender;
@@ -914,33 +904,6 @@ begin
   UpdateWarningsButton;
   if Window <> nil then
     Window.Invalidate;
-end;
-
-procedure InitializeSceneBoundingBox;
-var
-  RootNode: TX3DRootNode;
-  Shape: TShapeNode;
-  Material: TMaterialNode;
-begin
-  SceneBoundingBoxBox := TBoxNode.Create;
-
-  Material := TMaterialNode.Create;
-  Material.ForcePureEmissive;
-  Material.EmissiveColor := GreenRGB;
-
-  Shape := TShapeNode.Create;
-  Shape.Geometry := SceneBoundingBoxBox;
-  Shape.Shading := shWireframe;
-  Shape.Material := Material;
-  Shape.Appearance.ShadowCaster := false;
-
-  SceneBoundingBoxTransform := TTransformNode.Create;
-  SceneBoundingBoxTransform.AddChildren(Shape);
-
-  RootNode := TX3DRootNode.Create;
-  RootNode.AddChildren(SceneBoundingBoxTransform);
-
-  SceneBoundingBox.Load(RootNode, true);
 end;
 
 procedure SceneOctreeCreate;
@@ -1423,7 +1386,7 @@ begin
   begin
     { Many controls are hidden simply because ViewportsRender doesn't render them.
       But for extra 3D scenes within scene manager, we need to make sure
-      nearest SetupExtraScenes will hide them. }
+      nearest SceneBoundingBoxUpdate will hide them. }
     HideExtraScenesForScreenshot := true;
     ViewportsRender(Window.Container);
     HideExtraScenesForScreenshot := false;
@@ -4004,9 +3967,11 @@ begin
       SceneManager.Items.Add(Scene);
       SceneManager.MainScene := Scene;
 
-      SceneBoundingBox := TInternalScene.Create(Scene);
+      SceneBoundingBox := TBoundingBoxScene.Create(Scene);
       SceneManager.Items.Add(SceneBoundingBox);
-      InitializeSceneBoundingBox;
+
+      SceneDebugEdges := TDebugEdgesScene.Create(Scene);
+      SceneManager.Items.Add(SceneDebugEdges);
 
       InitCameras(SceneManager);
       InitTextureFilters(Scene);
