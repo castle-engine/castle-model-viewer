@@ -39,22 +39,14 @@ end;
 
 procedure Render3DShadowsBegin(Scene: TCastleScene);
 begin
-  {$ifndef OpenGLES} //TODO-es
-  { Thanks to using PureGeometryShadowedColor, shadow is visible
-    even when rmPureGeometry is used. Note: no need to push current
-    glColor value, renderer doesn't preserve state anyway
-    and caller is prepared to deal with it. }
-  if Scene.Attributes.Mode = rmPureGeometry then
-    glColorv(PureGeometryShadowedColor);
-  {$endif}
+  { Thanks to using SolidShadowColor, shadow is visible
+    even when rmSolidColor is used }
+  Scene.Attributes.SolidColor := SolidShadowColor;
 end;
 
 procedure Render3DNoShadowsBegin(Scene: TCastleScene);
 begin
-  {$ifndef OpenGLES} //TODO-es
-  if Scene.Attributes.Mode = rmPureGeometry then
-    glColorv(PureGeometryColor);
-  {$endif}
+  Scene.Attributes.SolidColor := SolidColor;
 end;
 
 procedure TV3DShadowsSceneManager.Render3D(const Params: TRenderParams);

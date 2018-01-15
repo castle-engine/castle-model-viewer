@@ -4,7 +4,7 @@ unit V3DSceneFillMode;
 
 interface
 
-uses CastleScene, CastleWindow, CastleRenderer, CastleVectors;
+uses CastleScene, CastleWindow, CastleRenderer, CastleVectors, CastleColors;
 
 type
   TFillMode = 0..8;
@@ -14,7 +14,7 @@ const
     Name: string;
     Mode: TRenderingMode;
     WireframeEffect: TWireframeEffect;
-    WireframeColor: TVector3;
+    WireframeColor: TCastleColorRGB;
     BackgroundWireframe: boolean;
   end =
   ( (Name: 'Normal'                               ; Mode: rmFull        ; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
@@ -22,10 +22,10 @@ const
     (Name: 'Solid Wireframe'                      ; Mode: rmFull        ; WireframeEffect: weSolidWireframe; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: false; ),
     (Name: 'Normal with Silhouette'               ; Mode: rmFull        ; WireframeEffect: weSilhouette    ; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: false; ),
 
-    (Name: 'Solid Shape'                          ; Mode: rmPureGeometry; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
-    (Name: 'Wireframe (Single Color)'             ; Mode: rmPureGeometry; WireframeEffect: weWireframeOnly ; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: true ; ),
-    (Name: 'Solid Wireframe (Single Color)'       ; Mode: rmPureGeometry; WireframeEffect: weSolidWireframe; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
-    (Name: 'Normal with Silhouette (Single Color)'; Mode: rmPureGeometry; WireframeEffect: weSilhouette    ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
+    (Name: 'Solid Shape'                          ; Mode: rmSolidColor; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
+    (Name: 'Wireframe (Single Color)'             ; Mode: rmSolidColor; WireframeEffect: weWireframeOnly ; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: true ; ),
+    (Name: 'Solid Wireframe (Single Color)'       ; Mode: rmSolidColor; WireframeEffect: weSolidWireframe; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
+    (Name: 'Normal with Silhouette (Single Color)'; Mode: rmSolidColor; WireframeEffect: weSilhouette    ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
 
     (Name: 'Silhouette and Border Edges'          ;
       { Mode, WireframeEffect, WireframeColor don't matter here,
@@ -36,8 +36,8 @@ const
       BackgroundWireframe: false)
   );
 
-  PureGeometryColor: TVector3 = (Data: (1, 1, 1));
-  PureGeometryShadowedColor: TVector3 = (Data: (0.5, 0.5, 0.5));
+  SolidColor: TCastleColorRGB = (Data: (1, 1, 1));
+  SolidShadowColor: TCastleColorRGB = (Data: (0.5, 0.5, 0.5));
 
 var
   FillMode: TFillMode = 0;
@@ -49,10 +49,6 @@ const
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 
 implementation
-
-uses
-  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
-  CastleGLUtils;
 
 procedure MenuAppendFillModes(M: TMenu; BaseIntData: Cardinal);
 var
