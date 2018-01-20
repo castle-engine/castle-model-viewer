@@ -170,7 +170,7 @@ begin
   SilhouetteLines.FdVertexCount.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
 
-  SI := TShapeTreeIterator.Create(SourceScene.Shapes, true);
+  SI := TShapeTreeIterator.Create(SourceScene.Shapes, { OnlyActive } true, { OnlyVisible } true);
   try
     while SI.GetNext do
     begin
