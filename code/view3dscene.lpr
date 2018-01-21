@@ -3004,8 +3004,20 @@ begin
 
     131: begin
            ShowAndWrite(
-             'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' +nl+
-             'Formats: X3D, VRML 1.0 and 2.0 (aka VRML 97), 3DS, MD3, Wavefront OBJ, Collada.' + NL +
+             'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' + NL +
+             NL +
+             'Supported formats:' + NL +
+             '- X3D' + NL +
+             '- VRML 2.0 (aka VRML 97) and 1.0' + NL +
+             '- castle-anim-frames' + NL +
+             '- OpenInventor (IV)' + NL +
+             '- 3DS' + NL +
+             '- MD3' + NL +
+             '- Wavefront OBJ' + NL +
+             '- Collada' + NL +
+             '- STL' + NL +
+             '- Spine JSON.' + NL +
+             NL +
              'Version ' + Version + '.' + NL +
              'By Michalis Kamburelis.' + NL +
              NL +
