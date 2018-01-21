@@ -86,6 +86,14 @@ tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
 tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightBottom" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightTop" not bound
 tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchLeftBottom" not bound
