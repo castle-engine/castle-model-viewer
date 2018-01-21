@@ -737,7 +737,7 @@ begin
 
   { do not render GetMainScene if SceneDebugEdges is to be visible }
   GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
-  SceneDebugEdges.Visible := FillMode = fmSilhouetteBorderEdges;
+  SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
   if SceneDebugEdges.Exists then
     SceneDebugEdges.UpdateEdges(Scene);
 
@@ -780,7 +780,7 @@ begin
   if GetMainScene = nil then Exit;
 
   GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
-  SceneDebugEdges.Visible := FillMode = fmSilhouetteBorderEdges;
+  SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
 
   inherited;
   { inherited will call Render3D that will call RenderVisualizations }
