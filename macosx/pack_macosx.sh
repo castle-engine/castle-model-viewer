@@ -1,10 +1,20 @@
 #!/bin/bash
 set -eu
 
-# Create Mac OS X bundle, and then dmg (disk image) file to distribute view3dscene.
-# Compile the view3dscene (and tovrmlx3d) binaries before calling this.
+# Compile for Mac OS X (using CGE alternative_castle_window_based_on_lcl package),
+# create Mac OS X bundle (.app),
+# create dmg (disk image) file to distribute.
 
 . ../../cge-scripts/create_macosx_bundle.sh
+
+make -C ../ clean
+
+# compile view3dscene and tovrmlx3d for Mac OS X
+echo '--------------------- Compiling view3dscene  --------------------'
+temporary_change_lpi_to_alternative_castle_window_based_on_lcl ../code/view3dscene.lpi
+lazbuild ../code/view3dscene.lpi
+echo '--------------------- Compiling tovrmlx3d  --------------------'
+lazbuild ../code/tovrmlx3d.lpi
 
 create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
 '  <dict>
@@ -216,26 +226,28 @@ create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
 # add tovrmlx3d binary
 cp ../tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
 
-# add libraries from fink
-cd view3dscene.app/Contents/MacOS/
+# We used to add now libpng and OggVorbis from Fink, but
+# - we don't use Fink anymore
+# - we don't need libpng anymore, FpImage has internal png reader
+#
+# TODO: OggVorbis loading will not work now.
 
-# TODO: For now, I don't have fink available.
-# Lack of the libraries below means that OggVorbis loading will not work.
-# (lack of png is harmless now, we read PNG without it)
+## # add libraries from fink
+## cd view3dscene.app/Contents/MacOS/
+##
+## cp_fink_lib libpng14.14.dylib
+## cp_fink_lib libvorbisfile.3.dylib
+## cp_fink_lib libvorbis.0.dylib
+## cp_fink_lib libogg.0.dylib
+##
+## install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0.dylib libvorbisfile.3.dylib
+## install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
+## install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
+##
+## check_libs_not_depending_on_fink view3dscene tovrmlx3d
+##
+## cd ../../../
 
-# cp_fink_lib libpng14.14.dylib
-# cp_fink_lib libvorbisfile.3.dylib
-# cp_fink_lib libvorbis.0.dylib
-# cp_fink_lib libogg.0.dylib
+create_dmg view3dscene
 
-# install_name_tool -change /sw/lib/libvorbis.0.dylib @executable_path/libvorbis.0.dylib libvorbisfile.3.dylib
-# install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbisfile.3.dylib
-# install_name_tool -change /sw/lib/libogg.0.dylib    @executable_path/libogg.0.dylib    libvorbis.0.dylib
-
-check_libs_not_depending_on_fink view3dscene tovrmlx3d
-
-cd ../../../
-
-make -f ../../cge-scripts/macosx_dmg.makefile NAME=view3dscene
-
-echo 'Done OK'
+finish_macosx_pack
