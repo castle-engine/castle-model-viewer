@@ -121,6 +121,7 @@ var
   MenuSelectedLightsInfo: TMenuItem;
   MenuRemoveSelectedShape: TMenuItem;
   MenuRemoveSelectedFace: TMenuItem;
+  MenuHideSelectedShape: TMenuItem;
   MenuEditMaterial: TMenu;
   MenuMergeCloseVertexes: TMenuItem;
   MenuHeadlight, MenuGravity, MenuMouseLook: TMenuItemChecked;
@@ -289,6 +290,8 @@ begin
     MenuRemoveSelectedShape.Enabled := SelectedItem <> nil;
   if MenuRemoveSelectedFace <> nil then
     MenuRemoveSelectedFace.Enabled := SelectedItem <> nil;
+  if MenuHideSelectedShape <> nil then
+    MenuHideSelectedShape.Enabled := SelectedItem <> nil;
   if MenuEditMaterial <> nil then
     MenuEditMaterial.Enabled := SelectedItem <> nil;
   if MenuMergeCloseVertexes <> nil then
@@ -2837,6 +2840,37 @@ var
     Scene.FreeResources([frShadowVolume]);
   end;
 
+  procedure HideSelectedShape;
+  begin
+    if SelectedItem = nil then
+    begin
+      MessageOk(Window, 'Nothing selected.');
+      Exit;
+    end;
+    if SelectedItem^.Shape.Node = nil then
+    begin
+      MessageOk(Window, 'Cannot hide VRML 1.0 shape.');
+      Exit;
+    end;
+    SelectedItem^.Shape.Node.Render := false;
+  end;
+
+  procedure RevealAllHiddenShapes;
+  var
+    SI: TShapeTreeIterator;
+    Shape: TShape;
+  begin
+    SI := TShapeTreeIterator.Create(Scene.Shapes, { OnlyActive } false);
+    try
+      while SI.GetNext do
+      begin
+        Shape := SI.Current;
+        if Shape.Node <> nil then
+          Shape.Node.Render := true;
+      end;
+    finally FreeAndNil(SI) end;
+  end;
+
 var
   C: Cardinal;
 begin
@@ -3142,6 +3176,8 @@ begin
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, SceneManager);
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
+    4100: HideSelectedShape;
+    4110: RevealAllHiddenShapes;
     else raise EInternalError.Create('not impl menu item');
   end;
 
@@ -3380,6 +3416,11 @@ begin
     // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
     Result.Append(M);
   M := TMenu.Create('_Edit');
+    MenuHideSelectedShape :=
+      TMenuItem.Create('Hide _Shape (containing selected triangle)', 4100);
+    M.Append(MenuHideSelectedShape);
+    M.Append(TMenuItem.Create('Reveal All Hidden Shapes', 4110));
+    M.Append(TMenuSeparator.Create);
     MenuRemoveSelectedShape :=
       TMenuItem.Create('Remove _Shape (containing selected triangle)', 36);
     M.Append(MenuRemoveSelectedShape);
