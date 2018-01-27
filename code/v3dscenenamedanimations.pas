@@ -48,10 +48,17 @@ const
 
 var
   Looping: TPlayAnimationLooping = paDefault;
+  Forward: boolean = true;
 
 type
   TMenuItemLooping = class(TMenuItemRadio)
+    Scene: TCastleScene;
     LoopingValue: TPlayAnimationLooping;
+    function DoClick: boolean; override;
+  end;
+
+  TMenuItemForward = class(TMenuItemChecked)
+    Scene: TCastleScene;
     function DoClick: boolean; override;
   end;
 
@@ -78,7 +85,7 @@ end;
 function TMenuItemAnimation.DoClick: boolean;
 begin
   inherited;
-  if not Scene.PlayAnimation(AnimationName, Looping) then
+  if not Scene.PlayAnimation(AnimationName, Looping, Forward) then
     WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
       [AnimationName]));
   Result := true;
@@ -87,7 +94,27 @@ end;
 function TMenuItemLooping.DoClick: boolean;
 begin
   inherited;
+  // change future animations
   Looping := LoopingValue;
+  // also change currently playing animation, if any
+  if Scene.CurrentAnimation <> nil then
+  begin
+    case Looping of
+      paForceLooping: Scene.CurrentAnimation.Loop := true;
+      paForceNotLooping: Scene.CurrentAnimation.Loop := false;
+    end;
+  end;
+  Result := true;
+end;
+
+function TMenuItemForward.DoClick: boolean;
+begin
+  inherited;
+  // change future animations
+  Forward := Checked;
+  // also change currently playing animation, if any
+  if Scene.CurrentAnimation <> nil then
+    Scene.CurrentAnimation.FractionIncreasing := Forward;
   Result := true;
 end;
 
@@ -109,12 +136,23 @@ procedure RefreshNamedAnimations(const Scene: TCastleScene);
     for L := Low(L) to High(L) do
     begin
       Radio := TMenuItemLooping.Create(LoopingNames[L], 0, L = Looping, true);
+      Radio.Scene := Scene;
       Radio.LoopingValue := L;
       if Group = nil then
         Group := Radio.Group else
         Radio.Group := Group;
       MenuNamedAnimations.Append(Radio);
     end;
+    MenuNamedAnimations.Append(TMenuSeparator.Create);
+  end;
+
+  procedure AppendForward;
+  var
+    MenuItem: TMenuItemForward;
+  begin
+    MenuItem := TMenuItemForward.Create('Forward', 0, Forward, true);
+    MenuItem.Scene := Scene;
+    MenuNamedAnimations.Append(MenuItem);
     MenuNamedAnimations.Append(TMenuSeparator.Create);
   end;
 
@@ -126,6 +164,7 @@ begin
 
   MenuNamedAnimations.Clear;
   AppendLooping;
+  AppendForward;
 
   NamedAnimations := Scene.AnimationsList;
   for I := 0 to NamedAnimations.Count - 1 do
