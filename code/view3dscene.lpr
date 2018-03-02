@@ -902,7 +902,7 @@ class procedure THelper.OnWarningHandle(Sender: TObject; const Category, S: stri
 begin
   { Write to ErrOutput, not normal Output, since when --write is used,
     we write to output VRML/X3D contents. }
-  Writeln(ErrOutput, ApplicationName + ': ' + Category + ' warning: ' + S);
+  Writeln(ErrOutput, 'Warning: ' + Category + ': ' + S);
   SceneWarnings.Add(Category + ': ' + S);
   UpdateWarningsButton;
   if Window <> nil then
