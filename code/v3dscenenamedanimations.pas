@@ -40,20 +40,13 @@ uses SysUtils, Classes,
   CastleLog, CastleSceneCore,
   V3DSceneCaptions;
 
-const
-  LoopingNames: array [TPlayAnimationLooping] of string =
-  ( 'Default Looping',
-    'Force Looping',
-    'Force Not Looping' );
-
 var
-  Looping: TPlayAnimationLooping = paDefault;
+  Loop: boolean = true;
   Forward: boolean = true;
 
 type
-  TMenuItemLooping = class(TMenuItemRadio)
+  TMenuItemLoop = class(TMenuItemChecked)
     Scene: TCastleScene;
-    LoopingValue: TPlayAnimationLooping;
     function DoClick: boolean; override;
   end;
 
@@ -85,25 +78,20 @@ end;
 function TMenuItemAnimation.DoClick: boolean;
 begin
   inherited;
-  if not Scene.PlayAnimation(AnimationName, Looping, Forward) then
+  if not Scene.PlayAnimation(AnimationName, Loop, Forward) then
     WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
       [AnimationName]));
   Result := true;
 end;
 
-function TMenuItemLooping.DoClick: boolean;
+function TMenuItemLoop.DoClick: boolean;
 begin
   inherited;
   // change future animations
-  Looping := LoopingValue;
+  Loop := Checked;
   // also change currently playing animation, if any
   if Scene.CurrentAnimation <> nil then
-  begin
-    case Looping of
-      paForceLooping: Scene.CurrentAnimation.Loop := true;
-      paForceNotLooping: Scene.CurrentAnimation.Loop := false;
-    end;
-  end;
+    Scene.CurrentAnimation.Loop := Loop;
   Result := true;
 end;
 
@@ -126,24 +114,13 @@ end;
 
 procedure RefreshNamedAnimations(const Scene: TCastleScene);
 
-  procedure AppendLooping;
+  procedure AppendLoop;
   var
-    Group: TMenuItemRadioGroup;
-    Radio: TMenuItemLooping;
-    L: TPlayAnimationLooping;
+    MenuItem: TMenuItemLoop;
   begin
-    Group := nil;
-    for L := Low(L) to High(L) do
-    begin
-      Radio := TMenuItemLooping.Create(LoopingNames[L], 0, L = Looping, true);
-      Radio.Scene := Scene;
-      Radio.LoopingValue := L;
-      if Group = nil then
-        Group := Radio.Group else
-        Radio.Group := Group;
-      MenuNamedAnimations.Append(Radio);
-    end;
-    MenuNamedAnimations.Append(TMenuSeparator.Create);
+    MenuItem := TMenuItemLoop.Create('Loop', 0, Loop, true);
+    MenuItem.Scene := Scene;
+    MenuNamedAnimations.Append(MenuItem);
   end;
 
   procedure AppendForward;
@@ -153,7 +130,6 @@ procedure RefreshNamedAnimations(const Scene: TCastleScene);
     MenuItem := TMenuItemForward.Create('Forward', 0, Forward, true);
     MenuItem.Scene := Scene;
     MenuNamedAnimations.Append(MenuItem);
-    MenuNamedAnimations.Append(TMenuSeparator.Create);
   end;
 
 var
@@ -163,8 +139,9 @@ begin
   CreateMenuNamedAnimations;
 
   MenuNamedAnimations.Clear;
-  AppendLooping;
+  AppendLoop;
   AppendForward;
+  MenuNamedAnimations.Append(TMenuSeparator.Create);
 
   NamedAnimations := Scene.AnimationsList;
   for I := 0 to NamedAnimations.Count - 1 do
