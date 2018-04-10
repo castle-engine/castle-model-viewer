@@ -120,7 +120,8 @@ procedure TStatusText.Update(const SecondsPassed: Single;
 begin
   inherited;
   if not GetExists then Exit;
-  if (FlashText <> '') and (FlashTime + FlashDelay > Time) then VisibleChange;
+  if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
+    VisibleChange([chRender]);
   Time += SecondsPassed;
 end;
 

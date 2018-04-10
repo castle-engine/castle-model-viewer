@@ -19,7 +19,8 @@ var
 
 implementation
 
-uses SysUtils, CastleConfig, CastleWindow, CastleDownload;
+uses SysUtils,
+  CastleConfig, CastleWindow, CastleDownload, CastleApplicationProperties;
 
 function MyGetApplicationName: string;
 begin
@@ -38,8 +39,8 @@ begin
     'video_options/initial_show_bbox', DefaultInitialShowBBox);
   InitialShowStatus := Config.GetValue(
     'video_options/initial_show_status', DefaultInitialShowStatus);
-  Application.LimitFPS := Config.GetFloat('video_options/limit_fps',
-    DefaultLimitFPS);
+  ApplicationProperties.LimitFPS := Config.GetFloat('video_options/limit_fps',
+    TCastleApplicationProperties.DefaultLimitFPS);
   EnableNetwork := Config.GetValue('network', DefaultEnableNetwork);
 
   ShowBBox := InitialShowBBox;
@@ -53,7 +54,7 @@ begin
   Config.SetDeleteValue('video_options/initial_show_status',
     InitialShowStatus, DefaultInitialShowStatus);
   Config.SetDeleteFloat('video_options/limit_fps',
-    Application.LimitFPS, DefaultLimitFPS);
+    ApplicationProperties.LimitFPS, TCastleApplicationProperties.DefaultLimitFPS);
   Config.SetDeleteValue('network', EnableNetwork, DefaultEnableNetwork);
 end;
 

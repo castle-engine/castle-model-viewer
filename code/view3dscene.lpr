@@ -2728,7 +2728,7 @@ var
   var
     F: Single;
   begin
-    F := Application.LimitFPS;
+    F := ApplicationProperties.LimitFPS;
     if MessageInputQuery(Window,
       'Set approximate FPS (Frames Per Second) limit.' +NL+
       NL+
@@ -2738,7 +2738,7 @@ var
       NL+
       'Special value 0 means "do not limit FPS".',
       F, Format('%f', [F])) then
-      Application.LimitFPS := Max(F, 0.0);
+      ApplicationProperties.LimitFPS := Max(F, 0.0);
   end;
 
   procedure SwitchScreenSpaceAmbientOcclusion;
