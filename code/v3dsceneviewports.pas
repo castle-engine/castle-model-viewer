@@ -114,7 +114,7 @@ begin
       vc1:
         begin
           { make sure glViewport is also restored }
-          GLViewport(Window.Rect);
+          RenderContext.Viewport := Window.Rect;
           for I := 0 to High(Viewports) do
             Window.Controls.Remove(Viewports[I]);
         end;

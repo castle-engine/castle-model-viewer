@@ -68,7 +68,7 @@ uses SysUtils, Math, Classes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleBackground,
-  CastleRenderer, CastleShapes, CastleRenderingCamera, CastleSceneManager,
+  CastleRenderer, CastleShapes, CastleSceneManager, CastleTransform,
   CastleMaterialProperties,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
@@ -572,7 +572,7 @@ end;
 { TCastleWindowCustom callbacks --------------------------------------------------------- }
 
 { Update SceneBoundingBox look. }
-procedure SceneBoundingBoxUpdate;
+procedure SceneBoundingBoxUpdate(const RenderingCamera: TRenderingCamera);
 begin
   SceneBoundingBox.Exists :=
     (RenderingCamera.Target = rtScreen) and
@@ -587,7 +587,7 @@ begin
 end;
 
 { Render visualization of various stuff, like octree and such. }
-procedure RenderVisualizations;
+procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
   { TODO:
     Rendering below for now uses OpenGL fixed-function pipeline,
@@ -720,14 +720,14 @@ end;
 
 procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
 begin
-  SceneBoundingBoxUpdate;
+  SceneBoundingBoxUpdate(Params.RenderingCamera);
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
     Render as ShadowVolumesReceivers=true to make selected triangle
     drawn last (on top), to be clearly and always visible. }
   if (not Params.Transparent) and Params.ShadowVolumesReceivers then
-    RenderVisualizations;
+    RenderVisualizations(Params.RenderingCamera);
 end;
 
 procedure TV3DSceneManager.RenderFromView3D(const Params: TRenderParams);
@@ -764,14 +764,14 @@ end;
 
 procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
-  SceneBoundingBoxUpdate;
+  SceneBoundingBoxUpdate(Params.RenderingCamera);
   inherited;
   { RenderVisualizations are opaque, so they should be rendered here
     to correctly mix with partially transparent 3D scenes.
     Render as ShadowVolumesReceivers=true to make selected triangle
     drawn last (on top), to be clearly and always visible. }
   if (not Params.Transparent) and Params.ShadowVolumesReceivers then
-    RenderVisualizations;
+    RenderVisualizations(Params.RenderingCamera);
 end;
 
 procedure TV3DViewport.RenderFromView3D(const Params: TRenderParams);
@@ -2490,7 +2490,7 @@ var
             {$ifdef CASTLE_OBJFPC}@{$endif} TV3DSceneManager(SceneManager).RenderFromViewEverything,
             SceneManager.Projection.ProjectionNear,
             SceneManager.Projection.ProjectionFar);
-          glViewport(Window.Rect);
+          RenderContext.Viewport := Window.Rect;
 
           case Orientation of
             'b':
@@ -2527,7 +2527,7 @@ var
                 SaveSide(CubeMapImg[csPositiveZ], 'positive_z');
                 SaveSide(CubeMapImg[csNegativeZ], 'negative_z');
               end;
-            else EInternalError.Create('orient?');
+            else raise EInternalError.Create('orient?');
           end;
 
           for Side := Low(Side) to High(Side) do
@@ -2558,7 +2558,7 @@ var
           SceneManager.Projection.ProjectionNear,
           SceneManager.Projection.ProjectionFar);
         try
-          glViewport(Window.Rect);
+          RenderContext.Viewport := Window.Rect;
           Composite.SaveToFile(URL);
         finally FreeAndNil(Composite) end;
       end;
