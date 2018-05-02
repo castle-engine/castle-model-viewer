@@ -1106,7 +1106,8 @@ end;
 procedure LoadErrorMessage(const S: string);
 begin
   if not MakingScreenShot then
-    MessageOK(Window, S) else
+    MessageOK(Window, S)
+  else
     Writeln(ErrOutput, 'view3dscene: ', S);
 end;
 
@@ -1612,6 +1613,20 @@ procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 var
   WalkCamera: TWalkCamera;
 
+  { Show a multi-line message, allow to copy it to clipboard etc. }
+  procedure MessageReport(const S: string);
+  var
+    Answer: char;
+  begin
+    Answer := MessageChoice(Window, S,
+      ['Copy To Clipboard (Ctrl + C)', {'Write to Console', } 'Close (Enter)'],
+      [CtrlC, {CtrlW,} CharEnter], hpLeft, false, true);
+    case Answer of
+      CtrlC: Clipboard.AsText := S + NL;
+      //CtrlW: Writeln(S);
+    end;
+  end;
+
   procedure MakeGravityUp(const NewUp: TVector3);
   var
     Pos, Dir, Up, GravityUp: TVector3;
@@ -1634,12 +1649,6 @@ var
       Camera.MoveSpeed := MoveSpeed;
       Window.Invalidate;
     end;
-  end;
-
-  procedure ShowAndWrite(const S: string);
-  begin
-    Writeln(S);
-    MessageOK(Window, S);
   end;
 
   procedure ChangePointSize;
@@ -1786,7 +1795,7 @@ var
       end else
         S := S + 'No material (unlit)';
     end;
-    ShowAndWrite(S);
+    MessageReport(S);
   end;
 
   procedure SelectedShowLightsInformation;
@@ -1830,14 +1839,14 @@ var
         end;
     end;
 
-    ShowAndWrite(S);
+    MessageReport(S);
   end;
 
   procedure RemoveSelectedShape;
   begin
     if SelectedItem = nil then
     begin
-      ShowAndWrite('Nothing selected.');
+      Window.MessageOK('Nothing selected.', mtError);
     end else
     begin
       Scene.RemoveShape(TShape(SelectedItem^.Shape));
@@ -1869,14 +1878,14 @@ var
 
     if SelectedItem = nil then
     begin
-      ShowAndWrite('Nothing selected.');
+      Window.MessageOK('Nothing selected.', mtError);
       Exit;
     end;
 
     if (SelectedItem^.Face.IndexBegin = -1) or
        (SelectedItem^.Face.IndexEnd = -1) then
     begin
-      MessageOK(Window, 'The selected triangle is not part of IndexedFaceSet or IndexedTriangleSet node.');
+      Window.MessageOK('The selected triangle is not part of IndexedFaceSet or IndexedTriangleSet node.', mtError);
       Exit;
     end;
 
@@ -1972,7 +1981,7 @@ var
   begin
     if (SelectedItem = nil) then
     begin
-      ShowAndWrite('Nothing selected.');
+      Window.MessageOK('Nothing selected.', mtError);
       Exit(false);
     end;
 
@@ -2198,16 +2207,16 @@ var
       else raise EInternalError.Create('PrintRayhunterCommand:ProjectionType?');
     end;
 
-    Writeln(S);
+    MessageReport(S);
   end;
 
-  procedure WritelnCameraSettings(const Version: TX3DCameraVersion;
+  procedure PrintCameraSettings(const Version: TX3DCameraVersion;
     const Xml: boolean);
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
-    Writeln(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
+    MessageReport(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
@@ -2219,7 +2228,7 @@ var
     begin
       { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
       (*
-      Writeln(Format(
+      MessageReport(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
         '# Version for VRML 1.0' +nl+
@@ -2251,7 +2260,7 @@ var
       S2 := Format('%g', [Box.Data[1].Data[0] - Box.Data[0].Data[0]]);
       S3 := Format('%g', [Box.Data[1].Data[1] - Box.Data[0].Data[1]]);
       S4 := Format('%g', [Box.Data[1].Data[2] - Box.Data[0].Data[2]]);
-      Writeln(Format(
+      MessageReport(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
         '# Version for VRML 1.0' +nl+
@@ -2438,7 +2447,7 @@ var
       if Shape.InternalOctreeTriangles = nil then
         MessageOk(Window, 'No collision octree was initialized for this shape.') else
       begin
-        Writeln(Shape.InternalOctreeTriangles.Statistics);
+        MessageReport(Shape.InternalOctreeTriangles.Statistics);
       end;
     end;
   end;
@@ -2971,17 +2980,19 @@ begin
 
     100: SelectedShapeOctreeStat;
     101: if SceneOctreeCollisions <> nil then
-           Writeln(SceneOctreeCollisions.Statistics) else
+           MessageReport(SceneOctreeCollisions.Statistics)
+         else
            MessageOk(Window, SOnlyWhenOctreeAvailable);
     103: if SceneOctreeRendering <> nil then
-           Writeln(SceneOctreeRendering.Statistics) else
+           MessageReport(SceneOctreeRendering.Statistics)
+         else
            MessageOk(Window, SOnlyWhenOctreeAvailable);
 
     105: PrintRayhunterCommand;
 
-    106: WritelnCameraSettings(cvVrml1_Inventor, false);
-    107: WritelnCameraSettings(cvVrml2_X3d, false);
-    108: WritelnCameraSettings(cvVrml2_X3d, true);
+    106: PrintCameraSettings(cvVrml1_Inventor, false);
+    107: PrintCameraSettings(cvVrml2_X3d, false);
+    108: PrintCameraSettings(cvVrml2_X3d, true);
 
   { Only for debugging:
            Writeln(
@@ -3016,9 +3027,9 @@ begin
            UpdateCameraUI;
          end;
 
-    120: Writeln(TextureMemoryProfiler.Summary);
+    120: MessageReport(TextureMemoryProfiler.Summary);
 
-    121: ShowAndWrite('Scene "' + SceneURL + '" information:' + NL + NL +
+    121: MessageReport('Scene "' + SceneURL + '" information:' + NL + NL +
            SceneVertexTriangleInfo(Scene) + NL +
            SceneBoundingBoxInfo(Scene));
     122: begin
@@ -3034,10 +3045,10 @@ begin
            WalkCamera.MouseLook := not WalkCamera.MouseLook;
            UpdateCameraUI;
          end;
-    129: ShowAndWrite(ManifoldEdgesInfo(Scene));
+    129: MessageReport(ManifoldEdgesInfo(Scene));
 
     131: begin
-           ShowAndWrite(
+           MessageReport(
              'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' + NL +
              NL +
              'Supported formats:' + NL +
@@ -3067,7 +3078,7 @@ begin
 
     171: SelectedShowInformation;
     172: SelectedShowLightsInformation;
-    173: ShowAndWrite(GLInformationString);
+    173: MessageReport(GLInformationString);
 
     182: ChangePointSize;
 
@@ -3460,9 +3471,9 @@ begin
     M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
     Result.Append(M);
   M := TMenu.Create('_Console');
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
     M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
