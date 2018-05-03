@@ -43,6 +43,7 @@ program view3dscene;
 
 {$ifdef MSWINDOWS}
   {$R automatic-windows-resources.res}
+  {$apptype GUI}
 {$endif MSWINDOWS}
 
 { Icon for Mac OS X. .res file managed by Lazarus. }
@@ -56,7 +57,7 @@ uses SysUtils, Math, Classes,
   CastleTriangles, CastleApplicationProperties,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
-  CastleLog, CastleProgressConsole, DateUtils, CastleFrustum,
+  CastleLog, DateUtils, CastleFrustum,
   CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
@@ -902,7 +903,6 @@ class procedure THelper.OnWarningHandle(Sender: TObject; const Category, S: stri
 begin
   { Write to ErrOutput, not normal Output, since when --write is used,
     we write to output VRML/X3D contents. }
-  Writeln(ErrOutput, 'Warning: ' + Category + ': ' + S);
   SceneWarnings.Add(Category + ': ' + S);
   UpdateWarningsButton;
   if Window <> nil then
@@ -1108,7 +1108,7 @@ begin
   if not MakingScreenShot then
     MessageOK(Window, S)
   else
-    Writeln(ErrOutput, 'view3dscene: ', S);
+    ErrorWrite(S);
 end;
 
 { This loads the scene from file (using Load3D) and
@@ -1354,7 +1354,7 @@ begin
     S.Append('');
     S.AddStrings(SceneWarnings.Items);
     S.Append('');
-    S.Append('You can always see the console or use File->"View warnings" menu command to view these warnings again.');
+    S.Append('You can always use "File->View warnings" menu command to view these warnings again.');
     MessageOK(Window, S);
     WarningsButtonEnabled := false;
     UpdateWarningsButton;
@@ -1417,11 +1417,10 @@ begin
   try
     SceneManager.BeforeRender;
 
-    { For TRangeScreenShot to display progress on console
-      (it cannot display progress on GL window, since this would
-      mess rendered image; besides, in the future GL window may be
-      hidden during rendering). }
-    Progress.UserInterface := ProgressConsoleInterface;
+    { TRangeScreenShot cannot display progress on TCastleWindow,
+      since this would mess rendered image.
+      Besides, in the future GL window may be hidden during rendering. }
+    Progress.UserInterface := ProgressNullInterface;
 
     ScreenShotsList.BeginCapture;
 
@@ -3470,7 +3469,7 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
     Result.Append(M);
-  M := TMenu.Create('_Console');
+  M := TMenu.Create('_Clipboard');
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
@@ -3727,13 +3726,13 @@ begin
     Window.AntiAliasing := aaNone;
     if AntiAliasingMenu[Window.AntiAliasing] <> nil then
       AntiAliasingMenu[Window.AntiAliasing].Checked := true;
-    Writeln('OpenGL context cannot be initialized. Multi-sampling (anti-aliasing) turned off, trying to initialize once again.');
+    WritelnLog('OpenGL context cannot be initialized. Multi-sampling (anti-aliasing) turned off, trying to initialize once again.');
     Result := true;
   end else
   if Window.StencilBits > 0 then
   begin
     Window.StencilBits := 0;
-    Writeln('OpenGL context cannot be initialized. Stencil buffer (shadow volumes) turned off, trying to initialize once again.');
+    WritelnLog('OpenGL context cannot be initialized. Stencil buffer (shadow volumes) turned off, trying to initialize once again.');
     Result := true;
   end else
     Result := false;
@@ -4117,7 +4116,7 @@ begin
         without dumping any stack trace (because it's normal to
         exit with exception in case of project/environment error, not a bug,
         and the stack trace is mostly useless for end-users in -dRELEASE mode). }
-      Writeln(ErrOutput, ExceptMessage(E));
+      ErrorWrite(ExceptMessage(E));
       Halt(1);
     end;
   end;

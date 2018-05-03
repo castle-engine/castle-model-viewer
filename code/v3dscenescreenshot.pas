@@ -229,14 +229,14 @@ begin
       FfmpegExecute(Executable,
         [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-qscale', '1', OutputMovieFileName ]);
 
-      Write(Output, 'Removing temporary image files "', TemporaryImagesPattern, '" ...');
+      WritelnLog('Removing temporary image files "' + TemporaryImagesPattern + '" ...');
       TemporaryImagesCounter := 1;
       for I := 1 to FramesCount do
       begin
         TempFile := URIToFilenameSafe(MakeURL(TemporaryImagesPattern, TemporaryImagesCounter));
         CheckDeleteFile(TempFile, true);
       end;
-      Writeln('done.');
+      WritelnLog('Done removing temporary image files.');
     end;
   end;
 end;
