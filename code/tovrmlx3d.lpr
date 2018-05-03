@@ -14,7 +14,7 @@
 }
 
 { Simple converter to VRML/X3D from various other 3D formats.
-  See [http://castle-engine.sourceforge.net/view3dscene.php#section_converting].
+  See [https://castle-engine.io/view3dscene.php#section_converting].
 
   Reads a 3D model from the URL (in sample case, just a filename)
   given as command-line parameter ('-' means stdin),
@@ -105,7 +105,7 @@ begin
 
   Node := Load3D(URL, true);
   try
-    Save3D(Node, StdOutStream, 'tovrmlx3d, http://castle-engine.sourceforge.net/view3dscene.php#section_converting',
+    Save3D(Node, StdOutStream, 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
       ExtractURIName(URL), Encoding, ForceX3D);
   finally FreeAndNil(Node) end;
 end;

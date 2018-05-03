@@ -21,7 +21,7 @@
 }
 
 { view3dscene, a VRML/X3D browser and general 3D model viewer.
-  See [http://castle-engine.sourceforge.net/view3dscene.php] for user
+  See [https://castle-engine.io/view3dscene.php] for user
   documentation.
 
   The real name of this program is "Castle Game Engine swiss army knife" :)
@@ -1275,7 +1275,7 @@ begin
 end;
 
 const
-  SaveGenerator = 'view3dscene, http://castle-engine.sourceforge.net/view3dscene.php';
+  SaveGenerator = 'view3dscene, https://castle-engine.io/view3dscene.php';
 
 { Load model from ASceneURL ('-' means stdin),
   do SceneChanges, and write it as VRML/X3D to stdout.

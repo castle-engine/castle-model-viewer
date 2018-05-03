@@ -1,5 +1,5 @@
 "make install" does basic install of this for current user. See
-  http://castle-engine.sourceforge.net/view3dscene.php#section_install_free_desktop
+  https://castle-engine.io/view3dscene.php#section_install_free_desktop
 for user documentation how to use data and makefiles in this directory.
 File below is only for developers, some internal notes from Kambi how this
 works.

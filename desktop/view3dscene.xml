@@ -177,7 +177,7 @@
 
   <!-- MIME type invented by Michalis Kamburelis.
        castle-anim-frames is my format,
-       see [http://castle-engine.sourceforge.net/castle_animations_frames.php],
+       see [https://castle-engine.io/castle_animation_frames.php],
        so we can invent any mime type we want here. -->
   <mime-type type="application/x-castle-anim-frames">
     <sub-class-of type="text/xml"/>
