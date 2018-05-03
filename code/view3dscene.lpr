@@ -1618,12 +1618,10 @@ var
     Answer: char;
   begin
     Answer := MessageChoice(Window, S,
-      ['Copy To Clipboard (Ctrl + C)', {'Write to Console', } 'Close (Enter)'],
+      ['Copy To Clipboard (Ctrl + C)', 'Close (Enter)'],
       [CtrlC, {CtrlW,} CharEnter], hpLeft, false, true);
-    case Answer of
-      CtrlC: Clipboard.AsText := S + NL;
-      //CtrlW: Writeln(S);
-    end;
+    if Answer = CtrlC then
+      Clipboard.AsText := S + NL;
   end;
 
   procedure MakeGravityUp(const NewUp: TVector3);
@@ -2994,7 +2992,7 @@ begin
     108: PrintCameraSettings(cvVrml2_X3d, true);
 
   { Only for debugging:
-           Writeln(
+           WritelnLog(
              'Current camera frustum planes :' +nl+
              '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
              '  Left   : ' + SceneManager.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
@@ -3003,9 +3001,9 @@ begin
              '  Top    : ' + SceneManager.Camera.Frustum.Planes[fpTop].ToRawString +nl+
              '  Near   : ' + SceneManager.Camera.Frustum.Planes[fpNear].ToRawString);
            if SceneManager.Camera.Frustum.ZFarInfinity then
-             Writeln(
+             WritelnLog(
              '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
-             Writeln(
+             WritelnLog(
              '  Far    : ' + SceneManager.Camera.Frustum.Planes[fpFar].ToRawString);
          end;
   }
@@ -3888,7 +3886,7 @@ begin
          Halt;
         end;
     5 : begin
-         Writeln(Version);
+         InfoWrite(Version);
          Halt;
         end;
     6 : begin
