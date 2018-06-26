@@ -901,10 +901,18 @@ end;
 
 class procedure THelper.OnWarningHandle(Sender: TObject; const Category, S: string);
 begin
-  { Write to ErrOutput, not normal Output, since when --write is used,
-    we write to output VRML/X3D contents. }
-  SceneWarnings.Add(Category + ': ' + S);
-  UpdateWarningsButton;
+  { It is possible that SceneWarnings = nil now,
+    in case on macOS we use
+    ".../view3dscene .../dynamic_world.x3dv --screenshot 0 output_2d_screenshot.png"
+    and get warning
+    "Freeing form failed with EAccessViolation, this is unfortunately possible on macOS with Carbon widgetset".
+    The WarningsButton is invalid (already freed) at this point too. }
+  if SceneWarnings <> nil then
+  begin
+    SceneWarnings.Add(Category + ': ' + S);
+    UpdateWarningsButton;
+  end;
+
   if Window <> nil then
     Window.Invalidate;
 end;
