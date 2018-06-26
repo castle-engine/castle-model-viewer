@@ -248,6 +248,6 @@ cp ../tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
 ##
 ## cd ../../../
 
-create_dmg view3dscene
+create_dmg view3dscene ../view3dscene
 
 finish_macosx_pack
