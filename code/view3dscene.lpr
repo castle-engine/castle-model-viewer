@@ -2183,7 +2183,7 @@ var
   begin
     Camera.GetView(Pos, Dir, Up);
 
-    S := Format(
+    S := FormatDot(
        'Call rayhunter like this to render this view :' +nl+
        '  rayhunter classic %d %d %d "%s" "%s" \' +nl+
        '    --camera-pos %s \' +nl+
@@ -2201,10 +2201,10 @@ var
 
     case SceneManager.Projection.ProjectionType of
       ptPerspective:
-        S := S + Format('    --view-angle-x %f',
+        S := S + FormatDot('    --view-angle-x %f',
           [SceneManager.Projection.PerspectiveAngles[0]]);
       ptOrthographic:
-        S := S + Format('    --ortho %f %f %f %f', [
+        S := S + FormatDot('    --ortho %f %f %f %f', [
           SceneManager.Projection.Dimensions.Left,
           SceneManager.Projection.Dimensions.Bottom,
           SceneManager.Projection.Dimensions.Right,
@@ -2219,7 +2219,7 @@ var
 
     function Vector3ToPascal(const V: TVector3): String;
     begin
-      Result := Format('Vector3(%f, %f, %f)', [V.Data[0], V.Data[1], V.Data[2]]);
+      Result := FormatDot('Vector3(%f, %f, %f)', [V.Data[0], V.Data[1], V.Data[2]]);
     end;
 
   var
@@ -2287,9 +2287,9 @@ var
       *)
 
       S1 := Box.Center.ToRawString;
-      S2 := Format('%g', [Box.Data[1].Data[0] - Box.Data[0].Data[0]]);
-      S3 := Format('%g', [Box.Data[1].Data[1] - Box.Data[0].Data[1]]);
-      S4 := Format('%g', [Box.Data[1].Data[2] - Box.Data[0].Data[2]]);
+      S2 := FormatDot('%g', [Box.Data[1].Data[0] - Box.Data[0].Data[0]]);
+      S3 := FormatDot('%g', [Box.Data[1].Data[1] - Box.Data[0].Data[1]]);
+      S4 := FormatDot('%g', [Box.Data[1].Data[2] - Box.Data[0].Data[2]]);
       MessageReport(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+
