@@ -639,28 +639,20 @@ end;
 
 procedure TLightsMenu.ClickEditHeadlight(Sender: TObject);
 var
-  H: TLightInstance;
   NewHeadlight: TAbstractLightNode;
 begin
-  if SceneManager.HeadlightInstance(H) then
-  begin
-    FreeAndNil(HeadLightMenu);
-    NewHeadlight := H.Node;
-    HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
-    SetCurrentMenu(HeadLightMenu);
+  FreeAndNil(HeadLightMenu);
+  NewHeadlight := SceneManager.HeadlightNode;
+  HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
+  SetCurrentMenu(HeadLightMenu);
 
-    if Headlight <> NewHeadlight then
-    begin
-      if Headlight <> nil then
-        Headlight.RemoveDestructionNotification(@DestructionNotification);
-      Headlight := NewHeadlight;
-      Headlight.AddDestructionNotification(@DestructionNotification);
-    end;
-  end else
-    MessageOK(Window, 'No headlight in level.' +NL+ NL+
-      'You have to turn on headlight first:' +NL+
-      '- by menu item "View -> Headlight" (Ctrl+H),' +NL+
-      '- or by editing the VRML/X3D model and setting NavigationInfo.headlight to TRUE.');
+  if Headlight <> NewHeadlight then
+  begin
+    if Headlight <> nil then
+      Headlight.RemoveDestructionNotification(@DestructionNotification);
+    Headlight := NewHeadlight;
+    Headlight.AddDestructionNotification(@DestructionNotification);
+  end;
 end;
 
 procedure TLightsMenu.ClickClose(Sender: TObject);
