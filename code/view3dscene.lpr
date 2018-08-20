@@ -2215,6 +2215,31 @@ var
     MessageReport(S);
   end;
 
+  procedure PrintCameraSettingsPascal;
+
+    function Vector3ToPascal(const V: TVector3): String;
+    begin
+      Result := Format('Vector3(%f, %f, %f)', [V.Data[0], V.Data[1], V.Data[2]]);
+    end;
+
+  var
+    Pos, Dir, Up, GravityUp: TVector3;
+  begin
+    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
+      'SceneManager.RequiredCamera.SetView(' + NL +
+      '  %s, // position' + NL +
+      '  %s, // direction' + NL +
+      '  %s, // up (current)' + NL +
+      '  %s // gravity up' + NL +
+      ');',
+      [ Vector3ToPascal(Pos),
+        Vector3ToPascal(Dir),
+        Vector3ToPascal(Up),
+        Vector3ToPascal(GravityUp)
+      ]));
+  end;
+
   procedure PrintCameraSettings(const Version: TX3DCameraVersion;
     const Xml: boolean);
   var
@@ -2995,6 +3020,7 @@ begin
 
     105: PrintRayhunterCommand;
 
+    104: PrintCameraSettingsPascal;
     106: PrintCameraSettings(cvVrml1_Inventor, false);
     107: PrintCameraSettings(cvVrml2_X3d, false);
     108: PrintCameraSettings(cvVrml2_X3d, true);
@@ -3479,6 +3505,7 @@ begin
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal)',   104));
     M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
