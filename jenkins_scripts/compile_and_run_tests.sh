@@ -1,8 +1,11 @@
 #!/bin/bash
 set -eu
 
-# Run from view3dscene main directory
-cd ../
+# Build view3dscene and tovrmlx3d,
+# run various tests.
+#
+# This script uses some commands and assumes environment of our Jenkins on
+# https://jenkins.castle-engine.io/ .
 
 . /usr/local/fpclazarus/bin/setup.sh default
 ./compile.sh
