@@ -135,9 +135,9 @@ procedure TNavigationTypeButton.TooltipRender;
     ButtonBottomMargin = 16;
     ImageMargin = 8;
   var
-    R: TRectangle;
+    R: TFloatRectangle;
   begin
-    R := Rectangle(
+    R := FloatRectangle(
       WindowBorderMargin,
       Bottom - ButtonBottomMargin - (GLImage.Height + 2 * ImageMargin),
       GLImage.Width  + 2 * ImageMargin,
@@ -146,7 +146,7 @@ procedure TNavigationTypeButton.TooltipRender;
     Theme.Draw(R, tiTooltip);
     GLImage.Draw(R.Left + ImageMargin, R.Bottom + ImageMargin);
     { we decrease R.Top to overdraw the tooltip image border }
-    ImageTooltipArrow.Draw(Left + (CalculatedWidth - ImageTooltipArrow.Width) div 2, R.Top - 1);
+    ImageTooltipArrow.Draw(Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
   end;
 
 begin

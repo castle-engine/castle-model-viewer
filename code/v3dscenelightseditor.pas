@@ -35,7 +35,7 @@ var
 function LightsEditorIsOpen: boolean;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
-  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Integer);
+  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Single);
 procedure LightsEditorClose;
 
 implementation
@@ -250,7 +250,7 @@ var
     Both @nil when we're closed, never @nil when we're open. }
   SceneManager: TCastleSceneManager;
   Window: TCastleWindowCustom;
-  WindowMarginTop: Integer;
+  WindowMarginTop: Single;
 
   LightsMenu: TLightsMenu;
   Gizmo: TInternalScene;
@@ -358,7 +358,7 @@ begin
 end;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
-  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Integer);
+  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Single);
 begin
   if SceneManager = ASceneManager then Exit;
   SceneManager := ASceneManager;

@@ -58,7 +58,7 @@ uses SysUtils, Math, Classes,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleLog, DateUtils, CastleFrustum,
-  CastleImages, CastleCubeMaps, CastleCompositeImage, Castle3D, CastleSoundEngine,
+  CastleImages, CastleCubeMaps, CastleCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
   { OpenGL related units: }
@@ -69,7 +69,7 @@ uses SysUtils, Math, Classes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleBackground,
-  CastleRenderer, CastleShapes, CastleSceneManager, CastleTransform,
+  CastleRenderer, CastleShapes, CastleSceneManager,
   CastleMaterialProperties,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
@@ -3669,11 +3669,11 @@ const
   ButtonsSeparatorsMargin = 8; {< between buttons and separators }
 var
   NT: TNavigationType;
-  NextLeft, ButtonsHeight, ButtonsBottom: Integer;
+  NextLeft, ButtonsHeight, ButtonsBottom: Single;
 begin
   ButtonsHeight := Max(
-    CameraButtons[ntExamine { any button }].CalculatedHeight,
-    WarningsButton.CalculatedHeight);
+    CameraButtons[ntExamine { any button }].EffectiveHeight,
+    WarningsButton.EffectiveHeight);
   ButtonsBottom := Window.Height - ButtonsHeight - ToolbarMargin;
 
   NextLeft := ToolbarMargin;
@@ -3689,7 +3689,7 @@ begin
 
     OpenButton.Left := NextLeft;
     OpenButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + OpenButton.CalculatedWidth + ButtonsSeparatorsMargin;
+    NextLeft := NextLeft + OpenButton.EffectiveWidth + ButtonsSeparatorsMargin;
 
     ToolbarPanel.VerticalSeparators[0] := NextLeft;
     NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
@@ -3701,7 +3701,7 @@ begin
       begin
         CameraButtons[NT].Left := NextLeft;
         CameraButtons[NT].Bottom := ButtonsBottom;
-        NextLeft := NextLeft + CameraButtons[NT].CalculatedWidth + ButtonsMargin;
+        NextLeft := NextLeft + CameraButtons[NT].EffectiveWidth + ButtonsMargin;
       end;
     NextLeft := NextLeft + -ButtonsMargin + ButtonsSeparatorsMargin;
 
@@ -3710,15 +3710,15 @@ begin
 
     CollisionsButton.Left := NextLeft;
     CollisionsButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + CollisionsButton.CalculatedWidth + ButtonsMargin;
+    NextLeft := NextLeft + CollisionsButton.EffectiveWidth + ButtonsMargin;
 
     ScreenshotButton.Left := NextLeft;
     ScreenshotButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + ScreenshotButton.CalculatedWidth + ButtonsMargin;
+    NextLeft := NextLeft + ScreenshotButton.EffectiveWidth + ButtonsMargin;
   end;
 
   WarningsButton.Left := Max(NextLeft,
-    Window.Width - WarningsButton.CalculatedWidth - ToolbarMargin);
+    Window.Width - WarningsButton.EffectiveWidth - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
 
   ResizeViewports(V3DSceneWindow.Window, SceneManager);
