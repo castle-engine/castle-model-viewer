@@ -19,7 +19,7 @@ pipeline {
     stage('Upload Snapshots') {
       /* This must run on michalis.ii.uni.wroc.pl, outside Docker,
          since it directly copies the files. */
-      agent { label 'web-michalis-ii-uni-wroc-pl' } }
+      agent { label 'web-michalis-ii-uni-wroc-pl' }
       steps {
 	sh 'scripts/upload_snapshots.sh'
       }
