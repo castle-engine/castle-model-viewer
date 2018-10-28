@@ -13,7 +13,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-	sh 'scripts/build.sh'
+	sh 'jenkins_scripts/build.sh'
       }
     }
     stage('Upload Snapshots') {
@@ -21,7 +21,7 @@ pipeline {
          since it directly copies the files. */
       agent { label 'web-michalis-ii-uni-wroc-pl' }
       steps {
-	sh 'scripts/upload_snapshots.sh'
+	sh 'jenkins_scripts/upload_snapshots.sh'
       }
     }
   }
