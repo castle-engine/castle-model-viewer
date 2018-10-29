@@ -4,16 +4,16 @@
 */
 
 pipeline {
-  agent {
-    docker {
-      image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
-      label 'cag-jenkins-slave'
-    }
-  }
   stages {
+    agent {
+      docker {
+        image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
+        label 'cag-jenkins-slave'
+      }
+    }
     stage('Build') {
       steps {
-	sh 'jenkins_scripts/build.sh'
+        sh 'jenkins_scripts/build.sh'
       }
     }
     stage('Upload Snapshots') {
@@ -21,7 +21,7 @@ pipeline {
          since it directly copies the files. */
       agent { label 'web-michalis-ii-uni-wroc-pl' }
       steps {
-	sh 'jenkins_scripts/upload_snapshots.sh'
+        sh 'jenkins_scripts/upload_snapshots.sh'
       }
     }
   }
