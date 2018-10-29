@@ -4,14 +4,15 @@
 */
 
 pipeline {
+  agent { any }
   stages {
-    agent {
-      docker {
-        image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
-        label 'cag-jenkins-slave'
-      }
-    }
     stage('Build') {
+      agent {
+        docker {
+          image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
+          label 'cag-jenkins-slave'
+        }
+      }
       steps {
         sh 'jenkins_scripts/build.sh'
       }
