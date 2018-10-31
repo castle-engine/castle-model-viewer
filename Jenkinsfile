@@ -14,7 +14,7 @@ pipeline {
       }
       steps {
         sh 'jenkins_scripts/build.sh'
-        stash name: 'snapshots-to-publish' includes: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+        stash name: 'snapshots-to-publish', includes: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
     stage('Upload Snapshots') {
