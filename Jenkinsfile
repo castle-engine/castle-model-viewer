@@ -10,11 +10,11 @@ pipeline {
       agent {
         docker {
           image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
-          label 'cag-jenkins-slave'
         }
       }
       steps {
         sh 'jenkins_scripts/build.sh'
+        stash name: 'snapshots-to-publish' includes: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
     stage('Upload Snapshots') {
@@ -22,6 +22,7 @@ pipeline {
          since it directly copies the files. */
       agent { label 'web-michalis-ii-uni-wroc-pl' }
       steps {
+        unstash name: 'snapshots-to-publish'
         sh 'jenkins_scripts/upload_snapshots.sh'
       }
     }
