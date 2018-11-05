@@ -81,7 +81,7 @@ uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
 { global routines ------------------------------------------------------------ }
 
 var
-  Background: TCastleSimpleBackground;
+  Background: TCastleRectangleControl;
 
 procedure AssignCamera(Target, Source: TCastleAbstractViewport;
   SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
@@ -226,7 +226,8 @@ begin
     Viewports[I].UseGlobalLights := false;
     Viewports[I].SceneManager := SceneManager;
   end;
-  Background := TCastleSimpleBackground.Create(nil);
+  Background := TCastleRectangleControl.Create(nil);
+  Background.FullSize := true;
   Background.Color := Gray;
 end;
 
