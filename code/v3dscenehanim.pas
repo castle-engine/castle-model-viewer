@@ -85,8 +85,8 @@ begin
   { make all existing skin shapes transparent.
     This helps to see joints and their names through }
   for I := 0 to HumanoidNode.FdSkin.Count - 1 do
-    if HumanoidNode.FdSkin.Items[I] is TShapeNode then
-      MakeShapeTransparent(TShapeNode(HumanoidNode.FdSkin.Items[I]));
+    if HumanoidNode.FdSkin[I] is TShapeNode then
+      MakeShapeTransparent(TShapeNode(HumanoidNode.FdSkin[I]));
 
   { create sphere Shape for joints.
     All joint visualizations share the same sphere Shape.
@@ -107,9 +107,9 @@ begin
 
   { for each joint, add it's visualization }
   for I := 0 to HumanoidNode.FdJoints.Count - 1 do
-    if HumanoidNode.FdJoints.Items[I] is THAnimJointNode then
+    if HumanoidNode.FdJoints[I] is THAnimJointNode then
     begin
-      Joint := THAnimJointNode(HumanoidNode.FdJoints.Items[I]);
+      Joint := THAnimJointNode(HumanoidNode.FdJoints[I]);
       Inc(JointsProcessed);
 
       JointTransform := TTransformNode.Create(
