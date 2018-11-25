@@ -27,9 +27,6 @@ interface
 
 uses CastleColors, CastleSceneManager, V3DSceneViewports;
 
-const
-  DefaultBGColor: TCastleColor = (Data: (0, 0, 0, 1));
-
 var
   BGColor: TCastleColor;
 
@@ -66,13 +63,13 @@ type
 class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
 begin
   BGColor := Config.GetVector4(
-    'video_options/default_background_color', DefaultBGColor);
+    'video_options/default_background_color', TCastleSceneManager.DefaultBackgroundColor);
 end;
 
 class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
   Config.SetDeleteVector4('video_options/default_background_color',
-    BGColor, DefaultBGColor);
+    BGColor, TCastleSceneManager.DefaultBackgroundColor);
 end;
 
 procedure BackgroundTransparent;
