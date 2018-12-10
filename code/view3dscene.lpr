@@ -1387,8 +1387,7 @@ end;
 
 { make screen shots ---------------------------------------------------------- }
 
-function RenderAndSaveScreen(ImageClass: TCastleImageClass;
-  const ReadBuffer: TColorBuffer): TCastleImage;
+procedure SaveScreenRender;
 begin
   if ControlsOnScreenshot then
   begin
@@ -1403,7 +1402,6 @@ begin
     ViewportsRender(Window.Container);
     HideExtraScenesForScreenshot := false;
   end;
-  Result := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
 end;
 
 { This performs all screenshot takes, as specified in ScreenShotsList.
@@ -1439,7 +1437,8 @@ begin
         for J := 0 to ScreenShotsList[I].Count - 1 do
         begin
           Scene.ResetTime(ScreenShotsList[I].UseTime(J));
-          Image := RenderAndSaveScreen(ImageClass, ReadBuffer);
+          SaveScreenRender;
+          Image := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
           try
             SaveImage(Image, ScreenShotsList[I].UseURL(J));
           finally FreeAndNil(Image) end;
@@ -1547,7 +1546,6 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
 
   function CaptureScreen: TCastleImage;
   var
-    ReadBuffer: TColorBuffer;
     Fbo: TGLRenderToTexture;
     ImageClass: TCastleImageClass;
   begin
@@ -1558,9 +1556,10 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       Fbo := TGLRenderToTexture.Create(Window.Width, Window.Height);
       Fbo.Buffer := tbNone;
       Fbo.ColorBufferAlpha := true;
+      Fbo.Stencil := Window.StencilBits > 0;
+      Fbo.MultiSampling := Window.MultiSampling;
       Fbo.GLContextOpen;
       Fbo.RenderBegin;
-      ReadBuffer := Fbo.ColorBuffer;
       ImageClass := TRGBAlphaImage;
       BackgroundTransparent;
 
@@ -1570,13 +1569,21 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end else
     begin
-      ReadBuffer := Window.SaveScreenBuffer;
+      Fbo := nil;
       ImageClass := TRGBImage;
     end;
 
     try
       Window.Container.EventBeforeRender;
-      Result := RenderAndSaveScreen(ImageClass, ReadBuffer);
+      SaveScreenRender;
+
+      if Fbo <> nil then
+      begin
+        { We need to use TGLRenderToTexture.SaveScreen
+          to work in case of multi-sampling. }
+        Result := Fbo.SaveScreen(ImageClass, Window.Rect);
+      end else
+        Result := SaveScreen_NoFlush(ImageClass, Window.Rect, Window.SaveScreenBuffer);
     finally
       if Transparency then
       begin
