@@ -15,6 +15,10 @@ pipeline {
       steps {
         sh 'jenkins_scripts/build.sh'
         stash name: 'snapshots-to-publish', includes: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+        /* Do not defer "archiveArtifacts" to later (like post section),
+           as this command must run in the same agent and Docker container
+           as build.sh. */
+        archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
     stage('Upload Snapshots') {
@@ -28,9 +32,6 @@ pipeline {
     }
   }
   post {
-    success {
-      archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
-    }
     regression {
       mail to: 'michalis.kambi@gmail.com',
         subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",
