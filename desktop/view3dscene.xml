@@ -194,4 +194,14 @@
     <comment>JSON document</comment>
     <glob pattern="*.json"/>
   </mime-type>
+
+  <mime-type type="model/gltf+json">
+    <comment>glTF</comment>
+    <glob pattern="*.gltf"/>
+  </mime-type>
+
+  <mime-type type="model/gltf-binary">
+    <comment>glTF Binary</comment>
+    <glob pattern="*.glb"/>
+  </mime-type>
 </mime-info>

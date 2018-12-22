@@ -221,6 +221,42 @@ create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
     <key>CFBundleTypeRole</key>
     <string>Viewer</string>
   </dict>
+  <dict>
+    <key>CFBundleTypeExtensions</key>
+    <array>
+      <string>gltf</string>
+    </array>
+    <key>CFBundleTypeMIMETypes</key>
+    <string>model/gltf+json</string>
+    <key>CFBundleTypeName</key>
+    <string>glTF</string>
+    <key>CFBundleTypeIconFile</key>
+    <string>view3dscene</string>
+    <key>CFBundleTypeOSTypes</key>
+    <array>
+      <string>****</string>
+    </array>
+    <key>CFBundleTypeRole</key>
+    <string>Viewer</string>
+  </dict>
+  <dict>
+    <key>CFBundleTypeExtensions</key>
+    <array>
+      <string>glb</string>
+    </array>
+    <key>CFBundleTypeMIMETypes</key>
+    <string>model/gltf-binary</string>
+    <key>CFBundleTypeName</key>
+    <string>glTF Binary</string>
+    <key>CFBundleTypeIconFile</key>
+    <string>view3dscene</string>
+    <key>CFBundleTypeOSTypes</key>
+    <array>
+      <string>****</string>
+    </array>
+    <key>CFBundleTypeRole</key>
+    <string>Viewer</string>
+  </dict>
 '
 
 # add tovrmlx3d binary

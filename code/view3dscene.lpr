@@ -3091,6 +3091,8 @@ begin
              NL +
              'Supported formats:' + NL +
              '- X3D' + NL +
+             '- glTF 2.0' + NL +
+             '- Spine JSON' + NL +
              '- VRML 2.0 (aka VRML 97) and 1.0' + NL +
              '- castle-anim-frames' + NL +
              '- OpenInventor (IV)' + NL +
@@ -3099,7 +3101,6 @@ begin
              '- Wavefront OBJ' + NL +
              '- Collada' + NL +
              '- STL' + NL +
-             '- Spine JSON.' + NL +
              NL +
              'Version ' + Version + '.' + NL +
              'By Michalis Kamburelis.' + NL +

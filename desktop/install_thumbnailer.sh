@@ -38,6 +38,8 @@ install_single_thumbnailer 'application/x-wavefront-obj'
 install_single_thumbnailer 'application/x-geo'
 install_single_thumbnailer 'application/x-castle-anim-frames'
 install_single_thumbnailer 'application/json'
+install_single_thumbnailer 'model/gltf+json'
+install_single_thumbnailer 'model/gltf-binary'
 
 echo '----------'
 echo 'Installing view3dscene as GNOME thumbnailer: all OK.'
