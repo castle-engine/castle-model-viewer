@@ -1045,6 +1045,7 @@ begin
   SliderMapScale.OnChange := @MapScaleChanged;
 
   CurrentProjectionLabel := TCastleLabel.Create(Self);
+  CurrentProjectionLabel.Color := Vector4(0.7, 0.7, 0.7, 1);
 
   AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
   AddTitle('    Shadow Volumes Settings:');
