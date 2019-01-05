@@ -108,7 +108,7 @@ type
     ColorSlider: TMenuVector3Sliders;
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
-    OnToggle: TCastleMenuToggle;
+    OnToggle: TCastleOnScreenMenuItemToggle;
     LocationSlider: TMenuVector3Sliders;
     procedure LocationChanged(Sender: TObject);
     procedure ColorChanged(Sender: TObject);
@@ -190,9 +190,9 @@ type
   TShadowsMenu = class(TV3DOnScreenMenu)
   strict private
     Light: TAbstractLightNode;
-    ShadowsToggle: TCastleMenuToggle;
-    ShadowVolumesToggle: TCastleMenuToggle;
-    ShadowVolumesMainToggle: TCastleMenuToggle;
+    ShadowsToggle: TCastleOnScreenMenuItemToggle;
+    ShadowVolumesToggle: TCastleOnScreenMenuItemToggle;
+    ShadowVolumesMainToggle: TCastleOnScreenMenuItemToggle;
     SliderMapSizeExponent: TCastle2ExponentSlider;
     SliderMapBias: TCastleFloatSlider;
     SliderMapScale: TCastleFloatSlider;
@@ -519,7 +519,7 @@ constructor TLightsMenu.Create(AOwner: TComponent);
 var
   I: Integer;
   Light: TAbstractLightNode;
-  LightEditButton: TCastleMenuButton;
+  LightEditButton: TCastleOnScreenMenuItem;
 begin
   inherited;
 
@@ -534,10 +534,11 @@ begin
   for I := 0 to Lights.Count - 1 do
   begin
     Light := Lights[I] as TAbstractLightNode;
-    LightEditButton := TCastleMenuButton.Create(Self);
+    LightEditButton := TCastleOnScreenMenuItem.Create(Self);
     LightEditButton.Tag := I;
     LightEditButton.OnClick := @ClickEditLight;
-    Add(Format('Edit %d: %s', [I, Light.NiceName]), LightEditButton);
+    LightEditButton.Caption := Format('Edit %d: %s', [I, Light.NiceName]);
+    Add(LightEditButton);
   end;
   AmbientColorSlider.AddToMenu(Self, 'Global Ambient Light', 'Red', 'Green', 'Blue');
   Add('Edit Headlight', @ClickEditHeadlight);
@@ -620,7 +621,7 @@ var
   Node: TAbstractLightNode;
 begin
   FreeAndNil(LightMenu);
-  LightIndex := (Sender as TCastleMenuButton).Tag;
+  LightIndex := (Sender as TCastleOnScreenMenuItem).Tag;
   Node := Lights[LightIndex] as TAbstractLightNode;
   if Node is TSpotLightNode_1 then
     LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
@@ -697,8 +698,9 @@ begin
   AmbientIntensitySlider.Value := Light.AmbientIntensity;
   AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
 
-  OnToggle := TCastleMenuToggle.Create(Self);
-  OnToggle.Pressed := Light.IsOn;
+  OnToggle := TCastleOnScreenMenuItemToggle.Create(Self);
+  OnToggle.Caption := 'On';
+  OnToggle.Checked := Light.IsOn;
   OnToggle.OnClick := @ClickOn;
 
  { determine sensible lights positions.
@@ -714,7 +716,7 @@ begin
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
-  Add('On', OnToggle);
+  Add(OnToggle);
   LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
   Add('Shadows Settings...', @ClickShadowsMenu);
 
@@ -744,8 +746,8 @@ end;
 
 procedure TLightMenu.ClickOn(Sender: TObject);
 begin
-  OnToggle.Pressed := not OnToggle.Pressed;
-  Light.IsOn := OnToggle.Pressed;
+  OnToggle.Checked := not OnToggle.Checked;
+  Light.IsOn := OnToggle.Checked;
 end;
 
 procedure TLightMenu.ClickShadowsMenu(Sender: TObject);
@@ -1009,16 +1011,19 @@ begin
   inherited Create(AOwner);
   Light := ALight;
 
-  ShadowsToggle := TCastleMenuToggle.Create(Self);
-  ShadowsToggle.Pressed := Light.Shadows;
+  ShadowsToggle := TCastleOnScreenMenuItemToggle.Create(Self);
+  ShadowsToggle.Caption := '        Enable';
+  ShadowsToggle.Checked := Light.Shadows;
   ShadowsToggle.OnClick := @ClickShadows;
 
-  ShadowVolumesToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesToggle.Pressed := Light.ShadowVolumes;
+  ShadowVolumesToggle := TCastleOnScreenMenuItemToggle.Create(Self);
+  ShadowVolumesToggle.Caption :='        Off In Shadows';
+  ShadowVolumesToggle.Checked := Light.ShadowVolumes;
   ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
 
-  ShadowVolumesMainToggle := TCastleMenuToggle.Create(Self);
-  ShadowVolumesMainToggle.Pressed := Light.ShadowVolumesMain;
+  ShadowVolumesMainToggle := TCastleOnScreenMenuItemToggle.Create(Self);
+  ShadowVolumesMainToggle.Caption := '        Main (Determines Shadows)';
+  ShadowVolumesMainToggle.Checked := Light.ShadowVolumesMain;
   ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
 
   SliderMapSizeExponent := TCastle2ExponentSlider.Create(Self);
@@ -1043,10 +1048,10 @@ begin
 
   AddTitle('Edit ' + Light.NiceName + ' -> Shadows Settings:');
   AddTitle('    Shadow Volumes Settings:');
-  Add('        Main (Determines Shadows)', ShadowVolumesMainToggle);
-  Add('        Off In Shadows', ShadowVolumesToggle);
+  Add(ShadowVolumesMainToggle);
+  Add(ShadowVolumesToggle);
   AddTitle('    Shadow Maps Settings:');
-  Add('        Enable', ShadowsToggle);
+  Add(ShadowsToggle);
   Add('        Map Size', SliderMapSizeExponent);
   Add('        Map Bias (adjust to polygons slope)', SliderMapBias);
   Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
@@ -1074,8 +1079,8 @@ begin
     Exit;
   end;
 
-  ShadowsToggle.Pressed := not ShadowsToggle.Pressed;
-  Light.Shadows := ShadowsToggle.Pressed;
+  ShadowsToggle.Checked := not ShadowsToggle.Checked;
+  Light.Shadows := ShadowsToggle.Checked;
 end;
 
 procedure TShadowsMenu.ClickRecalculateProjection(Sender: TObject);
@@ -1103,14 +1108,14 @@ end;
 
 procedure TShadowsMenu.ClickShadowVolumes(Sender: TObject);
 begin
-  ShadowVolumesToggle.Pressed := not ShadowVolumesToggle.Pressed;
-  Light.ShadowVolumes := ShadowVolumesToggle.Pressed;
+  ShadowVolumesToggle.Checked := not ShadowVolumesToggle.Checked;
+  Light.ShadowVolumes := ShadowVolumesToggle.Checked;
 end;
 
 procedure TShadowsMenu.ClickShadowVolumesMain(Sender: TObject);
 begin
-  ShadowVolumesMainToggle.Pressed := not ShadowVolumesMainToggle.Pressed;
-  Light.ShadowVolumesMain := ShadowVolumesMainToggle.Pressed;
+  ShadowVolumesMainToggle.Checked := not ShadowVolumesMainToggle.Checked;
+  Light.ShadowVolumesMain := ShadowVolumesMainToggle.Checked;
 end;
 
 procedure TShadowsMenu.ClickBack(Sender: TObject);
