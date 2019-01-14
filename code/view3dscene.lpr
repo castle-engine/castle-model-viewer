@@ -570,7 +570,7 @@ begin
 *)
 end;
 
-{ TCastleWindowCustom callbacks --------------------------------------------------------- }
+{ TCastleWindowBase callbacks --------------------------------------------------------- }
 
 { Update SceneBoundingBox look. }
 procedure SceneBoundingBoxUpdate(const RenderingCamera: TRenderingCamera);
@@ -1611,7 +1611,7 @@ begin
       ScreenShotName := ChangeURIExt(ExtractURIName(SceneURL), '_%d.png') else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
-    { Below is a little expanded version of TCastleWindowCustom.SaveScreenDialog.
+    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
     if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
@@ -2617,7 +2617,7 @@ var
     var
       Image: TGrayscaleImage;
     begin
-      { Just like TCastleWindowCustom.SaveScreen, we have to force redisplay now
+      { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
@@ -3760,7 +3760,7 @@ end;
 
 { Try to lower anti-aliasing (multi-sampling) and shadows (stencil buffer)
   requirements and initialize worse GL context. }
-function RetryOpen(Window: TCastleWindowCustom): boolean;
+function RetryOpen(Window: TCastleWindowBase): boolean;
 begin
   if Window.AntiAliasing <> aaNone then
   begin
@@ -3897,7 +3897,7 @@ begin
            '                        anti-aliasing quality.' +NL+
            SoundEngine.ParseParametersHelp + NL+
            NL+
-           TCastleWindowCustom.ParseParametersHelp(StandardParseOptions, true) +NL+
+           TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
            NL+
            'Debug options:' +NL+
            '  --debug-log           Write log info to stdout.' +NL+
@@ -3997,7 +3997,7 @@ procedure Run;
 begin
   ApplicationProperties.Version := Version;
 
-  Window := TCastleWindowCustom.Create(Application);
+  Window := TCastleWindowBase.Create(Application);
 
   Application.MainWindow := Window;
   Progress.UserInterface := WindowProgressInterface;

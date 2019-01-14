@@ -2,6 +2,6 @@ unit V3DSceneWindow;
 interface
 uses CastleWindow;
 var
-  Window: TCastleWindowCustom;
+  Window: TCastleWindowBase;
 implementation
 end.

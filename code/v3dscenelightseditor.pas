@@ -35,7 +35,7 @@ var
 function LightsEditorIsOpen: boolean;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
-  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Single);
+  const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
 procedure LightsEditorClose;
 
 implementation
@@ -249,7 +249,7 @@ var
   { Local copy of scene manager and window for lights editor.
     Both @nil when we're closed, never @nil when we're open. }
   SceneManager: TCastleSceneManager;
-  Window: TCastleWindowCustom;
+  Window: TCastleWindowBase;
   WindowMarginTop: Single;
 
   LightsMenu: TLightsMenu;
@@ -358,7 +358,7 @@ begin
 end;
 
 procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
-  const AWindow: TCastleWindowCustom; const AWindowMarginTop: Single);
+  const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
 begin
   if SceneManager = ASceneManager then Exit;
   SceneManager := ASceneManager;
@@ -400,7 +400,7 @@ begin
 end;
 
 function MessageInputQueryDirection(
-  Window: TCastleWindowCustom; const Title: string;
+  Window: TCastleWindowBase; const Title: string;
   var Value: TVector3): boolean;
 var
   Pos, Up: TVector3;
