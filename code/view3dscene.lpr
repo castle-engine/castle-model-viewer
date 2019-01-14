@@ -198,6 +198,7 @@ type
     function ScreenEffectsCount: Integer; override;
     function ScreenEffectsNeedDepth: boolean; override;
     function Background: TBackground; override;
+    function BaseLightsForRaytracer: TLightInstancesList;
   end;
 
   TV3DViewport = class(TV3DShadowsViewport)
@@ -246,6 +247,12 @@ begin
   if DisableBackground <> 0 then
     Result := nil else
     Result := inherited;
+end;
+
+function TV3DSceneManager.BaseLightsForRaytracer: TLightInstancesList;
+begin
+  Result := TLightInstancesList.Create;
+  InitializeLights(Result);
 end;
 
 function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
@@ -2649,22 +2656,12 @@ var
   end;
 
   procedure Raytrace;
-
-    function LightsForRaytracer: TLightInstancesList;
-    var
-      HI: TLightInstance;
-    begin
-      Result := TLightInstancesList.Create;
-      if SceneManager.HeadlightInstance(HI) then
-        Result.Add(HI);
-    end;
-
   var
     Pos, Dir, Up: TVector3;
     BaseLights: TLightInstancesList;
   begin
     SceneManager.Camera.GetView(Pos, Dir, Up);
-    BaseLights := LightsForRaytracer;
+    BaseLights := (SceneManager as TV3DSceneManager).BaseLightsForRaytracer;
     try
       RaytraceToWin(BaseLights, Scene, Pos, Dir, Up, SceneManager.Projection, BGColor);
     finally FreeAndNil(BaseLights) end;
