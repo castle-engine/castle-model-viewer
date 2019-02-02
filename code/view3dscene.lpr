@@ -2800,9 +2800,9 @@ var
     URL, CopyStr, CutStr, PasteStr: string;
   begin
     URL := SceneURL;
-    Check(KeyString(CtrlC, K_None, [], CopyStr));
-    Check(KeyString(CtrlX, K_None, [], CutStr));
-    Check(KeyString(CtrlV, K_None, [], PasteStr));
+    Check(KeyToString(CtrlC, K_None, [], CopyStr));
+    Check(KeyToString(CtrlX, K_None, [], CutStr));
+    Check(KeyToString(CtrlV, K_None, [], PasteStr));
     if MessageInputQuery(Window,
       'Open 3D model from given URL.' + NL + NL +
       'Note that by default "http" is disabled (because the downloads are blocking for now, and every 3D model may reference additional resources like textures). Enable http by checking "Preferences -> Download Resources From Network".' + NL + NL +
