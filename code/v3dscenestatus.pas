@@ -99,13 +99,13 @@ end;
 
 procedure TStatusText.Resize;
 var
-  CharWidth: Integer;
+  CharWidth: Single;
 begin
   inherited;
   CharWidth := Font.TextWidth('W');
   if CharWidth > 0 then
-    FMaxLineChars := Max(Integer(10), Integer(ContainerWidth -
-      PaddingHorizontal * 2 - Left * 2) div CharWidth) else
+    FMaxLineChars := Max(10, Floor(
+      (ContainerWidth - PaddingHorizontal * 2 - Left * 2) / CharWidth)) else
     FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 
