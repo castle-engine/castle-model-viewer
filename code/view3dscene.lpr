@@ -1803,12 +1803,14 @@ var
                '  ambient : %s' +nl+
                '  diffuse : %s' +nl+
                '  specular : %s' +nl+
+               '  emissive : %s' +nl+
                '  shininess : %f' +nl+
                '  transparency : %f',
                [ M.Node.NiceName, M.Node.ClassName,
                  M.AmbientColor.ToString,
                  M.DiffuseColor.ToString,
                  M.SpecularColor.ToString,
+                 M.EmissiveColor.ToString,
                  M.Shininess,
                  M.Transparency ]);
       end else
