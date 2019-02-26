@@ -3614,8 +3614,9 @@ begin
   OpenButton := TCastleButton.Create(Application);
   OpenButton.Caption := 'Open';
   OpenButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OpenButtonClick;
-  OpenButton.Image := V3DSceneImages.Open;
-  OpenButton.ImageAlphaTest := true;
+  OpenButton.Image.Image := V3DSceneImages.Open;
+  OpenButton.Image.OwnsImage := false;
+  OpenButton.Image.AlphaChannel := acTest;
   OpenButton.MinImageHeight := MinImageHeight;
   Window.Controls.InsertFront(OpenButton);
 
@@ -3632,15 +3633,17 @@ begin
   ScreenshotButton := TCastleButton.Create(Application);
   ScreenshotButton.Caption := 'Screenshot';
   ScreenshotButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ScreenshotButtonClick;
-  ScreenshotButton.Image := V3DSceneImages.Screenshot;
-  ScreenshotButton.ImageAlphaTest := true;
+  ScreenshotButton.Image.Image := V3DSceneImages.Screenshot;
+  ScreenshotButton.Image.OwnsImage := false;
+  ScreenshotButton.Image.AlphaChannel := acTest;
   ScreenshotButton.MinImageHeight := MinImageHeight;
   Window.Controls.InsertFront(ScreenShotButton);
 
   WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
   WarningsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).WarningsButtonClick;
-  WarningsButton.Image := Warning_icon;
+  WarningsButton.Image.Image := Warning_icon;
+  WarningsButton.Image.OwnsImage := false;
   WarningsButton.MinImageHeight := MinImageHeight;
   Window.Controls.InsertFront(WarningsButton);
 
@@ -3662,9 +3665,12 @@ begin
       Window.Controls.InsertFront(CameraButtons[NT]);
     end;
 
-  CameraButtons[ntExamine].Image := V3DSceneImages.Examine;
-  CameraButtons[ntWalk].Image := V3DSceneImages.Walk;
-  CameraButtons[ntFly].Image := V3DSceneImages.Fly;
+  CameraButtons[ntExamine].Image.Image := V3DSceneImages.Examine;
+  CameraButtons[ntExamine].Image.OwnsImage := false;
+  CameraButtons[ntWalk].Image.Image := V3DSceneImages.Walk;
+  CameraButtons[ntWalk].Image.OwnsImage := false;
+  CameraButtons[ntFly].Image.Image := V3DSceneImages.Fly;
+  CameraButtons[ntFly].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
 end;
