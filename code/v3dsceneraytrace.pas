@@ -21,7 +21,7 @@
 }
 
 { Simple unit that allows to incrementally display raytracer result
-  in TCastleWindowCustom window. }
+  in TCastleWindowBase window. }
 unit V3DSceneRaytrace;
 
 interface
@@ -36,7 +36,7 @@ const
 procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
-  const CamPosition, CamDir, CamUp: TVector3Single;
+  const CamPosition, CamDir, CamUp: TVector3;
   const Projection: TProjection;
   const SceneBGColor: TCastleColor);
 
@@ -89,7 +89,7 @@ type
 { TRayTracerImage ----------------------------------------------------------- }
 
 type
-  TRayTracerImage = class(TUIControl)
+  TRayTracerImage = class(TCastleUserInterface)
   private
     Image: TCastleImage;
   public
@@ -98,13 +98,13 @@ type
 
 procedure TRayTracerImage.Render;
 var
-  GLImage: TGLImage;
+  GLImage: TDrawableImage;
 begin
   { Although usually the Image will cover the whole window (as it was
     created with the size = window size), we have to clear screen first
     in case user resized the window to make it larger. }
   RenderContext.Clear([cbColor], Black);
-  GLImage := TGLImage.Create(Image, false, false);
+  GLImage := TDrawableImage.Create(Image, false, false);
   try
     GLImage.Draw(0, 0);
   finally FreeAndNil(GLImage) end;
@@ -238,7 +238,7 @@ end;
 procedure RaytraceToWin(
   BaseLights: TLightInstancesList;
   Scene: TCastleSceneCore;
-  const CamPosition, CamDir, CamUp: TVector3Single;
+  const CamPosition, CamDir, CamUp: TVector3;
   const Projection: TProjection;
   const SceneBGColor: TCastleColor);
 var

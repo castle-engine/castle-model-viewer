@@ -66,9 +66,9 @@ uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages,
   V3DSceneImages, CastleRectangles;
 
 var
-  ImageExamine_TooltipGL: TGLImage;
-  ImageWalk_Fly_TooltipGL: TGLImage;
-  ImageTooltipArrow: TGLImage;
+  ImageExamine_TooltipGL: TDrawableImage;
+  ImageWalk_Fly_TooltipGL: TDrawableImage;
+  ImageTooltipArrow: TDrawableImage;
   { Saved SceneManager from InitCameras. }
   FSceneManager: TCastleSceneManager;
 
@@ -129,7 +129,7 @@ end;
 
 procedure TNavigationTypeButton.TooltipRender;
 
-  procedure DoDraw(GLImage: TGLImage);
+  procedure DoDraw(GLImage: TDrawableImage);
   const
     WindowBorderMargin = 8;
     ButtonBottomMargin = 16;
@@ -164,11 +164,11 @@ begin
   if NavigationType = ntExamine then
   begin
     if ImageExamine_TooltipGL = nil then
-      ImageExamine_TooltipGL := TGLImage.Create(Examine_Tooltip, false, false);
+      ImageExamine_TooltipGL := TDrawableImage.Create(Examine_Tooltip, false, false);
     if ImageWalk_Fly_TooltipGL = nil then
-      ImageWalk_Fly_TooltipGL := TGLImage.Create(Walk_Fly_Tooltip, false, false);
+      ImageWalk_Fly_TooltipGL := TDrawableImage.Create(Walk_Fly_Tooltip, false, false);
     if ImageTooltipArrow = nil then
-      ImageTooltipArrow := TGLImage.Create(TooltipArrow, false, false);
+      ImageTooltipArrow := TDrawableImage.Create(TooltipArrow, false, false);
   end;
 end;
 
