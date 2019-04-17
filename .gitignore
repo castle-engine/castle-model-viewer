@@ -1,6 +1,7 @@
 *~
 *.o
 *.ppu
+*.log
 view3dscene
 view3dscene.exe
 tovrmlx3d
