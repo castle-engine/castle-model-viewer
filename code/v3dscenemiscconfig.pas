@@ -22,11 +22,6 @@ implementation
 uses SysUtils,
   CastleConfig, CastleWindow, CastleDownload, CastleApplicationProperties;
 
-function MyGetApplicationName: string;
-begin
-  Result := 'view3dscene';
-end;
-
 type
   TConfigOptions = class
     class procedure LoadFromConfig(const Config: TCastleConfig);
@@ -59,13 +54,6 @@ begin
 end;
 
 initialization
-  { This is needed because
-    - I sometimes display ApplicationName for user, and under Windows
-      ParamStr(0) is ugly uppercased.
-    - ParamStr(0) is unsure for Unixes.
-    - ApplicationName is used for Config.URL by ApplicationConfig. }
-  OnGetApplicationName := @MyGetApplicationName;
-
   UserConfig.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
   UserConfig.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
 end.

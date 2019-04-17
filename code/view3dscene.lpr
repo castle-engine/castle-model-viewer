@@ -3905,7 +3905,7 @@ begin
            TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
            NL+
            'Debug options:' +NL+
-           '  --debug-log           Write log info to stdout.' +NL+
+           '  --debug-log           Deprecated. We now log by default.' +NL+
            '  --debug-log-cache     Write log info, including cache.' +nl+
            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
@@ -3951,27 +3951,12 @@ begin
           RangeScreenShot.URLPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
-    8 : InitializeLog;
-    9 : begin
-          InitializeLog;
-          LogChanges := true;
-        end;
-    10: begin
-          InitializeLog;
-          LogRendererCache := true;
-        end;
-    11: begin
-          InitializeLog;
-          LogShaders := true;
-        end;
-    12: begin
-          InitializeLog;
-          LogVideosCache := true;
-        end;
-    13: begin
-          InitializeLog;
-          LogTextureCache := true;
-        end;
+    8 : ; // we now call InitializeLog always
+    9 : LogChanges := true;
+    10: LogRendererCache := true;
+    11: LogShaders := true;
+    12: LogVideosCache := true;
+    13: LogTextureCache := true;
     14: begin
           Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
             Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
@@ -4000,7 +3985,15 @@ end;
 
 procedure Run;
 begin
+  { Set nice application name.
+    The default application name is determined from ParamStr(0),
+    but that is sometimes not optimal:
+    - Under Windows ParamStr(0) is ugly uppercased.
+    - ParamStr(0) is unceratain for Unixes -- it contains whatever caller set.
+    - ApplicationName is used for Config.URL by ApplicationConfig, so it better be reliable. }
+  ApplicationProperties.ApplicationName := 'view3dscene';
   ApplicationProperties.Version := Version;
+  InitializeLog;
 
   Window := TCastleWindowBase.Create(Application);
 
