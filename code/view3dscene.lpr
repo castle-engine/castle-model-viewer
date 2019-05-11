@@ -41,10 +41,11 @@ program view3dscene;
 
 {$I v3dsceneconf.inc}
 
-{$ifdef MSWINDOWS}
-  {$R automatic-windows-resources.res}
-  {$apptype GUI}
-{$endif MSWINDOWS}
+{$ifdef MSWINDOWS} {$apptype GUI} {$endif}
+
+{ This adds icons and version info for Windows,
+  automatically created by "castle-engine compile". }
+{$ifdef CASTLE_AUTO_GENERATED_RESOURCES} {$R castle-auto-generated-resources.res} {$endif}
 
 { Icon for Mac OS X. .res file managed by Lazarus. }
 {$ifdef DARWIN}

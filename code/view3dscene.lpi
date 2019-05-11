@@ -40,7 +40,7 @@
         <PackageName Value="castle_base"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="31">
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -57,10 +57,6 @@
         <Filename Value="v3dscenelightseditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
-      <Unit4>
-        <Filename Value="automatic-windows-resources.res"/>
-        <IsPartOfProject Value="True"/>
-      </Unit4>
       <Unit5>
         <Filename Value="screen_effects_flashlight.glsl.inc"/>
         <IsPartOfProject Value="True"/>
@@ -165,10 +161,10 @@
         <Filename Value="v3dscenescenechanges.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
-      <Unit31>
+      <Unit4>
         <Filename Value="v3dsceneboxes.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit31>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
