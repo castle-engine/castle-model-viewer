@@ -1168,6 +1168,8 @@ begin
   try
     SavedSceneWarnings.Assign(SceneWarnings);
     SceneWarnings.Clear;
+    // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
+    UpdateWarningsButton;
 
     {$ifdef CATCH_EXCEPTIONS}
     try
@@ -1181,6 +1183,8 @@ begin
           E.Message);
         { In this case we can preserve current scene. }
         SceneWarnings.Assign(SavedSceneWarnings);
+        // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
+        UpdateWarningsButton;
         Exit;
       end;
     end;
@@ -1255,6 +1259,9 @@ procedure LoadSimpleScene(Node: TX3DRootNode;
   const Options: TLoadSceneOptions);
 begin
   SceneWarnings.Clear;
+  // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
+  UpdateWarningsButton;
+
   LoadSceneCore(Node, '', [], Options);
 end;
 
@@ -3648,7 +3655,8 @@ begin
   Window.Controls.InsertFront(WarningsButton);
 
   if SceneWarnings <> nil then
-    UpdateWarningsButton else
+    UpdateWarningsButton
+  else
     WarningsButton.Exists := false; { at least initialize Exists }
 
   for NT := Low(NT) to High(NT) do
