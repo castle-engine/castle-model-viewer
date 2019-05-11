@@ -4,6 +4,7 @@
 *.log
 *.exe
 *.dll
+*.res
 view3dscene
 tovrmlx3d
 automatic-windows-resources.res
