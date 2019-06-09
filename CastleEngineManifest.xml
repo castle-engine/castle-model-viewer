@@ -20,4 +20,5 @@
   <package>
     <include path="COPYING.GPL2.txt" />
   </package>
+  <data exists="false" />
 </project>
