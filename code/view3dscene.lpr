@@ -917,7 +917,10 @@ begin
     The WarningsButton is invalid (already freed) at this point too. }
   if SceneWarnings <> nil then
   begin
-    SceneWarnings.Add(Category + ': ' + S);
+    if Category <> '' then
+      SceneWarnings.Add(Category + ': ' + S)
+    else
+      SceneWarnings.Add(S);
     UpdateWarningsButton;
   end;
 
