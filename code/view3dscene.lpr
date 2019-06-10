@@ -130,6 +130,7 @@ var
   MenuPreferGravityUpForRotations: TMenuItemChecked;
   MenuPreferGravityUpForMoving: TMenuItemChecked;
   MenuReopen: TMenuItem;
+  MenuNamedAnimations: TMenuItemChecked;
 
   SceneWarnings: TSceneWarnings;
 
@@ -154,6 +155,7 @@ var
 
   ToolbarPanel: TCastlePanel;
   CollisionsButton: TCastleButton;
+  AnimationsButton: TCastleButton;
 
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
@@ -182,6 +184,7 @@ type
     class procedure OpenButtonClick(Sender: TObject);
     class procedure CollisionsButtonClick(Sender: TObject);
     class procedure ScreenshotButtonClick(Sender: TObject);
+    class procedure AnimationsButtonClick(Sender: TObject);
     class procedure OnWarningHandle(Sender: TObject; const Category, S: string);
   end;
 
@@ -389,6 +392,13 @@ begin
     if Scene.Collides and (Scene.InternalOctreeCollisions = nil) then
       SceneOctreeCreate;
   end;
+end;
+
+procedure ToggleNamedAnimationsUi;
+begin
+  NamedAnimationsUiExists := not NamedAnimationsUiExists;
+  MenuNamedAnimations.Checked := NamedAnimationsUiExists;
+  AnimationsButton.Pressed := NamedAnimationsUiExists;
 end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
@@ -989,8 +999,7 @@ begin
   // Scene.Close;
 
   Viewpoints.Recalculate(nil);
-  if MenuNamedAnimations <> nil then
-    MenuNamedAnimations.Clear;
+  RefreshNamedAnimationsUi(Window, nil, ToolbarPanel.Height);
 
   SceneURL := '';
 
@@ -1106,7 +1115,7 @@ begin
     Scene.CameraChanged(SceneManager.Camera);
     Scene.VisibleChangeNotification(SceneManager.CameraToChanges);
 
-    RefreshNamedAnimations(Scene);
+    RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.Height);
 
     if not Window.Closed then
       Scene.VisibleChangeHere([]);
@@ -3163,6 +3172,8 @@ begin
 
   //  225: PrecalculateAnimationFromEvents;
 
+    230: ToggleNamedAnimationsUi;
+
     300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
     340: SwitchScreenSpaceAmbientOcclusion;
@@ -3201,7 +3212,8 @@ begin
     722: LoadMaterialProperties;
     723: CleanMaterialProperties;
     725: if LightsEditorIsOpen then
-           LightsEditorClose else
+           LightsEditorClose
+         else
            LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
     730: MergeCloseVertexes;
 
@@ -3466,11 +3478,12 @@ begin
     M.Append(MenuCollisions);
     Result.Append(M);
   M := TMenu.Create('_Animation');
+    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, NamedAnimationsUiExists, false);
+    M.Append(MenuNamedAnimations);
+    M.Append(TMenuSeparator.Create);
     MenuAnimationTimePlaying := TMenuItemChecked.Create(
       '_Playing / Paused',   220, CtrlP, AnimationTimePlaying, true);
     M.Append(MenuAnimationTimePlaying);
-    CreateMenuNamedAnimations;
-    M.Append(MenuNamedAnimations);
     M.Append(TMenuItem.Create('Playing Speed...', 222));
     M.Append(TMenuItem.Create('Baked Animation Smoothness ...', 223));
     M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
@@ -3592,6 +3605,7 @@ begin
     OpenButton.Exists := Vis;
     CollisionsButton.Exists := Vis;
     ScreenshotButton.Exists := Vis;
+    AnimationsButton.Exists := Vis;
 
     { Note that WarningsButton ignores the Vis.
       This is by design --- always signal warnings. }
@@ -3648,7 +3662,16 @@ begin
   ScreenshotButton.Image.OwnsImage := false;
   ScreenshotButton.Image.AlphaChannel := acTest;
   ScreenshotButton.MinImageHeight := MinImageHeight;
-  Window.Controls.InsertFront(ScreenShotButton);
+  Window.Controls.InsertFront(ScreenshotButton);
+
+  AnimationsButton := TCastleButton.Create(Application);
+  AnimationsButton.Caption := 'Animations';
+  AnimationsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).AnimationsButtonClick;
+  AnimationsButton.Toggle := true;
+  AnimationsButton.Image.Image := V3DSceneImages.Animations;
+  AnimationsButton.Image.OwnsImage := false;
+  AnimationsButton.MinImageHeight := MinImageHeight;
+  Window.Controls.InsertFront(AnimationsButton);
 
   WarningsButton := TCastleButton.Create(Application);
   WarningsButton.Caption := 'Warnings';
@@ -3740,6 +3763,10 @@ begin
     ScreenshotButton.Left := NextLeft;
     ScreenshotButton.Bottom := ButtonsBottom;
     NextLeft := NextLeft + ScreenshotButton.EffectiveWidth + ButtonsMargin;
+
+    AnimationsButton.Left := NextLeft;
+    AnimationsButton.Bottom := ButtonsBottom;
+    NextLeft := NextLeft + AnimationsButton.EffectiveWidth + ButtonsMargin;
   end;
 
   WarningsButton.Left := Max(NextLeft,
@@ -3773,6 +3800,11 @@ end;
 class procedure THelper.ScreenshotButtonClick(Sender: TObject);
 begin
   ScreenShotImage('Screenshot to Image', false);
+end;
+
+class procedure THelper.AnimationsButtonClick(Sender: TObject);
+begin
+  ToggleNamedAnimationsUi;
 end;
 
 { Try to lower anti-aliasing (multi-sampling) and shadows (stencil buffer)
