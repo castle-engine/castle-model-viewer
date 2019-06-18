@@ -177,6 +177,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Slider := TCastleFloatSlider.Create(Self);
     Slider.Min := 0;
     Slider.Max := 5;
+    Slider.Value := Transition;
     Slider.OnChange := @ChangeSliderTransition;
     LabelAndSlider.InsertFront(Slider);
 
