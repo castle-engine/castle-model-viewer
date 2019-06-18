@@ -74,6 +74,7 @@ type
     procedure ChangeCheckboxLoop(Sender: TObject);
     procedure ChangeCheckboxForward(Sender: TObject);
     procedure ChangeSliderTransition(Sender: TObject);
+    procedure ChangeSliderSpeed(Sender: TObject);
     procedure ClickAnimation(Sender: TObject);
     procedure ClickResetAnimationState(Sender: TObject);
     procedure ClickStopAnimation(Sender: TObject);
@@ -184,6 +185,36 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     InsertFront(LabelAndSlider);
   end;
 
+  procedure AppendSpeed;
+  var
+    Lab: TCastleLabel;
+    Slider: TCastleFloatSlider;
+    LabelAndSlider: TCastleHorizontalGroup;
+  begin
+    LabelAndSlider := TCastleHorizontalGroup.Create(Self);
+    LabelAndSlider.Spacing := Margin;
+
+    Lab := TCastleLabel.Create(Self);
+    Lab.Caption := 'Playback Speed:';
+    Lab.Color := White;
+    LabelAndSlider.InsertFront(Lab);
+
+    Slider := TCastleFloatSlider.Create(Self);
+    Slider.Min := 0;
+    Slider.Max := 10;
+    { We use Scene.TimePlayingSpeed to preserve playing speed when scene changes.
+      (view3dscene doesn't create new Scene each time, it only calls Load on one
+      Scene instance). }
+    if Scene <> nil then
+      Slider.Value := Scene.TimePlayingSpeed
+    else
+      Slider.Value := 1;
+    Slider.OnChange := @ChangeSliderSpeed;
+    LabelAndSlider.InsertFront(Slider);
+
+    InsertFront(LabelAndSlider);
+  end;
+
   procedure CreateScrollView;
   begin
     { We place animations in TCastleScrollView,
@@ -213,6 +244,7 @@ begin
     AppendLoop;
     AppendForward;
     AppendTransition;
+    AppendSpeed;
     AppendSpacer(Margin);
     NamedAnimations := Scene.AnimationsList;
     AppendAnimationsInfo(NamedAnimations.Count);
@@ -293,6 +325,12 @@ end;
 procedure TNamedAnimationsUi.ChangeSliderTransition(Sender: TObject);
 begin
   Transition := (Sender as TCastleFloatSlider).Value;
+end;
+
+procedure TNamedAnimationsUi.ChangeSliderSpeed(Sender: TObject);
+begin
+  if Scene <> nil then
+    Scene.TimePlayingSpeed := (Sender as TCastleFloatSlider).Value;
 end;
 
 procedure TNamedAnimationsUi.ClickResetAnimationState(Sender: TObject);
