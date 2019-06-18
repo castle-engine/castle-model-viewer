@@ -1,15 +1,7 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "flashlight.glsl" }
-'int screen_x();' + LineEnding +
-'int screen_y();' + LineEnding +
-'vec4 screen_get_color(ivec2 position);' + LineEnding +
-'float screen_get_depth(ivec2 position);' + LineEnding +
-'ivec2 screen_position();' + LineEnding +
-'' + LineEnding +
-'/* Below already declared by ScreenEffectLibrary that is glued at' + LineEnding +
-'   the beginning.' + LineEnding +
-'uniform int screen_width;' + LineEnding +
-'uniform int screen_height;' + LineEnding +
+'/* See https://castle-engine.io/x3d_extensions_screen_effects.php' + LineEnding +
+'   for docs how to write screen effects for CGE.' + LineEnding +
 '*/' + LineEnding +
 '' + LineEnding +
 'void main (void)' + LineEnding +

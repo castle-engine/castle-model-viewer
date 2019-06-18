@@ -1,6 +1,6 @@
-int screen_x();
-int screen_y();
-vec4 screen_get_color(ivec2 position);
+/* See https://castle-engine.io/x3d_extensions_screen_effects.php
+   for docs how to write screen effects for CGE.
+*/
 
 void main (void)
 {

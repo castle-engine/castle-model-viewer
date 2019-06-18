@@ -1,8 +1,8 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "edge_detect.glsl" }
-'int screen_x();' + LineEnding +
-'int screen_y();' + LineEnding +
-'vec4 screen_get_color(ivec2 position);' + LineEnding +
+'/* See https://castle-engine.io/x3d_extensions_screen_effects.php' + LineEnding +
+'   for docs how to write screen effects for CGE.' + LineEnding +
+'*/' + LineEnding +
 '' + LineEnding +
 'void main (void)' + LineEnding +
 '{' + LineEnding +

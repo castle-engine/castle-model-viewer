@@ -1,13 +1,5 @@
-int screen_x();
-int screen_y();
-vec4 screen_get_color(ivec2 position);
-float screen_get_depth(ivec2 position);
-ivec2 screen_position();
-
-/* Below already declared by ScreenEffectLibrary that is glued at
-   the beginning.
-uniform int screen_width;
-uniform int screen_height;
+/* See https://castle-engine.io/x3d_extensions_screen_effects.php
+   for docs how to write screen effects for CGE.
 */
 
 void main (void)
