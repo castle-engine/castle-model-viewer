@@ -42,15 +42,19 @@ property NamedAnimationsUiExists: Boolean
 
 implementation
 
-uses SysUtils,
+uses SysUtils, Math,
   CastleLog, CastleSceneCore, CastleColors,
   V3DSceneCaptions;
+
+const
+  Margin = 10;
 
 { State preserved across RefreshNamedAnimationsUi ---------------------------- }
 
 var
   Loop: boolean = true;
   Forward: boolean = true;
+  Transition: Single = 0;
 
 { TNamedAnimationsUi and friend classes -------------------------------------- }
 
@@ -63,21 +67,207 @@ type
   TNamedAnimationsUi = class(TCastleVerticalGroup)
   public
     Scene: TCastleScene;
+    AnimationsScrollView: TCastleScrollView;
+    AnimationsScrollGroup: TCastleVerticalGroup;
+    constructor Create(const AOwner: TComponent; const AScene: TCastleScene); reintroduce;
+    procedure Resize; override;
     procedure ChangeCheckboxLoop(Sender: TObject);
     procedure ChangeCheckboxForward(Sender: TObject);
+    procedure ChangeSliderTransition(Sender: TObject);
     procedure ClickAnimation(Sender: TObject);
     procedure ClickResetAnimationState(Sender: TObject);
     procedure ClickStopAnimation(Sender: TObject);
   end;
 
+constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TCastleScene);
+
+  procedure AppendLoop;
+  var
+    Ui: TCastleCheckbox;
+  begin
+    Ui := TCastleCheckbox.Create(Self);
+    Ui.Caption := 'Loop';
+    Ui.Checked := Loop;
+    Ui.OnChange := @ChangeCheckboxLoop;
+    Ui.TextColor := White;
+    Ui.CheckboxColor := White;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendForward;
+  var
+    Ui: TCastleCheckbox;
+  begin
+    Ui := TCastleCheckbox.Create(Self);
+    Ui.Caption := 'Forward';
+    Ui.Checked := Forward;
+    Ui.OnChange := @ChangeCheckboxForward;
+    Ui.TextColor := White;
+    Ui.CheckboxColor := White;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendAnimationsInfo(const AnimationsCount: Cardinal);
+  var
+    Ui: TCastleLabel;
+  begin
+    Ui := TCastleLabel.Create(Self);
+    Ui.Caption := Format('%d Animations', [AnimationsCount]);
+    Ui.Color := White;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendAnimation(const AnimationName: String);
+  var
+    Ui: TButtonAnimation;
+  begin
+    Ui := TButtonAnimation.Create(Self);
+    Ui.Caption := Format('%s (%f)', [
+      SForCaption(AnimationName),
+      Scene.AnimationDuration(AnimationName)
+    ]);
+    Ui.AnimationName := AnimationName;
+    Ui.OnClick := @ClickAnimation;
+    AnimationsScrollGroup.InsertFront(Ui);
+  end;
+
+  procedure AppendSpacer(const Height: Single);
+  var
+    Ui: TCastleUserInterface;
+  begin
+    Ui := TCastleUserInterface.Create(Self);
+    Ui.Height := Height;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendStopAnimation;
+  var
+    Ui: TCastleButton;
+  begin
+    Ui := TCastleButton.Create(Self);
+    Ui.Caption := 'Stop Animation';
+    Ui.OnClick := @ClickStopAnimation;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendResetAnimationState;
+  var
+    Ui: TCastleButton;
+  begin
+    Ui := TCastleButton.Create(Self);
+    Ui.Caption := 'Reset Animation State';
+    Ui.OnClick := @ClickResetAnimationState;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendTransition;
+  var
+    Lab: TCastleLabel;
+    Slider: TCastleFloatSlider;
+    LabelAndSlider: TCastleHorizontalGroup;
+  begin
+    LabelAndSlider := TCastleHorizontalGroup.Create(Self);
+    LabelAndSlider.Spacing := Margin;
+
+    Lab := TCastleLabel.Create(Self);
+    Lab.Caption := 'Transition:';
+    Lab.Color := White;
+    LabelAndSlider.InsertFront(Lab);
+
+    Slider := TCastleFloatSlider.Create(Self);
+    Slider.Min := 0;
+    Slider.Max := 5;
+    Slider.OnChange := @ChangeSliderTransition;
+    LabelAndSlider.InsertFront(Slider);
+
+    InsertFront(LabelAndSlider);
+  end;
+
+  procedure CreateScrollView;
+  begin
+    { We place animations in TCastleScrollView,
+      in case we have too many animations to fit on screen. }
+    AnimationsScrollView := TCastleScrollView.Create(Self);
+    AnimationsScrollView.ScrollArea.AutoSizeToChildren := true;
+    InsertFront(AnimationsScrollView);
+
+    AnimationsScrollGroup := TCastleVerticalGroup.Create(Self);
+    AnimationsScrollGroup.Spacing := Spacing; // copy own Spacing
+    AnimationsScrollView.ScrollArea.InsertFront(AnimationsScrollGroup);
+  end;
+
+var
+  NamedAnimations: TStrings;
+  I: Integer;
+begin
+  inherited Create(AOwner);
+
+  Scene := AScene;
+  Frame := true;
+  Padding := Margin;
+  Spacing := 4;
+
+  if Scene <> nil then
+  begin
+    AppendLoop;
+    AppendForward;
+    AppendTransition;
+    AppendSpacer(Margin);
+    NamedAnimations := Scene.AnimationsList;
+    AppendAnimationsInfo(NamedAnimations.Count);
+    if NamedAnimations.Count <> 0 then
+    begin
+      CreateScrollView;
+      for I := 0 to NamedAnimations.Count - 1 do
+        AppendAnimation(NamedAnimations[I]);
+
+      AppendSpacer(Margin);
+      AppendStopAnimation;
+      AppendResetAnimationState;
+    end;
+  end;
+
+  { The state with Scene = nil is never visible by user in practice,
+    so we don't bother to make it look nice with some label 'open some scene'. }
+end;
+
+procedure TNamedAnimationsUi.Resize;
+
+  procedure UpdateScrollViewSize;
+  const
+    { It is easier to set it experimentally than to calculate from code, for now }
+    HeightForRestOfUi = 380;
+  begin
+    if AnimationsScrollView <> nil then
+    begin
+      Assert(Container <> nil);
+      AnimationsScrollView.Width := AnimationsScrollGroup.EffectiveWidth
+        + AnimationsScrollView.EffectiveScrollBarWidth;
+      AnimationsScrollView.Height := Min(AnimationsScrollGroup.EffectiveHeight,
+        Container.UnscaledHeight - HeightForRestOfUi);
+    end;
+  end;
+
+begin
+  UpdateScrollViewSize;
+end;
+
 procedure TNamedAnimationsUi.ClickAnimation(Sender: TObject);
 var
   AnimationName: String;
+  Params: TPlayAnimationParameters;
 begin
   AnimationName := (Sender as TButtonAnimation).AnimationName;
-  if not Scene.PlayAnimation(AnimationName, Loop, Forward) then
-    WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
-      [AnimationName]));
+  Params := TPlayAnimationParameters.Create;
+  try
+    Params.Name := AnimationName;
+    Params.Loop := Loop;
+    Params.Forward := Forward;
+    Params.TransitionDuration := Transition;
+    if not Scene.PlayAnimation(Params) then
+      WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
+        [AnimationName]));
+  finally FreeAndNil(Params) end;
 end;
 
 procedure TNamedAnimationsUi.ChangeCheckboxLoop(Sender: TObject);
@@ -99,6 +289,11 @@ begin
     Scene.CurrentAnimation.FractionIncreasing := Forward;
 end;
 
+procedure TNamedAnimationsUi.ChangeSliderTransition(Sender: TObject);
+begin
+  Transition := (Sender as TCastleFloatSlider).Value;
+end;
+
 procedure TNamedAnimationsUi.ClickResetAnimationState(Sender: TObject);
 begin
   Scene.ResetAnimationState;
@@ -116,90 +311,7 @@ var
 
 procedure RefreshNamedAnimationsUi(const Window: TCastleWindowBase;
   const Scene: TCastleScene; const WindowMarginTop: Single);
-
-  procedure AppendLoop;
-  var
-    Ui: TCastleCheckbox;
-  begin
-    Ui := TCastleCheckbox.Create(NamedAnimationsUi);
-    Ui.Caption := 'Loop';
-    Ui.Checked := Loop;
-    Ui.OnChange := @NamedAnimationsUi.ChangeCheckboxLoop;
-    Ui.TextColor := White;
-    Ui.CheckboxColor := White;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendForward;
-  var
-    Ui: TCastleCheckbox;
-  begin
-    Ui := TCastleCheckbox.Create(NamedAnimationsUi);
-    Ui.Caption := 'Forward';
-    Ui.Checked := Forward;
-    Ui.OnChange := @NamedAnimationsUi.ChangeCheckboxForward;
-    Ui.TextColor := White;
-    Ui.CheckboxColor := White;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendAnimationsInfo(const AnimationsCount: Cardinal);
-  var
-    Ui: TCastleLabel;
-  begin
-    Ui := TCastleLabel.Create(NamedAnimationsUi);
-    Ui.Caption := Format('%d Animations', [AnimationsCount]);
-    Ui.Color := White;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendAnimation(const AnimationName: String);
-  var
-    Ui: TButtonAnimation;
-  begin
-    // TODO: scroll area
-    Ui := TButtonAnimation.Create(NamedAnimationsUi);
-    Ui.Caption := Format('%s (%f)', [
-      SForCaption(AnimationName),
-      Scene.AnimationDuration(AnimationName)
-    ]);
-    Ui.AnimationName := AnimationName;
-    Ui.OnClick := @NamedAnimationsUi.ClickAnimation;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendSpacer(const Height: Single);
-  var
-    Ui: TCastleUserInterface;
-  begin
-    Ui := TCastleUserInterface.Create(NamedAnimationsUi);
-    Ui.Height := 10;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendStopAnimation;
-  var
-    Ui: TCastleButton;
-  begin
-    Ui := TCastleButton.Create(NamedAnimationsUi);
-    Ui.Caption := 'Stop Animation';
-    Ui.OnClick := @NamedAnimationsUi.ClickStopAnimation;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
-  procedure AppendResetAnimationState;
-  var
-    Ui: TCastleButton;
-  begin
-    Ui := TCastleButton.Create(NamedAnimationsUi);
-    Ui.Caption := 'Reset Animation State';
-    Ui.OnClick := @NamedAnimationsUi.ClickResetAnimationState;
-    NamedAnimationsUi.InsertFront(Ui);
-  end;
-
 var
-  NamedAnimations: TStrings;
-  I: Integer;
   OldNamedAnimationsExists: Boolean;
 begin
   OldNamedAnimationsExists := (NamedAnimationsUi <> nil) and NamedAnimationsUi.Exists;
@@ -207,35 +319,11 @@ begin
   { free previous UI owned by NamedAnimationsUi, including previous animations }
   FreeAndNil(NamedAnimationsUi);
 
-  NamedAnimationsUi := TNamedAnimationsUi.Create(Window);
+  NamedAnimationsUi := TNamedAnimationsUi.Create(Window, Scene);
   NamedAnimationsUi.Exists := OldNamedAnimationsExists;
-  NamedAnimationsUi.Scene := Scene;
-  NamedAnimationsUi.Frame := true;
-  NamedAnimationsUi.Padding := 10;
-  NamedAnimationsUi.Spacing := 4;
-  NamedAnimationsUi.Anchor(hpLeft, 10);
-  NamedAnimationsUi.Anchor(vpTop, - WindowMarginTop - 10);
+  NamedAnimationsUi.Anchor(hpLeft, Margin);
+  NamedAnimationsUi.Anchor(vpTop, - WindowMarginTop - Margin);
   Window.Controls.InsertFront(NamedAnimationsUi);
-
-  if Scene <> nil then
-  begin
-    AppendLoop;
-    AppendForward;
-    AppendSpacer(10);
-    NamedAnimations := Scene.AnimationsList;
-    AppendAnimationsInfo(NamedAnimations.Count);
-    if NamedAnimations.Count <> 0 then
-    begin
-      for I := 0 to NamedAnimations.Count - 1 do
-        AppendAnimation(NamedAnimations[I]);
-      AppendSpacer(10);
-      AppendStopAnimation;
-      AppendResetAnimationState;
-    end;
-  end;
-
-  { The state with Scene = nil is never visible by user in practice,
-    so we don't bother to make it look nice with some label 'open some scene'. }
 end;
 
 function GetNamedAnimationsUiExists: Boolean;
