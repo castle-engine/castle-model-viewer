@@ -269,7 +269,7 @@ procedure TNamedAnimationsUi.Resize;
   procedure UpdateScrollViewSize;
   const
     { It is easier to set it experimentally than to calculate from code, for now }
-    HeightForRestOfUi = 380;
+    HeightForRestOfUi = 400;
   begin
     if AnimationsScrollView <> nil then
     begin
