@@ -43,7 +43,7 @@ property NamedAnimationsUiExists: Boolean
 implementation
 
 uses SysUtils, Math,
-  CastleLog, CastleSceneCore, CastleColors,
+  CastleLog, CastleSceneCore, CastleColors, CastleUtils,
   V3DSceneCaptions;
 
 const
@@ -69,8 +69,10 @@ type
     Scene: TCastleScene;
     AnimationsScrollView: TCastleScrollView;
     AnimationsScrollGroup: TCastleVerticalGroup;
+    LabelCurrentAnimation: TCastleLabel;
     constructor Create(const AOwner: TComponent; const AScene: TCastleScene); reintroduce;
     procedure Resize; override;
+    procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
     procedure ChangeCheckboxLoop(Sender: TObject);
     procedure ChangeCheckboxForward(Sender: TObject);
     procedure ChangeSliderTransition(Sender: TObject);
@@ -139,6 +141,15 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui := TCastleUserInterface.Create(Self);
     Ui.Height := Height;
     InsertFront(Ui);
+  end;
+
+  procedure AppendCurrentAnimation;
+  begin
+    LabelCurrentAnimation := TCastleLabel.Create(Self);
+    LabelCurrentAnimation.Caption := 'Current:';
+    LabelCurrentAnimation.Color := White;
+    LabelCurrentAnimation.Exists := false; // will be shown in Update if needed
+    InsertFront(LabelCurrentAnimation);
   end;
 
   procedure AppendStopAnimation;
@@ -257,6 +268,9 @@ begin
       AppendSpacer(Margin);
       AppendStopAnimation;
       AppendResetAnimationState;
+      { Since it dynamically appears / disappears, it's best to show it last,
+        so that it doesn't shift the remaining UI when disappearing. }
+      AppendCurrentAnimation;
     end;
   end;
 
@@ -269,20 +283,44 @@ procedure TNamedAnimationsUi.Resize;
   procedure UpdateScrollViewSize;
   const
     { It is easier to set it experimentally than to calculate from code, for now }
-    HeightForRestOfUi = 400;
+    HeightForRestOfUi = 470;
   begin
     if AnimationsScrollView <> nil then
     begin
       Assert(Container <> nil);
       AnimationsScrollView.Width := AnimationsScrollGroup.EffectiveWidth
         + AnimationsScrollView.EffectiveScrollBarWidth;
-      AnimationsScrollView.Height := Min(AnimationsScrollGroup.EffectiveHeight,
-        Container.UnscaledHeight - HeightForRestOfUi);
+      AnimationsScrollView.Height := Max(0, Min(AnimationsScrollGroup.EffectiveHeight,
+        Container.UnscaledHeight - HeightForRestOfUi));
     end;
   end;
 
 begin
+  inherited;
   UpdateScrollViewSize;
+end;
+
+procedure TNamedAnimationsUi.Update(const SecondsPassed: Single; var HandleInput: boolean);
+begin
+  inherited;
+
+  // LabelCurrentAnimation is nil <=> Scene is nil
+  if LabelCurrentAnimation <> nil then
+  begin
+    Assert(Scene <> nil);
+    LabelCurrentAnimation.Exists := Scene.CurrentAnimation <> nil;
+    if Scene.CurrentAnimation <> nil then
+    begin
+      LabelCurrentAnimation.Caption := Format('Current:' + NL + '%s' + NL + '%f / %f', [
+        { We write animation name on a separate line,
+          this way we know it will fit within AnimationsScrollView width,
+          without the need to resize it. }
+        Scene.CurrentAnimation.X3DName,
+        Scene.CurrentAnimation.ElapsedTimeInCycle,
+        Scene.CurrentAnimation.CycleInterval
+      ]);
+    end;
+  end;
 end;
 
 procedure TNamedAnimationsUi.ClickAnimation(Sender: TObject);
