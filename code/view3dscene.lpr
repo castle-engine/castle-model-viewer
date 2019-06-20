@@ -3478,7 +3478,7 @@ begin
     M.Append(MenuCollisions);
     Result.Append(M);
   M := TMenu.Create('_Animation');
-    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, NamedAnimationsUiExists, false);
+    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, CtrlA, NamedAnimationsUiExists, false);
     M.Append(MenuNamedAnimations);
     M.Append(TMenuSeparator.Create);
     MenuAnimationTimePlaying := TMenuItemChecked.Create(
