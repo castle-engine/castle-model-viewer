@@ -785,7 +785,7 @@ begin
   { light location may change due to various things
     (it may be animated by X3D events, it may change when we turn on
     shadows:=TRUE for DirectionalLight...).
-    So just update it continously. }
+    So just update it continuously. }
   V := Light.ProjectionSceneLocation;
   if not TVector3.Equals(V, LocationSlider.Value) then
   begin
