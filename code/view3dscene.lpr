@@ -290,6 +290,18 @@ end;
 
 { Helper functions ----------------------------------------------------------- }
 
+{ Show a multi-line message, allow to copy it to clipboard etc. }
+procedure MessageReport(const S: string);
+var
+  Answer: char;
+begin
+  Answer := MessageChoice(Window, S,
+    ['Copy To Clipboard (Ctrl + C)', 'Close (Enter)'],
+    [CtrlC, {CtrlW,} CharEnter], hpLeft, false, true);
+  if Answer = CtrlC then
+    Clipboard.AsText := S + NL;
+end;
+
 procedure UpdateSelectedEnabled;
 begin
   if MenuSelectedInfo <> nil then
@@ -1379,21 +1391,17 @@ begin
 end;
 
 class procedure THelper.WarningsButtonClick(Sender: TObject);
-var
-  S: TStringList;
 begin
-  S := TStringList.Create;
-  try
-    S.Append(Format('Total %d warnings about current scene "%s":',
-      [ SceneWarnings.Count, SceneURL ]));
-    S.Append('');
-    S.AddStrings(SceneWarnings.Items);
-    S.Append('');
-    S.Append('You can always use "File->View warnings" menu command to view these warnings again.');
-    MessageOK(Window, S);
-    WarningsButtonEnabled := false;
-    UpdateWarningsButton;
-  finally FreeAndNil(S) end;
+  MessageReport(
+    Format('%d warnings:', [SceneWarnings.Count]) + NL +
+    NL +
+    TrimRight(SceneWarnings.Items.Text) + NL +
+    NL +
+    'Scene URL: "' + URIDisplay(SceneURL) + '".' + NL +
+    'Use "File->View Warnings" menu to view these warnings again.'
+  );
+  WarningsButtonEnabled := false;
+  UpdateWarningsButton;
 end;
 
 procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
@@ -1653,18 +1661,6 @@ end;
 procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 var
   WalkCamera: TWalkCamera;
-
-  { Show a multi-line message, allow to copy it to clipboard etc. }
-  procedure MessageReport(const S: string);
-  var
-    Answer: char;
-  begin
-    Answer := MessageChoice(Window, S,
-      ['Copy To Clipboard (Ctrl + C)', 'Close (Enter)'],
-      [CtrlC, {CtrlW,} CharEnter], hpLeft, false, true);
-    if Answer = CtrlC then
-      Clipboard.AsText := S + NL;
-  end;
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
