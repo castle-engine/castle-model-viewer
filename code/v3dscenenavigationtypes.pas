@@ -57,8 +57,8 @@ type
     procedure GLContextClose; override;
   end;
 
-{ Same as SceneManager.Camera, where SceneManager was given to InitCameras. }
-function Camera: TCamera;
+{ Same as SceneManager.Navigation, where SceneManager was given to InitCameras. }
+function Navigation: TCastleNavigation;
 
 implementation
 
@@ -91,9 +91,9 @@ begin
   UpdateCameraNavigationTypeUI;
 end;
 
-function Camera: TCamera;
+function Navigation: TCastleNavigation;
 begin
-  Result := FSceneManager.Camera;
+  Result := FSceneManager.Navigation;
 end;
 
 { TNavigationTypeButton ------------------------------------------------------ }

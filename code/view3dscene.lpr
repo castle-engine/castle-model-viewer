@@ -547,7 +547,7 @@ begin
     S := S + ' (octree resources released)';
   Text.Append(S); }
 
-  Camera.GetView(Pos, Dir, Up);
+  Navigation.GetView(Pos, Dir, Up);
   Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
     [ ValueColor, Pos.ToString,
       ValueColor, Dir.ToString,
@@ -691,7 +691,7 @@ begin
     { Note that there is no sense in showing viewing frustum if
       Camera is TWalkCamera, since InternalWalkCamera.Frustum should not
       be visible then (as it's just the *currently used* frustum in this case). }
-    if ShowFrustum and not (Camera is TWalkCamera) then
+    if ShowFrustum and not (Navigation is TWalkCamera) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -1666,22 +1666,22 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    Camera.GetView(Pos, Dir, Up, GravityUp);
+    Navigation.GetView(Pos, Dir, Up, GravityUp);
     if VectorsParallel(Dir, NewUp) then
       Dir := AnyOrthogonalVector(NewUp);
     Up := NewUp;
     GravityUp := NewUp;
-    Camera.SetView(Pos, Dir, Up, GravityUp, false);
+    Navigation.SetView(Pos, Dir, Up, GravityUp, false);
   end;
 
   procedure ChangeMoveSpeed;
   var
     MoveSpeed: Single;
   begin
-    MoveSpeed := Camera.MoveSpeed;
+    MoveSpeed := Navigation.MoveSpeed;
     if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
     begin
-      Camera.MoveSpeed := MoveSpeed;
+      Navigation.MoveSpeed := MoveSpeed;
       Window.Invalidate;
     end;
   end;
@@ -2168,7 +2168,7 @@ var
     CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Scene.CameraTransition(Camera, Position, Direction, Up, GravityUp);
+    Scene.CameraTransition(Navigation, Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2213,7 +2213,7 @@ var
     S: string;
     Pos, Dir, Up: TVector3;
   begin
-    Camera.GetView(Pos, Dir, Up);
+    Navigation.GetView(Pos, Dir, Up);
 
     S := FormatDot(
        'Call rayhunter like this to render this view :' +nl+
@@ -2257,7 +2257,7 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
+    SceneManager.Navigation.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
       'SceneManager.RequiredCamera.SetView(' + NL +
       '  %s, // position' + NL +
@@ -2840,14 +2840,14 @@ var
     { reopen saves/restores camera view and navigation type,
       this makes it more useful }
     NavigationType := SceneManager.NavigationType;
-    Camera.GetView(Pos, Dir, Up{, GravityUp});
+    Navigation.GetView(Pos, Dir, Up{, GravityUp});
 
     LoadScene(SceneURL, []);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
       --- original scene's gravity is then lost) }
-    Camera.SetView(Pos, Dir, Up{, GravityUp});
+    Navigation.SetView(Pos, Dir, Up{, GravityUp});
     { restore NavigationType }
     SceneManager.NavigationType := NavigationType;
     ViewportsSetNavigationType(SceneManager.NavigationType);
@@ -2976,12 +2976,12 @@ begin
     36: RemoveSelectedShape;
     37: RemoveSelectedFace;
 
-    51: Scene.CameraTransition(Camera,
+    51: Scene.CameraTransition(Navigation,
           DefaultX3DCameraPosition[cvVrml1_Inventor],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
           DefaultX3DGravityUp);
-    52: Scene.CameraTransition(Camera,
+    52: Scene.CameraTransition(Navigation,
           DefaultX3DCameraPosition[cvVrml2_X3d],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
