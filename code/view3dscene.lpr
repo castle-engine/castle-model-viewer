@@ -4033,7 +4033,15 @@ begin
     - ApplicationName is used for Config.URL by ApplicationConfig, so it better be reliable. }
   ApplicationProperties.ApplicationName := 'view3dscene';
   ApplicationProperties.Version := Version;
-  InitializeLog;
+
+  // Initialize log as early as possible, but avoid messing --help/--version output
+  if not Parameters.IsPresent([
+        '-h',
+        '--help',
+        '-v',
+        '--version'
+      ]) then
+    InitializeLog;
 
   Window := TCastleWindowBase.Create(Application);
 
