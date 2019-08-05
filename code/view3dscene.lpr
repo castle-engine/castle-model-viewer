@@ -1439,63 +1439,64 @@ begin
   end;
 end;
 
-{ This performs all screenshot takes, as specified in ScreenShotsList.
-  It is used both for batch mode screenshots (--screenshot, --screenshot-range)
-  and interactive (menu items about screenshots) operation. }
-procedure MakeAllScreenShots(
-  const ImageClass: TCastleImageClass; const ReadBuffer: TColorBuffer);
-var
-  I, J: Integer;
-  OldProgressUserInterface: TProgressUserInterface;
-  OldTime: TFloatTime;
-  Image: TCastleImage;
-begin
-  { Save global things that we change, to restore them later.
-    This isn't needed for batch mode screenshots, but it doesn't hurt
-    to be clean. }
-  OldProgressUserInterface := Progress.UserInterface;
-  OldTime := Scene.Time;
-  try
-    SceneManager.BeforeRender;
-
-    { TRangeScreenShot cannot display progress on TCastleWindow,
-      since this would mess rendered image.
-      Besides, in the future GL window may be hidden during rendering. }
-    Progress.UserInterface := ProgressNullInterface;
-
-    ScreenShotsList.BeginCapture;
-
-    for I := 0 to ScreenShotsList.Count - 1 do
-    begin
-      ScreenShotsList[I].BeginCapture;
-      try
-        for J := 0 to ScreenShotsList[I].Count - 1 do
-        begin
-          Scene.ResetTime(ScreenShotsList[I].UseTime(J));
-          SaveScreenRender;
-          Image := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
-          try
-            SaveImage(Image, ScreenShotsList[I].UseURL(J));
-          finally FreeAndNil(Image) end;
-        end;
-        ScreenShotsList[I].EndCapture(true);
-      except
-        ScreenShotsList[I].EndCapture(false);
-        raise;
-      end;
-    end;
-
-  finally
-    Progress.UserInterface := OldProgressUserInterface;
-    Scene.ResetTime(OldTime);
-  end;
-end;
-
-{ Make all the screenshots, preferably using FBO.
-  This allows the window to be hidden. }
+{ Make all the screenshots, using FBO.
+  This allows the window to be hidden when taking screenshots. }
 procedure MakeAllScreenShotsFBO(const Transparency: boolean);
 var
   ScreenshotRender: TGLRenderToTexture;
+
+  { This performs all screenshot takes, as specified in ScreenShotsList.
+    It is used both for batch mode screenshots (--screenshot, --screenshot-range)
+    and interactive (menu items about screenshots) operation. }
+  procedure MakeAllScreenShots(const ImageClass: TCastleImageClass);
+  var
+    I, J: Integer;
+    OldProgressUserInterface: TProgressUserInterface;
+    OldTime: TFloatTime;
+    Image: TCastleImage;
+  begin
+    { Save global things that we change, to restore them later.
+      This isn't needed for batch mode screenshots, but it doesn't hurt
+      to be clean. }
+    OldProgressUserInterface := Progress.UserInterface;
+    OldTime := Scene.Time;
+    try
+      SceneManager.BeforeRender;
+
+      { TRangeScreenShot cannot display progress on TCastleWindow,
+        since this would mess rendered image.
+        Besides, in the future GL window may be hidden during rendering. }
+      Progress.UserInterface := ProgressNullInterface;
+
+      ScreenShotsList.BeginCapture;
+
+      for I := 0 to ScreenShotsList.Count - 1 do
+      begin
+        ScreenShotsList[I].BeginCapture;
+        try
+          for J := 0 to ScreenShotsList[I].Count - 1 do
+          begin
+            Scene.ResetTime(ScreenShotsList[I].UseTime(J));
+            SaveScreenRender;
+            Image := ScreenshotRender.SaveScreen(ImageClass, Window.Rect);
+            try
+              SaveImage(Image, ScreenShotsList[I].UseURL(J));
+            finally FreeAndNil(Image) end;
+          end;
+          ScreenShotsList[I].EndCapture(true);
+        except
+          ScreenShotsList[I].EndCapture(false);
+          raise;
+        end;
+      end;
+
+    finally
+      Progress.UserInterface := OldProgressUserInterface;
+      Scene.ResetTime(OldTime);
+    end;
+  end;
+
+var
   ImageClass: TCastleImageClass;
 begin
   ScreenshotRender := TGLRenderToTexture.Create(Window.Width, Window.Height);
@@ -1507,6 +1508,8 @@ begin
       ImageClass := TRGBAlphaImage;
     end else
       ImageClass := TRGBImage;
+    ScreenshotRender.Stencil := Window.StencilBits > 0;
+    ScreenshotRender.MultiSampling := Window.MultiSampling;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
 
@@ -1520,7 +1523,7 @@ begin
     end;
 
     try
-      MakeAllScreenShots(ImageClass, ScreenshotRender.ColorBuffer);
+      MakeAllScreenShots(ImageClass);
     finally
       ScreenshotRender.RenderEnd;
       if Transparency then
@@ -2393,12 +2396,7 @@ var
             ScreenShotsList.Add(Range);
 
             try
-              { We could just call here MakeAllScreenShotsFBO(Transparency).
-                But when Transparency = false, there is no need to use FBO
-                for this, so we can work even on more ancient GPUs. }
-              if Transparency then
-                MakeAllScreenShotsFBO(true) else
-                MakeAllScreenShots(TRGBImage, Window.SaveScreenBuffer);
+              MakeAllScreenShotsFBO(Transparency);
             except
               on E: EInvalidScreenShotURL do
                 MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
