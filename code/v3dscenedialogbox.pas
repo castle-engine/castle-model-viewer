@@ -31,56 +31,98 @@ implementation
 
 uses SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleControls, CastleComponentSerialize,
-  CastleKeysMouse;
-
-var
-  ButtonClicked: Boolean;
+  CastleKeysMouse, CastleUIState, CastleStringUtils;
 
 type
-  TEventHandler = class
+  TStateDialogBox = class(TUIState)
+  strict private
+    FButtonClicked: Boolean;
+    LabelMessage: TCastleLabel;
+    ButtonOK: TCastleButton;
     procedure ClickOK(Sender: TObject);
-    procedure PressAnywhere(const Sender: TInputListener;
-      const Event: TInputPressRelease; var Handled: Boolean);
+  protected
+    function StateContainer: TUIContainer; override;
+  public
+    { Assign these fields before starting the state. }
+    WantedStateContainer: TUIContainer;
+    Message: String;
+
+    procedure Start; override;
+    function Press(const Event: TInputPressRelease): boolean; override;
+    property ButtonClicked: Boolean read FButtonClicked;
   end;
 
-procedure TEventHandler.ClickOK(Sender: TObject);
+procedure TStateDialogBox.ClickOK(Sender: TObject);
 begin
-  ButtonClicked := true;
+  FButtonClicked := true;
 end;
 
-procedure TEventHandler.PressAnywhere(const Sender: TInputListener;
-  const Event: TInputPressRelease; var Handled: Boolean);
+function TStateDialogBox.Press(const Event: TInputPressRelease): boolean;
 begin
+  Result := inherited;
+  if Result then Exit;
+
   if Event.IsKey(keyEnter) or Event.IsKey(keyEscape) or Event.IsMouseButton(mbLeft) then
   begin
-    ButtonClicked := true;
-    Handled := true;
+    FButtonClicked := true;
+    Exit(ExclusiveEvents);
   end;
+
+  if Event.IsKey(CtrlC) then
+  begin
+    Clipboard.AsText := LabelMessage.Caption;
+    Exit(ExclusiveEvents);
+  end;
+end;
+
+procedure TStateDialogBox.Start;
+var
+  UiOwner: TComponent;
+  Ui: TCastleUserInterface;
+begin
+  inherited;
+
+  FButtonClicked := false;
+
+  UiOwner := TComponent.Create(FreeAtStop);
+  Ui := StringToComponent({$I ../embedded_data/designs/help_message.castle-user-interface.inc}, UiOwner)
+    as TCastleUserInterface;
+
+  LabelMessage := UiOwner.FindRequiredComponent('LabelMessage') as TCastleLabel;
+  LabelMessage.Caption := Message;
+  ButtonOK := UiOwner.FindRequiredComponent('ButtonOK') as TCastleButton;
+  ButtonOK.OnClick := @ClickOK;
+
+  InsertFront(Ui);
+end;
+
+function TStateDialogBox.StateContainer: TUIContainer;
+begin
+  Result := WantedStateContainer;
 end;
 
 procedure WindowMessageOK(const S: String);
 var
   Window: TCastleWindowBase;
-  Ui: TCastleUserInterface;
-  LabelMessage: TCastleLabel;
-  ButtonOK: TCastleButton;
+  StateDialogBox: TStateDialogBox;
 begin
   Window := TCastleWindowBase.Create(nil);
   try
     Window.Open;
 
-    Ui := StringToComponent({$I ../embedded_data/designs/help_message.castle-user-interface.inc}, Window)
-      as TCastleUserInterface;
-    Ui.OnPress := @TEventHandler(nil).PressAnywhere;
-    LabelMessage := Window.FindRequiredComponent('LabelMessage') as TCastleLabel;
-    LabelMessage.Caption := S;
-    ButtonOK := Window.FindRequiredComponent('ButtonOK') as TCastleButton;
-    ButtonOK.OnClick := @TEventHandler(nil).ClickOK;
-    Window.Controls.InsertFront(Ui);
+    { add TStateDialogBox instance to window }
+    StateDialogBox := TStateDialogBox.Create(Window);
+    StateDialogBox.WantedStateContainer := Window.Container;
+    StateDialogBox.Message := S;
+    TUIState.Current := StateDialogBox;
 
-    ButtonClicked := false;
-    while (not Window.Closed) and (not ButtonClicked) do
+    while (not Window.Closed) and
+          (not StateDialogBox.ButtonClicked) do
       Application.ProcessAllMessages;
+
+    { call StateDialogBox when Window is still assigned,
+      otherwise TStateDialogBox.StateContainer would return wrong value }
+    TUIState.Current := nil;
   finally FreeAndNil(Window) end;
 end;
 
