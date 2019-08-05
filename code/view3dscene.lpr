@@ -1311,14 +1311,14 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML/X3D and then auto-generate
     xxx_scene.inc file to load scene from a simple string. }
-  LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), []);
+  LoadSimpleScene(LoadX3DClassicFromString({$I ../embedded_data/scenes/clear_scene.inc}, ''), []);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(LoadX3DClassicFromString({$I welcome_scene.inc}, ''), []);
+  LoadSimpleScene(LoadX3DClassicFromString({$I ../embedded_data/scenes/welcome_scene.inc}, ''), []);
 end;
 
 const

@@ -1,13 +1,11 @@
-# This requires file_to_pascal_string from PasDoc
-# ( https://github.com/pasdoc/pasdoc/wiki ) project. Get it and compile from
-# https://raw.githubusercontent.com/pasdoc/pasdoc/master/source/tools/file_to_pascal_string.dpr .
-
-ALL_TARGETS := designs/help_message.castle-user-interface.inc
-
-default: $(ALL_TARGETS)
+default:
+	$(MAKE) -C designs/
+	$(MAKE) -C images/
+	$(MAKE) -C scenes/
+	$(MAKE) -C screen_effects/
 
 clean:
-	rm -f $(ALL_TARGETS)
-
-designs/help_message.castle-user-interface.inc: designs/help_message.castle-user-interface
-	file_to_pascal_string $< $@
+	$(MAKE) -C designs/ clean
+	$(MAKE) -C images/ clean
+	$(MAKE) -C scenes/ clean
+	$(MAKE) -C screen_effects/ clean

@@ -98,7 +98,7 @@ const
        '}';
      NeedsDepth: false),
     (Name: 'Edge Detect';
-     Code: {$I screen_effects_edge_detect.glsl.inc};
+     Code: {$I ../embedded_data/screen_effects/screen_effects_edge_detect.glsl.inc};
      NeedsDepth: false),
     (Name: 'Gamma 2.2 (Brighten)';
      Code:
@@ -141,7 +141,7 @@ const
        '}';
      NeedsDepth: false),
     (Name: 'Flashlight (Nice Headlight)';
-     Code: {$I screen_effects_flashlight.glsl.inc};
+     Code: {$I ../embedded_data/screen_effects/screen_effects_flashlight.glsl.inc};
      NeedsDepth: true),
     (Name: 'Negative';
      Code:
