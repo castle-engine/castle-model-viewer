@@ -38,8 +38,9 @@ type
   strict private
     FButtonClicked: Boolean;
     LabelMessage: TCastleLabel;
-    ButtonOK: TCastleButton;
+    ButtonOK, ButtonCopyClipboard: TCastleButton;
     procedure ClickOK(Sender: TObject);
+    procedure ClickCopyClipboard(Sender: TObject);
   protected
     function StateContainer: TUIContainer; override;
   public
@@ -57,20 +58,25 @@ begin
   FButtonClicked := true;
 end;
 
+procedure TStateDialogBox.ClickCopyClipboard(Sender: TObject);
+begin
+  Clipboard.AsText := LabelMessage.Caption;
+end;
+
 function TStateDialogBox.Press(const Event: TInputPressRelease): boolean;
 begin
   Result := inherited;
   if Result then Exit;
 
-  if Event.IsKey(keyEnter) or Event.IsKey(keyEscape) or Event.IsMouseButton(mbLeft) then
+  if Event.IsKey(keyEnter) or Event.IsKey(keyEscape) then
   begin
-    FButtonClicked := true;
+    ButtonOK.DoClick;
     Exit(ExclusiveEvents);
   end;
 
   if Event.IsKey(CtrlC) then
   begin
-    Clipboard.AsText := LabelMessage.Caption;
+    ButtonCopyClipboard.DoClick;
     Exit(ExclusiveEvents);
   end;
 end;
@@ -92,6 +98,8 @@ begin
   LabelMessage.Caption := Message;
   ButtonOK := UiOwner.FindRequiredComponent('ButtonOK') as TCastleButton;
   ButtonOK.OnClick := @ClickOK;
+  ButtonCopyClipboard := UiOwner.FindRequiredComponent('ButtonCopyClipboard') as TCastleButton;
+  ButtonCopyClipboard.OnClick := @ClickCopyClipboard;
 
   InsertFront(Ui);
 end;
