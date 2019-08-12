@@ -53,6 +53,10 @@ program view3dscene;
 {$endif}
 
 uses SysUtils, Math, Classes,
+  { TODO: Temporarily commented out because our https://jenkins.castle-engine.io/
+    has older revision of FPC 3.3.1. Uncomment this if you use recent FPC 3.3.1
+    to be able to handle https. }
+  // {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties,
