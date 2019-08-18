@@ -53,6 +53,10 @@ program view3dscene;
 {$endif}
 
 uses SysUtils, Math, Classes,
+  { TODO: Temporarily commented out because our https://jenkins.castle-engine.io/
+    has older revision of FPC 3.3.1. Uncomment this if you use recent FPC 3.3.1
+    to be able to handle https. }
+  // {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties,
@@ -80,7 +84,7 @@ uses SysUtils, Math, Classes,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
-  V3DSceneBoxes, V3DSceneInternalScenes;
+  V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox;
 
 var
   ShowFrustum: boolean = false;
@@ -1311,14 +1315,14 @@ begin
     This would allow a fast implementation, but it's easier for me to
     design scene in pure VRML/X3D and then auto-generate
     xxx_scene.inc file to load scene from a simple string. }
-  LoadSimpleScene(LoadX3DClassicFromString({$I clear_scene.inc}, ''), []);
+  LoadSimpleScene(LoadX3DClassicFromString({$I ../embedded_data/scenes/clear_scene.inc}, ''), []);
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
   It's a "welcome scene" of view3dscene. }
 procedure LoadWelcomeScene;
 begin
-  LoadSimpleScene(LoadX3DClassicFromString({$I welcome_scene.inc}, ''), []);
+  LoadSimpleScene(LoadX3DClassicFromString({$I ../embedded_data/scenes/welcome_scene.inc}, ''), []);
 end;
 
 const
@@ -1439,63 +1443,64 @@ begin
   end;
 end;
 
-{ This performs all screenshot takes, as specified in ScreenShotsList.
-  It is used both for batch mode screenshots (--screenshot, --screenshot-range)
-  and interactive (menu items about screenshots) operation. }
-procedure MakeAllScreenShots(
-  const ImageClass: TCastleImageClass; const ReadBuffer: TColorBuffer);
-var
-  I, J: Integer;
-  OldProgressUserInterface: TProgressUserInterface;
-  OldTime: TFloatTime;
-  Image: TCastleImage;
-begin
-  { Save global things that we change, to restore them later.
-    This isn't needed for batch mode screenshots, but it doesn't hurt
-    to be clean. }
-  OldProgressUserInterface := Progress.UserInterface;
-  OldTime := Scene.Time;
-  try
-    SceneManager.BeforeRender;
-
-    { TRangeScreenShot cannot display progress on TCastleWindow,
-      since this would mess rendered image.
-      Besides, in the future GL window may be hidden during rendering. }
-    Progress.UserInterface := ProgressNullInterface;
-
-    ScreenShotsList.BeginCapture;
-
-    for I := 0 to ScreenShotsList.Count - 1 do
-    begin
-      ScreenShotsList[I].BeginCapture;
-      try
-        for J := 0 to ScreenShotsList[I].Count - 1 do
-        begin
-          Scene.ResetTime(ScreenShotsList[I].UseTime(J));
-          SaveScreenRender;
-          Image := SaveScreen_NoFlush(ImageClass, Window.Rect, ReadBuffer);
-          try
-            SaveImage(Image, ScreenShotsList[I].UseURL(J));
-          finally FreeAndNil(Image) end;
-        end;
-        ScreenShotsList[I].EndCapture(true);
-      except
-        ScreenShotsList[I].EndCapture(false);
-        raise;
-      end;
-    end;
-
-  finally
-    Progress.UserInterface := OldProgressUserInterface;
-    Scene.ResetTime(OldTime);
-  end;
-end;
-
-{ Make all the screenshots, preferably using FBO.
-  This allows the window to be hidden. }
+{ Make all the screenshots, using FBO.
+  This allows the window to be hidden when taking screenshots. }
 procedure MakeAllScreenShotsFBO(const Transparency: boolean);
 var
   ScreenshotRender: TGLRenderToTexture;
+
+  { This performs all screenshot takes, as specified in ScreenShotsList.
+    It is used both for batch mode screenshots (--screenshot, --screenshot-range)
+    and interactive (menu items about screenshots) operation. }
+  procedure MakeAllScreenShots(const ImageClass: TCastleImageClass);
+  var
+    I, J: Integer;
+    OldProgressUserInterface: TProgressUserInterface;
+    OldTime: TFloatTime;
+    Image: TCastleImage;
+  begin
+    { Save global things that we change, to restore them later.
+      This isn't needed for batch mode screenshots, but it doesn't hurt
+      to be clean. }
+    OldProgressUserInterface := Progress.UserInterface;
+    OldTime := Scene.Time;
+    try
+      SceneManager.BeforeRender;
+
+      { TRangeScreenShot cannot display progress on TCastleWindow,
+        since this would mess rendered image.
+        Besides, in the future GL window may be hidden during rendering. }
+      Progress.UserInterface := ProgressNullInterface;
+
+      ScreenShotsList.BeginCapture;
+
+      for I := 0 to ScreenShotsList.Count - 1 do
+      begin
+        ScreenShotsList[I].BeginCapture;
+        try
+          for J := 0 to ScreenShotsList[I].Count - 1 do
+          begin
+            Scene.ResetTime(ScreenShotsList[I].UseTime(J));
+            SaveScreenRender;
+            Image := ScreenshotRender.SaveScreen(ImageClass, Window.Rect);
+            try
+              SaveImage(Image, ScreenShotsList[I].UseURL(J));
+            finally FreeAndNil(Image) end;
+          end;
+          ScreenShotsList[I].EndCapture(true);
+        except
+          ScreenShotsList[I].EndCapture(false);
+          raise;
+        end;
+      end;
+
+    finally
+      Progress.UserInterface := OldProgressUserInterface;
+      Scene.ResetTime(OldTime);
+    end;
+  end;
+
+var
   ImageClass: TCastleImageClass;
 begin
   ScreenshotRender := TGLRenderToTexture.Create(Window.Width, Window.Height);
@@ -1507,6 +1512,8 @@ begin
       ImageClass := TRGBAlphaImage;
     end else
       ImageClass := TRGBImage;
+    ScreenshotRender.Stencil := Window.StencilBits > 0;
+    ScreenshotRender.MultiSampling := Window.MultiSampling;
     ScreenshotRender.GLContextOpen;
     ScreenshotRender.RenderBegin;
 
@@ -1520,7 +1527,7 @@ begin
     end;
 
     try
-      MakeAllScreenShots(ImageClass, ScreenshotRender.ColorBuffer);
+      MakeAllScreenShots(ImageClass);
     finally
       ScreenshotRender.RenderEnd;
       if Transparency then
@@ -2393,12 +2400,7 @@ var
             ScreenShotsList.Add(Range);
 
             try
-              { We could just call here MakeAllScreenShotsFBO(Transparency).
-                But when Transparency = false, there is no need to use FBO
-                for this, so we can work even on more ancient GPUs. }
-              if Transparency then
-                MakeAllScreenShotsFBO(true) else
-                MakeAllScreenShots(TRGBImage, Window.SaveScreenBuffer);
+              MakeAllScreenShotsFBO(Transparency);
             except
               on E: EInvalidScreenShotURL do
                 MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
@@ -3870,6 +3872,7 @@ procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
 var
   SingleScreenShot: TSingleScreenShot;
   RangeScreenShot: TRangeScreenShot;
+  S: String;
 begin
   case OptionNum of
     0 : Include(Param_SceneChanges, scNoNormals);
@@ -3880,102 +3883,107 @@ begin
           Param_WriteEncoding := xeClassic;
         end;
     4 : begin
-         InfoWrite(
-           'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
-           'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
-           'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
-           'You can also convert models in other formats to VRML/X3D.' +NL+
-           NL+
-           'Call as' +NL+
-           '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
-           NL+
-           'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
-           'As usual, dash (-) means that standard input will be read' +NL+
-           '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
-           NL+
-           'Available options are:' +NL+
-           HelpOptionHelp +NL+
-           VersionOptionHelp +NL+
-           '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
-           '                        or toolbar or bounding box) when program starts.' +NL+
-           '                        Show only the 3D world.' +NL+
-           '  --hide-menu           Hide menu bar.' +NL+
-           '  --write               Load the scene,'+NL+
-           '                        optionally process by --scene-change-xxx,' +NL+
-           '                        save it as VRML/X3D to the standard output,' +NL+
-           '                        exit. Use --write-encoding to choose encoding.' +NL+
-           '  --write-encoding classic|xml' +NL+
-           '                        Choose X3D encoding to use with --write option.' +NL+
-           '                        Default is "classic".' +NL+
-           '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
-           '                        Note that if you choose XML encoding' +NL+
-           '                        (by --write-encoding=xml), this is automatic.' +NL+
-           '                        Note that this works sensibly only for VRML 2.0' +NL+
-           '                        (not for older Inventor/VRML 1.0,' +NL+
-           '                        we cannot convert them to valid X3D for now).' +NL+
-           '  --screenshot TIME IMAGE-FILE-NAME' +NL+
-           '                        Take a screenshot of the loaded scene' +NL+
-           '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
-           '                        You most definitely want to pass 3D model' +NL+
-           '                        file to load at command-line too, otherwise' +NL+
-           '                        we''ll just make a screenshot of the default' +NL+
-           '                        black scene.' +NL+
-           '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' +NL+
-           '                        Take a FRAMES-COUNT number of screenshots from' +NL+
-           '                        TIME-BEGIN by step TIME-STEP. Save them to' +NL+
-           '                        a single movie file (like .avi) (ffmpeg must' +NL+
-           '                        be installed and available on $PATH for this)' +NL+
-           '                        or to a sequence of image files (FILE-NAME' +NL+
-           '                        must then be specified like image@counter(4).png).' +NL+
-           '  --screenshot-transparent' +NL+
-           '                        Screenshots background is transparent.' +NL+
-           '                        Useful only together' +NL+
-           '                        with --screenshot-range or --screenshot options.' +NL+
-           '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
-           '                        Especially useful to make a screenshot from given viewpoint.' +NL+
-           '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
-           '                        Argument AMOUNT is an integer >= 0.' +NL+
-           '                        Exact 0 means "no anti-aliasing",' +NL+
-           '                        this is the default. Each successive integer' +NL+
-           '                        generally makes method one step better.' +NL+
-           '                        Especially useful to make a screenshot with' +NL+
-           '                        anti-aliasing quality.' +NL+
-           SoundEngine.ParseParametersHelp + NL+
-           NL+
-           TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
-           NL+
-           'Debug options:' +NL+
-           '  --debug-log           Deprecated. We now log by default.' +NL+
-           '  --debug-log-cache     Write log info, including cache.' +nl+
-           '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
-           '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
-           '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
-           '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
-           OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') +NL+
-           NL+
-           'Deprecated options:' +NL+
-           '  --scene-change-no-normals' +NL+
-           '                        Remove normals information from the loaded scene.' +NL+
-           '                        Forces automatic calculation of normal vectors.' +NL+
-           '                        Deprecated, doing this from command-line is not' +NL+
-           '                        usually useful.' +NL+
-           '  --scene-change-no-solid-objects' +NL+
-           '                        Make all shapes not solid in the loaded scene.' +NL+
-           '                        Disables backface culling.' +NL+
-           '                        Deprecated, doing this from command-line is not' +NL+
-           '                        usually useful.' +NL+
-           '  --scene-change-no-convex-faces' +NL+
-           '                        Treat all faces as potentially concave in the loaded scene.' +NL+
-           '                        Deprecated, doing this from command-line is not' +NL+
-           '                        usually useful.' +NL+
-           '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
-           NL+
-           SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true));
-         Halt;
+          S :=
+            'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
+            'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
+            'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
+            'You can also convert models in other formats to VRML/X3D.' +NL+
+            NL+
+            'Call as' +NL+
+            '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
+            NL+
+            'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
+            'As usual, dash (-) means that standard input will be read' +NL+
+            '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
+            NL+
+            'Available options are:' +NL+
+            HelpOptionHelp +NL+
+            VersionOptionHelp +NL+
+            '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
+            '                        or toolbar or bounding box) when program starts.' +NL+
+            '                        Show only the 3D world.' +NL+
+            '  --hide-menu           Hide menu bar.' +NL+
+            '  --write               Load the scene,'+NL+
+            '                        optionally process by --scene-change-xxx,' +NL+
+            '                        save it as VRML/X3D to the standard output,' +NL+
+            '                        exit. Use --write-encoding to choose encoding.' +NL+
+            '  --write-encoding classic|xml' +NL+
+            '                        Choose X3D encoding to use with --write option.' +NL+
+            '                        Default is "classic".' +NL+
+            '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
+            '                        Note that if you choose XML encoding' +NL+
+            '                        (by --write-encoding=xml), this is automatic.' +NL+
+            '                        Note that this works sensibly only for VRML 2.0' +NL+
+            '                        (not for older Inventor/VRML 1.0,' +NL+
+            '                        we cannot convert them to valid X3D for now).' +NL+
+            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
+            '                        Take a screenshot of the loaded scene' +NL+
+            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
+            '                        You most definitely want to pass 3D model' +NL+
+            '                        file to load at command-line too, otherwise' +NL+
+            '                        we''ll just make a screenshot of the default' +NL+
+            '                        black scene.' +NL+
+            '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' +NL+
+            '                        Take a FRAMES-COUNT number of screenshots from' +NL+
+            '                        TIME-BEGIN by step TIME-STEP. Save them to' +NL+
+            '                        a single movie file (like .avi) (ffmpeg must' +NL+
+            '                        be installed and available on $PATH for this)' +NL+
+            '                        or to a sequence of image files (FILE-NAME' +NL+
+            '                        must then be specified like image@counter(4).png).' +NL+
+            '  --screenshot-transparent' +NL+
+            '                        Screenshots background is transparent.' +NL+
+            '                        Useful only together' +NL+
+            '                        with --screenshot-range or --screenshot options.' +NL+
+            '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
+            '                        Especially useful to make a screenshot from given viewpoint.' +NL+
+            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
+            '                        Argument AMOUNT is an integer >= 0.' +NL+
+            '                        Exact 0 means "no anti-aliasing",' +NL+
+            '                        this is the default. Each successive integer' +NL+
+            '                        generally makes method one step better.' +NL+
+            '                        Especially useful to make a screenshot with' +NL+
+            '                        anti-aliasing quality.' +NL+
+            SoundEngine.ParseParametersHelp + NL+
+            NL+
+            TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
+            NL+
+            'Debug options:' +NL+
+            '  --debug-log           Deprecated. We now log by default.' +NL+
+            '  --debug-log-cache     Write log info, including cache.' +nl+
+            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
+            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
+            '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
+            '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
+            OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') +NL+
+            NL+
+            'Deprecated options:' +NL+
+            '  --scene-change-no-normals' +NL+
+            '                        Remove normals information from the loaded scene.' +NL+
+            '                        Forces automatic calculation of normal vectors.' +NL+
+            '                        Deprecated, doing this from command-line is not' +NL+
+            '                        usually useful.' +NL+
+            '  --scene-change-no-solid-objects' +NL+
+            '                        Make all shapes not solid in the loaded scene.' +NL+
+            '                        Disables backface culling.' +NL+
+            '                        Deprecated, doing this from command-line is not' +NL+
+            '                        usually useful.' +NL+
+            '  --scene-change-no-convex-faces' +NL+
+            '                        Treat all faces as potentially concave in the loaded scene.' +NL+
+            '                        Deprecated, doing this from command-line is not' +NL+
+            '                        usually useful.' +NL+
+            '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
+            NL+
+            SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true);
+
+          if IsConsole then
+            Writeln(S)
+          else
+            WindowMessageOK(S);
+          Halt;
         end;
     5 : begin
-         InfoWrite(Version);
-         Halt;
+          InfoWrite(Version);
+          Halt;
         end;
     6 : begin
           SingleScreenShot := TSingleScreenShot.Create;
@@ -4033,7 +4041,15 @@ begin
     - ApplicationName is used for Config.URL by ApplicationConfig, so it better be reliable. }
   ApplicationProperties.ApplicationName := 'view3dscene';
   ApplicationProperties.Version := Version;
-  InitializeLog;
+
+  // Initialize log as early as possible, but avoid messing --help/--version output
+  if not Parameters.IsPresent([
+        '-h',
+        '--help',
+        '-v',
+        '--version'
+      ]) then
+    InitializeLog;
 
   Window := TCastleWindowBase.Create(Application);
 

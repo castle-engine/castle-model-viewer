@@ -1,0 +1,117 @@
+{
+  "FullSize" : true,
+  "Name" : "Group1",
+  "$Children" : [
+    {
+      "FullSize" : true,
+      "Name" : "RectangleControl2",
+      "$Children" : [
+      ],
+      "$ClassName" : "TCastleRectangleControl"
+    },
+    {
+      "Height" : 6.0000000000000000E+001,
+      "Name" : "Group2",
+      "WidthFraction" : 1.0000000000000000E+000,
+      "$Children" : [
+        {
+          "HorizontalAnchorParent" : "hpRight",
+          "HorizontalAnchorSelf" : "hpRight",
+          "Name" : "HorizontalGroup1",
+          "Padding" : 1.0000000000000000E+001,
+          "Spacing" : 1.0000000000000000E+001,
+          "VerticalAnchorParent" : "vpMiddle",
+          "VerticalAnchorSelf" : "vpMiddle",
+          "$Children" : [
+            {
+              "Caption" : "Copy To Clipboard (Ctrl + C)",
+              "CustomBackgroundDisabled" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomTextColorUse" : false,
+              "HorizontalAnchorDelta" : 1.0000000000000000E+001,
+              "Image" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "ButtonCopyClipboard",
+              "PaddingHorizontal" : 2.0000000000000000E+001,
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "$Children" : [
+              ],
+              "$ClassName" : "TCastleButton"
+            },
+            {
+              "Caption" : "Close",
+              "CustomBackgroundDisabled" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundFocused" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundNormal" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomBackgroundPressed" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "CustomTextColorUse" : false,
+              "HorizontalAnchorDelta" : 3.4500000000000000E+002,
+              "Image" : {
+                "$ClassName" : "TCastleImagePersistent"
+              },
+              "Name" : "ButtonOK",
+              "PaddingHorizontal" : 2.0000000000000000E+001,
+              "VerticalAnchorParent" : "vpMiddle",
+              "VerticalAnchorSelf" : "vpMiddle",
+              "$Children" : [
+              ],
+              "$ClassName" : "TCastleButton"
+            }
+          ],
+          "$ClassName" : "TCastleHorizontalGroup"
+        }
+      ],
+      "$ClassName" : "TCastleUserInterface"
+    },
+    {
+      "Border" : {
+        "Bottom" : 6.0000000000000000E+001,
+        "$ClassName" : "TBorder"
+      },
+      "FullSize" : true,
+      "Name" : "ScrollView1",
+      "ScrollArea" : {
+        "AutoSizeToChildren" : true,
+        "Name" : "ScrollArea",
+        "$Children" : [
+          {
+            "Border" : {
+              "AllSides" : 1.0000000000000000E+001,
+              "$ClassName" : "TBorder"
+            },
+            "Name" : "LabelMessage",
+            "Text" : "Debug options:\r\n  --debug-log           Deprecated. We now log by default.\r\n  --debug-log-cache     Write log info, including cache.\r\n  --debug-log-shaders   Write log info, including shader source and log.\r\n  --debug-log-changes   Write log info, including VRML/X3D graph changes.\r\n  --debug-log-videos    Write log info, including videos loading and cache.\r\n  --debug-texture-memory Profile GPU texture memory usage.\r\n  \r\nDeprecated options:\r\n  --scene-change-no-normals\r\n                        Remove normals information from the loaded scene.\r\n                        Forces automatic calculation of normal vectors.\r\n                        Deprecated, doing this from command-line is not\r\n                        usually useful.\r\n  --scene-change-no-solid-objects\r\n                        Make all shapes not solid in the loaded scene.\r\n                        Disables backface culling.\r\n                        Deprecated, doing this from command-line is not\r\n                        usually useful.\r\n  --scene-change-no-convex-faces\r\n                        Treat all faces as potentially concave in the loaded scene.\r\n                        Deprecated, doing this from command-line is not\r\n                        usually useful.\r\n  --write-to-vrml       Deprecated, shortcut for \"--write --write-encoding=classic\".\r\n",
+            "$Children" : [
+            ],
+            "$ClassName" : "TCastleLabel"
+          }
+        ],
+        "$ClassName" : "TInternalCastleScrollArea"
+      },
+      "$Children" : [
+      ],
+      "$ClassName" : "TCastleScrollView"
+    }
+  ],
+  "$ClassName" : "TCastleUserInterface"
+}
