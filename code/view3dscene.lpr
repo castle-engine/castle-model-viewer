@@ -1095,8 +1095,8 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    Scene.CameraFromNavigationInfo(SceneManager.RequiredCamera, Scene.BoundingBox);
-    Scene.CameraFromViewpoint(SceneManager.RequiredCamera, false, false);
+    Scene.CameraFromNavigationInfo(SceneManager.RequiredNavigation, Scene.BoundingBox);
+    Scene.CameraFromViewpoint(SceneManager.Camera, Scene.BoundingBox, false, false);
     for I := 0 to High(Viewports) do
       AssignCamera(Viewports[I], SceneManager, SceneManager, false);
     Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
