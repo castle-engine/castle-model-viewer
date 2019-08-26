@@ -73,7 +73,7 @@ uses SysUtils, Math, Classes,
   CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
-  CastleSceneCore, X3DCameraUtils, CastleBackground,
+  CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
   CastleRenderer, CastleShapes, CastleSceneManager,
   CastleMaterialProperties,
   { view3dscene-specific units: }
