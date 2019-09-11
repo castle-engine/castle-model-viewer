@@ -23,6 +23,8 @@
 { }
 unit V3DSceneViewports;
 
+{$I v3dsceneconf.inc}
+
 interface
 
 uses CastleSceneManager, CastleWindow, CastleCameras, CastleGLContainer;
@@ -145,9 +147,12 @@ begin
                 AssignCamera(Viewports[1], SceneManager, SceneManager, true);
                 AssignCamera(Viewports[2], Viewports[0], SceneManager, true);
               end;
+            else raise EInternalError.Create('ViewportsConfig OldValue was supposed to be <> new value?');
           end;
         end;
+      {$ifndef COMPILER_CASE_ANALYSIS}
       else raise EInternalError.Create('ViewportsConfig?');
+      {$endif}
     end;
     { Do this at the end, to make Background to most in the back.
       Also, always remove first, and the InsertBack -- to again
@@ -164,6 +169,7 @@ var
   W, H: Cardinal;
 begin
   case ViewportsConfig of
+    vc1: ;
     vc2Horizontal:
       begin
         W := Window.Width div 2;
