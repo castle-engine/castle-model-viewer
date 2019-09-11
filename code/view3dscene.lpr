@@ -329,27 +329,27 @@ end;
 { Update menu items and buttons that reflect Camera properties }
 procedure UpdateCameraUI;
 var
-  WalkCamera: TWalkCamera;
+  WalkNavigation: TCastleWalkNavigation;
 begin
   UpdateCameraNavigationTypeUI;
 
   if SceneManager <> nil then
-    WalkCamera := SceneManager.WalkCamera(false)
+    WalkNavigation := SceneManager.WalkNavigation(false)
   else
-    WalkCamera := nil;
+    WalkNavigation := nil;
 
   if MenuMouseLook <> nil then
     MenuMouseLook.Checked :=
-      (WalkCamera <> nil) and WalkCamera.MouseLook;
+      (WalkNavigation <> nil) and WalkNavigation.MouseLook;
   if MenuGravity <> nil then
     MenuGravity.Checked :=
-      (WalkCamera <> nil) and WalkCamera.Gravity;
+      (WalkNavigation <> nil) and WalkNavigation.Gravity;
   if MenuPreferGravityUpForRotations <> nil then
     MenuPreferGravityUpForRotations.Checked :=
-      (WalkCamera <> nil) and WalkCamera.PreferGravityUpForRotations;
+      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForRotations;
   if MenuPreferGravityUpForMoving <> nil then
     MenuPreferGravityUpForMoving.Checked :=
-      (WalkCamera <> nil) and WalkCamera.PreferGravityUpForMoving;
+      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForMoving;
 end;
 
 { Return currently used collisions octree.
@@ -520,25 +520,25 @@ const
     end;
   end;
 
-  function CurrentAboveHeight(WalkCamera: TWalkCamera): string;
+  function CurrentAboveHeight(WalkNavigation: TCastleWalkNavigation): string;
   begin
     if SceneOctreeCollisions = nil then
       Result := 'no collisions'
     else
-    if not WalkCamera.Gravity then
+    if not WalkNavigation.Gravity then
       Result := 'no gravity'
     else
-    if not WalkCamera.IsAbove then
+    if not WalkNavigation.IsAbove then
       Result := 'no ground beneath'
     else
-      Result := Format('%f', [WalkCamera.AboveHeight]);
+      Result := Format('%f', [WalkNavigation.AboveHeight]);
   end;
 
 var
   s: string;
   Statistics: TRenderStatistics;
   Pos, Dir, Up: TVector3;
-  WalkCamera: TWalkCamera;
+  WalkNavigation: TCastleWalkNavigation;
 begin
   inherited;
 
@@ -551,19 +551,19 @@ begin
     S := S + ' (octree resources released)';
   Text.Append(S); }
 
-  Navigation.GetView(Pos, Dir, Up);
+  SceneManager.Camera.GetView(Pos, Dir, Up);
   Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
     [ ValueColor, Pos.ToString,
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  WalkCamera := SceneManager.WalkCamera(false);
-  if WalkCamera <> nil then
+  WalkNavigation := SceneManager.WalkNavigation(false);
+  if WalkNavigation <> nil then
   begin
     Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, WalkCamera.MoveSpeed,
-        ValueColor, WalkCamera.PreferredHeight,
-        ValueColor, CurrentAboveHeight(WalkCamera) ]));
+      [ ValueColor, WalkNavigation.MoveSpeed,
+        ValueColor, WalkNavigation.PreferredHeight,
+        ValueColor, CurrentAboveHeight(WalkNavigation) ]));
   end;
 
   { if SceneLightsCount = 0 then
@@ -664,7 +664,7 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
       glDisable(GL_DEPTH_TEST);
     end;
     try
-      SceneManager.InternalWalkCamera.Frustum.CalculatePoints(FrustumPoints);
+      SceneManager.InternalWalkNavigation.Frustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
@@ -693,9 +693,9 @@ begin
     OctreeDisplay(Scene);
 
     { Note that there is no sense in showing viewing frustum if
-      Camera is TWalkCamera, since InternalWalkCamera.Frustum should not
+      Camera is TCastleWalkNavigation, since InternalWalkNavigation.Frustum should not
       be visible then (as it's just the *currently used* frustum in this case). }
-    if ShowFrustum and not (Navigation is TWalkCamera) then
+    if ShowFrustum and not (Navigation is TCastleWalkNavigation) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -1098,7 +1098,7 @@ begin
     Scene.CameraFromNavigationInfo(SceneManager.RequiredNavigation, Scene.BoundingBox);
     Scene.CameraFromViewpoint(SceneManager.Camera, Scene.BoundingBox, false, false);
     for I := 0 to High(Viewports) do
-      AssignCamera(Viewports[I], SceneManager, SceneManager, false);
+      AssignCameraAndNavigation(Viewports[I], SceneManager);
     Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
 
     SceneInitLights(Scene, NavigationNode);
@@ -1667,18 +1667,18 @@ end;
 
 procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
 var
-  WalkCamera: TWalkCamera;
+  WalkNavigation: TCastleWalkNavigation;
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    Navigation.GetView(Pos, Dir, Up, GravityUp);
+    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
     if VectorsParallel(Dir, NewUp) then
       Dir := AnyOrthogonalVector(NewUp);
     Up := NewUp;
     GravityUp := NewUp;
-    Navigation.SetView(Pos, Dir, Up, GravityUp, false);
+    SceneManager.Camera.SetView(Pos, Dir, Up, GravityUp, false);
   end;
 
   procedure ChangeMoveSpeed;
@@ -2175,7 +2175,7 @@ var
     CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Scene.CameraTransition(Navigation, Position, Direction, Up, GravityUp);
+    Scene.CameraTransition(SceneManager.Camera, Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2220,7 +2220,7 @@ var
     S: string;
     Pos, Dir, Up: TVector3;
   begin
-    Navigation.GetView(Pos, Dir, Up);
+    SceneManager.Camera.GetView(Pos, Dir, Up);
 
     S := FormatDot(
        'Call rayhunter like this to render this view :' +nl+
@@ -2238,6 +2238,7 @@ var
          Up.ToRawString,
          BGColor[0], BGColor[1], BGColor[2] ]);
 
+    {$warnings off} // for now, this knowingly uses deprecated SceneManager.Projection
     case SceneManager.Projection.ProjectionType of
       ptPerspective:
         S := S + FormatDot('    --view-angle-x %f',
@@ -2250,6 +2251,7 @@ var
           SceneManager.Projection.Dimensions.Top ]);
       else raise EInternalError.Create('PrintRayhunterCommand:ProjectionType?');
     end;
+    {$warnings on}
 
     MessageReport(S);
   end;
@@ -2266,7 +2268,7 @@ var
   begin
     SceneManager.Navigation.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
-      'SceneManager.RequiredCamera.SetView(' + NL +
+      'SceneManager.Camera.SetView(' + NL +
       '  %s, // position' + NL +
       '  %s, // direction' + NL +
       '  %s, // up (current)' + NL +
@@ -2937,7 +2939,7 @@ var
 var
   C: Cardinal;
 begin
-  WalkCamera := SceneManager.WalkCamera(false);
+  WalkNavigation := SceneManager.WalkNavigation(false);
 
   case MenuItem.IntData of
     10: THelper.OpenButtonClick(nil);
@@ -3095,9 +3097,9 @@ begin
     125: Raytrace;
     150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
     151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
-    128: if WalkCamera <> nil then
+    128: if WalkNavigation <> nil then
          begin
-           WalkCamera.MouseLook := not WalkCamera.MouseLook;
+           WalkNavigation.MouseLook := not WalkNavigation.MouseLook;
            UpdateCameraUI;
          end;
     129: MessageReport(ManifoldEdgesInfo(Scene));
@@ -3138,19 +3140,19 @@ begin
 
     182: ChangePointSize;
 
-    201: if WalkCamera <> nil then
+    201: if WalkNavigation <> nil then
          begin
-           WalkCamera.Gravity := not WalkCamera.Gravity;
+           WalkNavigation.Gravity := not WalkNavigation.Gravity;
            UpdateCameraUI;
          end;
-    202: if WalkCamera <> nil then
+    202: if WalkNavigation <> nil then
          begin
-           WalkCamera.PreferGravityUpForRotations := not WalkCamera.PreferGravityUpForRotations;
+           WalkNavigation.PreferGravityUpForRotations := not WalkNavigation.PreferGravityUpForRotations;
            UpdateCameraUI;
          end;
-    203: if WalkCamera <> nil then
+    203: if WalkNavigation <> nil then
          begin
-           WalkCamera.PreferGravityUpForMoving := not WalkCamera.PreferGravityUpForMoving;
+           WalkNavigation.PreferGravityUpForMoving := not WalkNavigation.PreferGravityUpForMoving;
            UpdateCameraUI;
          end;
     205: ChangeMoveSpeed;
@@ -3299,9 +3301,9 @@ function CreateMainMenu: TMenu;
 var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
-  WalkCamera: TWalkCamera;
+  WalkNavigation: TCastleWalkNavigation;
 begin
-  WalkCamera := SceneManager.WalkCamera(false);
+  WalkNavigation := SceneManager.WalkNavigation(false);
 
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
@@ -3452,19 +3454,19 @@ begin
     M2 := TMenu.Create('Walk and Fly Settings');
       MenuMouseLook := TMenuItemChecked.Create(
         '_Use Mouse Look',                       128, CtrlM,
-        (WalkCamera <> nil) and WalkCamera.MouseLook, false);
+        (WalkNavigation <> nil) and WalkNavigation.MouseLook, false);
       M2.Append(MenuMouseLook);
       MenuGravity := TMenuItemChecked.Create(
         '_Gravity',                              201, CtrlG,
-        (WalkCamera <> nil) and WalkCamera.Gravity, false);
+        (WalkNavigation <> nil) and WalkNavigation.Gravity, false);
       M2.Append(MenuGravity);
       MenuPreferGravityUpForRotations := TMenuItemChecked.Create(
         'Rotate with Respect to Gravity Vector',      202,
-        (WalkCamera <> nil) and WalkCamera.PreferGravityUpForRotations, false);
+        (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForRotations, false);
       M2.Append(MenuPreferGravityUpForRotations);
       MenuPreferGravityUpForMoving := TMenuItemChecked.Create(
         'Move with Respect to Gravity Vector',          203,
-        (WalkCamera <> nil) and WalkCamera.PreferGravityUpForMoving, false);
+        (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForMoving, false);
       M2.Append(MenuPreferGravityUpForMoving);
       M2.Append(TMenuItem.Create('Change Move Speed...', 205));
       M.Append(M2);

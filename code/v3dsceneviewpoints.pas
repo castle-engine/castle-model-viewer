@@ -433,7 +433,7 @@ begin
       otherwise nothing happens... So just explicitly go to viewpoint
       position. }
     Viewpoint.GetView(Pos, Dir, Up, GravityUp);
-    Scene.CameraTransition(SceneManager.Navigation, Pos, Dir, Up, GravityUp);
+    Scene.CameraTransition(SceneManager.Camera, Pos, Dir, Up, GravityUp);
   end else
     Viewpoint.EventSet_Bind.Send(true);
 end;

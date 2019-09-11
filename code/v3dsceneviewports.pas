@@ -53,11 +53,8 @@ var
 procedure SetViewportsConfig(const Value: TViewportsConfig;
   Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
-{ Copy all camera settings from Source.Camera to Target.Camera.
-  If CreateIfNeeded then Target will be created if @nil (otherwise
-  it will be left as @nil). }
-procedure AssignCamera(Target, Source: TCastleAbstractViewport;
-  SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
+{ Copy all Camera and Navigation settings from Source to Target. }
+procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewport);
 
 procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
 
@@ -78,20 +75,33 @@ procedure ViewportsRender(const Container: TGLContainer);
 implementation
 
 uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
-  CastleGLUtils, CastleColors;
+  CastleGLUtils, CastleColors, CastleLog;
 
 { global routines ------------------------------------------------------------ }
 
 var
   Background: TCastleRectangleControl;
 
-procedure AssignCamera(Target, Source: TCastleAbstractViewport;
-  SceneManager: TCastleSceneManager; const CreateIfNeeded: boolean);
+procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewport);
+var
+  NavigationTypeStr: String;
 begin
-  if (Target.Camera = nil) and (not CreateIfNeeded) then
-    Exit;
   Target.NavigationType := Source.NavigationType;
-  Target.RequiredCamera.Assign(Source.RequiredCamera);
+
+  if (Target.Navigation <> nil) and
+     (Source.Navigation <> nil) then
+    Target.Navigation.Assign(Source.Navigation)
+  else
+  if (Target.Navigation <> nil) or
+     (Source.Navigation <> nil) then
+  begin
+    WriteStr(NavigationTypeStr, Target.NavigationType);
+    WritelnLog('Both Source and Target have the same NavigationType, but only one of them has non-nil Navigation', [
+      NavigationTypeStr
+    ]);
+  end;
+
+  Target.Camera.Assign(Source.Camera);
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
@@ -127,7 +137,7 @@ begin
           Window.Controls.Remove(Viewports[2]);
           { Configure camera for newly appearing viewports }
           if OldValue = vc1 then
-            AssignCamera(Viewports[0], SceneManager, SceneManager, true);
+            AssignCameraAndNavigation(Viewports[0], SceneManager);
         end;
       vc4:
         begin
@@ -138,14 +148,14 @@ begin
           case OldValue of
             vc1:
               begin
-                AssignCamera(Viewports[0], SceneManager, SceneManager, true);
-                AssignCamera(Viewports[1], SceneManager, SceneManager, true);
-                AssignCamera(Viewports[2], SceneManager, SceneManager, true);
+                AssignCameraAndNavigation(Viewports[0], SceneManager);
+                AssignCameraAndNavigation(Viewports[1], SceneManager);
+                AssignCameraAndNavigation(Viewports[2], SceneManager);
               end;
             vc2Horizontal:
               begin
-                AssignCamera(Viewports[1], SceneManager, SceneManager, true);
-                AssignCamera(Viewports[2], Viewports[0], SceneManager, true);
+                AssignCameraAndNavigation(Viewports[1], SceneManager);
+                AssignCameraAndNavigation(Viewports[2], Viewports[0]);
               end;
             else raise EInternalError.Create('ViewportsConfig OldValue was supposed to be <> new value?');
           end;
