@@ -126,7 +126,7 @@ begin
       vc1:
         begin
           { make sure glViewport is also restored }
-          RenderContext.Viewport := Window.Rect;
+          RenderContext.Viewport := Window.Rect; // TODO: This is most probably useless now?
           for I := 0 to High(Viewports) do
             Window.Controls.Remove(Viewports[I]);
         end;
@@ -241,6 +241,11 @@ begin
     { do not use lights from Scene on other scenes }
     Viewports[I].UseGlobalLights := false;
     Viewports[I].SceneManager := SceneManager;
+    { We will explicitly initialize camera and navigation.
+      This also prevents the AutoDetectCamera mechanism from overriding
+      our camera set by AssignCameraAndNavigation. }
+    Viewports[I].AutoDetectCamera := false;
+    Viewports[I].AutoDetectNavigation := false;
   end;
   Background := TCastleRectangleControl.Create(nil);
   Background.FullSize := true;
