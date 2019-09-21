@@ -1097,11 +1097,8 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    Scene.InternalUpdateNavigation(SceneManager.RequiredNavigation, Scene.BoundingBox);
-    Scene.InternalUpdateCamera(SceneManager.Camera, Scene.BoundingBox, false, false);
-    // TODO:
-    // SceneManager.AssignDefaultCamera;
-    // SceneManager.AssignDefaultNavigation;
+    SceneManager.AssignDefaultCamera;
+    SceneManager.AssignDefaultNavigation;
     // UpdateCameraUI, called below, will make UI reflect current navigation
 
     for I := 0 to High(Viewports) do
