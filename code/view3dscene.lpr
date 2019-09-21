@@ -1097,8 +1097,13 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    Scene.CameraFromNavigationInfo(SceneManager.RequiredNavigation, Scene.BoundingBox);
-    Scene.CameraFromViewpoint(SceneManager.Camera, Scene.BoundingBox, false, false);
+    Scene.InternalUpdateNavigation(SceneManager.RequiredNavigation, Scene.BoundingBox);
+    Scene.InternalUpdateCamera(SceneManager.Camera, Scene.BoundingBox, false, false);
+    // TODO:
+    // SceneManager.AssignDefaultCamera;
+    // SceneManager.AssignDefaultNavigation;
+    // UpdateCameraUI, called below, will make UI reflect current navigation
+
     for I := 0 to High(Viewports) do
       AssignCameraAndNavigation(Viewports[I], SceneManager);
     Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
@@ -4137,7 +4142,7 @@ begin
       SceneDebugEdges := TDebugEdgesScene.Create(Scene);
       SceneManager.Items.Add(SceneDebugEdges);
 
-      InitCameras(SceneManager);
+      InitNavigation(SceneManager);
       InitTextureFilters(Scene);
 
       { init "scene global variables" to non-null values }

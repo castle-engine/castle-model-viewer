@@ -30,8 +30,8 @@ uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   CastleControls, CastleControlsImages;
 
 { Call this once on created SceneManager.
-  This will take care of using proper SceneManager.Camera. }
-procedure InitCameras(SceneManager: TCastleSceneManager);
+  This will take care of using proper SceneManager.Navigation. }
+procedure InitNavigation(const SceneManager: TCastleSceneManager);
 
 const
   CameraNames: array [TNavigationType] of string =
@@ -43,6 +43,7 @@ var
   CameraRadios: array [TNavigationType] of TMenuItemRadio;
   CameraButtons: array [TNavigationType] of TCastleButton;
 
+{ Make UI reflect the current state of SceneManager.NavigationType. }
 procedure UpdateCameraNavigationTypeUI;
 
 type
@@ -57,7 +58,7 @@ type
     procedure GLContextClose; override;
   end;
 
-{ Same as SceneManager.Navigation, where SceneManager was given to InitCameras. }
+{ Same as SceneManager.Navigation, where SceneManager was given to InitNavigation. }
 function Navigation: TCastleNavigation;
 
 implementation
@@ -69,7 +70,7 @@ var
   ImageExamine_TooltipGL: TDrawableImage;
   ImageWalk_Fly_TooltipGL: TDrawableImage;
   ImageTooltipArrow: TDrawableImage;
-  { Saved SceneManager from InitCameras. }
+  { Saved SceneManager from InitNavigation. }
   FSceneManager: TCastleSceneManager;
 
 procedure UpdateCameraNavigationTypeUI;
@@ -85,7 +86,7 @@ begin
       CameraButtons[NT].Pressed := NT = FSceneManager.NavigationType;
 end;
 
-procedure InitCameras(SceneManager: TCastleSceneManager);
+procedure InitNavigation(const SceneManager: TCastleSceneManager);
 begin
   FSceneManager := SceneManager;
   UpdateCameraNavigationTypeUI;
