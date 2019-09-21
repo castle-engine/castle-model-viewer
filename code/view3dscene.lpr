@@ -761,7 +761,8 @@ begin
     to correctly mix with partially transparent 3D scenes.
     Render as ShadowVolumesReceivers=true to make selected triangle
     drawn last (on top), to be clearly and always visible. }
-  if (not Params.Transparent) and Params.ShadowVolumesReceivers then
+  if (not Params.Transparent) and
+     (true in Params.ShadowVolumesReceivers) then
     RenderVisualizations(Params.RenderingCamera);
 end;
 
@@ -805,7 +806,8 @@ begin
     to correctly mix with partially transparent 3D scenes.
     Render as ShadowVolumesReceivers=true to make selected triangle
     drawn last (on top), to be clearly and always visible. }
-  if (not Params.Transparent) and Params.ShadowVolumesReceivers then
+  if (not Params.Transparent) and
+     (true in Params.ShadowVolumesReceivers) then
     RenderVisualizations(Params.RenderingCamera);
 end;
 

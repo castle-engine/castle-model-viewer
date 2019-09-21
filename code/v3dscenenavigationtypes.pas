@@ -185,5 +185,5 @@ end;
 
 initialization
   Theme.Images[tiTooltip] := TooltipRounded;
-  Theme.Corners[tiTooltip] := Vector4Integer(9, 9, 9, 9);
+  Theme.Corners[tiTooltip] := Vector4(9, 9, 9, 9);
 end.
