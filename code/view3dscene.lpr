@@ -53,10 +53,7 @@ program view3dscene;
 {$endif}
 
 uses SysUtils, Math, Classes,
-  { TODO: Temporarily commented out because our https://jenkins.castle-engine.io/
-    has older revision of FPC 3.3.1. Uncomment this if you use recent FPC 3.3.1
-    to be able to handle https. }
-  // {$ifndef VER3_0} OpenSSLSockets, {$endif}
+  {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties,
@@ -571,15 +568,10 @@ begin
    s := BoolToStrOO[Scene.Attributes.UseSceneLights];
   Text.Append(Format('Use scene lights: %s', [s])); }
 
-  if Scene.Attributes.UseOcclusionQuery or
-     Scene.Attributes.UseHierarchicalOcclusionQuery then
-    S := Format(' (+ <font color="#%s">%d boxes</font> for occlusion query)',
-           [ ValueColor, Statistics.BoxesOcclusionQueriedCount ]) else
-    S := '';
-  Text.Append(Format('Rendered Shapes: <font color="#%s">%d%s / %d</font> ',
-    [ ValueColor,
-      Statistics.ShapesRendered, S,
-      Statistics.ShapesVisible ]) + OctreeDisplayStatus);
+  Text.Append(Format('Rendered: <font color="#%s">%s</font>', [
+    ValueColor,
+    Statistics.ToString
+  ]) + OctreeDisplayStatus);
 
   if Scene.TimeAtLoad = 0.0 then
     S := Format('World time: <font color="#%s">%d</font>',
