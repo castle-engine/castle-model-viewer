@@ -568,15 +568,10 @@ begin
    s := BoolToStrOO[Scene.Attributes.UseSceneLights];
   Text.Append(Format('Use scene lights: %s', [s])); }
 
-  if Scene.Attributes.UseOcclusionQuery or
-     Scene.Attributes.UseHierarchicalOcclusionQuery then
-    S := Format(' (+ <font color="#%s">%d boxes</font> for occlusion query)',
-           [ ValueColor, Statistics.BoxesOcclusionQueriedCount ]) else
-    S := '';
-  Text.Append(Format('Rendered Shapes: <font color="#%s">%d%s / %d</font> ',
-    [ ValueColor,
-      Statistics.ShapesRendered, S,
-      Statistics.ShapesVisible ]) + OctreeDisplayStatus);
+  Text.Append(Format('Rendered: <font color="#%s">%s</font>', [
+    ValueColor,
+    Statistics.ToString
+  ]) + OctreeDisplayStatus);
 
   if Scene.TimeAtLoad = 0.0 then
     S := Format('World time: <font color="#%s">%d</font>',
