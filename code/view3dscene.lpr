@@ -3004,6 +3004,7 @@ begin
 
     82: ShowBBox := not ShowBBox;
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
+    83: InternalDynamicBatching := not InternalDynamicBatching;
     86: with Scene.Attributes do Blending := not Blending;
     87: with Scene.Attributes do OcclusionSort := not OcclusionSort;
     88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
@@ -3400,6 +3401,8 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Blending',                86,
       Scene.Attributes.Blending, true));
+    M.Append(TMenuItemChecked.Create('Dynamic Batching',        83,
+      InternalDynamicBatching, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
       Scene.Attributes.OcclusionSort, true));
