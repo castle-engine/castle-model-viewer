@@ -1122,15 +1122,10 @@ begin
       {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
     Scene.ProcessEvents := ProcessEventsWanted;
 
-    { Make initial CameraChanged to make initial events to
-      ProximitySensor, if user is within. }
-    Scene.CameraChanged(SceneManager.Camera);
-    Scene.VisibleChangeNotification(SceneManager.CameraToChanges);
-
     RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.Height);
 
     if not Window.Closed then
-      Scene.VisibleChangeHere([]);
+      Window.Invalidate;
 
     if MenuReopen <> nil then
       MenuReopen.Enabled := SceneURL <> '';
