@@ -2971,12 +2971,12 @@ begin
     36: RemoveSelectedShape;
     37: RemoveSelectedFace;
 
-    51: Scene.CameraTransition(Navigation,
+    51: Scene.CameraTransition(SceneManager.Camera,
           DefaultX3DCameraPosition[cvVrml1_Inventor],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
           DefaultX3DGravityUp);
-    52: Scene.CameraTransition(Navigation,
+    52: Scene.CameraTransition(SceneManager.Camera,
           DefaultX3DCameraPosition[cvVrml2_X3d],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
