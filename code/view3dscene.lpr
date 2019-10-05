@@ -2914,18 +2914,13 @@ var
 
   procedure RevealAllHiddenShapes;
   var
-    SI: TShapeTreeIterator;
+    ShapeList: TShapeList;
     Shape: TShape;
   begin
-    SI := TShapeTreeIterator.Create(Scene.Shapes, { OnlyActive } false);
-    try
-      while SI.GetNext do
-      begin
-        Shape := SI.Current;
-        if Shape.Node <> nil then
-          Shape.Node.Render := true;
-      end;
-    finally FreeAndNil(SI) end;
+    ShapeList := Scene.Shapes.TraverseList({ OnlyActive } false);
+    for Shape in ShapeList do
+      if Shape.Node <> nil then
+        Shape.Node.Render := true;
   end;
 
 var

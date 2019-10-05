@@ -159,7 +159,7 @@ end;
 procedure TDebugEdgesScene.UpdateEdges(const SourceScene: TCastleScene);
 var
   ObserverPos: TVector4;
-  SI: TShapeTreeIterator;
+  ShapeList: TShapeList;
   Shape: TShape;
 begin
   if not World.CameraKnown then Exit;
@@ -170,15 +170,12 @@ begin
   SilhouetteLines.FdVertexCount.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
 
-  SI := TShapeTreeIterator.Create(SourceScene.Shapes, { OnlyActive } true, { OnlyVisible } true);
-  try
-    while SI.GetNext do
-    begin
-      Shape := SI.Current;
-      AddSilhouetteEdges(ObserverPos, Shape.State.Transform, Shape.InternalShadowVolumes);
-      AddBorderEdges(Shape.State.Transform, Shape.InternalShadowVolumes);
-    end;
-  finally FreeAndNil(SI) end;
+  ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
+  for Shape in ShapeList do
+  begin
+    AddSilhouetteEdges(ObserverPos, Shape.State.Transform, Shape.InternalShadowVolumes);
+    AddBorderEdges(Shape.State.Transform, Shape.InternalShadowVolumes);
+  end;
 
   ChangedAll;
 end;
