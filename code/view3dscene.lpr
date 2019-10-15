@@ -3160,6 +3160,10 @@ begin
 
   //  225: PrecalculateAnimationFromEvents;
 
+    22800: Scene.AnimateSkipTicks := 0;
+    22810: Scene.AnimateSkipTicks := 1;
+    22820: Scene.AnimateSkipTicks := 2;
+
     230: ToggleNamedAnimationsUi;
 
     300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
@@ -3477,7 +3481,10 @@ begin
     M.Append(TMenuItem.Create('Playing Speed...', 222));
     M.Append(TMenuItem.Create('Baked Animation Smoothness ...', 223));
     M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
-    // M.Append(TMenuSeparator.Create);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Do Not Optimize (Update Every Frame)', 22800));
+    M.Append(TMenuItem.Create('Optimize 1 (Skip Updating for 1 Frame Between)', 22810));
+    M.Append(TMenuItem.Create('Optimize 2 (Skip Updating for 2 Frames Between)', 22820));
     // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
     Result.Append(M);
   M := TMenu.Create('_Edit');
