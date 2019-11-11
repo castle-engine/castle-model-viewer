@@ -2913,18 +2913,13 @@ var
 
   procedure RevealAllHiddenShapes;
   var
-    SI: TShapeTreeIterator;
+    ShapeList: TShapeList;
     Shape: TShape;
   begin
-    SI := TShapeTreeIterator.Create(Scene.Shapes, { OnlyActive } false);
-    try
-      while SI.GetNext do
-      begin
-        Shape := SI.Current;
-        if Shape.Node <> nil then
-          Shape.Node.Render := true;
-      end;
-    finally FreeAndNil(SI) end;
+    ShapeList := Scene.Shapes.TraverseList({ OnlyActive } false);
+    for Shape in ShapeList do
+      if Shape.Node <> nil then
+        Shape.Node.Render := true;
   end;
 
 var
@@ -2999,7 +2994,7 @@ begin
 
     82: ShowBBox := not ShowBBox;
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
-    83: InternalDynamicBatching := not InternalDynamicBatching;
+    83: DynamicBatching := not DynamicBatching;
     86: with Scene.Attributes do Blending := not Blending;
     87: with Scene.Attributes do OcclusionSort := not OcclusionSort;
     88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
@@ -3163,6 +3158,10 @@ begin
          end;
 
   //  225: PrecalculateAnimationFromEvents;
+
+    22800: Scene.AnimateSkipTicks := 0;
+    22810: Scene.AnimateSkipTicks := 1;
+    22820: Scene.AnimateSkipTicks := 2;
 
     230: ToggleNamedAnimationsUi;
 
@@ -3397,7 +3396,7 @@ begin
     M.Append(TMenuItemChecked.Create('Blending',                86,
       Scene.Attributes.Blending, true));
     M.Append(TMenuItemChecked.Create('Dynamic Batching',        83,
-      InternalDynamicBatching, true));
+      DynamicBatching, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
       Scene.Attributes.OcclusionSort, true));
@@ -3481,7 +3480,10 @@ begin
     M.Append(TMenuItem.Create('Playing Speed...', 222));
     M.Append(TMenuItem.Create('Baked Animation Smoothness ...', 223));
     M.Append(TMenuItemChecked.Create('Process VRML/X3D Events ("off" pauses also animation)', 224, ProcessEventsWanted, true));
-    // M.Append(TMenuSeparator.Create);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItem.Create('Do Not Optimize (Update Every Frame)', 22800));
+    M.Append(TMenuItem.Create('Optimize 1 (Skip Updating for 1 Frame Between)', 22810));
+    M.Append(TMenuItem.Create('Optimize 2 (Skip Updating for 2 Frames Between)', 22820));
     // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
     Result.Append(M);
   M := TMenu.Create('_Edit');

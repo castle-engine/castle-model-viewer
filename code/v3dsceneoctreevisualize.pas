@@ -152,7 +152,8 @@ procedure OctreeDisplay(Scene: TCastleScene);
 
   procedure DisplayOctreeTrianglesDepth(OctreeDisplayDepth: integer);
   var
-    SI: TShapeTreeIterator;
+    ShapeList: TShapeList;
+    Shape: TShape;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -164,18 +165,16 @@ procedure OctreeDisplay(Scene: TCastleScene);
 
     if Scene <> nil then
     begin
-      SI := TShapeTreeIterator.Create(Scene.Shapes, true);
-      try
-        while SI.GetNext do
-          if SI.Current.InternalOctreeTriangles <> nil then
-          begin
-            glPushMatrix;
-              glMultMatrix(SI.Current.State.Transform);
-              DisplayOctreeDepth(SI.Current.InternalOctreeTriangles.TreeRoot,
-                OctreeDisplayDepth);
-            glPopMatrix;
-          end;
-      finally FreeAndNil(SI) end;
+      ShapeList := Scene.Shapes.TraverseList(true);
+      for Shape in ShapeList do
+        if Shape.InternalOctreeTriangles <> nil then
+        begin
+          glPushMatrix;
+            glMultMatrix(Shape.State.Transform);
+            DisplayOctreeDepth(Shape.InternalOctreeTriangles.TreeRoot,
+              OctreeDisplayDepth);
+          glPopMatrix;
+        end;
     end;
   end;
 
@@ -200,7 +199,8 @@ procedure OctreeDisplay(Scene: TCastleScene);
 
   procedure DisplayOctreeTrianglesWhole;
   var
-    SI: TShapeTreeIterator;
+    ShapeList: TShapeList;
+    Shape: TShape;
   begin
     { Octree is not always ready, as it's recalculation during animations
       may hurt. Also, Draw may be called in various situations even when Scene
@@ -212,17 +212,15 @@ procedure OctreeDisplay(Scene: TCastleScene);
 
     if Scene <> nil then
     begin
-      SI := TShapeTreeIterator.Create(Scene.Shapes, true);
-      try
-        while SI.GetNext do
-          if SI.Current.InternalOctreeTriangles <> nil then
-          begin
-            glPushMatrix;
-              glMultMatrix(SI.Current.State.Transform);
-              DisplayOctreeWhole(SI.Current.InternalOctreeTriangles.TreeRoot);
-            glPopMatrix;
-          end;
-      finally FreeAndNil(SI) end;
+      ShapeList := Scene.Shapes.TraverseList(true);
+      for Shape in ShapeList do
+        if Shape.InternalOctreeTriangles <> nil then
+        begin
+          glPushMatrix;
+            glMultMatrix(Shape.State.Transform);
+            DisplayOctreeWhole(Shape.InternalOctreeTriangles.TreeRoot);
+          glPopMatrix;
+        end;
     end;
   end;
 
