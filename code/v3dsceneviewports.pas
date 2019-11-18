@@ -51,12 +51,12 @@ var
   Viewports: array [0..2] of TCastleViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
+  Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
 
 { Copy all Camera and Navigation settings from Source to Target. }
 procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewport);
 
-procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
+procedure ResizeViewports(Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
 
 { Copy NavigationType to (existing) viewports cameras. }
 procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
@@ -105,7 +105,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
+  Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
@@ -174,7 +174,7 @@ begin
   end;
 end;
 
-procedure ResizeViewports(Window: TCastleWindowCustom; SceneManager: TCastleSceneManager);
+procedure ResizeViewports(Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
 var
   W, H: Cardinal;
 begin
@@ -242,10 +242,10 @@ begin
     Viewports[I].UseGlobalLights := false;
     Viewports[I].SceneManager := SceneManager;
     { We will explicitly initialize camera and navigation.
-      This also prevents the AutoDetectCamera mechanism from overriding
+      This also prevents the AutoCamera mechanism from overriding
       our camera set by AssignCameraAndNavigation. }
-    Viewports[I].AutoDetectCamera := false;
-    Viewports[I].AutoDetectNavigation := false;
+    Viewports[I].AutoCamera := false;
+    Viewports[I].AutoNavigation := false;
   end;
   Background := TCastleRectangleControl.Create(nil);
   Background.FullSize := true;
