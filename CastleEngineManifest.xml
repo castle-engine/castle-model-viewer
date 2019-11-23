@@ -21,4 +21,12 @@
     <include path="COPYING.GPL2.txt" />
   </package>
   <data exists="false" />
+  <!--
+  Use this to test OpenGLES rendering.
+  <compiler_options>
+    <custom_options>
+      <option>-dOpenGLES</option>
+    </custom_options>
+  </compiler_options>
+  -->
 </project>
