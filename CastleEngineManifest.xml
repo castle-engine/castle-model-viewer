@@ -21,12 +21,13 @@
     <include path="COPYING.GPL2.txt" />
   </package>
   <data exists="false" />
-  <!--
-  Use this to test OpenGLES rendering.
+
   <compiler_options>
     <custom_options>
-      <option>-dOpenGLES</option>
+      <!-- Use this to test OpenGLES rendering. -->
+      <!-- <option>-dOpenGLES</option> -->
+      <!-- Test "slim" mode (see castleconf.inc for explanation) -->
+      <!-- <option>-dCASTLE_SLIM_NODES</option> -->
     </custom_options>
   </compiler_options>
-  -->
 </project>
