@@ -89,7 +89,7 @@ type
     LightMenu: TLightMenu;
     HeadLightMenu: THeadLightMenu;
     procedure AddLight(Node: TX3DNode);
-    procedure DestructionNotification(Node: TX3DNode);
+    procedure DestructionNotification(const Node: TX3DNode);
     procedure ClickEditLight(Sender: TObject);
     procedure ClickEditHeadlight(Sender: TObject);
     procedure ClickClose(Sender: TObject);
@@ -572,7 +572,7 @@ begin
   FreeAndNil(HeadLightMenu);
 end;
 
-procedure TLightsMenu.DestructionNotification(Node: TX3DNode);
+procedure TLightsMenu.DestructionNotification(const Node: TX3DNode);
 var
   I: Integer;
 begin
