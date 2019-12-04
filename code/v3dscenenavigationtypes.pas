@@ -53,7 +53,7 @@ type
     constructor Create(AOwner: TComponent;
       const ANavigationType: TNavigationType); reintroduce;
     function TooltipExists: boolean; override;
-    procedure TooltipRender; override;
+    procedure TooltipRender(const TooltipPosition: TVector2); override;
     procedure GLContextOpen; override;
     procedure GLContextClose; override;
   end;
@@ -128,7 +128,7 @@ end;
     we'll fit inside.
 }
 
-procedure TNavigationTypeButton.TooltipRender;
+procedure TNavigationTypeButton.TooltipRender(const TooltipPosition: TVector2);
 
   procedure DoDraw(GLImage: TDrawableImage);
   const
