@@ -2830,11 +2830,11 @@ var
   procedure Reopen;
   var
     Pos, Dir, Up: TVector3;
-    NavigationType: TNavigationType;
+    SavedNavigationType: TUserNavigationType;
   begin
     { reopen saves/restores camera view and navigation type,
       this makes it more useful }
-    NavigationType := SceneManager.NavigationType;
+    SavedNavigationType := NavigationType;
     Navigation.GetView(Pos, Dir, Up{, GravityUp});
 
     LoadScene(SceneURL, []);
@@ -2844,8 +2844,7 @@ var
       --- original scene's gravity is then lost) }
     Navigation.SetView(Pos, Dir, Up{, GravityUp});
     { restore NavigationType }
-    SceneManager.NavigationType := NavigationType;
-    ViewportsSetNavigationType(SceneManager.NavigationType);
+    SetNavigationType(SavedNavigationType);
     UpdateCameraUI;
   end;
 
@@ -3059,15 +3058,10 @@ begin
     110: WriteBoundingBox(Scene.BoundingBox);
 
     111: begin
-           if SceneManager.NavigationType = High(TNavigationType) then
-             SceneManager.NavigationType := Low(TNavigationType) else
-           begin
-             SceneManager.NavigationType := Succ(SceneManager.NavigationType);
-             { skip over navigation types that are not stable }
-             if not (SceneManager.NavigationType in StableNavigationType) then
-               SceneManager.NavigationType := Succ(SceneManager.NavigationType);
-           end;
-           ViewportsSetNavigationType(SceneManager.NavigationType);
+           if NavigationType = High(NavigationType) then
+             SetNavigationType(Low(NavigationType))
+           else
+             SetNavigationType(Succ(NavigationType));
            UpdateCameraUI;
          end;
 
@@ -3230,8 +3224,7 @@ begin
       TMagnificationFilter  (MenuItem.IntData-1200), Scene);
     1300..1399:
       begin
-        SceneManager.NavigationType := TNavigationType(MenuItem.IntData - 1300);
-        ViewportsSetNavigationType(SceneManager.NavigationType);
+        SetNavigationType(TUserNavigationType(MenuItem.IntData - 1300));
         UpdateCameraUI;
       end;
     1400..1499: Scene.Attributes.BumpMapping :=
@@ -3256,12 +3249,12 @@ function CreateMainMenu: TMenu;
 
   procedure AppendNavigationTypes(M: TMenu);
   var
-    Mode: TNavigationType;
+    NT: TUserNavigationType;
     Group: TMenuItemRadioGroup;
   begin
-    Group := M.AppendRadioGroup(CameraNames, 1300, Ord(SceneManager.NavigationType), true);
-    for Mode := Low(Mode) to High(Mode) do
-      CameraRadios[Mode] := Group[Ord(Mode)];
+    Group := M.AppendRadioGroup(NavigationNames, 1300, Ord(NavigationType), true);
+    for NT := Low(NT) to High(NT) do
+      CameraRadios[NT] := Group[Ord(NT)];
   end;
 
   procedure MenuAppendSoundDevices(M: TMenu; BaseIntData: Cardinal);
@@ -3590,7 +3583,7 @@ var
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
 var
-  NT: TNavigationType;
+  NT: TUserNavigationType;
   Vis: boolean;
 begin
   Vis := ShowStatus and not MakingScreenShot;
@@ -3621,7 +3614,7 @@ end;
 
 procedure CreateStatusToolbar;
 var
-  NT: TNavigationType;
+  NT: TUserNavigationType;
 const
   MinImageHeight = 22;
 begin
@@ -3683,25 +3676,25 @@ begin
     WarningsButton.Exists := false; { at least initialize Exists }
 
   for NT := Low(NT) to High(NT) do
-    { Don't show button for ntNone or not StableNavigationType.
+    { Don't show button for ntNone.
       For ntNone it's confusing for new user.
       The "none" navigation type is visible in menu. }
-    if (NT <> ntNone) and (NT in StableNavigationType) then
+    if NT <> untNone then
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
-      CameraButtons[NT].Caption := CameraNames[NT];
+      CameraButtons[NT].Caption := NavigationNames[NT];
       CameraButtons[NT].OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).NavigationTypeButtonClick;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
       Window.Controls.InsertFront(CameraButtons[NT]);
     end;
 
-  CameraButtons[ntExamine].Image.Image := V3DSceneImages.Examine;
-  CameraButtons[ntExamine].Image.OwnsImage := false;
-  CameraButtons[ntWalk].Image.Image := V3DSceneImages.Walk;
-  CameraButtons[ntWalk].Image.OwnsImage := false;
-  CameraButtons[ntFly].Image.Image := V3DSceneImages.Fly;
-  CameraButtons[ntFly].Image.OwnsImage := false;
+  CameraButtons[untExamine].Image.Image := V3DSceneImages.Examine;
+  CameraButtons[untExamine].Image.OwnsImage := false;
+  CameraButtons[untFly].Image.Image := V3DSceneImages.Fly;
+  CameraButtons[untFly].Image.OwnsImage := false;
+  CameraButtons[untWalk].Image.Image := V3DSceneImages.Walk;
+  CameraButtons[untWalk].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
 end;
@@ -3712,11 +3705,11 @@ const
   ButtonsMargin = 8; {< between buttons }
   ButtonsSeparatorsMargin = 8; {< between buttons and separators }
 var
-  NT: TNavigationType;
+  NT: TUserNavigationType;
   NextLeft, ButtonsHeight, ButtonsBottom: Single;
 begin
   ButtonsHeight := Max(
-    CameraButtons[ntExamine { any button }].EffectiveHeight,
+    CameraButtons[untExamine { any button }].EffectiveHeight,
     WarningsButton.EffectiveHeight);
   ButtonsBottom := Window.Height - ButtonsHeight - ToolbarMargin;
 
@@ -3739,8 +3732,7 @@ begin
     NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
 
     for NT := Low(NT) to High(NT) do
-      { check with <> nil, since for ntNone or not StableNavigationType
-        we don't show button }
+      { check with <> nil, since for ntNone we don't show button }
       if CameraButtons[NT] <> nil then
       begin
         CameraButtons[NT].Left := NextLeft;
@@ -3783,8 +3775,7 @@ end;
 
 class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
 begin
-  SceneManager.NavigationType := (Sender as TNavigationTypeButton).NavigationType;
-  ViewportsSetNavigationType(SceneManager.NavigationType);
+  SetNavigationType((Sender as TNavigationTypeButton).NavigationType);
   UpdateCameraUI;
 end;
 

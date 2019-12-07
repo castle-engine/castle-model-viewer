@@ -27,7 +27,8 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleSceneManager, CastleWindow, CastleCameras, CastleGLContainer;
+uses CastleSceneManager, CastleWindow, CastleCameras, CastleGLContainer,
+  V3DSceneNavigationTypes;
 
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
@@ -58,8 +59,8 @@ procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewpor
 
 procedure ResizeViewports(Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
 
-{ Copy NavigationType to (existing) viewports cameras. }
-procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
+{ Copy NewNavigationType to (existing) viewports and SceneManager. }
+procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
@@ -223,12 +224,28 @@ begin
   end;
 end;
 
-procedure ViewportsSetNavigationType(const NavigationType: TNavigationType);
+procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
+
+  procedure CoreSetNavigationType(const Viewport: TCastleAbstractViewport;
+    const Value: TUserNavigationType);
+  begin
+    case Value of
+      untExamine: Viewport.NavigationType := ntExamine;
+      untWalk: Viewport.NavigationType := ntWalk;
+      untFly: Viewport.NavigationType := ntFly;
+      untNone: Viewport.NavigationType := ntNone;
+      {$ifndef COMPILER_CASE_ANALYSIS}
+      else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
+      {$endif}
+    end;
+  end;
+
 var
   I: Integer;
 begin
+  CoreSetNavigationType(SceneManager, NewNavigationType);
   for I := 0 to High(Viewports) do
-    Viewports[I].NavigationType := NavigationType;
+    CoreSetNavigationType(Viewports[I], NewNavigationType);
 end;
 
 procedure InitializeViewports(ViewportClass: TViewportClass);

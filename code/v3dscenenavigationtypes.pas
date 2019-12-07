@@ -27,35 +27,48 @@ interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
-  CastleControls, CastleControlsImages;
+  CastleControls, CastleControlsImages, CastleGLImages;
 
 { Call this once on created SceneManager.
   This will take care of using proper SceneManager.Navigation. }
 procedure InitNavigation(const SceneManager: TCastleSceneManager);
 
+type
+  { Navigation types useful in view3dscene, in order suitable for view3dscene
+    menu and toolbar.
+    Note that "Walk" is after "Fly", which is safer because "Walk" automatically
+    activates gravity. }
+  TUserNavigationType = (
+    untExamine,
+    untFly,
+    untWalk,
+    untNone
+  );
+
 const
-  CameraNames: array [TNavigationType] of string =
-  ('Examine', 'Turntable (Work in Progress)', 'Walk', 'Fly', 'None');
-  StableNavigationType = [Low(TNavigationType)..High(TNavigationType)]
-    -[ntTurntable];
+  NavigationNames: array [TUserNavigationType] of string =
+  ('Examine', 'Fly', 'Walk', 'None');
 
 var
-  CameraRadios: array [TNavigationType] of TMenuItemRadio;
-  CameraButtons: array [TNavigationType] of TCastleButton;
+  CameraRadios: array [TUserNavigationType] of TMenuItemRadio;
+  CameraButtons: array [TUserNavigationType] of TCastleButton;
+
+function NavigationType: TUserNavigationType;
 
 { Make UI reflect the current state of SceneManager.NavigationType. }
 procedure UpdateCameraNavigationTypeUI;
 
 type
   TNavigationTypeButton = class(TCastleButton)
+  strict private
+    ImageTooltipArrow, ImageTooltip: TCastleImagePersistent;
   public
-    NavigationType: TNavigationType;
+    NavigationType: TUserNavigationType;
     constructor Create(AOwner: TComponent;
-      const ANavigationType: TNavigationType); reintroduce;
+      const ANavigationType: TUserNavigationType); reintroduce;
+    destructor Destroy; override;
     function TooltipExists: boolean; override;
     procedure TooltipRender(const TooltipPosition: TVector2); override;
-    procedure GLContextOpen; override;
-    procedure GLContextClose; override;
   end;
 
 { Same as SceneManager.Navigation, where SceneManager was given to InitNavigation. }
@@ -63,33 +76,43 @@ function Navigation: TCastleNavigation;
 
 implementation
 
-uses CastleParameters, CastleClassUtils, CastleImages, CastleGLImages,
+uses CastleParameters, CastleClassUtils, CastleImages,
   V3DSceneImages, CastleRectangles;
 
 var
-  ImageExamine_TooltipGL: TDrawableImage;
-  ImageWalk_Fly_TooltipGL: TDrawableImage;
-  ImageTooltipArrow: TDrawableImage;
   { Saved SceneManager from InitNavigation. }
   FSceneManager: TCastleSceneManager;
 
 procedure UpdateCameraNavigationTypeUI;
 var
-  NT: TNavigationType;
+  NT: TUserNavigationType;
 begin
-  if CameraRadios[FSceneManager.NavigationType] <> nil then
-    CameraRadios[FSceneManager.NavigationType].Checked := true;
+  if CameraRadios[NavigationType] <> nil then
+    CameraRadios[NavigationType].Checked := true;
   for NT := Low(NT) to High(NT) do
     { check <> nil, since for ntNone and not StableNavigationType
       we don't show buttons }
     if CameraButtons[NT] <> nil then
-      CameraButtons[NT].Pressed := NT = FSceneManager.NavigationType;
+      CameraButtons[NT].Pressed := NT = NavigationType;
 end;
 
 procedure InitNavigation(const SceneManager: TCastleSceneManager);
 begin
   FSceneManager := SceneManager;
   UpdateCameraNavigationTypeUI;
+end;
+
+function NavigationType: TUserNavigationType;
+begin
+  case FSceneManager.NavigationType of
+    ntExamine, ntTurntable: Result := untExamine;
+    ntWalk: Result := untWalk;
+    ntFly: Result := untFly;
+    ntNone: Result := untNone;
+    {$ifndef COMPILER_CASE_ANALYSIS}
+    else raise EInternalError.Create('FSceneManager.NavigationType?');
+    {$endif}
+  end;
 end;
 
 function Navigation: TCastleNavigation;
@@ -100,23 +123,46 @@ end;
 { TNavigationTypeButton ------------------------------------------------------ }
 
 constructor TNavigationTypeButton.Create(AOwner: TComponent;
-  const ANavigationType: TNavigationType);
+  const ANavigationType: TUserNavigationType);
 begin
   inherited Create(AOwner);
   NavigationType := ANavigationType;
+
+  ImageTooltipArrow := TCastleImagePersistent.Create;
+  ImageTooltipArrow.OwnsImage := false;
+  ImageTooltipArrow.Image := TooltipArrow;
+
+  ImageTooltip := TCastleImagePersistent.Create;
+  ImageTooltip.OwnsImage := false;
+  if NavigationType = untExamine then
+    ImageTooltip.Image := Examine_Tooltip
+  else
+    ImageTooltip.Image := Walk_Fly_Tooltip;
+end;
+
+destructor TNavigationTypeButton.Destroy;
+begin
+  FreeAndNil(ImageTooltip);
+  FreeAndNil(ImageTooltipArrow);
+  inherited;
 end;
 
 function TNavigationTypeButton.TooltipExists: boolean;
 begin
-  Result := NavigationType in [ntExamine, ntWalk, ntFly];
+  Result := NavigationType in [untExamine, untWalk, untFly];
 end;
 
 { By using image instead of drawing the text we avoid some lacks
   of our text output:
   - it would be unhandy to print both normal and bold fonts
+    (note: this limit was later removed with TCastleLabel.Html)
   - it would be unhandy to use non-monospace fonts and still
     make columns (key names) matching
   - Also we can draw a nice circle instead of "*" inside walk_fly list.
+
+  (Note: this limitation does not exist anymore,
+  as you can arrange layout in CGE editor.
+  Our tooltips could be reimplemented to allow any UI hierarchy.)
 
   Of course, it also causes some problems. Things are no longer configurable
   at runtime:
@@ -129,59 +175,23 @@ end;
 }
 
 procedure TNavigationTypeButton.TooltipRender(const TooltipPosition: TVector2);
-
-  procedure DoDraw(GLImage: TDrawableImage);
-  const
-    WindowBorderMargin = 8;
-    ButtonBottomMargin = 16;
-    ImageMargin = 8;
-  var
-    R: TFloatRectangle;
-  begin
-    R := FloatRectangle(
-      WindowBorderMargin,
-      Bottom - ButtonBottomMargin - (GLImage.Height + 2 * ImageMargin),
-      GLImage.Width  + 2 * ImageMargin,
-      GLImage.Height + 2 * ImageMargin);
-
-    Theme.Draw(R, tiTooltip);
-    GLImage.Draw(R.Left + ImageMargin, R.Bottom + ImageMargin);
-    { we decrease R.Top to overdraw the tooltip image border }
-    ImageTooltipArrow.Draw(Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
-  end;
-
+const
+  WindowBorderMargin = 8;
+  ButtonBottomMargin = 16;
+  ImgMargin = 8;
+var
+  R: TFloatRectangle;
 begin
-  if NavigationType = ntExamine then
-    DoDraw(ImageExamine_TooltipGL) else
-    DoDraw(ImageWalk_Fly_TooltipGL);
-end;
+  R := FloatRectangle(
+    WindowBorderMargin,
+    Bottom - ButtonBottomMargin - (ImageTooltip.Height + 2 * ImgMargin),
+    ImageTooltip.Width  + 2 * ImgMargin,
+    ImageTooltip.Height + 2 * ImgMargin);
 
-procedure TNavigationTypeButton.GLContextOpen;
-begin
-  inherited;
-
-  { Just use GLContextOpen/Close for ntExamine to initialize global unit
-    variables . }
-  if NavigationType = ntExamine then
-  begin
-    if ImageExamine_TooltipGL = nil then
-      ImageExamine_TooltipGL := TDrawableImage.Create(Examine_Tooltip, false, false);
-    if ImageWalk_Fly_TooltipGL = nil then
-      ImageWalk_Fly_TooltipGL := TDrawableImage.Create(Walk_Fly_Tooltip, false, false);
-    if ImageTooltipArrow = nil then
-      ImageTooltipArrow := TDrawableImage.Create(TooltipArrow, false, false);
-  end;
-end;
-
-procedure TNavigationTypeButton.GLContextClose;
-begin
-  if NavigationType = ntExamine then
-  begin
-    FreeAndNil(ImageExamine_TooltipGL);
-    FreeAndNil(ImageWalk_Fly_TooltipGL);
-    FreeAndNil(ImageTooltipArrow);
-  end;
-  inherited;
+  Theme.Draw(R, tiTooltip);
+  ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin, R.Bottom + ImgMargin);
+  { we decrease R.Top to overdraw the tooltip image border }
+  ImageTooltipArrow.DrawableImage.Draw(Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
 end;
 
 initialization
