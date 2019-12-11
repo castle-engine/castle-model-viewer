@@ -2001,16 +2001,12 @@ var
     finally Dec(DisableAutoDynamicGeometry) end;
   end;
 
-  { Returns @true and sets M1, M2, SurfaceShader
-    (exactly one to non-nil, others to non-nil)
-    if success. Produces message to user and returns @false on failure.
+  { Returns @true and sets MatInfo on success.
+    Produces message to user and returns @false on failure.
 
-    Note that SelectedItem is not necessarily correct anymore. Use only
-    M1, M2, SurfaceShader pointers after this. }
-  function ChangeMaterialInit(
-    out M1: TMaterialNode_1;
-    out M2: TMaterialNode;
-    out SurfaceShader: TCommonSurfaceShaderNode): boolean;
+    Note that SelectedItem is not necessarily correct anymore.
+    Use only MatInfo pointers after this. }
+  function ChangeMaterialInit(out MatInfo: TMaterialInfo): boolean;
   var
     Shape: TAbstractShapeNode;
   begin
@@ -2020,39 +2016,30 @@ var
       Exit(false);
     end;
 
-    M1 := nil;
-    M2 := nil;
-    SurfaceShader := nil;
+    MatInfo := SelectedItem^.State.MaterialInfo;
     Shape := SelectedItem^.State.ShapeNode;
-    if Shape <> nil then
+
+    if MatInfo = nil then
     begin
-      SurfaceShader := Shape.CommonSurfaceShader;
-      if SurfaceShader = nil then
+      if Shape <> nil then
       begin
-        M2 := Shape.Material;
-        if M2 = nil then
+        if MessageYesNo(Window, 'No Material (or similar node) present. Add material to this node and then edit it?') then
         begin
-          if MessageYesNo(Window, 'No Material or CommonSurfaceShader node present. Add material to this node and then edit it?') then
-          begin
-            { Note that this may remove old Shape.FdAppearance.Value,
-              but only if Shape.Appearance = nil, indicating that
-              something wrong was specified for "appearance" field.
+          { Note that this may remove old Shape.FdAppearance.Value,
+            but only if Shape.Appearance = nil, indicating that
+            something wrong was specified for "appearance" field.
 
-              Similar, it may remove old Shape.Appearance.FdMaterial.Value,
-              but only if Shape.Material was nil, and together
-              this indicates that something incorrect was placed in "material"
-              field. }
-
-            M2 := TMaterialNode.Create('', Shape.BaseUrl);
-            Shape.Material := M2;
-            Scene.ChangedAll;
-          end else
-            Exit(false);
-        end;
+            Similar, it may remove old Shape.Appearance.FdMaterial.Value,
+            but only if Shape.MaterialInfo was nil. }
+          Shape.Material := TMaterialNode.Create('', Shape.BaseUrl);
+          Scene.ChangedAll;
+        end else
+          Exit(false);
+      end else
+      begin
+        MessageOK(Window, 'Cannot add Material to VRML 1.0.');
+        Exit(false);
       end;
-    end else
-    begin
-      M1 := SelectedItem^.State.VRML1State.Material;
     end;
 
     Result := true;
@@ -2060,72 +2047,26 @@ var
 
   procedure ChangeMaterialDiffuse;
   var
-    M1: TMaterialNode_1;
-    M2: TMaterialNode;
-    SurfaceShader: TCommonSurfaceShaderNode;
+    MatInfo: TMaterialInfo;
     Color: TVector3;
   begin
-    if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
+    if not ChangeMaterialInit(MatInfo) then Exit;
 
-    if SurfaceShader <> nil then
-      Color := SurfaceShader.DiffuseFactor
-    else
-    if M2 <> nil then
-      Color := M2.DiffuseColor
-    else
-    begin
-      Assert(M1 <> nil);
-      if M1.FdDiffuseColor.Count > 0 then
-        Color := M1.FdDiffuseColor.Items.List^[0]
-      else
-        Color := TMaterialInfo.DefaultDiffuseColor;
-    end;
-
+    Color := MatInfo.DiffuseColor;
     if Window.ColorDialog(Color) then
-    begin
-      if SurfaceShader <> nil then
-        SurfaceShader.DiffuseFactor := Color
-      else
-      if M2 <> nil then
-        M2.DiffuseColor := Color
-      else
-        M1.FdDiffuseColor.Send([Color]);
-    end;
+      MatInfo.DiffuseColor := Color;
   end;
 
   procedure ChangeMaterialSpecular;
   var
-    M1: TMaterialNode_1;
-    M2: TMaterialNode;
-    SurfaceShader: TCommonSurfaceShaderNode;
+    MatInfo: TMaterialInfo;
     Color: TVector3;
   begin
-    if not ChangeMaterialInit(M1, M2, SurfaceShader) then Exit;
+    if not ChangeMaterialInit(MatInfo) then Exit;
 
-    if SurfaceShader <> nil then
-      Color := SurfaceShader.SpecularFactor
-    else
-    if M2 <> nil then
-      Color := M2.SpecularColor
-    else
-    begin
-      Assert(M1 <> nil);
-      if M1.FdSpecularColor.Count > 0 then
-        Color := M1.FdSpecularColor.Items.List^[0]
-      else
-        Color := TMaterialInfo.DefaultSpecularColor;
-    end;
-
+    Color := MatInfo.SpecularColor;
     if Window.ColorDialog(Color) then
-    begin
-      if SurfaceShader <> nil then
-        SurfaceShader.SpecularFactor := Color
-      else
-      if M2 <> nil then
-        M2.SpecularColor := Color
-      else
-        M1.FdSpecularColor.Send([Color]);
-    end;
+      MatInfo.SpecularColor := Color;
   end;
 
   procedure LoadMaterialProperties;

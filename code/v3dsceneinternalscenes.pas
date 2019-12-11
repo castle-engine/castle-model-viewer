@@ -126,6 +126,7 @@ constructor TDebugEdgesScene.Create(AOwner: TComponent);
 var
   Root: TX3DRootNode;
   Shape: TShapeNode;
+  BorderMaterial, SilhouetteMaterial: TMaterialNode;
 begin
   inherited;
 
@@ -133,10 +134,12 @@ begin
 
   BorderLines := TLineSetNode.Create;
 
+  BorderMaterial := TMaterialNode.Create;
+  BorderMaterial.EmissiveColor := Vector3(0, 0, 1);
+
   Shape := TShapeNode.Create;
   Shape.Geometry := BorderLines;
-  Shape.Material := TMaterialNode.Create;
-  Shape.Material.EmissiveColor := Vector3(0, 0, 1);
+  Shape.Material := BorderMaterial;
   Root.AddChildren(Shape);
 
   Shape.Appearance.LineProperties := TLinePropertiesNode.Create;
@@ -147,10 +150,12 @@ begin
 
   SilhouetteLines := TLineSetNode.Create;
 
+  SilhouetteMaterial := TMaterialNode.Create;
+  SilhouetteMaterial.EmissiveColor := Vector3(1, 1, 0);
+
   Shape := TShapeNode.Create;
   Shape.Geometry := SilhouetteLines;
-  Shape.Material := TMaterialNode.Create;
-  Shape.Material.EmissiveColor := Vector3(1, 1, 0);
+  Shape.Material := SilhouetteMaterial;
   Root.AddChildren(Shape);
 
   SilhouetteCoord := TCoordinateNode.Create;
