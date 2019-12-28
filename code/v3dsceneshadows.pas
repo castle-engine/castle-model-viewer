@@ -4,7 +4,7 @@ unit V3DSceneShadows;
 
 interface
 
-uses CastleWindow, CastleScene, Castle3D, CastleVectors, CastleSceneManager,
+uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleSceneManager,
   CastleRenderer;
 
 type

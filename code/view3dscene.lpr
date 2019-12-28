@@ -175,7 +175,7 @@ type
     class procedure GeometryChanged(Scene: TCastleSceneCore;
       const SomeLocalGeometryChanged: boolean;
       OnlyShapeChanged: TShape);
-    class procedure ViewpointsChanged(Scene: TCastleSceneCore);
+    class procedure ViewpointsChanged(Sender: TObject);
     class procedure BoundViewpointChanged(Sender: TObject);
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
@@ -888,7 +888,7 @@ begin
     Result := nil;
 end;
 
-class procedure THelper.ViewpointsChanged(Scene: TCastleSceneCore);
+class procedure THelper.ViewpointsChanged(Sender: TObject);
 begin
   Viewpoints.Recalculate(Scene);
 end;
