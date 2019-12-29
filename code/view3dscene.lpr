@@ -2200,7 +2200,7 @@ var
   begin
     SceneManager.Navigation.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
-      'SceneManager.Camera.SetView(' + NL +
+      'Viewport.Camera.SetView(' + NL +
       '  %s, // position' + NL +
       '  %s, // direction' + NL +
       '  %s, // up (current)' + NL +
