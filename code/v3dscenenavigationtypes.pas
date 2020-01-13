@@ -23,15 +23,17 @@
 { Manage camera navigation types. }
 unit V3DSceneNavigationTypes;
 
+{$I v3dsceneconf.inc}
+
 interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
-  CastleGLUtils, CastleSceneManager, Classes, CastleUIControls,
+  CastleGLUtils, CastleViewport, Classes, CastleUIControls,
   CastleControls, CastleControlsImages, CastleGLImages;
 
-{ Call this once on created SceneManager.
-  This will take care of using proper SceneManager.Navigation. }
-procedure InitNavigation(const SceneManager: TCastleSceneManager);
+{ Call this once on created Viewport.
+  This will take care of using proper Viewport.Navigation. }
+procedure InitNavigation(const Viewport: TCastleViewport);
 
 type
   { Navigation types useful in view3dscene, in order suitable for view3dscene
@@ -55,7 +57,7 @@ var
 
 function NavigationType: TUserNavigationType;
 
-{ Make UI reflect the current state of SceneManager.NavigationType. }
+{ Make UI reflect the current state of Viewport.NavigationType. }
 procedure UpdateCameraNavigationTypeUI;
 
 type
@@ -71,7 +73,7 @@ type
     procedure TooltipRender(const TooltipPosition: TVector2); override;
   end;
 
-{ Same as SceneManager.Navigation, where SceneManager was given to InitNavigation. }
+{ Same as Viewport.Navigation, where Viewport was given to InitNavigation. }
 function Navigation: TCastleNavigation;
 
 implementation
@@ -80,8 +82,8 @@ uses CastleParameters, CastleClassUtils, CastleImages,
   V3DSceneImages, CastleRectangles;
 
 var
-  { Saved SceneManager from InitNavigation. }
-  FSceneManager: TCastleSceneManager;
+  { Saved Viewport from InitNavigation. }
+  FViewport: TCastleViewport;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -96,28 +98,28 @@ begin
       CameraButtons[NT].Pressed := NT = NavigationType;
 end;
 
-procedure InitNavigation(const SceneManager: TCastleSceneManager);
+procedure InitNavigation(const Viewport: TCastleViewport);
 begin
-  FSceneManager := SceneManager;
+  FViewport := Viewport;
   UpdateCameraNavigationTypeUI;
 end;
 
 function NavigationType: TUserNavigationType;
 begin
-  case FSceneManager.NavigationType of
+  case FViewport.NavigationType of
     ntExamine, ntTurntable: Result := untExamine;
     ntWalk: Result := untWalk;
     ntFly: Result := untFly;
     ntNone: Result := untNone;
     {$ifndef COMPILER_CASE_ANALYSIS}
-    else raise EInternalError.Create('FSceneManager.NavigationType?');
+    else raise EInternalError.Create('FViewport.NavigationType?');
     {$endif}
   end;
 end;
 
 function Navigation: TCastleNavigation;
 begin
-  Result := FSceneManager.Navigation;
+  Result := FViewport.Navigation;
 end;
 
 { TNavigationTypeButton ------------------------------------------------------ }

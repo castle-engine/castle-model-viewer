@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
-  CastleRenderer, CastleShapes, CastleSceneManager,
+  CastleRenderer, CastleShapes, CastleViewport,
   CastleMaterialProperties,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
@@ -189,10 +189,10 @@ type
     class procedure OnWarningHandle(Sender: TObject; const Category, S: string);
   end;
 
-{ SceneManager and viewport ------------------------------------------------ }
+{ Custom viewport class ------------------------------------------------ }
 
 type
-  TV3DSceneManager = class(TV3DShadowsSceneManager)
+  TV3DViewport = class(TV3DShadowsViewport)
   protected
     procedure RenderFromView3D(const Params: TRenderParams); override;
     procedure Render3D(const Params: TRenderParams); override;
@@ -206,58 +206,10 @@ type
     function BaseLightsForRaytracer: TLightInstancesList;
   end;
 
-  TV3DViewport = class(TV3DShadowsViewport)
-  protected
-    procedure RenderFromView3D(const Params: TRenderParams); override;
-    procedure Render3D(const Params: TRenderParams); override;
-  public
-    procedure BeforeRender; override;
-    procedure Render; override;
-    function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
-    function ScreenEffectsCount: Integer; override;
-    function ScreenEffectsNeedDepth: boolean; override;
-    function Background: TBackground; override;
-  end;
-
-procedure ViewportProperties(Viewport: TCastleAbstractViewport);
+procedure ViewportProperties(Viewport: TCastleViewport);
 begin
   ViewportShadowsProperties(Viewport);
   Viewport.BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
-end;
-
-function TV3DSceneManager.GetScreenEffects(const Index: Integer): TGLSLProgram;
-var
-  C: Integer;
-begin
-  C := inherited ScreenEffectsCount;
-  if Index >= C then
-    Result := V3DSceneScreenEffects.ScreenEffects.ActiveEffects(Index - C) else
-    Result := inherited GetScreenEffects(Index);
-end;
-
-function TV3DSceneManager.ScreenEffectsCount: Integer;
-begin
-  Result := (inherited ScreenEffectsCount) +
-    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsCount;
-end;
-
-function TV3DSceneManager.ScreenEffectsNeedDepth: boolean;
-begin
-  Result := (inherited ScreenEffectsNeedDepth) or
-    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
-end;
-
-function TV3DSceneManager.Background: TBackground;
-begin
-  if DisableBackground <> 0 then
-    Result := nil else
-    Result := inherited;
-end;
-
-function TV3DSceneManager.BaseLightsForRaytracer: TLightInstancesList;
-begin
-  Result := TLightInstancesList.Create;
-  InitializeLights(Result);
 end;
 
 function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
@@ -287,6 +239,12 @@ begin
   if DisableBackground <> 0 then
     Result := nil else
     Result := inherited;
+end;
+
+function TV3DViewport.BaseLightsForRaytracer: TLightInstancesList;
+begin
+  Result := TLightInstancesList.Create;
+  InitializeLights(Result);
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -330,8 +288,8 @@ var
 begin
   UpdateCameraNavigationTypeUI;
 
-  if SceneManager <> nil then
-    WalkNavigation := SceneManager.WalkNavigation(false)
+  if MainViewport <> nil then
+    WalkNavigation := MainViewport.WalkNavigation(false)
   else
     WalkNavigation := nil;
 
@@ -376,7 +334,7 @@ begin
     Result := nil;
 end;
 
-{ This calls SceneManager.PrepareResources
+{ This calls MainViewport.PrepareResources
   (that causes Scene.PrepareResources).
   Additionally, if AllowProgess and some other conditions are met,
   this shows progress of operation.
@@ -386,9 +344,9 @@ end;
 procedure PrepareResources(AllowProgress: boolean);
 begin
   if AllowProgress then
-    SceneManager.PrepareResources('Preparing animation')
+    MainViewport.PrepareResources('Preparing animation')
   else
-    SceneManager.PrepareResources;
+    MainViewport.PrepareResources;
 end;
 
 procedure SceneOctreeCreate; forward;
@@ -539,7 +497,7 @@ var
 begin
   inherited;
 
-  Statistics := SceneManager.Statistics;
+  Statistics := MainViewport.Statistics;
 
   DescribeSensors;
 
@@ -548,13 +506,13 @@ begin
     S := S + ' (octree resources released)';
   Text.Append(S); }
 
-  SceneManager.Camera.GetView(Pos, Dir, Up);
+  MainViewport.Camera.GetView(Pos, Dir, Up);
   Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
     [ ValueColor, Pos.ToString,
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  WalkNavigation := SceneManager.WalkNavigation(false);
+  WalkNavigation := MainViewport.WalkNavigation(false);
   if WalkNavigation <> nil then
   begin
     Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
@@ -587,11 +545,11 @@ begin
 (*// nice to debug ShadowVolumeRenderer optimizations.
   // Too cryptic to show normal users:)
   S := Format('No shadow %d + zpass %d + zfail (no l cap) %d + zfail (l cap) %d = all %d',
-    [ SceneManager.ShadowVolumeRenderer.CountShadowsNotVisible,
-      SceneManager.ShadowVolumeRenderer.CountZPass,
-      SceneManager.ShadowVolumeRenderer.CountZFailNoLightCap,
-      SceneManager.ShadowVolumeRenderer.CountZFailAndLightCap,
-      SceneManager.ShadowVolumeRenderer.CountCasters ]);
+    [ MainViewport.ShadowVolumeRenderer.CountShadowsNotVisible,
+      MainViewport.ShadowVolumeRenderer.CountZPass,
+      MainViewport.ShadowVolumeRenderer.CountZFailNoLightCap,
+      MainViewport.ShadowVolumeRenderer.CountZFailAndLightCap,
+      MainViewport.ShadowVolumeRenderer.CountCasters ]);
   Text.Append(S);
 *)
 end;
@@ -656,7 +614,7 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
       glDisable(GL_DEPTH_TEST);
     end;
     try
-      SceneManager.InternalWalkNavigation.Frustum.CalculatePoints(FrustumPoints);
+      MainViewport.InternalWalkNavigation.Camera.Frustum.CalculatePoints(FrustumPoints);
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
@@ -745,51 +703,6 @@ begin
   end;
 end;
 
-procedure TV3DSceneManager.Render3D(const Params: TRenderParams);
-begin
-  SceneBoundingBoxUpdate(Params.RenderingCamera);
-  inherited;
-  { RenderVisualizations are opaque, so they should be rendered here
-    to correctly mix with partially transparent 3D scenes.
-    Render as ShadowVolumesReceivers=true to make selected triangle
-    drawn last (on top), to be clearly and always visible. }
-  if (not Params.Transparent) and
-     (true in Params.ShadowVolumesReceivers) then
-    RenderVisualizations(Params.RenderingCamera);
-end;
-
-procedure TV3DSceneManager.RenderFromView3D(const Params: TRenderParams);
-begin
-  { Although TCastleAbstractViewport is ready for MainScene = nil case,
-    this RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TCastleAbstractViewport
-    should always work with MainScene = nil. }
-  if MainScene = nil then Exit;
-
-  { do not render GetMainScene if SceneDebugEdges is to be visible }
-  GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
-  SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
-  if SceneDebugEdges.Exists then
-    SceneDebugEdges.UpdateEdges(Scene);
-
-  inherited;
-  { inherited will call Render3D that will call RenderVisualizations }
-end;
-
-procedure TV3DSceneManager.BeforeRender;
-begin
-  { Make sure to call ViewportProperties before inherited. }
-  ViewportProperties(Self);
-  inherited;
-end;
-
-procedure TV3DSceneManager.Render;
-begin
-  { Make sure to call ViewportProperties before inherited. }
-  ViewportProperties(Self);
-  inherited;
-end;
-
 procedure TV3DViewport.Render3D(const Params: TRenderParams);
 begin
   SceneBoundingBoxUpdate(Params.RenderingCamera);
@@ -805,14 +718,17 @@ end;
 
 procedure TV3DViewport.RenderFromView3D(const Params: TRenderParams);
 begin
-  { Although TCastleAbstractViewport is ready for MainScene = nil case,
+  { Although TCastleViewport is ready for Items.MainScene = nil case,
     this RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TCastleAbstractViewport
+    but better to secure for this case, since any TCastleViewport
     should always work with MainScene = nil. }
-  if GetMainScene = nil then Exit;
+  if Items.MainScene = nil then Exit;
 
-  GetMainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
+  { do not render Items.MainScene if SceneDebugEdges is to be visible }
+  Items.MainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
   SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
+  if SceneDebugEdges.Exists then
+    SceneDebugEdges.UpdateEdges(Scene);
 
   inherited;
   { inherited will call Render3D that will call RenderVisualizations }
@@ -1089,12 +1005,12 @@ begin
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
 
-    SceneManager.AssignDefaultCamera;
-    SceneManager.AssignDefaultNavigation;
+    MainViewport.AssignDefaultCamera;
+    MainViewport.AssignDefaultNavigation;
     // UpdateCameraUI, called below, will make UI reflect current navigation
 
-    for I := 0 to High(Viewports) do
-      AssignCameraAndNavigation(Viewports[I], SceneManager);
+    for I := 0 to High(ExtraViewports) do
+      AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
     Viewpoints.BoundViewpoint := Viewpoints.ItemOf(ViewpointNode);
 
     SceneInitLights(Scene, NavigationNode);
@@ -1146,7 +1062,7 @@ begin
     ErrorWrite(S);
 end;
 
-{ This loads the scene from file (using Load3D) and
+{ This loads the scene from file (using LoadNode) and
   then inits our scene variables by LoadSceneCore.
 
   If it fails, it tries to preserve current scene
@@ -1194,7 +1110,7 @@ begin
     {$ifdef CATCH_EXCEPTIONS}
     try
     {$endif CATCH_EXCEPTIONS}
-      RootNode := Load3D(ASceneURL, true);
+      RootNode := LoadNode(ASceneURL, true);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
@@ -1328,7 +1244,7 @@ procedure WriteModel(const ASceneURL: string;
 var
   Node: TX3DRootNode;
 begin
-  Node := Load3D(ASceneURL, true);
+  Node := LoadNode(ASceneURL, true);
   try
     ChangeNode(SceneChanges, Node);
     Save3D(Node, StdOutStream, SaveGenerator,
@@ -1456,7 +1372,7 @@ var
     OldProgressUserInterface := Progress.UserInterface;
     OldTime := Scene.Time;
     try
-      SceneManager.BeforeRender;
+      MainViewport.BeforeRender;
 
       { TRangeScreenShot cannot display progress on TCastleWindow,
         since this would mess rendered image.
@@ -1664,12 +1580,12 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
     if VectorsParallel(Dir, NewUp) then
       Dir := AnyOrthogonalVector(NewUp);
     Up := NewUp;
     GravityUp := NewUp;
-    SceneManager.Camera.SetView(Pos, Dir, Up, GravityUp, false);
+    MainViewport.Camera.SetView(Pos, Dir, Up, GravityUp, false);
   end;
 
   procedure ChangeMoveSpeed;
@@ -2107,7 +2023,7 @@ var
     CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Scene.CameraTransition(SceneManager.Camera, Position, Direction, Up, GravityUp);
+    Scene.CameraTransition(MainViewport.Camera, Position, Direction, Up, GravityUp);
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2152,7 +2068,7 @@ var
     S: string;
     Pos, Dir, Up: TVector3;
   begin
-    SceneManager.Camera.GetView(Pos, Dir, Up);
+    MainViewport.Camera.GetView(Pos, Dir, Up);
 
     S := FormatDot(
        'Call rayhunter like this to render this view :' +nl+
@@ -2170,17 +2086,17 @@ var
          Up.ToRawString,
          BGColor[0], BGColor[1], BGColor[2] ]);
 
-    {$warnings off} // for now, this knowingly uses deprecated SceneManager.Projection
-    case SceneManager.Projection.ProjectionType of
+    {$warnings off} // for now, this knowingly uses deprecated MainViewport.Projection
+    case MainViewport.Projection.ProjectionType of
       ptPerspective:
         S := S + FormatDot('    --view-angle-x %f',
-          [SceneManager.Projection.PerspectiveAngles[0]]);
+          [MainViewport.Projection.PerspectiveAngles[0]]);
       ptOrthographic:
         S := S + FormatDot('    --ortho %f %f %f %f', [
-          SceneManager.Projection.Dimensions.Left,
-          SceneManager.Projection.Dimensions.Bottom,
-          SceneManager.Projection.Dimensions.Right,
-          SceneManager.Projection.Dimensions.Top ]);
+          MainViewport.Projection.Dimensions.Left,
+          MainViewport.Projection.Dimensions.Bottom,
+          MainViewport.Projection.Dimensions.Right,
+          MainViewport.Projection.Dimensions.Top ]);
       else raise EInternalError.Create('PrintRayhunterCommand:ProjectionType?');
     end;
     {$warnings on}
@@ -2198,7 +2114,7 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    SceneManager.Navigation.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Navigation.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
       'Viewport.Camera.SetView(' + NL +
       '  %s, // position' + NL +
@@ -2218,7 +2134,7 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    SceneManager.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
   end;
 
@@ -2417,9 +2333,9 @@ var
         already requires TCastlePrecalculatedAnimation.Scene. }
       SceneAnimation.ResetTimeAtLoad;
 
-      { Closing the scene freed SceneManager.MainScene (it's set to nil
+      { Closing the scene freed MainViewport.MainScene (it's set to nil
         automagically by free notification). Set it correctly now. }
-      SceneManager.MainScene := Scene;
+      MainViewport.MainScene := Scene;
 
       { Since we just destroyed RootNode, and replaced it with completely
         different scene, we have to recalculate many things.
@@ -2493,10 +2409,10 @@ var
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, SceneManager.Camera.Position,
-            {$ifdef CASTLE_OBJFPC}@{$endif} TV3DSceneManager(SceneManager).RenderFromViewEverything,
-            SceneManager.Projection.ProjectionNear,
-            SceneManager.Projection.ProjectionFar);
+          GLCaptureCubeMapImages(CubeMapImg, MainViewport.Camera.Position,
+            {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
+            MainViewport.Projection.ProjectionNear,
+            MainViewport.Projection.ProjectionFar);
           RenderContext.Viewport := Window.Rect;
 
           case Orientation of
@@ -2560,10 +2476,10 @@ var
 
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
-        Composite := GLCaptureCubeMapComposite(Size, SceneManager.Camera.Position,
-          {$ifdef CASTLE_OBJFPC}@{$endif} TV3DSceneManager(SceneManager).RenderFromViewEverything,
-          SceneManager.Projection.ProjectionNear,
-          SceneManager.Projection.ProjectionFar);
+        Composite := GLCaptureCubeMapComposite(Size, MainViewport.Camera.Position,
+          {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
+          MainViewport.Projection.ProjectionNear,
+          MainViewport.Projection.ProjectionFar);
         try
           RenderContext.Viewport := Window.Rect;
           Composite.SaveToFile(URL);
@@ -2614,10 +2530,10 @@ var
     Pos, Dir, Up: TVector3;
     BaseLights: TLightInstancesList;
   begin
-    SceneManager.Camera.GetView(Pos, Dir, Up);
-    BaseLights := (SceneManager as TV3DSceneManager).BaseLightsForRaytracer;
+    MainViewport.Camera.GetView(Pos, Dir, Up);
+    BaseLights := TV3DViewport(MainViewport).BaseLightsForRaytracer;
     try
-      RaytraceToWin(BaseLights, Scene, Pos, Dir, Up, SceneManager.Projection, BGColor);
+      RaytraceToWin(BaseLights, Scene, Pos, Dir, Up, MainViewport.Projection, BGColor);
     finally FreeAndNil(BaseLights) end;
   end;
 
@@ -2742,10 +2658,10 @@ var
   var
     I: Integer;
   begin
-    with SceneManager do
+    with MainViewport do
       ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
-    for I := Low(Viewports) to High(Viewports) do
-      with Viewports[I] do
+    for I := Low(ExtraViewports) to High(ExtraViewports) do
+      with ExtraViewports[I] do
         ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
   end;
 
@@ -2865,7 +2781,7 @@ var
 var
   C: Cardinal;
 begin
-  WalkNavigation := SceneManager.WalkNavigation(false);
+  WalkNavigation := MainViewport.WalkNavigation(false);
 
   case MenuItem.IntData of
     10: THelper.OpenButtonClick(nil);
@@ -2906,12 +2822,12 @@ begin
     36: RemoveSelectedShape;
     37: RemoveSelectedFace;
 
-    51: Scene.CameraTransition(SceneManager.Camera,
+    51: Scene.CameraTransition(MainViewport.Camera,
           DefaultX3DCameraPosition[cvVrml1_Inventor],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
           DefaultX3DGravityUp);
-    52: Scene.CameraTransition(SceneManager.Camera,
+    52: Scene.CameraTransition(MainViewport.Camera,
           DefaultX3DCameraPosition[cvVrml2_X3d],
           DefaultX3DCameraDirection,
           DefaultX3DCameraUp,
@@ -2927,10 +2843,10 @@ begin
     59: SetViewpointForWholeScene(1, 2, false, true);
     60: SetViewpointForWholeScene(1, 2, true , true);
 
-    65: Viewpoints.Initial(SceneManager);
-    66: Viewpoints.Previous(SceneManager);
-    67: Viewpoints.Next(SceneManager);
-    68: Viewpoints.Final(SceneManager);
+    65: Viewpoints.Initial(MainViewport);
+    66: Viewpoints.Previous(MainViewport);
+    67: Viewpoints.Next(MainViewport);
+    68: Viewpoints.Final(MainViewport);
 
     82: ShowBBox := not ShowBBox;
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
@@ -2982,16 +2898,16 @@ begin
            WritelnLog(
              'Current camera frustum planes :' +nl+
              '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-             '  Left   : ' + SceneManager.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
-             '  Right  : ' + SceneManager.Camera.Frustum.Planes[fpRight].ToRawString +nl+
-             '  Bottom : ' + SceneManager.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
-             '  Top    : ' + SceneManager.Camera.Frustum.Planes[fpTop].ToRawString +nl+
-             '  Near   : ' + SceneManager.Camera.Frustum.Planes[fpNear].ToRawString);
-           if SceneManager.Camera.Frustum.ZFarInfinity then
+             '  Left   : ' + MainViewport.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
+             '  Right  : ' + MainViewport.Camera.Frustum.Planes[fpRight].ToRawString +nl+
+             '  Bottom : ' + MainViewport.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
+             '  Top    : ' + MainViewport.Camera.Frustum.Planes[fpTop].ToRawString +nl+
+             '  Near   : ' + MainViewport.Camera.Frustum.Planes[fpNear].ToRawString);
+           if MainViewport.Camera.Frustum.ZFarInfinity then
              WritelnLog(
              '  Far    : (No frustum far plane. That is, far plane is "at infinity".)') else
              WritelnLog(
-             '  Far    : ' + SceneManager.Camera.Frustum.Planes[fpFar].ToRawString);
+             '  Far    : ' + MainViewport.Camera.Frustum.Planes[fpFar].ToRawString);
          end;
   }
 
@@ -3100,7 +3016,7 @@ begin
 
     230: ToggleNamedAnimationsUi;
 
-    300: JumpToViewpoint(SceneManager, (MenuItem as TMenuItemViewpoint).Viewpoint);
+    300: JumpToViewpoint(MainViewport, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
     340: SwitchScreenSpaceAmbientOcclusion;
     350..370:
@@ -3140,7 +3056,7 @@ begin
     725: if LightsEditorIsOpen then
            LightsEditorClose
          else
-           LightsEditorOpen(SceneManager, V3DSceneWindow.Window, ToolbarPanel.Height);
+           LightsEditorOpen(MainViewport, V3DSceneWindow.Window, ToolbarPanel.Height);
     730: MergeCloseVertexes;
 
     750: ShadowVolumes := not ShadowVolumes;
@@ -3171,7 +3087,7 @@ begin
     1400..1499: Scene.Attributes.BumpMapping :=
       TBumpMapping(MenuItem.IntData - 1400);
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
-      V3DSceneWindow.Window, SceneManager);
+      V3DSceneWindow.Window, MainViewport);
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
     4005: Scene.Attributes.SeparateDiffuseTexture := not Scene.Attributes.SeparateDiffuseTexture;
     4100: HideSelectedShape;
@@ -3228,7 +3144,7 @@ var
   NextRecentMenuItem: TMenuEntry;
   WalkNavigation: TCastleWalkNavigation;
 begin
-  WalkNavigation := SceneManager.WalkNavigation(false);
+  WalkNavigation := MainViewport.WalkNavigation(false);
 
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
@@ -3702,7 +3618,7 @@ begin
     Window.Width - WarningsButton.EffectiveWidth - ToolbarMargin);
   WarningsButton.Bottom := ButtonsBottom;
 
-  ResizeViewports(V3DSceneWindow.Window, SceneManager);
+  ResizeViewports(V3DSceneWindow.Window, MainViewport);
 end;
 
 class procedure THelper.OpenButtonClick(Sender: TObject);
@@ -3710,7 +3626,7 @@ var
   URL: string;
 begin
   URL := SceneURL;
-  if Window.FileDialog('Open file', URL, true, Load3D_FileFilters) then
+  if Window.FileDialog('Open file', URL, true, LoadScene_FileFilters) then
     LoadScene(URL, []);
 end;
 
@@ -4012,13 +3928,16 @@ begin
     Param_SceneURL := Parameters[1];
   end;
 
-  SceneManager := TV3DSceneManager.Create(nil);
-  { do not use lights from Scene on other scenes }
-  SceneManager.UseGlobalLights := false;
-  Window.Controls.InsertBack(SceneManager);
-  SceneManager.OnBoundViewpointChanged :=
+  MainViewport := TV3DViewport.Create(nil);
+  MainViewport.FullSize := true;
+  MainViewport.AutoCamera := true;
+  MainViewport.AutoNavigation := true;
+  { do not use lights from MainViewport.Items.MainScene on other scenes }
+  MainViewport.UseGlobalLights := false;
+  Window.Controls.InsertBack(MainViewport);
+  MainViewport.OnBoundViewpointChanged :=
     {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundViewpointChanged;
-  SceneManager.OnBoundNavigationInfoChanged :=
+  MainViewport.OnBoundNavigationInfoChanged :=
     {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
 
   InitializeViewports(TV3DViewport);
@@ -4054,16 +3973,16 @@ begin
     Scene := TCastleScene.Create(nil);
     try
       AttributesLoadFromConfig(Scene.Attributes);
-      SceneManager.Items.Add(Scene);
-      SceneManager.MainScene := Scene;
+      MainViewport.Items.Add(Scene);
+      MainViewport.Items.MainScene := Scene;
 
       SceneBoundingBox := TBoundingBoxScene.Create(Scene);
-      SceneManager.Items.Add(SceneBoundingBox);
+      MainViewport.Items.Add(SceneBoundingBox);
 
       SceneDebugEdges := TDebugEdgesScene.Create(Scene);
-      SceneManager.Items.Add(SceneDebugEdges);
+      MainViewport.Items.Add(SceneDebugEdges);
 
-      InitNavigation(SceneManager);
+      InitNavigation(MainViewport);
       InitTextureFilters(Scene);
 
       { init "scene global variables" to non-null values }
@@ -4127,7 +4046,7 @@ begin
     end;
   finally
     FreeAndNil(SceneWarnings);
-    FreeAndNil(SceneManager);
+    FreeAndNil(MainViewport);
   end;
 end;
 

@@ -27,7 +27,7 @@ unit V3DSceneScreenEffects;
 interface
 
 uses Classes, CastleUtils, CastleUIControls, CastleWindow, CastleGLShaders,
-  CastleSceneManager, CastleScreenEffects;
+  CastleViewport, CastleScreenEffects;
 
 type
   { Screen effects predefined in view3dscene.
@@ -42,7 +42,7 @@ type
     seGammaBrighten, seGammaBrightenMore, seGammaDarken, seGammaDarkenMore,
     seRoundHeadLight, seNegative);
 
-  TScreenEffects = class(TUIControl)
+  TScreenEffects = class(TCastleUserInterface)
   private
     MenuItems: array [TScreenEffect] of TMenuItemChecked;
     Shaders: array [TScreenEffect] of TGLSLScreenEffect;
@@ -164,7 +164,7 @@ begin
 
   { add built-in screen effects }
   Menu.Append(TMenuItemChecked.Create('Screen Space Ambient Occlusion',
-    340, TCastleAbstractViewport.DefaultScreenSpaceAmbientOcclusion, true));
+    340, TCastleViewport.DefaultScreenSpaceAmbientOcclusion, true));
   Menu.Append(TMenuSeparator.Create);
 
   { add custom screen effects handled in this unit }

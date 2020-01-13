@@ -27,7 +27,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleSceneManager, CastleWindow, CastleCameras, CastleGLContainer,
+uses CastleViewport, CastleWindow, CastleCameras, CastleGLContainer,
   V3DSceneNavigationTypes;
 
 type
@@ -43,33 +43,28 @@ const
 var
   ViewportsConfig: TViewportsConfig;
 
-  { SceneManager, used also by all viewports.
+  { Main TCastleViewport.
     Set this before calling InitializeViewports. }
-  SceneManager: TCastleSceneManager;
+  MainViewport: TCastleViewport;
 
-  { Custom viewports. Remember that also SceneManager acts as the first viewport,
-    @italic(not listed here). }
-  Viewports: array [0..2] of TCastleViewport;
+  { Custom viewports, using the same Items as MainViewport.Items.
+    Note that MainViewport is @italic(not listed here). }
+  ExtraViewports: array [0..2] of TCastleViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
+  Window: TCastleWindowBase; MainViewport: TCastleViewport);
 
 { Copy all Camera and Navigation settings from Source to Target. }
-procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TCastleViewport);
 
-procedure ResizeViewports(Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
+procedure ResizeViewports(Window: TCastleWindowBase; MainViewport: TCastleViewport);
 
-{ Copy NewNavigationType to (existing) viewports and SceneManager. }
+{ Copy NewNavigationType to all (existing) viewports. }
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 
-{ Redraw everything in viewports (including scene manager).
-
-  If some custom viewports are visible then redraw background and
-  all viewports.
-  Then does SceneManager.Render, as SceneManager is also another viewport.
-
+{ Redraw all viewports (and background underneath).
   This renders viewports for the off-screen rendering. }
 procedure ViewportsRender(const Container: TGLContainer);
 
@@ -83,7 +78,7 @@ uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
 var
   Background: TCastleRectangleControl;
 
-procedure AssignCameraAndNavigation(const Target, Source: TCastleAbstractViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TCastleViewport);
 var
   NavigationTypeStr: String;
 begin
@@ -106,7 +101,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
+  Window: TCastleWindowBase; MainViewport: TCastleViewport);
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
@@ -122,41 +117,41 @@ begin
   begin
     OldValue := ViewportsConfig;
     ViewportsConfig := Value;
-    SceneManager.FullSize := ViewportsConfig = vc1;
+    MainViewport.FullSize := ViewportsConfig = vc1;
     case ViewportsConfig of
       vc1:
         begin
           { make sure glViewport is also restored }
           RenderContext.Viewport := Window.Rect; // TODO: This is most probably useless now?
-          for I := 0 to High(Viewports) do
-            Window.Controls.Remove(Viewports[I]);
+          for I := 0 to High(ExtraViewports) do
+            Window.Controls.Remove(ExtraViewports[I]);
         end;
       vc2Horizontal:
         begin
-          AddViewport(Viewports[0]);
-          Window.Controls.Remove(Viewports[1]);
-          Window.Controls.Remove(Viewports[2]);
+          AddViewport(ExtraViewports[0]);
+          Window.Controls.Remove(ExtraViewports[1]);
+          Window.Controls.Remove(ExtraViewports[2]);
           { Configure camera for newly appearing viewports }
           if OldValue = vc1 then
-            AssignCameraAndNavigation(Viewports[0], SceneManager);
+            AssignCameraAndNavigation(ExtraViewports[0], MainViewport);
         end;
       vc4:
         begin
-          AddViewport(Viewports[0]);
-          AddViewport(Viewports[1]);
-          AddViewport(Viewports[2]);
+          AddViewport(ExtraViewports[0]);
+          AddViewport(ExtraViewports[1]);
+          AddViewport(ExtraViewports[2]);
           { Configure camera for newly appearing viewports }
           case OldValue of
             vc1:
               begin
-                AssignCameraAndNavigation(Viewports[0], SceneManager);
-                AssignCameraAndNavigation(Viewports[1], SceneManager);
-                AssignCameraAndNavigation(Viewports[2], SceneManager);
+                AssignCameraAndNavigation(ExtraViewports[0], MainViewport);
+                AssignCameraAndNavigation(ExtraViewports[1], MainViewport);
+                AssignCameraAndNavigation(ExtraViewports[2], MainViewport);
               end;
             vc2Horizontal:
               begin
-                AssignCameraAndNavigation(Viewports[1], SceneManager);
-                AssignCameraAndNavigation(Viewports[2], Viewports[0]);
+                AssignCameraAndNavigation(ExtraViewports[1], MainViewport);
+                AssignCameraAndNavigation(ExtraViewports[2], ExtraViewports[0]);
               end;
             else raise EInternalError.Create('ViewportsConfig OldValue was supposed to be <> new value?');
           end;
@@ -171,11 +166,11 @@ begin
     Window.Controls.Remove(Background);
     if ViewportsConfig <> vc1 then
       Window.Controls.InsertBack(Background);
-    ResizeViewports(Window, SceneManager);
+    ResizeViewports(Window, MainViewport);
   end;
 end;
 
-procedure ResizeViewports(Window: TCastleWindowBase; SceneManager: TCastleSceneManager);
+procedure ResizeViewports(Window: TCastleWindowBase; MainViewport: TCastleViewport);
 var
   W, H: Cardinal;
 begin
@@ -186,47 +181,47 @@ begin
         W := Window.Width div 2;
         H := Window.Height;
 
-        SceneManager.Left := 0;
-        SceneManager.Bottom := 0;
-        SceneManager.Width := W - 1;
-        SceneManager.Height := H;
+        MainViewport.Left := 0;
+        MainViewport.Bottom := 0;
+        MainViewport.Width := W - 1;
+        MainViewport.Height := H;
 
-        Viewports[0].Left := W + 1;
-        Viewports[0].Bottom := 0;
-        Viewports[0].Width := W - 1;
-        Viewports[0].Height := H;
+        ExtraViewports[0].Left := W + 1;
+        ExtraViewports[0].Bottom := 0;
+        ExtraViewports[0].Width := W - 1;
+        ExtraViewports[0].Height := H;
       end;
     vc4:
       begin
         W := Window.Width div 2;
         H := Window.Height div 2;
 
-        SceneManager.Left := 0;
-        SceneManager.Bottom := H + 1;
-        SceneManager.Width := W - 1;
-        SceneManager.Height := H - 1;
+        MainViewport.Left := 0;
+        MainViewport.Bottom := H + 1;
+        MainViewport.Width := W - 1;
+        MainViewport.Height := H - 1;
 
-        Viewports[0].Left := W + 1;
-        Viewports[0].Bottom := H + 1;
-        Viewports[0].Width := W - 1;
-        Viewports[0].Height := H - 1;
+        ExtraViewports[0].Left := W + 1;
+        ExtraViewports[0].Bottom := H + 1;
+        ExtraViewports[0].Width := W - 1;
+        ExtraViewports[0].Height := H - 1;
 
-        Viewports[1].Left := 0;
-        Viewports[1].Bottom := 0;
-        Viewports[1].Width := W - 1;
-        Viewports[1].Height := H - 1;
+        ExtraViewports[1].Left := 0;
+        ExtraViewports[1].Bottom := 0;
+        ExtraViewports[1].Width := W - 1;
+        ExtraViewports[1].Height := H - 1;
 
-        Viewports[2].Left := W + 1;
-        Viewports[2].Bottom := 0;
-        Viewports[2].Width := W - 1;
-        Viewports[2].Height := H - 1;
+        ExtraViewports[2].Left := W + 1;
+        ExtraViewports[2].Bottom := 0;
+        ExtraViewports[2].Width := W - 1;
+        ExtraViewports[2].Height := H - 1;
       end;
   end;
 end;
 
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
-  procedure CoreSetNavigationType(const Viewport: TCastleAbstractViewport;
+  procedure CoreSetNavigationType(const Viewport: TCastleViewport;
     const Value: TUserNavigationType);
   begin
     case Value of
@@ -243,26 +238,26 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 var
   I: Integer;
 begin
-  CoreSetNavigationType(SceneManager, NewNavigationType);
-  for I := 0 to High(Viewports) do
-    CoreSetNavigationType(Viewports[I], NewNavigationType);
+  CoreSetNavigationType(MainViewport, NewNavigationType);
+  for I := 0 to High(ExtraViewports) do
+    CoreSetNavigationType(ExtraViewports[I], NewNavigationType);
 end;
 
 procedure InitializeViewports(ViewportClass: TViewportClass);
 var
   I: Integer;
 begin
-  for I := 0 to High(Viewports) do
+  for I := 0 to High(ExtraViewports) do
   begin
-    Viewports[I] := ViewportClass.Create(nil);
+    ExtraViewports[I] := ViewportClass.Create(nil);
     { do not use lights from Scene on other scenes }
-    Viewports[I].UseGlobalLights := false;
-    Viewports[I].SceneManager := SceneManager;
+    ExtraViewports[I].UseGlobalLights := false;
+    ExtraViewports[I].Items := MainViewport.Items;
     { We will explicitly initialize camera and navigation.
       This also prevents the AutoCamera mechanism from overriding
       our camera set by AssignCameraAndNavigation. }
-    Viewports[I].AutoCamera := false;
-    Viewports[I].AutoNavigation := false;
+    ExtraViewports[I].AutoCamera := false;
+    ExtraViewports[I].AutoNavigation := false;
   end;
   Background := TCastleRectangleControl.Create(nil);
   Background.FullSize := true;
@@ -278,16 +273,16 @@ begin
   if ViewportsConfig <> vc1 then
     Container.RenderControl(Background, Container.Rect);
   for I := 0 to Visible[ViewportsConfig] - 1 do
-    Container.RenderControl(Viewports[I], Container.Rect);
-  Container.RenderControl(SceneManager, Container.Rect);
+    Container.RenderControl(ExtraViewports[I], Container.Rect);
+  Container.RenderControl(MainViewport, Container.Rect);
 end;
 
 procedure DoFinalization;
 var
   I: Integer;
 begin
-  for I := 0 to High(Viewports) do
-    FreeAndNil(Viewports[I]);
+  for I := 0 to High(ExtraViewports) do
+    FreeAndNil(ExtraViewports[I]);
   FreeAndNil(Background);
 end;
 

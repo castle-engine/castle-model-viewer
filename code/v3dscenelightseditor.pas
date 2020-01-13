@@ -27,14 +27,14 @@ unit V3DSceneLightsEditor;
 
 interface
 
-uses Classes, CastleWindow, CastleSceneManager, CastleScene;
+uses Classes, CastleWindow, CastleViewport, CastleScene;
 
 var
   MenuLightsEditor: TMenuItemChecked;
 
 function LightsEditorIsOpen: boolean;
 
-procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
+procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
   const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
 procedure LightsEditorClose;
 
@@ -246,9 +246,9 @@ type
 { global utils --------------------------------------------------------------- }
 
 var
-  { Local copy of scene manager and window for lights editor.
+  { Local copy of MainViewport and Window for lights editor.
     Both @nil when we're closed, never @nil when we're open. }
-  SceneManager: TCastleSceneManager;
+  MainViewport: TCastleViewport;
   Window: TCastleWindowBase;
   WindowMarginTop: Single;
 
@@ -262,17 +262,17 @@ end;
 
 function LightsEditorIsOpen: boolean;
 begin
-  Result := SceneManager <> nil;
+  Result := MainViewport <> nil;
 end;
 
-{ Enlarged scene manager bounding box, never empty. }
-function SceneManagerLargerBox(const SceneManager: TCastleSceneManager): TBox3D;
+{ Enlarged viewport bounding box, never empty. }
+function ViewportLargerBox(const MainViewport: TCastleViewport): TBox3D;
 const
   DefaultSize = 10;
 var
   BoxSizes: TVector3;
 begin
-  Result := SceneManager.Items.BoundingBox;
+  Result := MainViewport.Items.BoundingBox;
   if Result.IsEmpty then
     Result := Box3D(
       Vector3(-DefaultSize, -DefaultSize, -DefaultSize),
@@ -300,7 +300,7 @@ var
   QuadTexCoords: TTextureCoordinateNode;
   Size: Single;
 begin
-  Size := SceneManagerLargerBox(SceneManager).AverageSize / 50;
+  Size := ViewportLargerBox(MainViewport).AverageSize / 50;
 
   QuadRect.Left   := - LightGizmoPivot[0];
   QuadRect.Bottom := - LightGizmoPivot[1];
@@ -357,11 +357,11 @@ begin
   Gizmo.Exists := false; // initially not existing
 end;
 
-procedure LightsEditorOpen(const ASceneManager: TCastleSceneManager;
+procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
   const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
 begin
-  if SceneManager = ASceneManager then Exit;
-  SceneManager := ASceneManager;
+  if MainViewport = AMainViewport then Exit;
+  MainViewport := AMainViewport;
   Window := AWindow;
   WindowMarginTop := AWindowMarginTop;
 
@@ -373,12 +373,12 @@ begin
   { create Gizmo on demand }
   if Gizmo = nil then
     IniitalizeGizmo;
-  SceneManager.Items.Add(Gizmo);
+  MainViewport.Items.Add(Gizmo);
 end;
 
 procedure LightsEditorClose;
 begin
-  if SceneManager = nil then Exit;
+  if MainViewport = nil then Exit;
 
   SetCurrentMenu(nil);
 
@@ -394,7 +394,7 @@ begin
   if LightsMenu <> nil then
     LightsMenu.ClearLights;
 
-  SceneManager := nil;
+  MainViewport := nil;
   Window := nil;
   MenuLightsEditor.Checked := false;
 end;
@@ -412,7 +412,7 @@ begin
   begin
     try
       if LowerCase(Trim(S)) = 'c' then
-        SceneManager.Camera.GetView(Pos, Value, Up) else
+        MainViewport.Camera.GetView(Pos, Value, Up) else
         Value := Vector3FromStr(s);
       Result := true;
     except
@@ -528,7 +528,7 @@ begin
   AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, RenderContext.GlobalAmbient);
   AmbientColorSlider.OnChange := @AmbientColorChanged;
 
-  SceneManager.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
+  MainViewport.Items.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
   AddTitle('Lights Editor:');
   for I := 0 to Lights.Count - 1 do
@@ -595,8 +595,8 @@ begin
   { At one point I tried here to return to LightsMenu,
     and do InitializeLightsItems again.
     But this isn't such good idea, because when we release the scene
-    to load a new one, we currently have empty SceneManager.MainScene
-    or SceneManager.MainScene.RootNode, and we don't see any lights yet.
+    to load a new one, we currently have empty MainViewport.MainScene
+    or MainViewport.MainScene.RootNode, and we don't see any lights yet.
     So calling InitializeLightsItems again always fills the list with no lights...
     And we don't get any notifications when new scene is loaded (no such
     mechanism in engine now), so we don't show new lights.
@@ -643,7 +643,7 @@ var
   NewHeadlight: TAbstractLightNode;
 begin
   FreeAndNil(HeadLightMenu);
-  NewHeadlight := SceneManager.HeadlightNode;
+  NewHeadlight := MainViewport.Items.HeadlightNode;
   HeadLightMenu := THeadLightMenu.Create(Self, NewHeadlight);
   SetCurrentMenu(HeadLightMenu);
 
@@ -708,7 +708,7 @@ begin
     --- but this causes troubles,
     as Light.SceneLocation may not fit within range,
     which is uncomfortable (works Ok, but not nice for user). }
-  Box := SceneManagerLargerBox(SceneManager);
+  Box := ViewportLargerBox(MainViewport);
   LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionSceneLocation);
   LocationSlider.OnChange := @LocationChanged;
 

@@ -25,7 +25,7 @@ unit V3DSceneBGColors;
 
 interface
 
-uses CastleColors, CastleSceneManager, V3DSceneViewports;
+uses CastleColors, CastleViewport, V3DSceneViewports;
 
 var
   BGColor: TCastleColor;
@@ -35,7 +35,7 @@ var
   DisableBackground: Cardinal = 0;
 
 { Call always after changing BGColor, call also once at the beginning
-  after Viewports and SceneManager is ready. }
+  after ExtraViewports and MainViewport is ready. }
 procedure BGColorChanged;
 
 procedure BackgroundTransparent;
@@ -49,9 +49,9 @@ procedure BGColorChanged;
 var
   I: Integer;
 begin
-  for I := 0 to High(Viewports) do
-    Viewports[I].BackgroundColor := BGColor;
-  SceneManager.BackgroundColor := BGColor;
+  for I := 0 to High(ExtraViewports) do
+    ExtraViewports[I].BackgroundColor := BGColor;
+  MainViewport.BackgroundColor := BGColor;
 end;
 
 type
@@ -63,13 +63,13 @@ type
 class procedure TConfigOptions.LoadFromConfig(const Config: TCastleConfig);
 begin
   BGColor := Config.GetVector4(
-    'video_options/default_background_color', TCastleSceneManager.DefaultBackgroundColor);
+    'video_options/default_background_color', TCastleViewport.DefaultBackgroundColor);
 end;
 
 class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
   Config.SetDeleteVector4('video_options/default_background_color',
-    BGColor, TCastleSceneManager.DefaultBackgroundColor);
+    BGColor, TCastleViewport.DefaultBackgroundColor);
 end;
 
 procedure BackgroundTransparent;
