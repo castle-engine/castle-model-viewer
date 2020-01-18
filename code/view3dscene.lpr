@@ -2114,7 +2114,7 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    MainViewport.Navigation.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
       'Viewport.Camera.SetView(' + NL +
       '  %s, // position' + NL +
@@ -2692,14 +2692,14 @@ var
     { reopen saves/restores camera view and navigation type,
       this makes it more useful }
     SavedNavigationType := NavigationType;
-    Navigation.GetView(Pos, Dir, Up{, GravityUp});
+    MainViewport.Camera.GetView(Pos, Dir, Up{, GravityUp});
 
     LoadScene(SceneURL, []);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
       --- original scene's gravity is then lost) }
-    Navigation.SetView(Pos, Dir, Up{, GravityUp});
+    MainViewport.Camera.SetView(Pos, Dir, Up{, GravityUp});
     { restore NavigationType }
     SetNavigationType(SavedNavigationType);
     UpdateCameraUI;
