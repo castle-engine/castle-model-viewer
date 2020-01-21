@@ -216,7 +216,7 @@ end;
 constructor TV3DViewport.Create(AOwner: TComponent);
 begin
   inherited;
-  ProtectInfiniteFallingDown := true;
+  PreventInfiniteFallingDown := true;
 end;
 
 function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
