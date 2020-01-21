@@ -197,6 +197,7 @@ type
     procedure RenderFromView3D(const Params: TRenderParams); override;
     procedure Render3D(const Params: TRenderParams); override;
   public
+    constructor Create(AOwner: TComponent); override;
     procedure BeforeRender; override;
     procedure Render; override;
     function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
@@ -210,6 +211,12 @@ procedure ViewportProperties(Viewport: TCastleViewport);
 begin
   ViewportShadowsProperties(Viewport);
   Viewport.BackgroundWireframe := FillModes[FillMode].BackgroundWireframe;
+end;
+
+constructor TV3DViewport.Create(AOwner: TComponent);
+begin
+  inherited;
+  ProtectInfiniteFallingDown := true;
 end;
 
 function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
