@@ -186,7 +186,7 @@ type
     class procedure CollisionsButtonClick(Sender: TObject);
     class procedure ScreenshotButtonClick(Sender: TObject);
     class procedure AnimationsButtonClick(Sender: TObject);
-    class procedure OnWarningHandle(Sender: TObject; const Category, S: string);
+    class procedure OnWarningHandle(const Category, S: string);
   end;
 
 { Custom viewport class ------------------------------------------------ }
@@ -850,7 +850,7 @@ begin
     Window.Container.EventResize; { update WarningsButton.Left }
 end;
 
-class procedure THelper.OnWarningHandle(Sender: TObject; const Category, S: string);
+class procedure THelper.OnWarningHandle(const Category, S: string);
 begin
   { It is possible that SceneWarnings = nil now,
     in case on macOS we use
