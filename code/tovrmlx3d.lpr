@@ -103,7 +103,7 @@ begin
 
   ApplicationProperties.OnWarning.Add(@ApplicationProperties.WriteWarningOnConsole);
 
-  Node := Load3D(URL, true);
+  Node := LoadNode(URL);
   try
     Save3D(Node, StdOutStream, 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
       ExtractURIName(URL), Encoding, ForceX3D);
