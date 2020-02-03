@@ -1117,7 +1117,7 @@ begin
     {$ifdef CATCH_EXCEPTIONS}
     try
     {$endif CATCH_EXCEPTIONS}
-      RootNode := LoadNode(ASceneURL, true);
+      RootNode := LoadNode(ASceneURL);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
@@ -1251,7 +1251,7 @@ procedure WriteModel(const ASceneURL: string;
 var
   Node: TX3DRootNode;
 begin
-  Node := LoadNode(ASceneURL, true);
+  Node := LoadNode(ASceneURL);
   try
     ChangeNode(SceneChanges, Node);
     Save3D(Node, StdOutStream, SaveGenerator,
