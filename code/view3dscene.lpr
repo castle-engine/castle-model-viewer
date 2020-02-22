@@ -1735,23 +1735,17 @@ var
       if M <> nil then
       begin
         S := S + Format(
-               'Material:' +nl+
-               '  type and name : %s (%s)' +nl+
-               '  ambient : %s' +nl+
-               '  diffuse : %s' +nl+
-               '  specular : %s' +nl+
-               '  emissive : %s' +nl+
-               '  shininess : %f' +nl+
-               '  transparency : %f',
-               [ M.Node.NiceName, M.Node.ClassName,
-                 M.AmbientColor.ToString,
-                 M.DiffuseColor.ToString,
-                 M.SpecularColor.ToString,
-                 M.EmissiveColor.ToString,
-                 M.Shininess,
-                 M.Transparency ]);
+          'Material parameters (lighting equation): %s' + NL +
+          '  Main color: %s' + NL +
+          '  Transparency : %f', [
+          M.ClassName,
+          M.MainColor.ToString,
+          M.Transparency
+        ]);
       end else
-        S := S + 'No material (unlit)';
+      begin
+        S := S + 'Material not assigned (unlit white material).';
+      end;
     end;
     MessageReport(S);
   end;
@@ -1928,10 +1922,13 @@ var
     Produces message to user and returns @false on failure.
 
     Note that SelectedItem is not necessarily correct anymore.
-    Use only MatInfo pointers after this. }
-  function ChangeMaterialInit(out MatInfo: TMaterialInfo): boolean;
+    Use only MatInfo pointers after this.
+
+    TODO: This only works with Phong materials. }
+  function ChangeMaterialInit(out MatInfo: TPhongMaterialInfo): boolean;
   var
     Shape: TAbstractShapeNode;
+    AnyMatInfo: TMaterialInfo;
   begin
     if (SelectedItem = nil) then
     begin
@@ -1939,14 +1936,19 @@ var
       Exit(false);
     end;
 
-    MatInfo := SelectedItem^.State.MaterialInfo;
+    AnyMatInfo := SelectedItem^.State.MaterialInfo;
+    if AnyMatInfo is TPhongMaterialInfo then
+      MatInfo := TPhongMaterialInfo(AnyMatInfo)
+    else
+      MatInfo := nil;
+
     Shape := SelectedItem^.State.ShapeNode;
 
     if MatInfo = nil then
     begin
       if Shape <> nil then
       begin
-        if MessageYesNo(Window, 'No Material (or similar node) present. Add material to this node and then edit it?') then
+        if MessageYesNo(Window, 'No Material (or similar node indicating Phong material) present. Add material to this node and then edit it?') then
         begin
           { Note that this may remove old Shape.FdAppearance.Value,
             but only if Shape.Appearance = nil, indicating that
@@ -1970,7 +1972,7 @@ var
 
   procedure ChangeMaterialDiffuse;
   var
-    MatInfo: TMaterialInfo;
+    MatInfo: TPhongMaterialInfo;
     Color: TVector3;
   begin
     if not ChangeMaterialInit(MatInfo) then Exit;
@@ -1982,7 +1984,7 @@ var
 
   procedure ChangeMaterialSpecular;
   var
-    MatInfo: TMaterialInfo;
+    MatInfo: TPhongMaterialInfo;
     Color: TVector3;
   begin
     if not ChangeMaterialInit(MatInfo) then Exit;
