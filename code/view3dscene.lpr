@@ -3098,7 +3098,6 @@ begin
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, MainViewport);
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
-    4005: Scene.Attributes.SeparateDiffuseTexture := not Scene.Attributes.SeparateDiffuseTexture;
     4100: HideSelectedShape;
     4110: RevealAllHiddenShapes;
     else raise EInternalError.Create('not impl menu item');
@@ -3211,7 +3210,6 @@ begin
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.Attributes.PhongShading, true));
-    M.Append(TMenuItemChecked.Create('Separate Diffuse Texture (When Phong Shading)', 4005, Scene.Attributes.SeparateDiffuseTexture, true));
     M2 := TMenu.Create('Bump mapping');
       M2.AppendRadioGroup(BumpMappingNames, 1400,
         Ord(Scene.Attributes.BumpMapping), true);
