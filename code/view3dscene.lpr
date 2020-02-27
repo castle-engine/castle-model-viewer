@@ -1721,7 +1721,7 @@ var
       end;
 
       { calculate Tex }
-      Tex := SelectedItem^.State.DiffuseAlphaTexture;
+      Tex := SelectedItem^.State.MainTexture;
 
       { calculate TextureDescription }
       if Tex = nil then
