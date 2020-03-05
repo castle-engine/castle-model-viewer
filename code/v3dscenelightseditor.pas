@@ -109,24 +109,31 @@ type
     IntensitySlider: TCastleFloatSlider;
     AmbientIntensitySlider: TCastleFloatSlider;
     OnToggle: TCastleOnScreenMenuItemToggle;
-    LocationSlider: TMenuVector3Sliders;
-    procedure LocationChanged(Sender: TObject);
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
     procedure AmbientIntensityChanged(Sender: TObject);
     procedure ClickOn(Sender: TObject);
-    procedure ClickShadowsMenu(Sender: TObject);
   strict protected
     procedure ClickBack(Sender: TObject); virtual;
   public
     constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
     procedure AfterCreate;
+  end;
+
+  TPunctualLightMenu = class(TLightMenu)
+  strict private
+    Light: TAbstractPunctualLightNode;
+    LocationSlider: TMenuVector3Sliders;
+    procedure LocationChanged(Sender: TObject);
+    procedure ClickShadowsMenu(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent; ALight: TAbstractPunctualLightNode); reintroduce;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
     procedure UpdateLightLocation;
   end;
 
-  TPositionalLightMenu = class(TLightMenu)
+  TPositionalLightMenu = class(TPunctualLightMenu)
   strict private
     Light: TAbstractPositionalLightNode;
     AttenuationSlider: TMenuVector3Sliders;
@@ -159,7 +166,7 @@ type
     constructor Create(AOwner: TComponent; ALight: TSpotLightNode); reintroduce;
   end;
 
-  TDirectionalLightMenu = class(TLightMenu)
+  TDirectionalLightMenu = class(TPunctualLightMenu)
   strict private
     Light: TAbstractDirectionalLightNode;
     procedure ClickDirection(Sender: TObject);
@@ -189,7 +196,7 @@ type
 
   TShadowsMenu = class(TV3DOnScreenMenu)
   strict private
-    Light: TAbstractLightNode;
+    Light: TAbstractPunctualLightNode;
     ShadowsToggle: TCastleOnScreenMenuItemToggle;
     ShadowVolumesToggle: TCastleOnScreenMenuItemToggle;
     ShadowVolumesMainToggle: TCastleOnScreenMenuItemToggle;
@@ -218,8 +225,8 @@ type
     procedure ClickBack(Sender: TObject); virtual;
     procedure UpdateCurrentProjectionLabel(const ALabel: TCastleLabel); virtual;
   public
-    ParentLightMenu: TLightMenu;
-    constructor Create(AOwner: TComponent; ALight: TAbstractLightNode); reintroduce;
+    ParentLightMenu: TPunctualLightMenu;
+    constructor Create(AOwner: TComponent; ALight: TAbstractPunctualLightNode); reintroduce;
     procedure AfterCreate;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
@@ -624,15 +631,18 @@ begin
   LightIndex := (Sender as TCastleOnScreenMenuItem).Tag;
   Node := Lights[LightIndex] as TAbstractLightNode;
   if Node is TSpotLightNode_1 then
-    LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node)) else
+    LightMenu := TSpot1LightMenu.Create(Self, TSpotLightNode_1(Node))
+  else
   if Node is TSpotLightNode then
-    LightMenu := TSpotLightMenu.Create(Self, TSpotLightNode(Node)) else
+    LightMenu := TSpotLightMenu.Create(Self, TSpotLightNode(Node))
+  else
   if Node is TAbstractDirectionalLightNode then
-    LightMenu := TDirectionalLightMenu.Create(Self, TAbstractDirectionalLightNode(Node)) else
+    LightMenu := TDirectionalLightMenu.Create(Self, TAbstractDirectionalLightNode(Node))
+  else
   if Node is TAbstractPositionalLightNode then
-    LightMenu := TPositionalLightMenu.Create(Self, TAbstractPositionalLightNode(Node)) else
-    { fallback on TLightMenu, although currently we just capture all
-      possible descendants with specialized menu types above }
+    LightMenu := TPositionalLightMenu.Create(Self, TAbstractPositionalLightNode(Node))
+  else
+    { fallback on TLightMenu, e.g. for TEnvironmentLightNode }
     LightMenu := TLightMenu.Create(Self, Node);
   LightMenu.AfterCreate;
   SetCurrentMenu(LightMenu);
@@ -676,8 +686,6 @@ end;
 { TLightMenu ---------------------------------------------------------- }
 
 constructor TLightMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
-var
-  Box: TBox3D;
 begin
   inherited Create(AOwner);
 
@@ -703,25 +711,11 @@ begin
   OnToggle.Checked := Light.IsOn;
   OnToggle.OnClick := @ClickOn;
 
- { determine sensible lights positions.
-    Box doesn't depend on Light.SceneLocation, to not change range each time
-    --- but this causes troubles,
-    as Light.SceneLocation may not fit within range,
-    which is uncomfortable (works Ok, but not nice for user). }
-  Box := ViewportLargerBox(MainViewport);
-  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionSceneLocation);
-  LocationSlider.OnChange := @LocationChanged;
-
   AddTitle('Edit ' + Light.NiceName + ':');
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
   Add('Intensity', IntensitySlider);
   Add('Ambient Intensity', AmbientIntensitySlider);
   Add(OnToggle);
-  LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
-  Add('Shadows Settings...', @ClickShadowsMenu);
-
-  Gizmo.Exists := true;
-  Gizmo.Translation := Light.ProjectionSceneLocation;
 end;
 
 procedure TLightMenu.AfterCreate;
@@ -750,7 +744,39 @@ begin
   Light.IsOn := OnToggle.Checked;
 end;
 
-procedure TLightMenu.ClickShadowsMenu(Sender: TObject);
+procedure TLightMenu.ClickBack(Sender: TObject);
+begin
+  SetCurrentMenu(LightsMenu);
+  Gizmo.Exists := false;
+end;
+
+{ TPunctualLightMenu ---------------------------------------------------------- }
+
+constructor TPunctualLightMenu.Create(AOwner: TComponent; ALight: TAbstractPunctualLightNode);
+var
+  Box: TBox3D;
+begin
+  inherited Create(AOwner, ALight);
+
+  Light := ALight;
+
+  { determine sensible lights positions.
+    Box doesn't depend on Light.SceneLocation, to not change range each time
+    --- but this causes troubles,
+    as Light.SceneLocation may not fit within range,
+    which is uncomfortable (works Ok, but not nice for user). }
+  Box := ViewportLargerBox(MainViewport);
+  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionSceneLocation);
+  LocationSlider.OnChange := @LocationChanged;
+
+  LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
+  Add('Shadows Settings...', @ClickShadowsMenu);
+
+  Gizmo.Exists := true;
+  Gizmo.Translation := Light.ProjectionSceneLocation;
+end;
+
+procedure TPunctualLightMenu.ClickShadowsMenu(Sender: TObject);
 var
   ShadowsMenu: TShadowsMenu;
 begin
@@ -766,19 +792,19 @@ begin
   SetCurrentMenu(ShadowsMenu);
 end;
 
-procedure TLightMenu.LocationChanged(Sender: TObject);
+procedure TPunctualLightMenu.LocationChanged(Sender: TObject);
 begin
   Light.ProjectionSceneLocation := LocationSlider.Value;
   Gizmo.Translation := LocationSlider.Value;
 end;
 
-procedure TLightMenu.Update(const SecondsPassed: Single; var HandleInput: boolean);
+procedure TPunctualLightMenu.Update(const SecondsPassed: Single; var HandleInput: boolean);
 begin
   inherited;
   UpdateLightLocation;
 end;
 
-procedure TLightMenu.UpdateLightLocation;
+procedure TPunctualLightMenu.UpdateLightLocation;
 var
   V: TVector3;
 begin
@@ -792,12 +818,6 @@ begin
     LocationSlider.Value := V;
     Gizmo.Translation := V;
   end;
-end;
-
-procedure TLightMenu.ClickBack(Sender: TObject);
-begin
-  SetCurrentMenu(LightsMenu);
-  Gizmo.Exists := false;
 end;
 
 { TPositionalLightMenu ------------------------------------------------------- }
@@ -1006,7 +1026,7 @@ end;
 
 { TShadowsMenu --------------------------------------------------------------- }
 
-constructor TShadowsMenu.Create(AOwner: TComponent; ALight: TAbstractLightNode);
+constructor TShadowsMenu.Create(AOwner: TComponent; ALight: TAbstractPunctualLightNode);
 begin
   inherited Create(AOwner);
   Light := ALight;
