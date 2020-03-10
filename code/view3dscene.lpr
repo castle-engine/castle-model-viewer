@@ -72,7 +72,7 @@ uses SysUtils, Math, Classes,
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
   CastleRenderer, CastleShapes, CastleViewport,
-  CastleMaterialProperties,
+  CastleMaterialProperties, CastleRendererBaseTypes,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -3098,6 +3098,8 @@ begin
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, MainViewport);
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
+    5000: GammaCorrection := not GammaCorrection;
+    5100..5199: ToneMapping := TToneMapping(MenuItem.IntData - 5100);
     4100: HideSelectedShape;
     4110: RevealAllHiddenShapes;
     else raise EInternalError.Create('not impl menu item');
@@ -3146,6 +3148,14 @@ function CreateMainMenu: TMenu;
       M.Append(Radio);
     end;
   end;
+
+const
+  ToneMappingNames: array [TToneMapping] of String = (
+    'None',
+    'Uncharted',
+    'Hejl-Richard',
+    'ACES'
+  );
 
 var
   M, M2, M3: TMenu;
@@ -3210,9 +3220,12 @@ begin
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.Attributes.PhongShading, true));
-    M2 := TMenu.Create('Bump mapping');
-      M2.AppendRadioGroup(BumpMappingNames, 1400,
-        Ord(Scene.Attributes.BumpMapping), true);
+    M.Append(TMenuItemChecked.Create('Gamma Correction', 5000, GammaCorrection, true));
+    M2 := TMenu.Create('Tone Mapping');
+      M2.AppendRadioGroup(ToneMappingNames, 5100, Ord(ToneMapping), true);
+      M.Append(M2);
+    M2 := TMenu.Create('Bump Mapping');
+      M2.AppendRadioGroup(BumpMappingNames, 1400, Ord(Scene.Attributes.BumpMapping), true);
       M.Append(M2);
     M2 := TMenu.Create('Shadow Maps');
       M2.Append(TMenuItemChecked.Create('Enable', 3500, Scene.ShadowMaps, true));
