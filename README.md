@@ -1,6 +1,6 @@
 # view3dscene
 
-`view3dscene` is a viewer for many 3D model formats: X3D, VRML, Collada, 3DS, MD3, Wavefront OBJ, STL and (2D) Spine JSON.
+`view3dscene` is a viewer for many 3D model formats: X3D, glTF, VRML, Collada, 3DS, MD3, Wavefront OBJ, STL and (2D) Spine JSON.
 
 Complete documentation on https://castle-engine.io/view3dscene.php .
 
