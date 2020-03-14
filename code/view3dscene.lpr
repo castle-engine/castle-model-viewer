@@ -288,6 +288,17 @@ begin
     MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
 end;
 
+{ Currently used TCastleWalkNavigation,
+  or @nil if we don't use TCastleWalkNavigation now. }
+function CurrentWalkNavigation: TCastleWalkNavigation;
+begin
+  if (MainViewport <> nil) and
+     (MainViewport.Navigation is TCastleWalkNavigation) then
+    Result := TCastleWalkNavigation(MainViewport.Navigation)
+  else
+    Result := nil;
+end;
+
 { Update menu items and buttons that reflect Camera properties }
 procedure UpdateCameraUI;
 var
@@ -295,10 +306,7 @@ var
 begin
   UpdateCameraNavigationTypeUI;
 
-  if MainViewport <> nil then
-    WalkNavigation := MainViewport.WalkNavigation(false)
-  else
-    WalkNavigation := nil;
+  WalkNavigation := CurrentWalkNavigation;
 
   if MenuMouseLook <> nil then
     MenuMouseLook.Checked :=
@@ -519,7 +527,7 @@ begin
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  WalkNavigation := MainViewport.WalkNavigation(false);
+  WalkNavigation := CurrentWalkNavigation;
   if WalkNavigation <> nil then
   begin
     Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
@@ -559,6 +567,13 @@ begin
       MainViewport.ShadowVolumeRenderer.CountCasters ]);
   Text.Append(S);
 *)
+
+{
+  Text.Append(Format('Projection: near %f far %f', [
+    MainViewport.Camera.EffectiveProjectionNear,
+    MainViewport.Camera.EffectiveProjectionFar
+  ]));
+}
 end;
 
 { TCastleWindowBase callbacks --------------------------------------------------------- }
@@ -621,7 +636,9 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
       glDisable(GL_DEPTH_TEST);
     end;
     try
+      {$warnings off} // using deprecated, but for now this is easiest for view3dscene
       MainViewport.InternalWalkNavigation.Camera.Frustum.CalculatePoints(FrustumPoints);
+      {$warnings on}
       glColor3f(1, 1, 1);
       glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
@@ -2420,8 +2437,8 @@ var
 
           GLCaptureCubeMapImages(CubeMapImg, MainViewport.Camera.Position,
             {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
-            MainViewport.Projection.ProjectionNear,
-            MainViewport.Projection.ProjectionFar);
+            MainViewport.Camera.EffectiveProjectionNear,
+            MainViewport.Camera.EffectiveProjectionFar);
           RenderContext.Viewport := Window.Rect;
 
           case Orientation of
@@ -2487,8 +2504,8 @@ var
       begin
         Composite := GLCaptureCubeMapComposite(Size, MainViewport.Camera.Position,
           {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
-          MainViewport.Projection.ProjectionNear,
-          MainViewport.Projection.ProjectionFar);
+          MainViewport.Camera.EffectiveProjectionNear,
+          MainViewport.Camera.EffectiveProjectionFar);
         try
           RenderContext.Viewport := Window.Rect;
           Composite.SaveToFile(URL);
@@ -2790,7 +2807,7 @@ var
 var
   C: Cardinal;
 begin
-  WalkNavigation := MainViewport.WalkNavigation(false);
+  WalkNavigation := CurrentWalkNavigation;
 
   case MenuItem.IntData of
     10: THelper.OpenButtonClick(nil);
@@ -3162,7 +3179,7 @@ var
   NextRecentMenuItem: TMenuEntry;
   WalkNavigation: TCastleWalkNavigation;
 begin
-  WalkNavigation := MainViewport.WalkNavigation(false);
+  WalkNavigation := CurrentWalkNavigation;
 
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
