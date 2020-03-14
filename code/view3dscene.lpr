@@ -2559,7 +2559,9 @@ var
     MainViewport.Camera.GetView(Pos, Dir, Up);
     BaseLights := TV3DViewport(MainViewport).BaseLightsForRaytracer;
     try
+      {$warnings off} // using deprecated MainViewport.Projection, for now this is simplest
       RaytraceToWin(BaseLights, Scene, Pos, Dir, Up, MainViewport.Projection, BGColor);
+      {$warnings on}
     finally FreeAndNil(BaseLights) end;
   end;
 

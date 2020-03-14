@@ -28,6 +28,9 @@
       <!-- <option>-dOpenGLES</option> -->
       <!-- Test "slim" mode (see castleconf.inc for explanation) -->
       <!-- <option>-dCASTLE_SLIM_NODES</option> -->
+      <!-- Do not warn about experimental symbols,
+           we knowingly use experimental UseHierarchicalOcclusionQuery from CGE -->
+      <option>-vm05063</option>
     </custom_options>
   </compiler_options>
 </project>
