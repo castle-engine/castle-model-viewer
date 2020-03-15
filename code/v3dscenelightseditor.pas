@@ -300,7 +300,7 @@ var
   Shape: TShapeNode;
   Appearance: TAppearanceNode;
   Texture: TPixelTextureNode;
-  Material: TMaterialNode;
+  Material: TUnlitMaterialNode;
   Quad: TQuadSetNode;
   QuadRect: TFloatRectangle;
   QuadCoords: TCoordinateNode;
@@ -335,8 +335,7 @@ begin
   Quad.Coord := QuadCoords;
   Quad.TexCoord := QuadTexCoords;
 
-  Material := TMaterialNode.Create;
-  Material.ForcePureEmissive;
+  Material := TUnlitMaterialNode.Create;
   Material.EmissiveColor := YellowRGB;
 
   Texture := TPixelTextureNode.Create;

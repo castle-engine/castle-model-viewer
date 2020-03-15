@@ -85,14 +85,13 @@ end;
 constructor TBoundingBoxScene.Create(AOwner: TComponent);
 var
   Root: TX3DRootNode;
-  Material: TMaterialNode;
+  Material: TUnlitMaterialNode;
 begin
   inherited;
 
   Box := TBoxNode.Create;
 
-  Material := TMaterialNode.Create;
-  Material.ForcePureEmissive;
+  Material := TUnlitMaterialNode.Create;
   Material.EmissiveColor := GreenRGB;
 
   Shape := TShapeNode.Create;
