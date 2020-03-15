@@ -1,0 +1,205 @@
+{
+  "FullSize" : true,
+  "Name" : "Group1",
+  "$Children" : [
+    {
+      "Height" : 5.2000000000000000E+001,
+      "Name" : "ToolbarPanel",
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "WidthFraction" : 1.0000000000000000E+000,
+      "$Children" : [
+        {
+          "Content" : {
+            "$ClassName" : "TCastleImagePersistent"
+          },
+          "FullSize" : true,
+          "Height" : 5.2000000000000000E+001,
+          "Name" : "ToolbarBackground",
+          "Stretch" : true,
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop",
+          "WidthFraction" : 1.0000000000000000E+000,
+          "$Children" : [
+            {
+              "Name" : "ToolbarHorizGroup",
+              "Padding" : 5.0000000000000000E+000,
+              "Spacing" : 8.0000000000000000E+000,
+              "VerticalAnchorParent" : "vpTop",
+              "VerticalAnchorSelf" : "vpTop",
+              "$Children" : [
+                {
+                  "Caption" : "Open",
+                  "CustomBackgroundDisabled" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundFocused" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundNormal" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundPressed" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "HorizontalAnchorDelta" : 5.0000000000000000E+000,
+                  "Image" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "Name" : "ButtonOpen",
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleButton"
+                },
+                {
+                  "Content" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "Height" : 4.2000000000000000E+001,
+                  "HorizontalAnchorDelta" : 9.7000000000000000E+001,
+                  "Name" : "PanelSeparator1",
+                  "Stretch" : true,
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "Width" : 2.0000000000000000E+000,
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleImageControl"
+                },
+                {
+                  "Content" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "Height" : 4.2000000000000000E+001,
+                  "HorizontalAnchorDelta" : 1.0700000000000000E+002,
+                  "Name" : "PanelSeparator2",
+                  "Stretch" : true,
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "Width" : 2.0000000000000000E+000,
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleImageControl"
+                },
+                {
+                  "Caption" : "Collisions",
+                  "CustomBackgroundDisabled" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundFocused" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundNormal" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundPressed" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "HorizontalAnchorDelta" : 1.1700000000000000E+002,
+                  "Image" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "MinImageHeight" : 2.2000000000000000E+001,
+                  "Name" : "ButtonCollisions",
+                  "Toggle" : true,
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleButton"
+                },
+                {
+                  "Caption" : "Screenshot",
+                  "CustomBackgroundDisabled" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundFocused" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundNormal" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundPressed" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "HorizontalAnchorDelta" : 2.5000000000000000E+002,
+                  "Image" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "MinImageHeight" : 2.2000000000000000E+001,
+                  "Name" : "ButtonScreenshot",
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleButton"
+                },
+                {
+                  "Caption" : "Animations",
+                  "CustomBackgroundDisabled" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundFocused" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundNormal" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "CustomBackgroundPressed" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "HorizontalAnchorDelta" : 4.0000000000000000E+002,
+                  "Image" : {
+                    "$ClassName" : "TCastleImagePersistent"
+                  },
+                  "MinImageHeight" : 2.2000000000000000E+001,
+                  "Name" : "ButtonAnimations",
+                  "VerticalAnchorParent" : "vpMiddle",
+                  "VerticalAnchorSelf" : "vpMiddle",
+                  "$Children" : [
+                  ],
+                  "$ClassName" : "TCastleButton"
+                }
+              ],
+              "$ClassName" : "TCastleHorizontalGroup"
+            }
+          ],
+          "$ClassName" : "TCastleImageControl"
+        }
+      ],
+      "$ClassName" : "TCastleUserInterface"
+    },
+    {
+      "Caption" : "Warnings",
+      "CustomBackgroundDisabled" : {
+        "$ClassName" : "TCastleImagePersistent"
+      },
+      "CustomBackgroundFocused" : {
+        "$ClassName" : "TCastleImagePersistent"
+      },
+      "CustomBackgroundNormal" : {
+        "$ClassName" : "TCastleImagePersistent"
+      },
+      "CustomBackgroundPressed" : {
+        "$ClassName" : "TCastleImagePersistent"
+      },
+      "HorizontalAnchorDelta" : -5.0000000000000000E+000,
+      "HorizontalAnchorParent" : "hpRight",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Image" : {
+        "$ClassName" : "TCastleImagePersistent"
+      },
+      "MinImageHeight" : 2.2000000000000000E+001,
+      "Name" : "ButtonWarnings",
+      "VerticalAnchorDelta" : -5.0000000000000000E+000,
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "$Children" : [
+      ],
+      "$ClassName" : "TCastleButton"
+    }
+  ],
+  "$ClassName" : "TCastleUserInterface"
+}

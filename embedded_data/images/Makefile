@@ -13,4 +13,5 @@ clean:
 	image-to-pascal --output ../../code V3DSceneImages \
 	  warning_icon.png examine.png walk.png fly.png open.png \
 	  screenshot.png TooltipArrow.png light_gizmo.png animations.png \
+	  Panel.png PanelSeparator.png \
 	  @alpha=strip examine_tooltip.png walk_fly_tooltip.png

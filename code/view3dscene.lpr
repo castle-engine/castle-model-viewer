@@ -66,7 +66,7 @@ uses SysUtils, Math, Classes,
   { OpenGL related units: }
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
-  CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps,
+  CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
@@ -149,14 +149,14 @@ var
     animation would play). }
   ProcessEventsWanted: boolean = true;
 
-  { If WarningsButton.GetExists is allowed. If false, then WarningsButton.Exists
+  { If ButtonWarnings.GetExists is allowed. If false, then ButtonWarnings.Exists
     should be false, regardless of warnings count. }
-  WarningsButtonEnabled: boolean = true;
-  WarningsButton: TCastleButton;
+  ButtonWarningsEnabled: boolean = true;
+  ButtonWarnings: TCastleButton;
 
-  ToolbarPanel: TCastlePanel;
-  CollisionsButton: TCastleButton;
-  AnimationsButton: TCastleButton;
+  ToolbarPanel: TCastleUserInterface;
+  ButtonCollisions: TCastleButton;
+  ButtonAnimations: TCastleButton;
 
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
@@ -180,12 +180,12 @@ type
     class procedure BoundNavigationInfoChanged(Sender: TObject);
     class procedure PointingDeviceSensorsChange(Sender: TObject);
     class procedure HeadlightOnChanged(Sender: TObject);
-    class procedure WarningsButtonClick(Sender: TObject);
-    class procedure NavigationTypeButtonClick(Sender: TObject);
-    class procedure OpenButtonClick(Sender: TObject);
-    class procedure CollisionsButtonClick(Sender: TObject);
-    class procedure ScreenshotButtonClick(Sender: TObject);
-    class procedure AnimationsButtonClick(Sender: TObject);
+    class procedure ClickButtonWarnings(Sender: TObject);
+    class procedure ClickNavigationTypeButton(Sender: TObject);
+    class procedure ClickButtonOpen(Sender: TObject);
+    class procedure ClickButtonCollisions(Sender: TObject);
+    class procedure ClickButtonScreenshot(Sender: TObject);
+    class procedure ClickButtonAnimations(Sender: TObject);
     class procedure OnWarningHandle(const Category, S: string);
   end;
 
@@ -372,7 +372,7 @@ begin
   if Scene.Collides <> Value then
   begin
     Scene.Collides := Value;
-    CollisionsButton.Pressed := Value;
+    ButtonCollisions.Pressed := Value;
     if NeedMenuUpdate then
       MenuCollisions.Checked := Value;
     if Scene.Collides and (Scene.InternalOctreeCollisions = nil) then
@@ -384,7 +384,7 @@ procedure ToggleNamedAnimationsUi;
 begin
   NamedAnimationsUiExists := not NamedAnimationsUiExists;
   MenuNamedAnimations.Checked := NamedAnimationsUiExists;
-  AnimationsButton.Pressed := NamedAnimationsUiExists;
+  ButtonAnimations.Pressed := NamedAnimationsUiExists;
 end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
@@ -854,17 +854,17 @@ end;
 
 { Scene operations ---------------------------------------------------------- }
 
-{ Call when WarningsButtonEnabled or SceneWarnings.Count changes
+{ Call when ButtonWarningsEnabled or SceneWarnings.Count changes
   or when window sizes change. }
-procedure UpdateWarningsButton;
+procedure UpdateButtonWarnings;
 begin
-  WarningsButton.Caption := Format('%d warnings', [SceneWarnings.Count]);
-  WarningsButton.Exists := WarningsButtonEnabled and (SceneWarnings.Count <> 0);
+  ButtonWarnings.Caption := Format('%d warnings', [SceneWarnings.Count]);
+  ButtonWarnings.Exists := ButtonWarningsEnabled and (SceneWarnings.Count <> 0);
   { When window is closed, width/height may be incorrect (even negative,
     because of WindowDefaultSize). Do not call EventResize then.
     May happen when you used --write, and some warning occurs. }
   if not Window.Closed then
-    Window.Container.EventResize; { update WarningsButton.Left }
+    Window.Container.EventResize; { update ButtonWarnings.Left }
 end;
 
 class procedure THelper.OnWarningHandle(const Category, S: string);
@@ -874,14 +874,14 @@ begin
     ".../view3dscene .../dynamic_world.x3dv --screenshot 0 output_2d_screenshot.png"
     and get warning
     "Freeing form failed with EAccessViolation, this is unfortunately possible on macOS with Carbon widgetset".
-    The WarningsButton is invalid (already freed) at this point too. }
+    The ButtonWarnings is invalid (already freed) at this point too. }
   if SceneWarnings <> nil then
   begin
     if Category <> '' then
       SceneWarnings.Add(Category + ': ' + S)
     else
       SceneWarnings.Add(S);
-    UpdateWarningsButton;
+    UpdateButtonWarnings;
   end;
 
   if Window <> nil then
@@ -949,7 +949,7 @@ begin
   // Scene.Close;
 
   Viewpoints.Recalculate(nil);
-  RefreshNamedAnimationsUi(Window, nil, ToolbarPanel.Height);
+  RefreshNamedAnimationsUi(Window, nil, ToolbarPanel.EffectiveHeight);
 
   SceneURL := '';
 
@@ -1062,7 +1062,7 @@ begin
       {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
     Scene.ProcessEvents := ProcessEventsWanted;
 
-    RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.Height);
+    RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.EffectiveHeight);
 
     if not Window.Closed then
       Window.Invalidate;
@@ -1128,8 +1128,8 @@ begin
   try
     SavedSceneWarnings.Assign(SceneWarnings);
     SceneWarnings.Clear;
-    // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
-    UpdateWarningsButton;
+    // since we just modified SceneWarnings.Count, refresh ButtonWarnings visibility
+    UpdateButtonWarnings;
 
     {$ifdef CATCH_EXCEPTIONS}
     try
@@ -1143,8 +1143,8 @@ begin
           E.Message);
         { In this case we can preserve current scene. }
         SceneWarnings.Assign(SavedSceneWarnings);
-        // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
-        UpdateWarningsButton;
+        // since we just modified SceneWarnings.Count, refresh ButtonWarnings visibility
+        UpdateButtonWarnings;
         Exit;
       end;
     end;
@@ -1194,8 +1194,8 @@ begin
     are reported only from Scene.PrepareResources).
     Also, this allows us to show first PrepareResources with progress bar. }
   PrepareResources(true);
-  WarningsButtonEnabled := true;
-  UpdateWarningsButton;
+  ButtonWarningsEnabled := true;
+  UpdateButtonWarnings;
 
   TimePrepareResources := ProcessTimer;
 
@@ -1219,8 +1219,8 @@ procedure LoadSimpleScene(Node: TX3DRootNode;
   const Options: TLoadSceneOptions);
 begin
   SceneWarnings.Clear;
-  // since we just modified SceneWarnings.Count, refresh WarningsButton visibility
-  UpdateWarningsButton;
+  // since we just modified SceneWarnings.Count, refresh ButtonWarnings visibility
+  UpdateButtonWarnings;
 
   LoadSceneCore(Node, '', [], Options);
 end;
@@ -1325,7 +1325,7 @@ begin
   end;
 end;
 
-class procedure THelper.WarningsButtonClick(Sender: TObject);
+class procedure THelper.ClickButtonWarnings(Sender: TObject);
 begin
   MessageReport(
     Format('%d warnings:', [SceneWarnings.Count]) + NL +
@@ -1335,8 +1335,8 @@ begin
     'Scene URL: "' + URIDisplay(SceneURL) + '".' + NL +
     'Use "File->View Warnings" menu to view these warnings again.'
   );
-  WarningsButtonEnabled := false;
-  UpdateWarningsButton;
+  ButtonWarningsEnabled := false;
+  UpdateButtonWarnings;
 end;
 
 procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
@@ -2812,7 +2812,7 @@ begin
   WalkNavigation := CurrentWalkNavigation;
 
   case MenuItem.IntData of
-    10: THelper.OpenButtonClick(nil);
+    10: THelper.ClickButtonOpen(nil);
     11: OpenSceneURL;
 
     12: Window.Close;
@@ -2823,7 +2823,7 @@ begin
     905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
     910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption), true { doesn't matter });
 
-    21: WarningsButton.DoClick;
+    21: ButtonWarnings.DoClick;
 
     31: ChangeScene([scNoNormals], Scene);
     32: ChangeScene([scNoSolidObjects], Scene);
@@ -3084,7 +3084,7 @@ begin
     725: if LightsEditorIsOpen then
            LightsEditorClose
          else
-           LightsEditorOpen(MainViewport, V3DSceneWindow.Window, ToolbarPanel.Height);
+           LightsEditorOpen(MainViewport, V3DSceneWindow.Window, ToolbarPanel.EffectiveHeight);
     730: MergeCloseVertexes;
 
     750: ShadowVolumes := not ShadowVolumes;
@@ -3474,102 +3474,101 @@ end;
 { toolbar -------------------------------------------------------------------- }
 
 var
-  OpenButton, ScreenshotButton: TCastleButton;
+  ButtonOpen, ButtonScreenshot: TCastleButton;
 
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
 var
-  NT: TUserNavigationType;
   Vis: boolean;
 begin
   Vis := ShowStatus and not MakingScreenShot;
 
-  if ToolbarPanel <> nil then // check was CreateToolbar called already?
+  if ToolbarPanel <> nil then // check was CreateMainUserInterface called already?
   begin
     ToolbarPanel.Exists := Vis;
-    OpenButton.Exists := Vis;
-    CollisionsButton.Exists := Vis;
-    ScreenshotButton.Exists := Vis;
-    AnimationsButton.Exists := Vis;
 
-    { Note that WarningsButton ignores the Vis.
+    { Note that ButtonWarnings ignores the Vis.
       This is by design --- always signal warnings. }
-
-    for NT := Low(NT) to High(NT) do
-      if CameraButtons[NT] <> nil then
-        CameraButtons[NT].Exists := Vis;
-
-    { Call Resize after changing ToolbarPanel.Exists, as warnings button
-      position is calculated differently based on it }
-    if not Window.Closed then Window.Container.EventResize;
   end;
 
   if StatusText <> nil then
     StatusText.Exists := Vis;
 end;
 
-procedure CreateStatusToolbar;
+{ Initialize StatusText and ToolbarPanel and various buttons instances }
+procedure CreateMainUserInterface;
 var
+  ToolbarHorizGroup: TCastleHorizontalGroup;
   NT: TUserNavigationType;
+  ToolbarBackground, PanelSeparator1, PanelSeparator2: TCastleImageControl;
+  UiOwner: TComponent;
+  Ui: TCastleUserInterface;
 const
   MinImageHeight = 22;
 begin
-  ToolbarPanel := TCastlePanel.Create(Application);
-  ToolbarPanel.VerticalSeparators.Count := 2;
-  Window.Controls.InsertFront(ToolbarPanel);
-
   StatusText := TExtendedStatusText.Create(Application);
   Window.Controls.InsertFront(StatusText);
 
-  OpenButton := TCastleButton.Create(Application);
-  OpenButton.Caption := 'Open';
-  OpenButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OpenButtonClick;
-  OpenButton.Image.Image := V3DSceneImages.Open;
-  OpenButton.Image.OwnsImage := false;
-  OpenButton.Image.AlphaChannel := acTest;
-  OpenButton.MinImageHeight := MinImageHeight;
-  Window.Controls.InsertFront(OpenButton);
+  UiOwner := TComponent.Create(Application);
+  Ui := StringToComponent({$I ../embedded_data/designs/main.castle-user-interface.inc}, UiOwner)
+    as TCastleUserInterface;
+  Window.Controls.InsertFront(Ui);
 
-  CollisionsButton := TCastleButton.Create(Application);
-  CollisionsButton.Caption := 'Collisions';
-  CollisionsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).CollisionsButtonClick;
-  CollisionsButton.MinImageHeight := MinImageHeight;
-  CollisionsButton.Toggle := true;
-  if Scene <> nil then
-    CollisionsButton.Pressed := Scene.Collides else
-    CollisionsButton.Pressed := true { default value };
-  Window.Controls.InsertFront(CollisionsButton);
+  ToolbarPanel := UiOwner.FindRequiredComponent('ToolbarPanel') as TCastleUserInterface;
 
-  ScreenshotButton := TCastleButton.Create(Application);
-  ScreenshotButton.Caption := 'Screenshot';
-  ScreenshotButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ScreenshotButtonClick;
-  ScreenshotButton.Image.Image := V3DSceneImages.Screenshot;
-  ScreenshotButton.Image.OwnsImage := false;
-  ScreenshotButton.Image.AlphaChannel := acTest;
-  ScreenshotButton.MinImageHeight := MinImageHeight;
-  Window.Controls.InsertFront(ScreenshotButton);
+  { Note that we need to assign all images,
+    because we embed all images in view3dscene binary. }
 
-  AnimationsButton := TCastleButton.Create(Application);
-  AnimationsButton.Caption := 'Animations';
-  AnimationsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).AnimationsButtonClick;
-  AnimationsButton.Toggle := true;
-  AnimationsButton.Image.Image := V3DSceneImages.Animations;
-  AnimationsButton.Image.OwnsImage := false;
-  AnimationsButton.MinImageHeight := MinImageHeight;
-  Window.Controls.InsertFront(AnimationsButton);
+  ButtonOpen := UiOwner.FindRequiredComponent('ButtonOpen') as TCastleButton;
+  ButtonOpen.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonOpen;
+  ButtonOpen.Image.Image := V3DSceneImages.Open;
+  ButtonOpen.Image.OwnsImage := false;
+  ButtonOpen.Image.AlphaChannel := acTest;
+  ButtonOpen.MinImageHeight := MinImageHeight;
 
-  WarningsButton := TCastleButton.Create(Application);
-  WarningsButton.Caption := 'Warnings';
-  WarningsButton.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).WarningsButtonClick;
-  WarningsButton.Image.Image := Warning_icon;
-  WarningsButton.Image.OwnsImage := false;
-  WarningsButton.MinImageHeight := MinImageHeight;
-  Window.Controls.InsertFront(WarningsButton);
+  ButtonCollisions := UiOwner.FindRequiredComponent('ButtonCollisions') as TCastleButton;
+  ButtonCollisions.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonCollisions;
+  ButtonCollisions.MinImageHeight := MinImageHeight;
+  ButtonCollisions.Pressed := (Scene <> nil) and Scene.Collides;
+
+  ButtonScreenshot := UiOwner.FindRequiredComponent('ButtonScreenshot') as TCastleButton;
+  ButtonScreenshot.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonScreenshot;
+  ButtonScreenshot.Image.Image := V3DSceneImages.Screenshot;
+  ButtonScreenshot.Image.OwnsImage := false;
+  ButtonScreenshot.Image.AlphaChannel := acTest;
+  ButtonScreenshot.MinImageHeight := MinImageHeight;
+
+  ButtonAnimations := UiOwner.FindRequiredComponent('ButtonAnimations') as TCastleButton;
+  ButtonAnimations.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonAnimations;
+  ButtonAnimations.Toggle := true;
+  ButtonAnimations.Image.Image := V3DSceneImages.Animations;
+  ButtonAnimations.Image.OwnsImage := false;
+  ButtonAnimations.MinImageHeight := MinImageHeight;
+
+  ButtonWarnings := UiOwner.FindRequiredComponent('ButtonWarnings') as TCastleButton;
+  ButtonWarnings.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonWarnings;
+  ButtonWarnings.Image.Image := Warning_icon;
+  ButtonWarnings.Image.OwnsImage := false;
+  ButtonWarnings.MinImageHeight := MinImageHeight;
+
+  ToolbarBackground := UiOwner.FindRequiredComponent('ToolbarBackground') as TCastleImageControl;
+  ToolbarBackground.Image := Panel;
+  ToolbarBackground.OwnsImage := false;
+
+  PanelSeparator1 := UiOwner.FindRequiredComponent('PanelSeparator1') as TCastleImageControl;
+  PanelSeparator1.Image := PanelSeparator;
+  PanelSeparator1.OwnsImage := false;
+
+  PanelSeparator2 := UiOwner.FindRequiredComponent('PanelSeparator2') as TCastleImageControl;
+  PanelSeparator2.Image := PanelSeparator;
+  PanelSeparator2.OwnsImage := false;
 
   if SceneWarnings <> nil then
-    UpdateWarningsButton
+    UpdateButtonWarnings
   else
-    WarningsButton.Exists := false; { at least initialize Exists }
+    ButtonWarnings.Exists := false; { at least initialize Exists }
+
+  ToolbarHorizGroup := UiOwner.FindRequiredComponent('ToolbarHorizGroup') as TCastleHorizontalGroup;
 
   for NT := Low(NT) to High(NT) do
     { Don't show button for ntNone.
@@ -3579,10 +3578,10 @@ begin
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       CameraButtons[NT].Caption := NavigationNames[NT];
-      CameraButtons[NT].OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).NavigationTypeButtonClick;
+      CameraButtons[NT].OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
-      Window.Controls.InsertFront(CameraButtons[NT]);
+      ToolbarHorizGroup.InsertControl(2 + Ord(NT), CameraButtons[NT]);
     end;
 
   CameraButtons[untExamine].Image.Image := V3DSceneImages.Examine;
@@ -3596,71 +3595,11 @@ begin
 end;
 
 procedure Resize(Container: TUIContainer);
-const
-  ToolbarMargin = 5;  {< between buttons and toolbar panel }
-  ButtonsMargin = 8; {< between buttons }
-  ButtonsSeparatorsMargin = 8; {< between buttons and separators }
-var
-  NT: TUserNavigationType;
-  NextLeft, ButtonsHeight, ButtonsBottom: Single;
 begin
-  ButtonsHeight := Max(
-    CameraButtons[untExamine { any button }].EffectiveHeight,
-    WarningsButton.EffectiveHeight);
-  ButtonsBottom := Window.Height - ButtonsHeight - ToolbarMargin;
-
-  NextLeft := ToolbarMargin;
-
-  if ToolbarPanel.Exists then
-  begin
-    ToolbarPanel.Left := 0;
-    ToolbarPanel.Width := Window.Width;
-    ToolbarPanel.Height := ButtonsHeight + ToolbarMargin * 2;
-    ToolbarPanel.Bottom := Window.Height - ToolbarPanel.Height;
-
-    { Now place buttons, in left-to-right order }
-
-    OpenButton.Left := NextLeft;
-    OpenButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + OpenButton.EffectiveWidth + ButtonsSeparatorsMargin;
-
-    ToolbarPanel.VerticalSeparators[0] := NextLeft;
-    NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
-
-    for NT := Low(NT) to High(NT) do
-      { check with <> nil, since for ntNone we don't show button }
-      if CameraButtons[NT] <> nil then
-      begin
-        CameraButtons[NT].Left := NextLeft;
-        CameraButtons[NT].Bottom := ButtonsBottom;
-        NextLeft := NextLeft + CameraButtons[NT].EffectiveWidth + ButtonsMargin;
-      end;
-    NextLeft := NextLeft + -ButtonsMargin + ButtonsSeparatorsMargin;
-
-    ToolbarPanel.VerticalSeparators[1] := NextLeft;
-    NextLeft := NextLeft + ToolbarPanel.SeparatorSize + ButtonsSeparatorsMargin;
-
-    CollisionsButton.Left := NextLeft;
-    CollisionsButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + CollisionsButton.EffectiveWidth + ButtonsMargin;
-
-    ScreenshotButton.Left := NextLeft;
-    ScreenshotButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + ScreenshotButton.EffectiveWidth + ButtonsMargin;
-
-    AnimationsButton.Left := NextLeft;
-    AnimationsButton.Bottom := ButtonsBottom;
-    NextLeft := NextLeft + AnimationsButton.EffectiveWidth + ButtonsMargin;
-  end;
-
-  WarningsButton.Left := Max(NextLeft,
-    Window.Width - WarningsButton.EffectiveWidth - ToolbarMargin);
-  WarningsButton.Bottom := ButtonsBottom;
-
   ResizeViewports(V3DSceneWindow.Window, MainViewport);
 end;
 
-class procedure THelper.OpenButtonClick(Sender: TObject);
+class procedure THelper.ClickButtonOpen(Sender: TObject);
 var
   URL: string;
 begin
@@ -3669,23 +3608,23 @@ begin
     LoadScene(URL, []);
 end;
 
-class procedure THelper.NavigationTypeButtonClick(Sender: TObject);
+class procedure THelper.ClickNavigationTypeButton(Sender: TObject);
 begin
   SetNavigationType((Sender as TNavigationTypeButton).NavigationType);
   UpdateCameraUI;
 end;
 
-class procedure THelper.CollisionsButtonClick(Sender: TObject);
+class procedure THelper.ClickButtonCollisions(Sender: TObject);
 begin
   SetCollisions(not Scene.Collides, true);
 end;
 
-class procedure THelper.ScreenshotButtonClick(Sender: TObject);
+class procedure THelper.ClickButtonScreenshot(Sender: TObject);
 begin
   ScreenShotImage('Screenshot to Image', false);
 end;
 
-class procedure THelper.AnimationsButtonClick(Sender: TObject);
+class procedure THelper.ClickButtonAnimations(Sender: TObject);
 begin
   ToggleNamedAnimationsUi;
 end;
@@ -3982,7 +3921,7 @@ begin
   InitializeViewports(TV3DViewport);
   BGColorChanged;
 
-  CreateStatusToolbar;
+  CreateMainUserInterface;
 
   Window.Controls.InsertBack(ScreenEffects);
 

@@ -27,6 +27,10 @@ function Light_gizmo: TRGBAlphaImage;
 
 function Animations: TRGBAlphaImage;
 
+function Panel: TRGBAlphaImage;
+
+function PanelSeparator: TRGBImage;
+
 function Examine_tooltip: TRGBImage;
 
 function Walk_fly_tooltip: TRGBImage;
@@ -53,6 +57,8 @@ finalization
   FreeAndNil(FTooltipArrow);
   FreeAndNil(FLight_gizmo);
   FreeAndNil(FAnimations);
+  FreeAndNil(FPanel);
+  FreeAndNil(FPanelSeparator);
   FreeAndNil(FExamine_tooltip);
   FreeAndNil(FWalk_fly_tooltip);
 end.
