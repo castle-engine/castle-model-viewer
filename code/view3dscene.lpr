@@ -79,7 +79,7 @@ uses SysUtils, Math, Classes,
   V3DSceneWarnings, V3DSceneFillMode,
   V3DSceneAntiAliasing, V3DSceneScreenShot, V3DSceneCaptions,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
-  V3DSceneScreenEffects, V3DSceneHAnim, V3DSceneViewports, V3DSceneVersion,
+  V3DSceneScreenEffects, V3DSceneSkeletonVisualize, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
   V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox;
 
@@ -2614,19 +2614,40 @@ var
 
   procedure VisualizeHumanoids;
   var
-    Vis: THumanoidVisualization;
+    Vis: TSkeletonVisualize;
   begin
-    Vis := THumanoidVisualization.Create;
+    Vis := TSkeletonVisualize.Create;
     try
       Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
       if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
         Vis.JointVisualizationSize) then
       begin
-        Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
-          {$ifdef CASTLE_OBJFPC}@{$endif} Vis.VisualizeHumanoid, false);
-        MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.',
-          [Vis.HumanoidsProcessed, Vis.JointsProcessed]));
+        Vis.VisualizeAllHumanoids(Scene.RootNode);
+        MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.', [
+          Vis.HumanoidsProcessed,
+          Vis.JointsProcessed
+        ]));
         if Vis.HumanoidsProcessed <> 0 then
+          Scene.ChangedAll;
+      end;
+    finally FreeAndNil(Vis) end;
+  end;
+
+  procedure VisualizeTransformations;
+  var
+    Vis: TSkeletonVisualize;
+  begin
+    Vis := TSkeletonVisualize.Create;
+    try
+      Vis.JointVisualizationSize := Scene.BoundingBox.AverageSize(false, 1) / 20;
+      if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
+        Vis.JointVisualizationSize) then
+      begin
+        Vis.VisualizeAllTransformations(Scene.RootNode);
+        MessageOK(Window, Format('%d Joints processed.', [
+          Vis.JointsProcessed
+        ]));
+        if Vis.JointsProcessed <> 0 then
           Scene.ChangedAll;
       end;
     finally FreeAndNil(Vis) end;
@@ -2833,6 +2854,7 @@ begin
     38: RemoveGamePlaceholders;
 
     42: VisualizeHumanoids;
+    45: VisualizeTransformations;
 
     3500: with Scene do ShadowMaps := not ShadowMaps;
     3510..3519: Scene.Attributes.ShadowSampling :=
@@ -3415,7 +3437,8 @@ begin
     M.Append(TMenuItem.Create('Mark All Faces as '+
       'non-convex (forces faces to be triangulated carefully)', 33));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('Add Humanoids Joints Visualization ...', 42));
+    M.Append(TMenuItem.Create('Add Joints Visualization ...', 45));
+    M.Append(TMenuItem.Create('Add H-Anim Joints Visualization ...', 42));
     Result.Append(M);
   M := TMenu.Create('_Clipboard');
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));

@@ -154,7 +154,7 @@
         <IsPartOfProject Value="True"/>
       </Unit28>
       <Unit29>
-        <Filename Value="v3dscenehanim.pas"/>
+        <Filename Value="v3dsceneskeletonvisualize.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit29>
       <Unit30>
