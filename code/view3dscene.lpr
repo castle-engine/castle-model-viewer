@@ -63,6 +63,7 @@ uses SysUtils, Math, Classes,
   CastleImages, CastleCubeMaps, CastleCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
+  X3DLoadInternalGLTF,
   { OpenGL related units: }
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
@@ -3141,6 +3142,7 @@ begin
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
     5000: GammaCorrection := not GammaCorrection;
     5100..5199: ToneMapping := TToneMapping(MenuItem.IntData - 5100);
+    5200: GltfForcePhongMaterials := not GltfForcePhongMaterials;
     4100: HideSelectedShape;
     4110: RevealAllHiddenShapes;
     else raise EInternalError.Create('not impl menu item');
@@ -3284,6 +3286,10 @@ begin
       M2.Append(TMenuItemChecked.Create('Render shadow volumes', 760,
         ShadowVolumesRender, true));
       M.Append(M2);
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create(
+      'Load glTF materials as Phong (Faster, Requires Reload)', 5200,
+      GltfForcePhongMaterials, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
       '_Lighting Calculation',         91,
