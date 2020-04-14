@@ -63,7 +63,7 @@ uses SysUtils, Math, Classes,
   CastleImages, CastleCubeMaps, CastleCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
-  X3DLoadInternalGLTF,
+  CastleLoadGltf,
   { OpenGL related units: }
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
