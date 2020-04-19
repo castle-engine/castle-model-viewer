@@ -3558,7 +3558,9 @@ begin
   ButtonCollisions := UiOwner.FindRequiredComponent('ButtonCollisions') as TCastleButton;
   ButtonCollisions.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonCollisions;
   ButtonCollisions.MinImageHeight := MinImageHeight;
-  ButtonCollisions.Pressed := (Scene <> nil) and Scene.Collides;
+  { When Scene = nil, make Pressed = true,
+    because it means the Scene will be soon created with Scene.Collides = default true. }
+  ButtonCollisions.Pressed := (Scene = nil) or Scene.Collides;
 
   ButtonScreenshot := UiOwner.FindRequiredComponent('ButtonScreenshot') as TCastleButton;
   ButtonScreenshot.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonScreenshot;
