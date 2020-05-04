@@ -793,7 +793,7 @@ begin
       SelectedShape := TShape(SelectedItem^.Shape);
       try
         SelectedPointLocal :=
-          SelectedItem^.State.InvertedTransform.MultPoint(SelectedPointWorld);
+          SelectedItem^.State.Transformation.InverseTransform.MultPoint(SelectedPointWorld);
       except
         on ETransformedResultInvalid do
           SelectedItem := nil;
@@ -1313,10 +1313,10 @@ begin
     SelectedItem^.UpdateWorld;
 
     { Also SelectedPointWorld changed now. To apply the change, convert
-      SelectedPointLocal to world coords by new trasform.
+      SelectedPointLocal to world coords by new transform.
       This is the main reason why we keep SelectedPointLocal recorded. }
     try
-      SelectedPointWorld := SelectedItem^.State.Transform.MultPoint(
+      SelectedPointWorld := SelectedItem^.State.Transformation.Transform.MultPoint(
         SelectedPointLocal);
     except
       on ETransformedResultInvalid do
