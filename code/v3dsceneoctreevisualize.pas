@@ -170,7 +170,7 @@ procedure OctreeDisplay(Scene: TCastleScene);
         if Shape.InternalOctreeTriangles <> nil then
         begin
           glPushMatrix;
-            glMultMatrix(Shape.State.Transform);
+            glMultMatrix(Shape.State.Transformation.Transform);
             DisplayOctreeDepth(Shape.InternalOctreeTriangles.TreeRoot,
               OctreeDisplayDepth);
           glPopMatrix;
@@ -217,7 +217,7 @@ procedure OctreeDisplay(Scene: TCastleScene);
         if Shape.InternalOctreeTriangles <> nil then
         begin
           glPushMatrix;
-            glMultMatrix(Shape.State.Transform);
+            glMultMatrix(Shape.State.Transformation.Transform);
             DisplayOctreeWhole(Shape.InternalOctreeTriangles.TreeRoot);
           glPopMatrix;
         end;

@@ -180,8 +180,8 @@ begin
   ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
   for Shape in ShapeList do
   begin
-    AddSilhouetteEdges(ObserverPos, Shape.State.Transform, Shape.InternalShadowVolumes);
-    AddBorderEdges(Shape.State.Transform, Shape.InternalShadowVolumes);
+    AddSilhouetteEdges(ObserverPos, Shape.State.Transformation.Transform, Shape.InternalShadowVolumes);
+    AddBorderEdges(Shape.State.Transformation.Transform, Shape.InternalShadowVolumes);
   end;
 
   ChangedAll;
