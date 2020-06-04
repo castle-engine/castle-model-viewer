@@ -3749,7 +3749,7 @@ procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
       ]);
 
     ApplicationDataOverride := DirUrl + 'data/';
-    if not (URIExists(URIExcludeSlash(DirUrl)) in [ueDirectory, ueUnknown]) then
+    if not (URIExists(URIExcludeSlash(ApplicationDataOverride)) in [ueDirectory, ueUnknown]) then
       WritelnWarning('Castle Game Engine project found, but "data" subdirectory does not exist ("%s"). Effectively, nothing will resolve to "castle-data:/" protocol.', [
         ApplicationDataOverride
       ]);
