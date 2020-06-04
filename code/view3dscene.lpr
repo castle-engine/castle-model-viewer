@@ -3695,7 +3695,7 @@ var
   Param_EnableFixedFunction: boolean = false;
 
 const
-  Options: array [0..22] of TOption =
+  Options: array [0..23] of TOption =
   (
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
@@ -3719,11 +3719,42 @@ const
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-enable-fixed-function'; Argument: oaNone)
+    (Short:  #0; Long: 'debug-enable-fixed-function'; Argument: oaNone),
+    (Short:  #0; Long: 'project'; Argument: oaRequired)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
   const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
+
+  { Set ApplicationDataOverride to make castle-data:/ protocol work with respect
+    to given project directory (or CastleEngineManifest.xml file). }
+  procedure SetProject(const DirOrManifestFile: String);
+  var
+    DirOrManifestFileUrl, ManifestUrl, DirUrl: String;
+  begin
+    DirOrManifestFileUrl := AbsoluteURI(DirOrManifestFile);
+    if ExtractURIName(DirOrManifestFileUrl) = 'CastleEngineManifest.xml' then
+    begin
+      ManifestUrl := DirOrManifestFileUrl;
+      DirUrl := ExtractURIPath(DirOrManifestFileUrl)
+    end else
+    begin
+      DirUrl := URIIncludeSlash(DirOrManifestFileUrl);
+      ManifestUrl := DirUrl + 'CastleEngineManifest.xml';
+    end;
+
+    if not URIFileExists(ManifestUrl) then
+      raise EInvalidParams.CreateFmt('Castle Game Engine project not recognized in this directory, "%s" does not exist', [
+        ManifestUrl
+      ]);
+
+    ApplicationDataOverride := DirUrl + 'data/';
+    if not (URIExists(URIExcludeSlash(DirUrl)) in [ueDirectory, ueUnknown]) then
+      WritelnWarning('Castle Game Engine project found, but "data" subdirectory does not exist ("%s"). Effectively, nothing will resolve to "castle-data:/" protocol.', [
+        ApplicationDataOverride
+      ]);
+  end;
+
 var
   SingleScreenShot: TSingleScreenShot;
   RangeScreenShot: TRangeScreenShot;
@@ -3798,6 +3829,9 @@ begin
             '                        generally makes method one step better.' +NL+
             '                        Especially useful to make a screenshot with' +NL+
             '                        anti-aliasing quality.' +NL+
+            '  --project DIR         Point view3dscene to Castle Game Engine' +NL+
+            '                        project directory (or CastleEngineManifest.xml file)' +NL+
+            '                        to resolve the "castle-data:/" URLs in files.' +NL+
             SoundEngine.ParseParametersHelp + NL+
             NL+
             TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
@@ -3882,6 +3916,7 @@ begin
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
     22: Param_EnableFixedFunction := true;
+    23: SetProject(Argument);
     else raise EInternalError.Create('OptionProc');
   end;
 end;
