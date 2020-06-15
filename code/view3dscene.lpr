@@ -3140,7 +3140,7 @@ begin
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, MainViewport);
     4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
-    5000: GammaCorrection := not GammaCorrection;
+    5000..5099: GammaCorrection := TGammaCorrection(MenuItem.IntData - 5000);
     5100..5199: ToneMapping := TToneMapping(MenuItem.IntData - 5100);
     5200: GltfForcePhongMaterials := not GltfForcePhongMaterials;
     4100: HideSelectedShape;
@@ -3198,6 +3198,11 @@ const
     'Uncharted',
     'Hejl-Richard',
     'ACES'
+  );
+  GammaCorrectionNames: array [TGammaCorrection] of String = (
+    'None',
+    'On Physical Materials',
+    'Always'
   );
 
 var
@@ -3263,7 +3268,9 @@ begin
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.Attributes.PhongShading, true));
-    M.Append(TMenuItemChecked.Create('Gamma Correction', 5000, GammaCorrection, true));
+    M2 := TMenu.Create('Gamma Correction');
+      M2.AppendRadioGroup(GammaCorrectionNames, 5000, Ord(GammaCorrection), true);
+      M.Append(M2);
     M2 := TMenu.Create('Tone Mapping');
       M2.AppendRadioGroup(ToneMappingNames, 5100, Ord(ToneMapping), true);
       M.Append(M2);
