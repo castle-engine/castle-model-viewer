@@ -2117,7 +2117,7 @@ var
     case MainViewport.Projection.ProjectionType of
       ptPerspective:
         S := S + FormatDot('    --view-angle-x %f',
-          [MainViewport.Projection.PerspectiveAngles[0]]);
+          [RadToDeg(MainViewport.Projection.PerspectiveAnglesRad[0])]);
       ptOrthographic:
         S := S + FormatDot('    --ortho %f %f %f %f', [
           MainViewport.Projection.Dimensions.Left,
