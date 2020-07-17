@@ -5,6 +5,7 @@ interface
 const
   DefaultInitialShowBBox = true;
   DefaultInitialShowStatus = true;
+  DefaultEnableBlockingDownloads = false;
 
 var
   { Initial* are initialized at unit initialization from config file.
@@ -36,7 +37,7 @@ begin
     'video_options/initial_show_status', DefaultInitialShowStatus);
   ApplicationProperties.LimitFPS := Config.GetFloat('video_options/limit_fps',
     TCastleApplicationProperties.DefaultLimitFPS);
-  EnableNetwork := Config.GetValue('network', DefaultEnableNetwork);
+  EnableBlockingDownloads := Config.GetValue('network', DefaultEnableBlockingDownloads);
 
   ShowBBox := InitialShowBBox;
   ShowStatus := InitialShowStatus;
@@ -50,7 +51,7 @@ begin
     InitialShowStatus, DefaultInitialShowStatus);
   Config.SetDeleteFloat('video_options/limit_fps',
     ApplicationProperties.LimitFPS, TCastleApplicationProperties.DefaultLimitFPS);
-  Config.SetDeleteValue('network', EnableNetwork, DefaultEnableNetwork);
+  Config.SetDeleteValue('network', EnableBlockingDownloads, DefaultEnableBlockingDownloads);
 end;
 
 initialization

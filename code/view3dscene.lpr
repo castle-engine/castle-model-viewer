@@ -3121,7 +3121,7 @@ begin
       SoundEngine.Devices[MenuItem.IntData - 810].Name;
 
     2000: SetLimitFPS;
-    2010: EnableNetwork := not EnableNetwork;
+    2010: EnableBlockingDownloads := not EnableBlockingDownloads;
 
     3010: MakeGravityUp(Vector3(0, 1, 0));
     3020: MakeGravityUp(Vector3(0, 0, 1));
@@ -3247,7 +3247,7 @@ begin
       M2.Append(TMenuItem.Create('Frames Per Second Limit ...', 2000));
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItemChecked.Create('Download Resources From Network', 2010,
-        EnableNetwork, true));
+        EnableBlockingDownloads, true));
       M.Append(M2);
     NextRecentMenuItem := TMenuSeparator.Create;
     M.Append(NextRecentMenuItem);
