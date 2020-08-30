@@ -19,8 +19,10 @@ and not use root privileges, you can also just run
   ./install.sh
 
 But in the latter case, it is your responsibility to make the binaries
-actually visible by X session. Adding them to $PATH only in ~/.bashrc is *not* enough,
-you should modify $PATH also in ~/.xinitrc .
+actually visible by X session.
+Note that you will need to modify $PATH used by the X session,
+which usually means you need to create and use the ~/.Xsession file.
+( Adjusting path of your shell, e.g. in ~/.bashrc, is *not* enough. )
 
 ------------------------------------------------------------------------------
 DETAILS HOW THIS WORKS
