@@ -1,6 +1,6 @@
 # See INSTALL file for some comments about installing desktop data.
 
-APP_NAME := glViewImage
+APP_NAME := view3dscene
 
 VIEW3DSCENE_ICON := ../../www/logo/6_thicker.svg
 

@@ -1,8 +1,30 @@
-"make install" does basic install of this for current user. See
-  https://castle-engine.io/view3dscene.php#section_install_free_desktop
-for user documentation how to use data and makefiles in this directory.
-File below is only for developers, some internal notes from Kambi how this
-works.
+To install on Linux or FreeBSD (any desktop Unix using Xorg and following standard XDG specifications)
+you can use the files provided here.
+It is advised to build and install by executing this in the top-level view3dscene directory:
+
+  make
+  sudo make install
+
+The latter command makes a system-wide installation,
+copying the view3dscene and tovrmlx3d binaries to /usr/local/bin , to make them available on $PATH.
+It also installs some desktop files under /usr/local/share .
+You can undo it by
+
+  sudo make uninstall
+
+If you would prefer to make an installation only for your used,
+and not use root privileges, you can also just run
+
+  cd desktop/
+  ./install.sh
+
+But in the latter case, it is your responsibility to make the binaries
+actually visible by X session. Adding them to $PATH only in ~/.bashrc is *not* enough,
+you should modify $PATH also in ~/.xinitrc .
+
+------------------------------------------------------------------------------
+DETAILS HOW THIS WORKS
+(for developers -- normal users can stop reading now :) ):
 
 See http://library.gnome.org/devel/integration-guide/stable/desktop-files.html.en
 for basic GNOME integration instructions.
