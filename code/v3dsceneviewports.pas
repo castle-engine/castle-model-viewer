@@ -71,7 +71,7 @@ procedure ViewportsRender(const Container: TGLContainer);
 implementation
 
 uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
-  CastleGLUtils, CastleColors, CastleLog;
+  CastleGLUtils, CastleColors, CastleLog, CastleRenderContext;
 
 { global routines ------------------------------------------------------------ }
 

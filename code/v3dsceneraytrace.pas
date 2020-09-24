@@ -44,7 +44,8 @@ implementation
 
 uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
   CastleGLUtils, CastleImages, CastleUtils, CastleMessages, CastleGLImages,
-  CastleURIUtils, CastleKeysMouse, V3DSceneStatus, V3DSceneWindow;
+  CastleURIUtils, CastleKeysMouse, CastleRenderContext,
+  V3DSceneStatus, V3DSceneWindow;
 
 const
   DefaultPrimarySamplesCount = 1;

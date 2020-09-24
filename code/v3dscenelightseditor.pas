@@ -43,7 +43,7 @@ implementation
 uses SysUtils, CastleColors,
   CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, CastleTransform,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
-  CastleRectangles, CastleControls,
+  CastleRectangles, CastleControls, CastleRenderContext,
   V3DSceneImages, V3DSceneInternalScenes;
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }

@@ -68,7 +68,7 @@ uses SysUtils, Math, Classes,
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
   CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps, CastleComponentSerialize,
-  CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes,
+  CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
