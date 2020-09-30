@@ -13,13 +13,12 @@ package_platform ()
   EXE_EXTENSION="$1"
   shift 1
 
-  castle-engine clean
+  make clean # not only "castle-engine clean", to clean also tovrmlx3d binaries
   castle-engine simple-compile code/tovrmlx3d.lpr "$@"
   mv -f code/tovrmlx3d"${EXE_EXTENSION}" .
   castle-engine package "$@"
 }
 
-make clean # just to be sure
 package_platform '.exe' --os=win64 --cpu=x86_64
 package_platform '.exe' --os=win32 --cpu=i386
 package_platform ''     --os=linux --cpu=x86_64
