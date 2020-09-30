@@ -18,6 +18,7 @@
   </dependencies>
   <version value="3.19.0" code="6" />
   <package>
+    <include path="tovrmlx3d*" />
     <include path="COPYING.GPL2.txt" />
   </package>
   <data exists="false" />

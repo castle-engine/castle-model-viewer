@@ -8,7 +8,19 @@ IFS=$'\n\t'
 # remove previous artifacts
 rm -f view3dscene-*.tar.gz view3dscene-*.zip view3dscene*.apk
 
-castle-engine package --os=win64 --cpu=x86_64 --verbose
-castle-engine package --os=win32 --cpu=i386 --verbose
-castle-engine package --os=linux --cpu=x86_64 --verbose
+package_platform ()
+{
+  EXE_EXTENSION="$1"
+  shift 1
+
+  castle-engine clean
+  castle-engine simple-compile code/tovrmlx3d.lpr "$@"
+  mv -f code/tovrmlx3d"${EXE_EXTENSION}" .
+  castle-engine package "$@"
+}
+
+make clean # just to be sure
+package_platform '.exe' --os=win64 --cpu=x86_64
+package_platform '.exe' --os=win32 --cpu=i386
+package_platform ''     --os=linux --cpu=x86_64
 castle-engine package-source --verbose
