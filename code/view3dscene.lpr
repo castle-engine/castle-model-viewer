@@ -2720,9 +2720,9 @@ var
     URL, CopyStr, CutStr, PasteStr: string;
   begin
     URL := SceneURL;
-    Check(KeyToString(CtrlC, K_None, [], CopyStr));
-    Check(KeyToString(CtrlX, K_None, [], CutStr));
-    Check(KeyToString(CtrlV, K_None, [], PasteStr));
+    Check(KeyToString(CtrlC, keyNone, [], CopyStr));
+    Check(KeyToString(CtrlX, keyNone, [], CutStr));
+    Check(KeyToString(CtrlV, keyNone, [], PasteStr));
     if MessageInputQuery(Window,
       'Open 3D model from given URL.' + NL + NL +
       'Note that by default "http" is disabled (because the downloads are blocking for now, and every 3D model may reference additional resources like textures). Enable http by checking "Preferences -> Download Resources From Network".' + NL + NL +
@@ -3257,7 +3257,7 @@ begin
   M := TMenu.Create('_View');
     M.Append(TMenuItemChecked.Create('_Bounding Box Visible',      82, CtrlB,
       ShowBBox, true));
-    M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, K_F1,
+    M.Append(TMenuItemChecked.Create('Status and Toolbar Visible',  122, keyF1,
       ShowStatus, true));
     M.Append(TMenuSeparator.Create);
     M2 := TMenu.Create('_Fill Mode');
@@ -3474,7 +3474,7 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemToggleFullScreen.Create(Window.FullScreen));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, K_F5));
+    M.Append(TMenuItem.Create('_Screenshot to Image ...',                  150, keyF5));
     M.Append(TMenuItem.Create('Screenshot to Image (Transparent Background) ...', 151));
     M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images ...', 540));
     M.Append(TMenuItem.Create('Screenshot to Video / Multiple Images (Transparent Background) ...', 542));

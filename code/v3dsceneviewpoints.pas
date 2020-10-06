@@ -274,16 +274,16 @@ begin
   end;
 
   Append(TMenuSeparator.Create);
-  M := TMenuItem.Create('Initial Viewpoint' , 65, K_Home);
+  M := TMenuItem.Create('Initial Viewpoint' , 65, keyHome);
   M.Enabled := ViewpointsRadioGroup <> nil;
   Append(M);
-  M := TMenuItem.Create('Previous Viewpoint', 66, K_PageUp);
+  M := TMenuItem.Create('Previous Viewpoint', 66, keyPageUp);
   M.Enabled := ViewpointsRadioGroup <> nil;
   Append(M);
-  M := TMenuItem.Create('Next Viewpoint'    , 67, K_PageDown);
+  M := TMenuItem.Create('Next Viewpoint'    , 67, keyPageDown);
   M.Enabled := ViewpointsRadioGroup <> nil;
   Append(M);
-  M := TMenuItem.Create('Final Viewpoint'   , 68, K_End);
+  M := TMenuItem.Create('Final Viewpoint'   , 68, keyEnd);
   M.Enabled := ViewpointsRadioGroup <> nil;
   Append(M);
   Append(TMenuSeparator.Create);
