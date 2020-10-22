@@ -2828,6 +2828,15 @@ var
         Shape.Node.Render := true;
   end;
 
+  procedure ChangeMaxLights;
+  var
+    L: Cardinal;
+  begin
+    L := Scene.Attributes.MaxLightsPerShape;
+    if MessageInputQueryCardinal(Window, 'Maximum Number of Lights (that can affect a single shape):', L) then
+      Scene.Attributes.MaxLightsPerShape := L;
+  end;
+
 var
   C: Cardinal;
 begin
@@ -2911,6 +2920,7 @@ begin
     91: with Scene.Attributes do Lighting := not Lighting;
     92: with Scene do HeadLightOn := not HeadLightOn;
     93: with Scene.Attributes do UseSceneLights := not UseSceneLights;
+    940: ChangeMaxLights;
     94: with Scene.Attributes do EnableTextures := not EnableTextures;
     95: ChangeLightModelAmbient;
     96: ShowFrustum := not ShowFrustum;
@@ -3306,6 +3316,7 @@ begin
     M.Append(MenuHeadlight);
     M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
       Scene.Attributes.UseSceneLights, true));
+    M.Append(TMenuItem.Create('Max Lights Per Shape ...'  , 940));
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
