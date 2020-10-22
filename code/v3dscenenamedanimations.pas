@@ -43,7 +43,7 @@ property NamedAnimationsUiExists: Boolean
 implementation
 
 uses SysUtils, Math,
-  CastleLog, CastleSceneCore, CastleColors, CastleUtils,
+  CastleLog, CastleSceneCore, CastleColors, CastleUtils, X3DNodes,
   V3DSceneCaptions;
 
 const
@@ -54,6 +54,7 @@ const
 var
   Loop: boolean = true;
   Forward: boolean = true;
+  MultipleAnimations: boolean = false;
   Transition: Single = 0;
 
 { TNamedAnimationsUi and friend classes -------------------------------------- }
@@ -62,8 +63,18 @@ type
   TButtonAnimation = class(TCastleButton)
   public
     AnimationName: string;
+    function TimeSensor(const Scene: TCastleScene): TTimeSensorNode;
   end;
 
+function TButtonAnimation.TimeSensor(const Scene: TCastleScene): TTimeSensorNode;
+begin
+  if Scene.RootNode <> nil then
+    TimeSensor := Scene.RootNode.TryFindNodeByName(TTimeSensorNode, AnimationName, false) as TTimeSensorNode
+  else
+    TimeSensor := nil;
+end;
+
+type
   TNamedAnimationsUi = class(TCastleVerticalGroup)
   public
     Scene: TCastleScene;
@@ -77,6 +88,7 @@ type
     procedure ChangeCheckboxForward(Sender: TObject);
     procedure ChangeSliderTransition(Sender: TObject);
     procedure ChangeSliderSpeed(Sender: TObject);
+    procedure ChangeCheckboxMultipleAnimations(Sender: TObject);
     procedure ClickAnimation(Sender: TObject);
     procedure ClickResetAnimationState(Sender: TObject);
     procedure ClickStopAnimation(Sender: TObject);
@@ -105,6 +117,19 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui.Caption := 'Forward';
     Ui.Checked := Forward;
     Ui.OnChange := @ChangeCheckboxForward;
+    Ui.TextColor := White;
+    Ui.CheckboxColor := White;
+    InsertFront(Ui);
+  end;
+
+  procedure AppendMultipleAnimations;
+  var
+    Ui: TCastleCheckbox;
+  begin
+    Ui := TCastleCheckbox.Create(Self);
+    Ui.Caption := 'Enable Multiple Simultaneous Animations';
+    Ui.Checked := MultipleAnimations;
+    Ui.OnChange := @ChangeCheckboxMultipleAnimations;
     Ui.TextColor := White;
     Ui.CheckboxColor := White;
     InsertFront(Ui);
@@ -254,6 +279,7 @@ begin
   begin
     AppendLoop;
     AppendForward;
+    AppendMultipleAnimations;
     AppendTransition;
     AppendSpeed;
     AppendSpacer(Margin);
@@ -301,6 +327,9 @@ begin
 end;
 
 procedure TNamedAnimationsUi.Update(const SecondsPassed: Single; var HandleInput: boolean);
+var
+  TimeSensor: TTimeSensorNode;
+  C: TCastleUserInterface;
 begin
   inherited;
 
@@ -321,24 +350,48 @@ begin
       ]);
     end;
   end;
+
+  for C in AnimationsScrollGroup do
+    if C is TButtonAnimation then
+    begin
+      Assert(Scene <> nil); // no TButtonAnimation should exist if Scene = nil
+      TimeSensor := TButtonAnimation(C).TimeSensor(Scene);
+      TButtonAnimation(C).Pressed := (TimeSensor <> nil) and TimeSensor.IsActive;
+    end;
 end;
 
 procedure TNamedAnimationsUi.ClickAnimation(Sender: TObject);
 var
+  Button: TButtonAnimation;
   AnimationName: String;
   Params: TPlayAnimationParameters;
+  TimeSensor: TTimeSensorNode;
 begin
-  AnimationName := (Sender as TButtonAnimation).AnimationName;
-  Params := TPlayAnimationParameters.Create;
-  try
-    Params.Name := AnimationName;
-    Params.Loop := Loop;
-    Params.Forward := Forward;
-    Params.TransitionDuration := Transition;
-    if not Scene.PlayAnimation(Params) then
-      WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
-        [AnimationName]));
-  finally FreeAndNil(Params) end;
+  Button := Sender as TButtonAnimation;
+  AnimationName := Button.AnimationName;
+  if MultipleAnimations then
+  begin
+    TimeSensor := Button.TimeSensor(Scene);
+    if TimeSensor <> nil then
+    begin
+      if TimeSensor.IsActive then
+        TimeSensor.Stop
+      else
+        TimeSensor.Start(Loop, Forward);
+    end;
+  end else
+  begin
+    Params := TPlayAnimationParameters.Create;
+    try
+      Params.Name := AnimationName;
+      Params.Loop := Loop;
+      Params.Forward := Forward;
+      Params.TransitionDuration := Transition;
+      if not Scene.PlayAnimation(Params) then
+        WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
+          [AnimationName]));
+    finally FreeAndNil(Params) end;
+  end;
 end;
 
 procedure TNamedAnimationsUi.ChangeCheckboxLoop(Sender: TObject);
@@ -369,6 +422,11 @@ procedure TNamedAnimationsUi.ChangeSliderSpeed(Sender: TObject);
 begin
   if Scene <> nil then
     Scene.TimePlayingSpeed := (Sender as TCastleFloatSlider).Value;
+end;
+
+procedure TNamedAnimationsUi.ChangeCheckboxMultipleAnimations(Sender: TObject);
+begin
+  MultipleAnimations := (Sender as TCastleCheckbox).Checked;
 end;
 
 procedure TNamedAnimationsUi.ClickResetAnimationState(Sender: TObject);
