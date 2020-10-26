@@ -77,7 +77,7 @@ begin Result := FMinificationFilter end;
 procedure SetMinificationFilter(Value: TMinificationFilter; Scene: TCastleScene);
 begin
   FMinificationFilter := value;
-  Scene.Attributes.MinificationFilter := Value;
+  Scene.RenderOptions.MinificationFilter := Value;
 end;
 
 function MagnificationFilter: TMagnificationFilter;
@@ -86,7 +86,7 @@ begin Result := FMagnificationFilter end;
 procedure SetMagnificationFilter(Value: TMagnificationFilter; Scene: TCastleScene);
 begin
   FMagnificationFilter := value;
-  Scene.Attributes.MagnificationFilter := Value;
+  Scene.RenderOptions.MagnificationFilter := Value;
 end;
 
 procedure MenuAppendMinificationFilters(M: TMenu; BaseIntData: Cardinal);

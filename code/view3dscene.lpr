@@ -72,8 +72,8 @@ uses SysUtils, Math, Classes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
-  CastleRenderer, CastleShapes, CastleViewport,
-  CastleMaterialProperties, CastleRendererBaseTypes,
+  CastleRenderOptions, CastleShapes, CastleViewport,
+  CastleMaterialProperties, CastleInternalRenderer,
   { view3dscene-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -101,7 +101,7 @@ var
     lifetime of this program. When we load new scene (from "Open"
     menu item) we DO NOT free and create new Scene object.
     Instead we only free and create underlying root node (TCastleScene.Load).
-    This way we're preserving values of all Attributes.Xxx when opening new scene
+    This way we're preserving values of all RenderOptions.Xxx when opening new scene
     from "Open" menu item. }
   Scene: TCastleScene;
   SceneBoundingBox: TBoundingBoxScene;
@@ -539,7 +539,7 @@ begin
 
   { if SceneLightsCount = 0 then
    s := '(useless, scene has no lights)' else
-   s := BoolToStrOO[Scene.Attributes.UseSceneLights];
+   s := BoolToStrOO[Scene.RenderOptions.UseSceneLights];
   Text.Append(Format('Use scene lights: %s', [s])); }
 
   Text.Append(Format('Rendered: <font color="#%s">%s</font>', [
@@ -588,8 +588,8 @@ begin
     ShowBBox;
   if SceneBoundingBox.Exists then
   begin
-    { Use Scene.Attributes.LineWidth for our visualizations as well }
-    SceneBoundingBox.Attributes.LineWidth := Scene.Attributes.LineWidth;
+    { Use Scene.RenderOptions.LineWidth for our visualizations as well }
+    SceneBoundingBox.RenderOptions.LineWidth := Scene.RenderOptions.LineWidth;
     SceneBoundingBox.UpdateBox(Scene.BoundingBox);
   end;
 end;
@@ -662,8 +662,8 @@ begin
       (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
     glEnable(GL_DEPTH_TEST);
 
-    { Use Scene.Attributes.LineWidth for our visualizations as well }
-    RenderContext.LineWidth := Scene.Attributes.LineWidth;
+    { Use Scene.RenderOptions.LineWidth for our visualizations as well }
+    RenderContext.LineWidth := Scene.RenderOptions.LineWidth;
 
     OctreeDisplay(Scene);
 
@@ -782,7 +782,7 @@ const
 procedure Press(Container: TUIContainer; const Event: TInputPressRelease);
 begin
   { Support selecting item by ctrl + right button click. }
-  if Event.IsMouseButton(mbRight) and (mkCtrl in Window.Pressed.Modifiers) then
+  if Event.IsMouseButton(buttonRight) and (mkCtrl in Window.Pressed.Modifiers) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
@@ -1340,20 +1340,20 @@ begin
   UpdateButtonWarnings;
 end;
 
-procedure AttributesLoadFromConfig(Attributes: TRenderingAttributes);
+procedure AttributesLoadFromConfig(RenderOptions: TCastleRenderOptions);
 begin
-  Attributes.LineWidth := UserConfig.GetFloat('video_options/line_width',
-    Attributes.DefaultLineWidth);
-  Attributes.PointSize := UserConfig.GetFloat('video_options/point_size',
-    Attributes.DefaultPointSize);
+  RenderOptions.LineWidth := UserConfig.GetFloat('video_options/line_width',
+    RenderOptions.DefaultLineWidth);
+  RenderOptions.PointSize := UserConfig.GetFloat('video_options/point_size',
+    RenderOptions.DefaultPointSize);
 end;
 
-procedure AttributesSaveToConfig(Attributes: TRenderingAttributes);
+procedure AttributesSaveToConfig(RenderOptions: TCastleRenderOptions);
 begin
   UserConfig.SetDeleteFloat('video_options/line_width',
-    Attributes.LineWidth, Attributes.DefaultLineWidth);
+    RenderOptions.LineWidth, RenderOptions.DefaultLineWidth);
   UserConfig.SetDeleteFloat('video_options/point_size',
-    Attributes.PointSize, Attributes.DefaultPointSize);
+    RenderOptions.PointSize, RenderOptions.DefaultPointSize);
 end;
 
 { make screen shots ---------------------------------------------------------- }
@@ -1629,18 +1629,18 @@ var
   var
     Value: Single;
   begin
-    Value := Scene.Attributes.PointSize;
+    Value := Scene.RenderOptions.PointSize;
     if MessageInputQuery(Window, 'Change point size:', Value) then
-      Scene.Attributes.PointSize := Max(Value, 0.01);
+      Scene.RenderOptions.PointSize := Max(Value, 0.01);
   end;
 
   procedure ChangeLineWidth;
   var
     Value: Single;
   begin
-    Value := Scene.Attributes.LineWidth;
+    Value := Scene.RenderOptions.LineWidth;
     if MessageInputQuery(Window, 'Change line width:', Value) then
-      Scene.Attributes.LineWidth := Max(Value, 0.01);
+      Scene.RenderOptions.LineWidth := Max(Value, 0.01);
   end;
 
   procedure ChangeTimeSpeed;
@@ -2238,9 +2238,9 @@ var
       previously. }
     if FillMode <> fmSilhouetteBorderEdges then
     begin
-      Scene.Attributes.WireframeEffect := FillModes[FillMode].WireframeEffect;
-      Scene.Attributes.WireframeColor  := FillModes[FillMode].WireframeColor;
-      Scene.Attributes.Mode            := FillModes[FillMode].Mode;
+      Scene.RenderOptions.WireframeEffect := FillModes[FillMode].WireframeEffect;
+      Scene.RenderOptions.WireframeColor  := FillModes[FillMode].WireframeColor;
+      Scene.RenderOptions.Mode            := FillModes[FillMode].Mode;
     end;
   end;
 
@@ -2832,9 +2832,9 @@ var
   var
     L: Cardinal;
   begin
-    L := Scene.Attributes.MaxLightsPerShape;
+    L := Scene.RenderOptions.MaxLightsPerShape;
     if MessageInputQueryCardinal(Window, 'Maximum Number of Lights (that can affect a single shape):', L) then
-      Scene.Attributes.MaxLightsPerShape := L;
+      Scene.RenderOptions.MaxLightsPerShape := L;
   end;
 
 var
@@ -2867,9 +2867,9 @@ begin
     45: VisualizeTransformations;
 
     3500: with Scene do ShadowMaps := not ShadowMaps;
-    3510..3519: Scene.Attributes.ShadowSampling :=
+    3510..3519: Scene.RenderOptions.ShadowSampling :=
       TShadowSampling(Ord(MenuItem.IntData) - 3510);
-    3520: with Scene.Attributes do VisualizeDepthMap := not VisualizeDepthMap;
+    3520: with Scene.RenderOptions do VisualizeDepthMap := not VisualizeDepthMap;
     3530:
       begin
         C := Scene.ShadowMapsDefaultSize;
@@ -2911,17 +2911,17 @@ begin
     82: ShowBBox := not ShowBBox;
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
     83: DynamicBatching := not DynamicBatching;
-    86: with Scene.Attributes do Blending := not Blending;
-    87: with Scene.Attributes do OcclusionSort := not OcclusionSort;
-    88: with Scene.Attributes do UseOcclusionQuery := not UseOcclusionQuery;
-    90: with Scene.Attributes do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
-    891: with Scene.Attributes do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
+    86: with Scene.RenderOptions do Blending := not Blending;
+    87: with Scene.RenderOptions do OcclusionSort := not OcclusionSort;
+    88: with Scene.RenderOptions do UseOcclusionQuery := not UseOcclusionQuery;
+    90: with Scene.RenderOptions do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
+    891: with Scene.RenderOptions do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
-    91: with Scene.Attributes do Lighting := not Lighting;
+    91: with Scene.RenderOptions do Lighting := not Lighting;
     92: with Scene do HeadLightOn := not HeadLightOn;
-    93: with Scene.Attributes do UseSceneLights := not UseSceneLights;
+    93: with Scene.RenderOptions do UseSceneLights := not UseSceneLights;
     940: ChangeMaxLights;
-    94: with Scene.Attributes do EnableTextures := not EnableTextures;
+    94: with Scene.RenderOptions do EnableTextures := not EnableTextures;
     95: ChangeLightModelAmbient;
     96: ShowFrustum := not ShowFrustum;
     180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
@@ -3145,11 +3145,11 @@ begin
         SetNavigationType(TUserNavigationType(MenuItem.IntData - 1300));
         UpdateCameraUI;
       end;
-    1400..1499: Scene.Attributes.BumpMapping :=
+    1400..1499: Scene.RenderOptions.BumpMapping :=
       TBumpMapping(MenuItem.IntData - 1400);
     3600..3610: SetViewportsConfig(TViewportsConfig(MenuItem.IntData - 3600),
       V3DSceneWindow.Window, MainViewport);
-    4000: Scene.Attributes.PhongShading := not Scene.Attributes.PhongShading;
+    4000: Scene.RenderOptions.PhongShading := not Scene.RenderOptions.PhongShading;
     5000..5099: GammaCorrection := TGammaCorrection(MenuItem.IntData - 5000);
     5100..5199: ToneMapping := TToneMapping(MenuItem.IntData - 5100);
     5200: GltfForcePhongMaterials := not GltfForcePhongMaterials;
@@ -3277,7 +3277,7 @@ begin
       M.Append(M2);
     M.Append(ScreenEffects.Menu);
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.Attributes.PhongShading, true));
+    M.Append(TMenuItemChecked.Create('Phong Shading on Everything', 4000, Scene.RenderOptions.PhongShading, true));
     M2 := TMenu.Create('Gamma Correction');
       M2.AppendRadioGroup(GammaCorrectionNames, 5000, Ord(GammaCorrection), true);
       M.Append(M2);
@@ -3285,15 +3285,15 @@ begin
       M2.AppendRadioGroup(ToneMappingNames, 5100, Ord(ToneMapping), true);
       M.Append(M2);
     M2 := TMenu.Create('Bump Mapping');
-      M2.AppendRadioGroup(BumpMappingNames, 1400, Ord(Scene.Attributes.BumpMapping), true);
+      M2.AppendRadioGroup(BumpMappingNames, 1400, Ord(Scene.RenderOptions.BumpMapping), true);
       M.Append(M2);
     M2 := TMenu.Create('Shadow Maps');
       M2.Append(TMenuItemChecked.Create('Enable', 3500, Scene.ShadowMaps, true));
       M2.Append(TMenuSeparator.Create);
       M2.AppendRadioGroup(ShadowSamplingNames, 3510,
-        Ord(Scene.Attributes.ShadowSampling), true);
+        Ord(Scene.RenderOptions.ShadowSampling), true);
       M2.Append(TMenuSeparator.Create);
-      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, Scene.Attributes.VisualizeDepthMap, true));
+      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, Scene.RenderOptions.VisualizeDepthMap, true));
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
@@ -3310,17 +3310,17 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create(
       '_Lighting Calculation',         91,
-      Scene.Attributes.Lighting, true));
+      Scene.RenderOptions.Lighting, true));
     MenuHeadlight := TMenuItemChecked.Create('_Headlight', 92, CtrlH,
       (Scene <> nil) and Scene.HeadlightOn, true);
     M.Append(MenuHeadlight);
     M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
-      Scene.Attributes.UseSceneLights, true));
+      Scene.RenderOptions.UseSceneLights, true));
     M.Append(TMenuItem.Create('Max Lights Per Shape ...'  , 940));
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
-      Scene.Attributes.EnableTextures, true));
+      Scene.RenderOptions.EnableTextures, true));
     M2 := TMenu.Create('Texture Minification Method');
       MenuAppendMinificationFilters(M2, 1100);
       M.Append(M2);
@@ -3329,18 +3329,18 @@ begin
       M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Blending',                86,
-      Scene.Attributes.Blending, true));
+      Scene.RenderOptions.Blending, true));
     M.Append(TMenuItemChecked.Create('Dynamic Batching',        83,
       DynamicBatching, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
-      Scene.Attributes.OcclusionSort, true));
+      Scene.RenderOptions.OcclusionSort, true));
     M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
-      Scene.Attributes.UseOcclusionQuery, true));
+      Scene.RenderOptions.UseOcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
-      Scene.Attributes.UseHierarchicalOcclusionQuery, true));
+      Scene.RenderOptions.UseHierarchicalOcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
-      Scene.Attributes.DebugHierOcclusionQueryResults, true));
+      Scene.RenderOptions.DebugHierOcclusionQueryResults, true));
     M2 := TMenu.Create('Frustum visualization');
       M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
         ShowFrustum, true));
@@ -4034,7 +4034,7 @@ begin
     { init "scene global variables" to initial empty values }
     Scene := TCastleScene.Create(nil);
     try
-      AttributesLoadFromConfig(Scene.Attributes);
+      AttributesLoadFromConfig(Scene.RenderOptions);
       MainViewport.Items.Add(Scene);
       MainViewport.Items.MainScene := Scene;
 
@@ -4097,7 +4097,7 @@ begin
         Application.Run;
       finally FreeScene end;
 
-      AttributesSaveToConfig(Scene.Attributes);
+      AttributesSaveToConfig(Scene.RenderOptions);
 
       SoundEngine.SaveToConfig(UserConfig);
       RecentMenu.SaveToConfig(UserConfig);
