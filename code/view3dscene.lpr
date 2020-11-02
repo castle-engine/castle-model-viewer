@@ -2913,15 +2913,15 @@ begin
     83: DynamicBatching := not DynamicBatching;
     86: with Scene.RenderOptions do Blending := not Blending;
     87: with Scene.RenderOptions do OcclusionSort := not OcclusionSort;
-    88: with Scene.RenderOptions do UseOcclusionQuery := not UseOcclusionQuery;
-    90: with Scene.RenderOptions do UseHierarchicalOcclusionQuery := not UseHierarchicalOcclusionQuery;
+    88: with Scene.RenderOptions do OcclusionQuery := not OcclusionQuery;
+    90: with Scene.RenderOptions do HierarchicalOcclusionQuery := not HierarchicalOcclusionQuery;
     891: with Scene.RenderOptions do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
 
     91: with Scene.RenderOptions do Lighting := not Lighting;
     92: with Scene do HeadLightOn := not HeadLightOn;
     93: with Scene.RenderOptions do UseSceneLights := not UseSceneLights;
     940: ChangeMaxLights;
-    94: with Scene.RenderOptions do EnableTextures := not EnableTextures;
+    94: with Scene.RenderOptions do Textures := not Textures;
     95: ChangeLightModelAmbient;
     96: ShowFrustum := not ShowFrustum;
     180: ShowFrustumAlwaysVisible := not ShowFrustumAlwaysVisible;
@@ -3320,7 +3320,7 @@ begin
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
-      Scene.RenderOptions.EnableTextures, true));
+      Scene.RenderOptions.Textures, true));
     M2 := TMenu.Create('Texture Minification Method');
       MenuAppendMinificationFilters(M2, 1100);
       M.Append(M2);
@@ -3336,9 +3336,9 @@ begin
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
       Scene.RenderOptions.OcclusionSort, true));
     M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
-      Scene.RenderOptions.UseOcclusionQuery, true));
+      Scene.RenderOptions.OcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
-      Scene.RenderOptions.UseHierarchicalOcclusionQuery, true));
+      Scene.RenderOptions.HierarchicalOcclusionQuery, true));
     M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
       Scene.RenderOptions.DebugHierOcclusionQueryResults, true));
     M2 := TMenu.Create('Frustum visualization');
