@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses SysUtils, CastleGLUtils, CastleLog, CastleRenderer, CastleKeysMouse;
+uses SysUtils, CastleGLUtils, CastleLog, CastleRenderOptions, CastleKeysMouse;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record

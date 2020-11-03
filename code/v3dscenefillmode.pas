@@ -4,8 +4,7 @@ unit V3DSceneFillMode;
 
 interface
 
-uses CastleScene, CastleWindow, CastleRenderer, CastleVectors, CastleColors,
-  CastleRenderOptions;
+uses CastleScene, CastleWindow, CastleRenderOptions, CastleVectors, CastleColors;
 
 type
   TFillMode = 0..8;

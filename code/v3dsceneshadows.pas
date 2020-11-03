@@ -5,7 +5,7 @@ unit V3DSceneShadows;
 interface
 
 uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleViewport,
-  CastleRenderer;
+  CastleRenderOptions;
 
 type
   { Takes care of setting shadow volume properties, and modifies a little
@@ -38,12 +38,12 @@ procedure TV3DShadowsViewport.Render3D(const Params: TRenderParams);
   begin
     { Thanks to using SolidShadowColor, shadow is visible
       even when rmSolidColor is used }
-    Scene.Attributes.SolidColor := SolidShadowColor;
+    Scene.RenderOptions.SolidColor := SolidShadowColor;
   end;
 
   procedure Render3DNoShadowsBegin(Scene: TCastleScene);
   begin
-    Scene.Attributes.SolidColor := SolidColor;
+    Scene.RenderOptions.SolidColor := SolidColor;
   end;
 
 begin
