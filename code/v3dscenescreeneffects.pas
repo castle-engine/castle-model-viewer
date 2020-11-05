@@ -165,6 +165,8 @@ begin
   { add built-in screen effects }
   Menu.Append(TMenuItemChecked.Create('Screen Space Ambient Occlusion',
     340, TCastleViewport.DefaultScreenSpaceAmbientOcclusion, true));
+  Menu.Append(TMenuItemChecked.Create('Screen Space Reflections',
+    342, TCastleViewport.DefaultScreenSpaceReflections, true));
   Menu.Append(TMenuSeparator.Create);
 
   { add custom screen effects handled in this unit }

@@ -2715,6 +2715,17 @@ var
         ScreenSpaceAmbientOcclusion := not ScreenSpaceAmbientOcclusion;
   end;
 
+  procedure SwitchScreenSpaceReflections;
+  var
+    I: Integer;
+  begin
+    with MainViewport do
+      ScreenSpaceReflections := not ScreenSpaceReflections;
+    for I := Low(ExtraViewports) to High(ExtraViewports) do
+      with ExtraViewports[I] do
+        ScreenSpaceReflections := not ScreenSpaceReflections;
+  end;
+
   procedure OpenSceneURL;
   var
     URL, CopyStr, CutStr, PasteStr: string;
@@ -3080,6 +3091,7 @@ begin
     300: JumpToViewpoint(MainViewport, (MenuItem as TMenuItemViewpoint).Viewpoint);
 
     340: SwitchScreenSpaceAmbientOcclusion;
+    342: SwitchScreenSpaceReflections;
     350..370:
       begin
         ScreenEffects.ActiveEffectsRecalculate;
