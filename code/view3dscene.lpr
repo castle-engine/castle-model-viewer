@@ -4092,13 +4092,13 @@ begin
         Window.StencilBits := 8;
 
         Window.Open(@RetryOpen);
+        if Param_EnableFixedFunction then
+          GLFeatures.EnableFixedFunction := true; // force EnableFixedFunction even before loading Param_SceneURL
 
         if WasParam_SceneURL then
-          LoadScene(Param_SceneURL, Param_SceneChanges) else
+          LoadScene(Param_SceneURL, Param_SceneChanges)
+        else
           LoadWelcomeScene;
-
-        if Param_EnableFixedFunction then
-          GLFeatures.EnableFixedFunction := true;
 
         if MakingScreenShot then
         begin
