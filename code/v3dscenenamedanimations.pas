@@ -351,13 +351,19 @@ begin
     end;
   end;
 
-  for C in AnimationsScrollGroup do
-    if C is TButtonAnimation then
-    begin
-      Assert(Scene <> nil); // no TButtonAnimation should exist if Scene = nil
-      TimeSensor := TButtonAnimation(C).TimeSensor(Scene);
-      TButtonAnimation(C).Pressed := (TimeSensor <> nil) and TimeSensor.IsActive;
-    end;
+  { AnimationsScrollGroup doesn't exist if no animations.
+    Testcase:
+    - open glTF Drone animation,
+    - play animation by clicking button in Animations panel,
+    - load glTF DamagedHelmet through recent menu }
+  if AnimationsScrollGroup <> nil then
+    for C in AnimationsScrollGroup do
+      if C is TButtonAnimation then
+      begin
+        Assert(Scene <> nil); // no TButtonAnimation should exist if Scene = nil
+        TimeSensor := TButtonAnimation(C).TimeSensor(Scene);
+        TButtonAnimation(C).Pressed := (TimeSensor <> nil) and TimeSensor.IsActive;
+      end;
 end;
 
 procedure TNamedAnimationsUi.ClickAnimation(Sender: TObject);
