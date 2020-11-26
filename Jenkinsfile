@@ -6,16 +6,15 @@
 pipeline {
   triggers {
     pollSCM('H/4 * * * *')
-    upstream(upstreamProjects: 'castle_game_engine_update_docker_image/master', threshold: hudson.model.Result.SUCCESS)
+    upstream(upstreamProjects: 'castle_game_engine_organization/castle-engine-cloud-builds-tools/master', threshold: hudson.model.Result.SUCCESS)
   }
-  agent any
+  agent {
+    docker {
+      image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
+    }
+  }
   stages {
     stage('Build') {
-      agent {
-        docker {
-          image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
-        }
-      }
       steps {
         sh 'jenkins_scripts/build.sh'
         stash name: 'snapshots-to-publish', includes: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
@@ -25,15 +24,6 @@ pipeline {
         archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
-    // stage('Upload Snapshots') {
-    //   /* This must run outside Docker since it directly copies the files. */
-    //   agent { label 'web-jenkins' }
-    //   when { branch 'master' }
-    //   steps {
-    //     unstash name: 'snapshots-to-publish'
-    //     sh 'jenkins_scripts/upload_snapshots.sh'
-    //   }
-    // }
   }
   post {
     regression {
