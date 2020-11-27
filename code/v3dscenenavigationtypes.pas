@@ -182,18 +182,20 @@ const
   ButtonBottomMargin = 16;
   ImgMargin = 8;
 var
-  R: TFloatRectangle;
+  ButtonR, R: TFloatRectangle;
 begin
+  ButtonR := RenderRect;
+
   R := FloatRectangle(
     WindowBorderMargin,
-    Bottom - ButtonBottomMargin - (ImageTooltip.Height + 2 * ImgMargin),
+    ButtonR.Bottom - ButtonBottomMargin - (ImageTooltip.Height + 2 * ImgMargin),
     ImageTooltip.Width  + 2 * ImgMargin,
     ImageTooltip.Height + 2 * ImgMargin);
 
   Theme.Draw(R, tiTooltip);
   ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin, R.Bottom + ImgMargin);
   { we decrease R.Top to overdraw the tooltip image border }
-  ImageTooltipArrow.DrawableImage.Draw(Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
+  ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
 end;
 
 initialization
