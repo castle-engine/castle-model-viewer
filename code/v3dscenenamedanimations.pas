@@ -62,17 +62,13 @@ var
 type
   TButtonAnimation = class(TCastleButton)
   public
-    AnimationName: string;
-    function TimeSensor(const Scene: TCastleScene): TTimeSensorNode;
+    AnimationName: String;
+    { Store TTimeSensorNode reference, not only AnimationName,
+      as time sensor better identifies the animation.
+      Testcase: Bee_10.x3dv that Inlines and IMPORTs animations
+      from multiple copies of the same glTF file. }
+    TimeSensor: TTimeSensorNode;
   end;
-
-function TButtonAnimation.TimeSensor(const Scene: TCastleScene): TTimeSensorNode;
-begin
-  if Scene.RootNode <> nil then
-    TimeSensor := Scene.RootNode.TryFindNodeByName(TTimeSensorNode, AnimationName, false) as TTimeSensorNode
-  else
-    TimeSensor := nil;
-end;
 
 type
   TNamedAnimationsUi = class(TCastleVerticalGroup)
@@ -145,7 +141,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     InsertFront(Ui);
   end;
 
-  procedure AppendAnimation(const AnimationName: String);
+  procedure AppendAnimation(const AnimationName: String; const TimeSensor: TTimeSensorNode);
   var
     Ui: TButtonAnimation;
   begin
@@ -154,6 +150,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
       SForCaption(AnimationName),
       Scene.AnimationDuration(AnimationName)
     ]);
+    Ui.TimeSensor := TimeSensor;
     Ui.AnimationName := AnimationName;
     Ui.OnClick := @ClickAnimation;
     AnimationsScrollGroup.InsertFront(Ui);
@@ -289,7 +286,7 @@ begin
     begin
       CreateScrollView;
       for I := 0 to NamedAnimations.Count - 1 do
-        AppendAnimation(NamedAnimations[I]);
+        AppendAnimation(NamedAnimations[I], Scene.AnimationTimeSensor(I));
 
       AppendSpacer(Margin);
       AppendStopAnimation;
@@ -361,8 +358,8 @@ begin
       if C is TButtonAnimation then
       begin
         Assert(Scene <> nil); // no TButtonAnimation should exist if Scene = nil
-        TimeSensor := TButtonAnimation(C).TimeSensor(Scene);
-        TButtonAnimation(C).Pressed := (TimeSensor <> nil) and TimeSensor.IsActive;
+        TimeSensor := TButtonAnimation(C).TimeSensor;
+        TButtonAnimation(C).Pressed := TimeSensor.IsActive;
       end;
 end;
 
@@ -377,14 +374,11 @@ begin
   AnimationName := Button.AnimationName;
   if MultipleAnimations then
   begin
-    TimeSensor := Button.TimeSensor(Scene);
-    if TimeSensor <> nil then
-    begin
-      if TimeSensor.IsActive then
-        TimeSensor.Stop
-      else
-        TimeSensor.Start(Loop, Forward);
-    end;
+    TimeSensor := Button.TimeSensor;
+    if TimeSensor.IsActive then
+      TimeSensor.Stop
+    else
+      TimeSensor.Start(Loop, Forward);
   end else
   begin
     Params := TPlayAnimationParameters.Create;
