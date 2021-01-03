@@ -38,7 +38,9 @@ type
   TSceneChange = (
     scNoNormals,
     scNoSolidObjects,
-    scNoConvexFaces);
+    scNoConvexFaces,
+    scConvertInlines
+  );
   TSceneChanges = set of TSceneChange;
 
 { Transforms scene root node as appropriate.
@@ -67,6 +69,8 @@ type
 
     class procedure NoConvex_ShapeHints(node: TX3DNode);
     class procedure NoConvex_AbstractGeometry(node: TX3DNode);
+
+    class procedure ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
   end;
 
 class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TX3DNode);
@@ -112,6 +116,27 @@ var
 begin
   F := (Node as TAbstractGeometryNode).ConvexField;
   if F <> nil then F.Value := false;
+end;
+
+class procedure TSceneChangesDo.ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
+var
+  InlineNode: TInlineNode;
+  NewGroup: TGroupNode;
+begin
+  if Node is TInlineNode then
+  begin
+    // replace Node with new TGroupNode
+    InlineNode := TInlineNode(Node);
+    NewGroup := TGroupNode.Create(InlineNode.X3DName, InlineNode.BaseUrl);
+    Node := NewGroup;
+
+    // put Inline contents into new group
+    if InlineNode.Inlined <> nil then
+    begin
+      ChangeNode([scConvertInlines], InlineNode.Inlined);
+      NewGroup.FdChildren.Assign(InlineNode.Inlined.FdChildren);
+    end;
+  end;
 end;
 
 { SceneChange_Xxx functions ---------------------------------------- }
@@ -176,6 +201,11 @@ begin
   end;
 end;
 
+procedure SceneChange_ConvertInlines(Node: TX3DRootNode);
+begin
+  Node.EnumerateReplaceChildren(@TSceneChangesDo(nil).ConvertInlines);
+end;
+
 { ChangeScene --------------------------------------------------------------- }
 
 type
@@ -184,7 +214,9 @@ const
   SCFunctions: array[TSceneChange]of TSceneChangeFunction =
   ( @SceneChange_NoNormals,
     @SceneChange_NoSolidObjects,
-    @SceneChange_NoConvexFaces );
+    @SceneChange_NoConvexFaces,
+    @SceneChange_ConvertInlines
+  );
 
 procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
 var

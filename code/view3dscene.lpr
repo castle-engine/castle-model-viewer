@@ -2870,6 +2870,7 @@ begin
     31: ChangeScene([scNoNormals], Scene);
     32: ChangeScene([scNoSolidObjects], Scene);
     33: ChangeScene([scNoConvexFaces], Scene);
+    33000: ChangeScene([scConvertInlines], Scene);
 
     34: RemoveNodesWithMatchingName;
     38: RemoveGamePlaceholders;
@@ -3472,6 +3473,7 @@ begin
       'non-solid (disables any backface culling)', 32));
     M.Append(TMenuItem.Create('Mark All Faces as '+
       'non-convex (forces faces to be triangulated carefully)', 33));
+    M.Append(TMenuItem.Create('Convert Inline to Group (pulls external content into this model)', 33000));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Add Joints Visualization ...', 45));
     M.Append(TMenuItem.Create('Add H-Anim Joints Visualization ...', 42));
