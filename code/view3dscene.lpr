@@ -4048,6 +4048,9 @@ begin
     { init "scene global variables" to initial empty values }
     Scene := TCastleScene.Create(nil);
     try
+      { makes X3D KeySensor and StringSensor working }
+      Scene.ListenPressRelease := true;
+
       AttributesLoadFromConfig(Scene.RenderOptions);
       MainViewport.Items.Add(Scene);
       MainViewport.Items.MainScene := Scene;
