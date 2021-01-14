@@ -169,8 +169,8 @@ var
   ShapeList: TShapeList;
   Shape: TShape;
 begin
-  if not World.CameraKnown then Exit;
-  ObserverPos := Vector4(World.CameraPosition, 1);
+  if World.MainCamera = nil then Exit;
+  ObserverPos := Vector4(World.MainCamera.Position, 1);
 
   BorderLines.FdVertexCount.Items.Clear;
   BorderCoord.FdPoint.Items.Clear;
