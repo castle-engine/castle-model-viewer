@@ -96,12 +96,12 @@ shift 2
 
 rm -f "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 
-# test_dir ../demo_models/
-# test_dir ../castle/data/
-# test_dir ../castle_game_engine/
+# test_dir ../demo-models/
+# test_dir ../castle-game/data/
+# test_dir ../castle-engine/
 # This dir has fallback_prototypes in VRML 97 and X3D, two really important
 # files that should be correct.
-# test_dir ../www/htdocs/
+# test_dir ../cge-www/htdocs/
 
 # Just test all models within ../
 test_dir ../
