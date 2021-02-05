@@ -3017,13 +3017,14 @@ begin
 
     131: begin
            MessageReport(
-             'view3dscene: VRML / X3D browser and full-featured viewer of other 3D models.' + NL +
+             'viewer for all 3D and 2D model formats supported by Castle Game Engine.' + NL +
              NL +
              'Supported formats:' + NL +
-             '- X3D' + NL +
              '- glTF 2.0' + NL +
-             '- Spine JSON' + NL +
+             '- X3D' + NL +
              '- VRML 2.0 (aka VRML 97) and 1.0' + NL +
+             '- Spine JSON' + NL +
+             '- Sprite sheets in Starling and Cocos2d formats' + NL +
              '- castle-anim-frames' + NL +
              '- OpenInventor (IV)' + NL +
              '- 3DS' + NL +
@@ -3802,17 +3803,18 @@ begin
         end;
     4 : begin
           S :=
-            'view3dscene: VRML / X3D browser, and a viewer for other 3D formats.' +NL+
-            'You can navigate in the (possibly animated and interactive) 3D scene,' +NL+
+            'viewer for all 3D and 2D model formats supported by Castle Game Engine,' + NL +
+            'including glTF, X3D, Spine, sprite sheets etc.' +NL+
+            'You can navigate in the (animated and interactive) scene,' +NL+
             'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
-            'You can also convert models in other formats to VRML/X3D.' +NL+
+            'You can also convert models in other formats to X3D.' +NL+
             NL+
             'Call as' +NL+
             '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
             NL+
             'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
             'As usual, dash (-) means that standard input will be read' +NL+
-            '(in this case the input must be in Inventor / VRML / X3D (classic) format).' +NL+
+            '(in this case the input must be in X3D format).' +NL+
             NL+
             'Available options are:' +NL+
             HelpOptionHelp +NL+
