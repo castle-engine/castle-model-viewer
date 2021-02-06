@@ -26,7 +26,7 @@ cd freedesktop/
 
 But in the latter case, it is your responsibility to make the binaries actually visible by X session. Note that you will need to modify `$PATH` used by the X session, which usually means you need to create and use the `~/.Xsession` file. (Adjusting path of your shell, e.g. in `~/.bashrc`, is *not* enough.)
 
-# DETAILS HOW THIS WORKS
+# Details how this works
 
 This is for developers -- normal users can stop reading now :)
 
