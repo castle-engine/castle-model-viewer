@@ -18,8 +18,9 @@
   </dependencies>
   <version value="4.0.0" code="7" />
   <package>
-    <include path="tovrmlx3d*" />
+    <include path="README.md" />
     <include path="COPYING.GPL2.txt" />
+    <include path="tovrmlx3d*" />
     <include path="freedesktop/*" recursive="True" />
   </package>
   <data exists="false" />

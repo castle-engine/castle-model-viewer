@@ -1,6 +1,23 @@
 # view3dscene
 
-`view3dscene` is a viewer for many 3D model formats: X3D, glTF, VRML, Collada, 3DS, MD3, Wavefront OBJ, STL and (2D) Spine JSON.
+`view3dscene` is a viewer for all 3D and 2D model formats supported by Castle Game Engine.
+
+Supported formats:
+
+- glTF 2.0
+- X3D
+- VRML 2.0 (aka VRML 97) and 1.0
+- Spine JSON
+- Sprite sheets in Starling and Cocos2d formats
+- castle-anim-frames
+- OpenInventor (IV)
+- 3DS
+- MD3
+- Wavefront OBJ
+- Collada
+- STL
+
+See also [Castle Game Engine model formats](https://castle-engine.io/creating_data_model_formats.php).
 
 Complete documentation on https://castle-engine.io/view3dscene.php .
 
