@@ -2,12 +2,12 @@
 <project name="view3dscene"
   standalone_source="code/view3dscene.lpr"
   author="Michalis Kamburelis"
-  qualified_name="net.sourceforge.castleengine.view3dscene"
+  qualified_name="io.castleengine.view3dscene"
   >
   <icons>
     <icon path="windows/view3dscene.ico" />
-    <icon path="desktop/view3dscene.svg" />
-    <icon path="desktop/view3dscene.icns" />
+    <icon path="freedesktop/view3dscene.svg" />
+    <icon path="freedesktop/view3dscene.icns" />
   </icons>
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->
@@ -20,6 +20,7 @@
   <package>
     <include path="tovrmlx3d*" />
     <include path="COPYING.GPL2.txt" />
+    <include path="freedesktop/*" recursive="True" />
   </package>
   <data exists="false" />
 

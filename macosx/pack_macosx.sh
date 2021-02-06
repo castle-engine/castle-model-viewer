@@ -16,7 +16,7 @@ lazbuild ../code/view3dscene.lpi
 echo '--------------------- Compiling tovrmlx3d  --------------------'
 lazbuild ../code/tovrmlx3d.lpi
 
-create_bundle view3dscene ../view3dscene ../desktop/view3dscene.icns \
+create_bundle view3dscene ../view3dscene ../freedesktop/view3dscene.icns \
 '  <dict>
     <key>CFBundleTypeExtensions</key>
     <array>

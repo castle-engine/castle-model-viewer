@@ -37,13 +37,13 @@ install:
 	install view3dscene $(BINDIR)
 	install tovrmlx3d $(BINDIR)
 	install -d  $(DATADIR)
-	cd desktop/ && ./install.sh "$(DATADIR)"
+	cd freedesktop/ && ./install.sh "$(DATADIR)"
 
 .PHONY: uninstall
 uninstall:
 	rm -f $(BINDIR)/view3dscene \
 	      $(BINDIR)/tovrmlx3d
-	cd desktop/ && ./uninstall.sh "$(DATADIR)"
+	cd freedesktop/ && ./uninstall.sh "$(DATADIR)"
 
 # code generation ------------------------------------------------------------
 
