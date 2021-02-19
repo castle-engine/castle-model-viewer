@@ -1,5 +1,10 @@
 # build / clean --------------------------------------------------------------
 
+# Hint: use
+#   export CASTLE_ENGINE_TOOL_OPTIONS='--mode=debug'
+#   make
+# to build in debug mode.
+
 .PHONY: compile
 compile:
 	./compile.sh
