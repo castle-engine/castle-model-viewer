@@ -228,6 +228,7 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
       untExamine: Viewport.NavigationType := ntExamine;
       untWalk: Viewport.NavigationType := ntWalk;
       untFly: Viewport.NavigationType := ntFly;
+      unt2D: Viewport.Navigation := TCastle2DNavigation.Create(Viewport);
       untNone: Viewport.NavigationType := ntNone;
       {$ifndef COMPILER_CASE_ANALYSIS}
       else raise EInternalError.Create('CoreSetNavigationType NavigationType?');

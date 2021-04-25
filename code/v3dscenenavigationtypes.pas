@@ -44,12 +44,13 @@ type
     untExamine,
     untFly,
     untWalk,
+    unt2D,
     untNone
   );
 
 const
   NavigationNames: array [TUserNavigationType] of string =
-  ('Examine', 'Fly', 'Walk', 'None');
+  ('Examine', 'Fly', 'Walk', '2D', 'None');
 
 var
   CameraRadios: array [TUserNavigationType] of TMenuItemRadio;
@@ -106,6 +107,9 @@ end;
 
 function NavigationType: TUserNavigationType;
 begin
+  if FViewport.Navigation is TCastle2DNavigation then
+    Result := unt2D
+  else
   case FViewport.NavigationType of
     ntExamine, ntTurntable: Result := untExamine;
     ntWalk: Result := untWalk;
@@ -136,10 +140,14 @@ begin
 
   ImageTooltip := TCastleImagePersistent.Create;
   ImageTooltip.OwnsImage := false;
-  if NavigationType = untExamine then
-    ImageTooltip.Image := Examine_Tooltip
-  else
-    ImageTooltip.Image := Walk_Fly_Tooltip;
+  case NavigationType of
+    untExamine:
+      ImageTooltip.Image := Examine_Tooltip;
+    untWalk, untFly:
+      ImageTooltip.Image := Walk_Fly_Tooltip;
+    unt2D:
+      //ImageTooltip.Image := Navigation2D_Tooltip; // TODO
+  end;
 end;
 
 destructor TNavigationTypeButton.Destroy;
