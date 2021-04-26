@@ -1226,6 +1226,17 @@ begin
   LoadSceneCore(Node, '', [], Options);
 end;
 
+function LoadX3DClassicFromString(const FileContents: string;
+  const BaseUrl: string): TX3DRootNode;
+var
+  Stream: TStringStream;
+begin
+  Stream := TStringStream.Create(FileContents);
+  try
+    Result := LoadNode(Stream, BaseUrl, 'model/x3d+vrml');
+  finally FreeAndNil(Stream) end;
+end;
+
 { This works like LoadScene, but loaded scene is an empty scene.
   More specifically, this calls FreeScene, and then inits
   "scene global variables" to some non-null values. }
@@ -1272,8 +1283,10 @@ begin
   Node := LoadNode(ASceneURL);
   try
     ChangeNode(SceneChanges, Node);
+    {$warnings off} // using internal CGE routine knowingly
     Save3D(Node, StdOutStream, SaveGenerator,
       ExtractURIName(ASceneURL), Encoding, ForceConvertingToX3D);
+    {$warnings on}
   finally FreeAndNil(Node) end;
 end;
 
@@ -2673,8 +2686,10 @@ var
       if Conversion then
         Scene.BeforeNodesFree;
 
+      {$warnings off} // using internal CGE routine knowingly
       Save3D(Scene.RootNode, ProposedSaveName, SaveGenerator,
         ExtractURIName(SceneURL), SaveVersion, Encoding, ForceConvertingToX3D);
+      {$warnings on}
 
       if Conversion then
         Scene.ChangedAll;
@@ -3896,7 +3911,7 @@ begin
             '                        usually useful.' +NL+
             '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
             NL+
-            SCastleEngineProgramHelpSuffix(DisplayApplicationName, Version, true);
+            ApplicationProperties.Description;
 
           if IsConsole then
             Writeln(S)
