@@ -4,6 +4,14 @@
 */
 
 pipeline {
+  options {
+    /* We do not really have a problem with concurrent builds (jenkins_scripts/build.sh
+       could execute in parallel in multiple checkouts),
+       but it seems that view3dscene job can be created many many times in Jenkins
+       and get stuck.
+       Using disableConcurrentBuilds as a workaround. */
+    disableConcurrentBuilds()
+  }
   triggers {
     pollSCM('H/4 * * * *')
     upstream(upstreamProjects: 'castle_game_engine_organization/castle-engine-cloud-builds-tools/master', threshold: hudson.model.Result.SUCCESS)
