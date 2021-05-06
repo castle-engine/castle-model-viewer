@@ -207,6 +207,7 @@ begin
 end;
 
 initialization
-  Theme.Images[tiTooltip] := TooltipRounded;
-  Theme.Corners[tiTooltip] := Vector4(9, 9, 9, 9);
+  Theme.ImagesPersistent[tiTooltip].Image := TooltipRounded;
+  Theme.ImagesPersistent[tiTooltip].OwnsImage := false;
+  Theme.ImagesPersistent[tiTooltip].ProtectedSides.AllSides := 9;
 end.
