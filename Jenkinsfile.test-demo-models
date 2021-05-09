@@ -20,13 +20,24 @@ pipeline {
         sh 'git clone --depth 1 --single-branch --branch master https://github.com/castle-engine/demo-models'
       }
     }
+    stage('Build') {
+      steps {
+        sh 'make'
+      }
+    }
     stage('Run Tests') {
       steps {
-        sh 'jenkins_scripts/compile_and_run_tests.sh demo-models/'
+        sh 'jenkins_scripts/run_tests_on_dir_and_compare.sh demo-models/'
       }
     }
   }
   post {
+    always {
+      /* We save output always, also in case of failure,
+         because it is useful (to analyze, to update jenkins_scripts/run_tests_valid_output.txt)
+         even in case of failure. */
+      archiveArtifacts artifacts: 'run_tests_output.txt run_tests_output_verbose.txt'
+    }
     regression {
       mail to: 'michalis@castle-engine.io',
         subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",

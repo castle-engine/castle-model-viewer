@@ -1,10 +1,12 @@
 #!/bin/bash
 set -eu
 
-# Run various tests of view3dscene / tovrmlx3d on a given 3D model.
-# 3D model filename is provided as a parameter for this script.
-# This script is usually run by run_tests.sh script, see there for some
+# Run various tests of view3dscene / tovrmlx3d on a given model.
+# Model filename is provided as a parameter for this script.
+# This script is usually run by run_tests_on_dir.sh script, see there for some
 # comments.
+
+# ----------------------------------------------------------------------------
 
 # Disable heaptrc, to get shorter output and avoid reports of harmless leaks
 # occuring when ending program with Halt.
