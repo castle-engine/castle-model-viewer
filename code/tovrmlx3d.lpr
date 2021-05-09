@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2018 Michalis Kamburelis.
+  Copyright 2003-2021 Michalis Kamburelis.
 
   This file is part of "Castle Game Engine".
 
@@ -71,7 +71,7 @@ begin
            '                        (not for older Inventor/VRML 1.0,' +NL+
            '                        we cannot convert them to valid X3D for now).' +NL+
            NL+
-           SCastleEngineProgramHelpSuffix('tovrmlx3d', Version, true));
+           ApplicationProperties.Description);
          Halt;
        end;
     1: begin
@@ -94,6 +94,7 @@ var
   URL: string;
   Node: TX3DNode;
 begin
+  ApplicationProperties.ApplicationName := 'tovrmlx3d';
   ApplicationProperties.Version := Version;
 
   { parse command-line }
