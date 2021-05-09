@@ -2,14 +2,10 @@
 set -eu
 
 # Build view3dscene and tovrmlx3d,
-# run various tests.
-#
-# This script uses some commands and assumes environment of our Jenkins on
-# https://jenkins.castle-engine.io/ .
+# run various tests on models in directories given as arguments ($@).
 
-. /usr/local/fpclazarus/bin/setup.sh default
 ./compile.sh
-jenkins_scripts/run_tests.sh /tmp/view3dscene_run_tests_output.txt /tmp/view3dscene_run_tests_output_verbose.txt
+jenkins_scripts/run_tests.sh /tmp/view3dscene_run_tests_output.txt /tmp/view3dscene_run_tests_output_verbose.txt "$@"
 
 # remove OpenAL trash from outpt
 sed --in-place=.bak \

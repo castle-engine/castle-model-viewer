@@ -1,16 +1,14 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene / tovrmlx3d tests on 3D models inside the ../ directory.
+# Run view3dscene / tovrmlx3d tests on models inside the given directories.
+# Use with any directory of test models,
+# like CGE demo-models, castle-engine/tests/, cge-www/htdocs/ .
 #
-# We assume that ../ directory contains various Castle Game Engine-related
-# projects, like demo-models from https://github.com/castle-engine/demo-models .
-# You can either clone multiple GIT repositories alongside the view3dscene repository,
-# or you can grab the SVN trunk with various CGE projects
-# from https://sourceforge.net/projects/castle-engine/ .
-#
-# This script is designed to work with any 3D models, so feel free to use this
-# on your own private 3D models. Just modify the "test_dir" calls at the bottom.
+# Arguments:
+# $1 - short output file
+# $2 - short output file
+# $3 and more - directories with models to test
 #
 # Running this requires:
 # - view3dscene and tovrmlx3d binaries compiled (either in current dir,
@@ -28,14 +26,14 @@ set -eu
 #
 # - for some optional comparisons (regression checking), it's useful
 #   to have alternative view3dscene / tovrmlx3d binaries installed.
-#   For example, if you test view3dscene from SVN, you may also install last
-#   stable view3dscene release. Just rename the binary (like view3dscene-3.10.0-release),
+#   For example, if you test unstable view3dscene, you may also install last
+#   stable view3dscene release. Just rename the binary (like view3dscene-stable-release),
 #   and uncomment appropriate parts of run_test_once.sh.
 #
-# Every suitable 3D model format is tested by the run_test_once.sh script:
+# Every suitable model format is tested by the run_test_once.sh script:
 # - It reads a model, writes it back to file, and then reads again.
 #   This somewhat tests that there are no problems with parsing
-#   and saving 3D files.
+#   and saving models.
 # - Various other reading and writing validation is done by comparing
 #   outputs going through various (classic and XML) encodings.
 # - Check rendering, by making screenshots
@@ -69,7 +67,7 @@ test_dir()
   # impossible. Fortunately, find and sort goes very fast (compared to actual
   # run_test_once.sh time).
 
-  find "$1" \
+  find "$@" \
   '(' -type d -iname 'errors' -prune ')' -or \
   '(' -type f -iwholename '*ios_tests/CastleEngineTest/CastleEngineTest*' ')' -or \
   '(' -type f -name '*test_temporary*' ')' -or \
@@ -83,7 +81,11 @@ test_dir()
                   -iname '*.x3dvz' -or \
                   -iname '*.x3dv.gz' -or \
                   -iname '*.3ds' -or \
-                  -iname '*.dae' ')' \
+                  -iname '*.dae' -or \
+                  -iname '*.gltf' -or \
+                  -iname '*.glb' -or \
+                  -iname '*.plist' -or \
+                  -iname '*.starling-xml' ')' \
               -print0 ')' | \
   sort --zero-terminated | \
   xargs -0 --max-args=1 jenkins_scripts/run_test_once.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
@@ -96,12 +98,4 @@ shift 2
 
 rm -f "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 
-# test_dir ../demo-models/
-# test_dir ../castle-game/data/
-# test_dir ../castle-engine/
-# This dir has fallback_prototypes in VRML 97 and X3D, two really important
-# files that should be correct.
-# test_dir ../cge-www/htdocs/
-
-# Just test all models within ../
-test_dir ../
+test_dir "$@"

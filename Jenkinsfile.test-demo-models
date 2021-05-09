@@ -1,0 +1,46 @@
+/* -*- mode: groovy -*-
+  Confgure how to run our job in Jenkins.
+  See https://github.com/castle-engine/castle-engine/wiki/Cloud-Builds-(Jenkins) .
+*/
+
+pipeline {
+  triggers {
+    pollSCM('H/4 * * * *')
+    upstream(upstreamProjects: 'castle_game_engine_organization/castle-engine-cloud-builds-tools/master', threshold: hudson.model.Result.SUCCESS)
+  }
+  agent {
+    docker {
+      image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
+    }
+  }
+  stages {
+    stage('Get demo-models') {
+      steps {
+        sh 'rm -Rf demo-models/'
+        sh 'git clone --depth 1 --single-branch --branch master https://github.com/castle-engine/demo-models'
+      }
+    }
+    stage('Run Tests') {
+      steps {
+        sh 'jenkins_scripts/compile_and_run_tests.sh demo-models/'
+      }
+    }
+  }
+  post {
+    regression {
+      mail to: 'michalis@castle-engine.io',
+        subject: "[jenkins] Build started failing: ${currentBuild.fullDisplayName}",
+        body: "See the build details on ${env.BUILD_URL}"
+    }
+    failure {
+      mail to: 'michalis@castle-engine.io',
+        subject: "[jenkins] Build failed: ${currentBuild.fullDisplayName}",
+        body: "See the build details on ${env.BUILD_URL}"
+    }
+    fixed {
+      mail to: 'michalis@castle-engine.io',
+        subject: "[jenkins] Build is again successfull: ${currentBuild.fullDisplayName}",
+        body: "See the build details on ${env.BUILD_URL}"
+    }
+  }
+}
