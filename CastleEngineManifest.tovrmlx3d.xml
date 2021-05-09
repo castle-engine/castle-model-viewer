@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="tovrmlx3d"
+  standalone_source="code/tovrmlx3d.lpr"
+  author="Michalis Kamburelis"
+  qualified_name="io.castleengine.tovrmlx3d"
+  >
+  <dependencies>
+    <dependency name="Zlib" /> <!-- read .gz -->
+    <dependency name="Https" /> <!-- read https links -->
+  </dependencies>
+  <data exists="false" />
+</project>
