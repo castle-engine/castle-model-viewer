@@ -1,346 +1,318 @@
-tovrmlx3d: VRML/X3D warning: A node inside the field "GeneratedShadowMap.light" must be already used elsewhere (use USE clause, do not declare a new node here)
-tovrmlx3d: VRML/X3D warning: A node inside the field "GeneratedShadowMap.light" must be already used elsewhere (use USE clause, do not declare a new node here)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "animation" not bound
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Collada warning: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
-tovrmlx3d: Collada warning: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
-tovrmlx3d: Collada warning: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
-tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
-tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
-tovrmlx3d: VRML/X3D warning: Unknown "language" field value: "INVALID-LANGUAGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "INVALID-TYPE"
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "file://DIR/demo_models/prototypes/not_existing.wrl": Unable to open file "DIR/demo_models/prototypes/not_existing.wrl"
-tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "file://DIR/demo_models/prototypes/not_existing.wrl": Unable to open file "DIR/demo_models/prototypes/not_existing.wrl"
-tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "file://DIR/demo_models/prototypes/not_existing.wrl": Unable to open file "DIR/demo_models/prototypes/not_existing.wrl"
-tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
-tovrmlx3d: VRML/X3D warning: Cannot load external prototype from URL "file://DIR/demo_models/prototypes/not_existing.wrl": Unable to open file "DIR/demo_models/prototypes/not_existing.wrl"
-tovrmlx3d: VRML/X3D warning: Unknown node URN "urn:not_existing"
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
-tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
-tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
-tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
-tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
-tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
-tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
-tovrmlx3d: VRML/X3D warning: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
-tovrmlx3d: VRML/X3D warning: Prototype "Empty" has no nodes, cannot instantiate
-tovrmlx3d: VRML/X3D warning: Node "Empty" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
-tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
-tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown node of type "Leg" (named "")
-tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown X3D node type "Leg"
-tovrmlx3d: VRML/X3D warning: Node "Leg" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
-tovrmlx3d: VRML/X3D warning: Unknown "type" field value: "SOMETHING-STRANGE"
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "fly" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "TouchLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioRightTop" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftBottom" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node name "AudioLeftTop" not bound
-tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
-tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
-tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
-tovrmlx3d: VRML/X3D warning: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
-tovrmlx3d: VRML/X3D warning: Converting VRML 1.0 or Inventor to X3D is not implemented. You will get VRML 1.0/Inventor nodes encoded like for X3D, which probably is not much useful.
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Group"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Group"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Coordinate3" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "PointSet" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Separator" inside node "TransformSeparator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "Krzyzyk" undefined
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "fontStyle" by node "FontStyle" inside node "TransformSeparator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D node type "AsciiText"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "" by node "AsciiText" inside node "TransformSeparator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Group" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown node of type "ExtendedMaterial" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "ExtendedMaterial" (named "")
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "jump" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "walk" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "jump" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "walk" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "animation" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "animation_2" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "animation" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "animation_2" not bound
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2400 float values in <float_array>, but only 636 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 1968 float values in <float_array>, but only 528 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 720 float values in <float_array>, but only 156 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
+tovrmlx3d: Warning: Collada: <node> instantiates non-existing <geometry> element "Armature-Lib"
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
+tovrmlx3d: Warning: Collada: <node> instantiates non-existing <geometry> element "Armature-Lib"
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
+tovrmlx3d: Warning: Collada: <node> instantiates non-existing <geometry> element "Armature-Lib"
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 48 float values in <float_array>, but only 15 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 12096 float values in <float_array>, but only 2982 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 16896 float values in <float_array>, but only 4230 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
+tovrmlx3d: Warning: Collada: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
+tovrmlx3d: Warning: Collada: <node> instantiates non-existing <geometry> element "Armature-Lib"
+tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
+tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
+tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
+tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
+tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "INVALID-TYPE"
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOn_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOff_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeChanged_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOn_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOff_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeChanged_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
+tovrmlx3d: Warning: VRML/X3D: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: Warning: VRML/X3D: Node "Empty" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
+tovrmlx3d: Warning: VRML/X3D: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: Warning: VRML/X3D: Node "Empty" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
+tovrmlx3d: Warning: VRML/X3D: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: Warning: VRML/X3D: Node "Empty" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
+tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
+tovrmlx3d: Warning: X3D: Prototype "Empty" has no nodes, cannot instantiate
+tovrmlx3d: Warning: VRML/X3D: Node "Empty" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Unknown node of type "Leg" (named "")
+tovrmlx3d: Warning: VRML/X3D: Node "Leg" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Unknown node of type "Leg" (named "")
+tovrmlx3d: Warning: VRML/X3D: Node "Leg" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Unknown node of type "Leg" (named "")
+tovrmlx3d: Warning: VRML/X3D: Node "Leg" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Leg"
+tovrmlx3d: Warning: VRML/X3D: Node "Leg" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: Warning: X3D: Unknown "type" field value: "SOMETHING-STRANGE"
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioRightTop" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftBottom" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "AudioLeftTop" not bound
+tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
+tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
+tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
+tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
+tovrmlx3d: Warning: VRML/X3D: Converting VRML 1.0 or Inventor to X3D is not implemented. You will get VRML 1.0/Inventor nodes encoded like for X3D, which probably is not much useful.
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Coordinate3" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "PointSet" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Separator" inside node "TransformSeparator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "Krzyzyk" undefined
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "fontStyle" by node "FontStyle" inside node "TransformSeparator"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "AsciiText"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "AsciiText" inside node "TransformSeparator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Group" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
+tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
+tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
 WARNING: input/output headers differ:
 Header on input is #VRML V2.0 utf8 CosmoWorlds V1.0
 Header on output is #VRML V2.0 utf8
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "children" of the node "Transform"
-tovrmlx3d: VRML/X3D warning: Node "Material" is not allowed in the field "appearance" of the node "Shape"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
-tovrmlx3d: VRML/X3D warning: Node "Text" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
-tovrmlx3d: VRML/X3D warning: Node "Text" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
-tovrmlx3d: VRML/X3D warning: Node "Text" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
-tovrmlx3d: VRML/X3D warning: Node "Text" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Shape" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: VRML/X3D warning: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "children" by node "Transform" inside node "Separator"
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsNose" not bound
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: X3D warning: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
-tovrmlx3d: VRML/X3D warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: VRML/X3D warning: Exported node name "KingsEye" not found
-tovrmlx3d: VRML/X3D warning: Exported node name "PosInterpBlah" not found
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
-tovrmlx3d: VRML/X3D warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: VRML/X3D warning: Exported node name "KingsEye" not found
-tovrmlx3d: VRML/X3D warning: Exported node name "PosInterpBlah" not found
-tovrmlx3d: VRML/X3D warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: VRML/X3D warning: Exported node name "KingsEye" not found
-tovrmlx3d: VRML/X3D warning: Exported node name "PosInterpBlah" not found
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node name "KingsEye" not bound
-tovrmlx3d: VRML/X3D warning: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
-tovrmlx3d: VRML/X3D warning: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: VRML/X3D warning: Exported node name "KingsEye" not found
-tovrmlx3d: VRML/X3D warning: Exported node name "PosInterpBlah" not found
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
-tovrmlx3d: VRML/X3D warning: Node "Coordinate" is not allowed at the top level of the VRML/X3D file
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 15: Expected node type, got "{"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 15: Expected node type, got "{"
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 8: Expected name, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 8: Expected name, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 21: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
-tovrmlx3d: VRML/X3D warning: Error when reading, will skip the rest of VRML/X3D file: Error at line 15 column 21: Invalid VRML node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
-tovrmlx3d: VRML/X3D warning: Route source node name "InvalidNodeName" not found
-tovrmlx3d: VRML/X3D warning: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
-tovrmlx3d: VRML/X3D warning: Route destination specifies field "bboxCenter" (for node "XXX"), but this is not an exposed field (cannot generate/receive events)
-tovrmlx3d: VRML/X3D warning: Route has different event types for source (hitPoint_changed, type SFVec3f) and destination (set_scaleOrientation, type SFRotation)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Route source node name "InvalidNodeName" not found
-tovrmlx3d: VRML/X3D warning: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
-tovrmlx3d: VRML/X3D warning: Route destination specifies field "bboxCenter" (for node "XXX"), but this is not an exposed field (cannot generate/receive events)
-tovrmlx3d: VRML/X3D warning: Route has different event types for source (hitPoint_changed, type SFVec3f) and destination (set_scaleOrientation, type SFRotation)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: VRML/X3D warning: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
-tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
-tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
-tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
-tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
-tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
-tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
-tovrmlx3d: X3D warning: UNIT declaration found, but X3D version is < 3.3
-tovrmlx3d: X3D warning: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionNotMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionLevelInfo" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionCircleMovingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
-tovrmlx3d: VRML/X3D warning: Unknown node of type "MalfunctionHuntingEnemy" (named "")
+tovrmlx3d: Warning: VRML/X3D: Node "Material" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "children" of the node "Transform"
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "appearance" of the node "Shape"
+tovrmlx3d: Warning: VRML/X3D: Node "Material" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "children" of the node "Transform"
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "appearance" of the node "Shape"
+tovrmlx3d: Warning: VRML/X3D: Node "Material" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "children" of the node "Transform"
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "appearance" of the node "Shape"
+tovrmlx3d: Warning: VRML/X3D: Node "Material" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "children" of the node "Transform"
+tovrmlx3d: Warning: X3D: Node "Material" is not allowed in the field "appearance" of the node "Shape"
+tovrmlx3d: Warning: X3D: Node "Coordinate" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
+tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Coordinate" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
+tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Coordinate" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
+tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Coordinate" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
+tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of the node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Shape" inside node "Separator"
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
+tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Transform" inside node "Separator"
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsNose" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsNose" not bound
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\b". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\m". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\p". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\d". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\i". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\u". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\D". Backslash must be followed by another backslash or double quote, for SFString and MFString (in X3D classic (VRML) encoding) and for MFString (in X3D XML encoding).
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
+tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
+tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
+tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
+tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
+tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
+tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
+tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
+tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
+tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
+tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
+tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
+tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 15: Expected node type, got "{"
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 15: Expected node type, got "{"
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 8: Expected name, got "["
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 8: Expected name, got "["
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 16 column 4: Expected node type or DEF or USE, got "["
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 21: Invalid X3D node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 21: Invalid X3D node content (probably unknown or not allowed field, prototype or VRML 1.0-style children) inside "Shape": got end of stream
+tovrmlx3d: Warning: X3D: Route source node name "InvalidNodeName" not found
+tovrmlx3d: Warning: X3D: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
+tovrmlx3d: Warning: X3D: Route has different event types for source (hitPoint_changed, type SFVec3f) and destination (set_scaleOrientation, type SFRotation)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Route source node name "InvalidNodeName" not found
+tovrmlx3d: Warning: X3D: Route source field/event name "InvalidField" (for node "XXXTouch", type "TouchSensor") not found
+tovrmlx3d: Warning: X3D: Route has different event types for source (hitPoint_changed, type SFVec3f) and destination (set_scaleOrientation, type SFRotation)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "type" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "family" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: Error when reading MFString field "justify" value. Possibly missing double quotes (treating as a single string): Error at line 1 column 2: Illegal character in stream : ' (#39)
+tovrmlx3d: Warning: X3D: UNIT declaration found, but X3D version is < 3.3
+tovrmlx3d: Warning: X3D: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
+tovrmlx3d: Warning: X3D: UNIT declaration found, but X3D version is < 3.3
+tovrmlx3d: Warning: X3D: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
+tovrmlx3d: Warning: X3D: UNIT declaration found, but X3D version is < 3.3
+tovrmlx3d: Warning: X3D: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
+tovrmlx3d: Warning: X3D: UNIT declaration found, but X3D version is < 3.3
+tovrmlx3d: Warning: X3D: UNIT category "unknown" unknown. Only the categories listed in X3D specification as base units are allowed
