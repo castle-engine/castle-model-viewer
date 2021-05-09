@@ -18,7 +18,7 @@ package_platform ()
   make clean
 
   # build tovrmlx3d first, it will be packaged in view3dscene CastleEngineManifest.xml
-  castle-engine compile ${CASTLE_ENGINE_TOOL_OPTIONS:-} --manifest-name=CastleEngineManifest.tovrmlx3d.xml
+  castle-engine compile "$@" --manifest-name=CastleEngineManifest.tovrmlx3d.xml
 
   # build and package view3dscene
   castle-engine package "$@"
