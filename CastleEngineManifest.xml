@@ -20,7 +20,7 @@
   <package>
     <include path="README.md" />
     <include path="COPYING.GPL2.txt" />
-    <include path="tovrmlx3d*" />
+    <include path="tovrmlx3d*" executable_permission="True" />
     <include path="freedesktop/*" recursive="True" />
   </package>
   <data exists="false" />
