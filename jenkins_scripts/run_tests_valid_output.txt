@@ -42,10 +42,6 @@ tovrmlx3d: Warning: Collada: <accessor> count requires at least 16896 float valu
 tovrmlx3d: Warning: Collada: <accessor> count requires at least 2976 float values in <float_array>, but only 726 are available
 tovrmlx3d: Warning: Collada: <accessor> count requires at least 96 float values in <float_array>, but only 48 are available
 tovrmlx3d: Warning: Collada: <node> instantiates non-existing <geometry> element "Armature-Lib"
-tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
-tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
-tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
-tovrmlx3d: Warning: X3D: Node "MultiTextureCoordinate" is not allowed in the field "texCoord" of the node "Teapot"
 tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
 tovrmlx3d: Warning: X3D: Unknown "type" field value: "INVALID-TYPE"
 tovrmlx3d: Warning: X3D: Unknown "language" field value: "INVALID-LANGUAGE"
