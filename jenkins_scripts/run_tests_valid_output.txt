@@ -58,17 +58,17 @@ tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "Visualiz
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeChanged_2" not bound (another node bound to the same name)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
-Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/demo-models/prototypes/not_existing.wrl": No such file or directory
 tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
-tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
-Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/demo-models/prototypes/not_existing.wrl": No such file or directory
 tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
-tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
-Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/demo-models/prototypes/not_existing.wrl": No such file or directory
 tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
-tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
-Unable to open file "DIR/w3dscene_test_demo_models_master@2/demo-models/prototypes/not_existing.wrl": No such file or directory
+tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
+Unable to open file "DIR/demo-models/prototypes/not_existing.wrl": No such file or directory
 tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
 tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial", exposed field "diffuseColor" references (by "IS" clause) non-existing field/event name "notExisting"
 tovrmlx3d: Warning: VRML/X3D: Within prototype "MyMaterial2", field of type SFColor (named "diffuseColor") references (by "IS" clause) field of different type SFFloat (named "floatField")
