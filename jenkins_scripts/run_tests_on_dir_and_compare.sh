@@ -22,7 +22,7 @@ sed --in-place=.bak \
 # replace current dir (present in some output messages) with string "DIR",
 # to make the result reproducible, regardless of the current directory.
 REPOSITORY_DIR="`pwd`"
-REPOSITORY_DIR="`dirname \"$REPOSITORY_DIR\"`"
+# REPOSITORY_DIR="`dirname \"$REPOSITORY_DIR\"`" # go to parent -- not anymore
 sed --in-place=.bak2 -e "s|${REPOSITORY_DIR}|DIR|g" run_tests_output.txt
 
 cat run_tests_output.txt
