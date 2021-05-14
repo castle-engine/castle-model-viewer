@@ -29,4 +29,3 @@ cat run_tests_output.txt
 
 # compare with last correct output
 diff -u run_tests_output.txt jenkins_scripts/run_tests_valid_output.txt
-rm -f run_tests_output.txt

@@ -36,7 +36,7 @@ pipeline {
       /* We save output always, also in case of failure,
          because it is useful (to analyze, to update jenkins_scripts/run_tests_valid_output.txt)
          even in case of failure. */
-      archiveArtifacts artifacts: 'run_tests_output.txt run_tests_output_verbose.txt'
+      archiveArtifacts artifacts: 'run_tests_output.txt,run_tests_output_verbose.txt'
     }
     regression {
       mail to: 'michalis@castle-engine.io',
