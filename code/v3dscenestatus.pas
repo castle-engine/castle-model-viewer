@@ -71,8 +71,8 @@ begin
   Color := Yellow;
   PaddingHorizontal := 5;
   PaddingVertical := 5;
-  CustomFont := TTextureFont.Create(Self);
-  TTextureFont(CustomFont).Load(TextureFont_DejaVuSansMonoBold_15);
+  CustomFont := TCastleFont.Create(Self);
+  TCastleFont(CustomFont).Load(TextureFont_DejaVuSansMonoBold_15);
   Frame := true;
 end;
 
