@@ -1,0 +1,26 @@
+#X3D V4.0 utf8
+PROFILE Interchange
+
+# Apply trivial power over RGB colors (fancy brighten/darken) screen effect.
+#
+# See https://castle-engine.io/x3d_extensions_screen_effects.php
+# for docs how to write screen effects for CGE.
+
+ScreenEffect {
+  shaders DEF MyShader ComposedShader {
+    language "GLSL"
+    inputOutput SFFloat exponent 1.0
+    parts ShaderPart {
+      type "FRAGMENT"
+      url "data:text/plain,
+        uniform float exponent;
+        void main (void)
+        {
+          vec4 color = screenf_get_original_color();
+          color.rgb = pow(color.rgb, vec3(exponent));
+          gl_FragColor = color;
+        }
+        "
+    }
+  }
+}

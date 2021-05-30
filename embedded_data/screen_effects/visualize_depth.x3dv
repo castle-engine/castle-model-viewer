@@ -1,0 +1,24 @@
+#X3D V4.0 utf8
+PROFILE Interchange
+
+# Visualize depth screen effect.
+#
+# See https://castle-engine.io/x3d_extensions_screen_effects.php
+# for docs how to write screen effects for CGE.
+
+ScreenEffect {
+  needsDepth TRUE
+  shaders ComposedShader {
+    language "GLSL"
+    parts ShaderPart {
+      type "FRAGMENT"
+      url "data:text/plain,
+        void main (void)
+        {
+          float d = pow(screenf_get_original_depth(), 20.0);
+          gl_FragColor = vec4(d, d, d, 1.0);
+        };
+        "
+    }
+  }
+}

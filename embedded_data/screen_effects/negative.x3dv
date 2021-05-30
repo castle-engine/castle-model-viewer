@@ -1,0 +1,23 @@
+#X3D V4.0 utf8
+PROFILE Interchange
+
+# Negate RGB screen effect.
+#
+# See https://castle-engine.io/x3d_extensions_screen_effects.php
+# for docs how to write screen effects for CGE.
+
+ScreenEffect {
+  shaders ComposedShader {
+    language "GLSL"
+    parts ShaderPart {
+      type "FRAGMENT"
+      url "data:text/plain,
+        void main (void)
+        {
+          vec4 color = screenf_get_original_color();
+          gl_FragColor = vec4(vec3(1.0) - color.rgb, color.a);
+        }
+        "
+    }
+  }
+}

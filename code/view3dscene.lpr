@@ -68,7 +68,7 @@ uses SysUtils, Math, Classes,
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
   CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps, CastleComponentSerialize,
-  CastleControls, CastleGLShaders, CastleControlsImages, CastleGLBoxes, CastleRenderContext,
+  CastleControls, CastleGLShaders, CastleControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
@@ -201,9 +201,6 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BeforeRender; override;
     procedure Render; override;
-    function GetScreenEffects(const Index: Integer): TGLSLProgram; override;
-    function ScreenEffectsCount: Integer; override;
-    function ScreenEffectsNeedDepth: boolean; override;
     function Background: TBackground; override;
     function BaseLightsForRaytracer: TLightInstancesList;
   end;
@@ -218,28 +215,6 @@ constructor TV3DViewport.Create(AOwner: TComponent);
 begin
   inherited;
   PreventInfiniteFallingDown := true;
-end;
-
-function TV3DViewport.GetScreenEffects(const Index: Integer): TGLSLProgram;
-var
-  C: Integer;
-begin
-  C := inherited ScreenEffectsCount;
-  if Index >= C then
-    Result := V3DSceneScreenEffects.ScreenEffects.ActiveEffects(Index - C) else
-    Result := inherited GetScreenEffects(Index);
-end;
-
-function TV3DViewport.ScreenEffectsCount: Integer;
-begin
-  Result := (inherited ScreenEffectsCount) +
-    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsCount;
-end;
-
-function TV3DViewport.ScreenEffectsNeedDepth: boolean;
-begin
-  Result := (inherited ScreenEffectsNeedDepth) or
-    V3DSceneScreenEffects.ScreenEffects.ActiveEffectsNeedDepth;
 end;
 
 function TV3DViewport.Background: TBackground;
@@ -1224,17 +1199,6 @@ begin
   UpdateButtonWarnings;
 
   LoadSceneCore(Node, '', [], Options);
-end;
-
-function LoadX3DClassicFromString(const FileContents: string;
-  const BaseUrl: string): TX3DRootNode;
-var
-  Stream: TStringStream;
-begin
-  Stream := TStringStream.Create(FileContents);
-  try
-    Result := LoadNode(Stream, BaseUrl, 'model/x3d+vrml');
-  finally FreeAndNil(Stream) end;
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -3111,9 +3075,11 @@ begin
     342: SwitchScreenSpaceReflections;
     350..370:
       begin
-        ScreenEffects.ActiveEffectsRecalculate;
-        { All that is needed to actually render with the new effect is to
-          actually redisplay. }
+        ScreenEffects.ActiveEffectsApply(MainViewport, 0);
+        ScreenEffects.ActiveEffectsApply(ExtraViewports[0], 1);
+        ScreenEffects.ActiveEffectsApply(ExtraViewports[1], 2);
+        ScreenEffects.ActiveEffectsApply(ExtraViewports[2], 3);
+        { Redisplay to actually render with the new effect }
         Window.Invalidate;
       end;
 

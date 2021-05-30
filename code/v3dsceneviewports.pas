@@ -27,7 +27,7 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleViewport, CastleWindow, CastleCameras, CastleGLContainer,
+uses CastleViewport, CastleWindow, CastleCameras,
   V3DSceneNavigationTypes;
 
 type
@@ -66,7 +66,7 @@ procedure InitializeViewports(ViewportClass: TViewportClass);
 
 { Redraw all viewports (and background underneath).
   This renders viewports for the off-screen rendering. }
-procedure ViewportsRender(const Container: TGLContainer);
+procedure ViewportsRender(const Container: TUIContainer);
 
 implementation
 
@@ -265,7 +265,7 @@ begin
   Background.Color := Gray;
 end;
 
-procedure ViewportsRender(const Container: TGLContainer);
+procedure ViewportsRender(const Container: TUIContainer);
 var
   I: Integer;
 const

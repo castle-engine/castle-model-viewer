@@ -27,137 +27,106 @@ unit V3DSceneScreenEffects;
 interface
 
 uses Classes, CastleUtils, CastleUIControls, CastleWindow, CastleGLShaders,
-  CastleViewport, CastleScreenEffects;
+  CastleViewport, CastleScreenEffects, X3DNodes;
 
 type
   { Screen effects predefined in view3dscene.
     The order below matters: that's the order in which they will be applied.
     Some findings:
-    - seNegative looks best after at least seGamma*
-    - seEdgeDetect looks best before gamma correction (including seRoundHeadLight)
+    - seNegative looks best after at least sePower*
+    - seEdgeDetect looks best before sePower* and seFlashlight
     - seVisualizeDepth overrides color, so it's sensible to place it
       at the beginning (otherwise it just cancels any other effect)
   }
-  TScreenEffect = (seVisualizeDepth, seGrayscale, seEdgeDetect,
-    seGammaBrighten, seGammaBrightenMore, seGammaDarken, seGammaDarkenMore,
-    seRoundHeadLight, seNegative);
+  TScreenEffect = (
+    seVisualizeDepth,
+    seGrayscale,
+    seEdgeDetect,
+    sePowerBrighten,
+    sePowerBrightenMore,
+    sePowerDarken,
+    sePowerDarkenMore,
+    seFlashlight,
+    seNegative
+  );
+
+  TScreenEffectsControlIndex = 0..3;
 
   TScreenEffects = class(TCastleUserInterface)
   private
     MenuItems: array [TScreenEffect] of TMenuItemChecked;
-    Shaders: array [TScreenEffect] of TGLSLScreenEffect;
-    FActiveEffectsCount: Integer;
+    Nodes: array [TScreenEffect, TScreenEffectsControlIndex] of TX3DRootNode;
   public
     Menu: TMenu;
-
     constructor Create(AOwner: TComponent); override;
-
-    procedure GLContextOpen; override;
-    procedure GLContextClose; override;
-
-    property ActiveEffectsCount: Integer read FActiveEffectsCount;
-    procedure ActiveEffectsRecalculate;
-    function ActiveEffects(const Index: Integer): TGLSLProgram;
-    function ActiveEffectsNeedDepth: boolean;
+    destructor Destroy; override;
+    procedure ActiveEffectsApply(
+      const ScreenEffectsControl: TCastleScreenEffects;
+      const ScreenEffectsControlIndex: TScreenEffectsControlIndex);
   end;
 
 var
   ScreenEffects: TScreenEffects;
 
+function LoadX3DClassicFromString(const FileContents: string;
+  const BaseUrl: string): TX3DRootNode;
+
 implementation
 
-uses SysUtils, CastleGLUtils, CastleLog, CastleRenderOptions, CastleKeysMouse;
+uses SysUtils,
+  CastleGLUtils, CastleLog, CastleRenderOptions, X3DLoad, X3DFields;
+
+function LoadX3DClassicFromString(const FileContents: string;
+  const BaseUrl: string): TX3DRootNode;
+var
+  Stream: TStringStream;
+begin
+  Stream := TStringStream.Create(FileContents);
+  try
+    Result := LoadNode(Stream, BaseUrl, 'model/x3d+vrml');
+  finally FreeAndNil(Stream) end;
+end;
 
 const
   ScreenEffectsInfo: array [TScreenEffect] of record
-    Name: string;
-    Code: string;
-    NeedsDepth: boolean;
+    Name: String;
+    Node: String;
+    Exponent: Single; //< Value of 'exponent' uniform, or 0 if this shader doesn't take such uniform.
   end = (
     (Name: 'Visualize Depth';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'float screen_get_depth(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  float d = pow(screen_get_depth(screen_position()), 20.0);' +NL+
-       '  gl_FragColor = vec4(d, d, d, 1.0);' +NL+
-       '}';
-     NeedsDepth: true),
+     Node: {$I ../embedded_data/screen_effects/visualize_depth.x3dv.inc};
+     Exponent: 0),
     (Name: 'Grayscale';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  /* Use integer (in 256 range) grayscale weights, to avoid crappy fglrx bugs with float consts */' +NL+
-       '  gl_FragColor.r = (gl_FragColor.r * 54.0 + gl_FragColor.g * 183.0 + gl_FragColor.b * 19.0) / 256.0;' +NL+
-       '  gl_FragColor.g = gl_FragColor.r;' +NL+
-       '  gl_FragColor.b = gl_FragColor.r;' +NL+
-       '}';
-     NeedsDepth: false),
+     Node: {$I ../embedded_data/screen_effects/grayscale.x3dv.inc};
+     Exponent: 0),
     (Name: 'Edge Detect';
-     Code: {$I ../embedded_data/screen_effects/screen_effects_edge_detect.glsl.inc};
-     NeedsDepth: false),
-    (Name: 'Gamma 2.2 (Brighten)';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2, 1.0/2.2, 1.0/2.2));' +NL+
-       '}';
-     NeedsDepth: false),
-    (Name: 'Gamma 4.0 (Brighten More)';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/4.0, 1.0/4.0, 1.0/4.0));' +NL+
-       '}';
-     NeedsDepth: false),
-    (Name: 'Gamma 1 / 1.5 (Darken)';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(15.0/10.0, 15.0/10.0, 15.0/10.0));' +NL+
-       '}';
-     NeedsDepth: false),
-    (Name: 'Gamma 1 / 2.2 (Darken More)';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(22.0/10.0, 22.0/10.0, 22.0/10.0));' +NL+
-       '}';
-     NeedsDepth: false),
+     Node: {$I ../embedded_data/screen_effects/edge_detect.x3dv.inc};
+     Exponent: 0),
+    (Name: 'Power 1 / 2.2 (Brighten)';
+     Node: {$I ../embedded_data/screen_effects/power.x3dv.inc};
+     Exponent: 1 / 2.2),
+    (Name: 'Power 1 / 4.0 (Brighten More)';
+     Node: {$I ../embedded_data/screen_effects/power.x3dv.inc};
+     Exponent: 1 / 4.0),
+    (Name: 'Power 1.5 (Darken)';
+     Node: {$I ../embedded_data/screen_effects/power.x3dv.inc};
+     Exponent: 1.5),
+    (Name: 'Power 2.2 (Darken More)';
+     Node: {$I ../embedded_data/screen_effects/power.x3dv.inc};
+     Exponent: 2.2),
     (Name: 'Flashlight (Nice Headlight)';
-     Code: {$I ../embedded_data/screen_effects/screen_effects_flashlight.glsl.inc};
-     NeedsDepth: true),
+     Node: {$I ../embedded_data/screen_effects/flashlight.x3dv.inc};
+     Exponent: 0),
     (Name: 'Negative';
-     Code:
-       'ivec2 screen_position();' +NL+
-       'vec4 screen_get_color(ivec2 position);' +NL+
-       'void main (void)' +NL+
-       '{' +NL+
-       '  gl_FragColor = screen_get_color(screen_position());' +NL+
-       '  gl_FragColor.rgb = vec3(1.0, 1.0, 1.0) - gl_FragColor.rgb;' +NL+
-       '}';
-     NeedsDepth: false)
+     Node: {$I ../embedded_data/screen_effects/negative.x3dv.inc};
+     Exponent: 0)
   );
 
 constructor TScreenEffects.Create(AOwner: TComponent);
 var
   SE: TScreenEffect;
+  ExponentField: TSFFloat;
+  I: TScreenEffectsControlIndex;
 begin
   inherited;
   Menu := TMenu.Create('Screen Effects');
@@ -175,81 +144,55 @@ begin
     MenuItems[SE] := TMenuItemChecked.Create(
       SQuoteMenuEntryCaption(ScreenEffectsInfo[SE].Name), 350, false, true);
     Menu.Append(MenuItems[SE]);
+
+    { We create the same node 4 times, for each possible view3dscene viewport,
+      as one X3D node cannot be added to multiple TCastleScene instances. }
+    for I := Low(TScreenEffectsControlIndex) to High(TScreenEffectsControlIndex) do
+    begin
+      Nodes[SE, I] := LoadX3DClassicFromString(ScreenEffectsInfo[SE].Node, '');
+      Nodes[SE, I].KeepExistingBegin;
+      if ScreenEffectsInfo[SE].Exponent <> 0 then
+      begin
+        ExponentField := Nodes[SE, I].FindNode('MyShader').Field('exponent', true) as TSFFloat;
+        ExponentField.Send(ScreenEffectsInfo[SE].Exponent);
+      end;
+    end;
   end;
 end;
 
-procedure TScreenEffects.GLContextOpen;
+destructor TScreenEffects.Destroy;
 var
   SE: TScreenEffect;
+  I: TScreenEffectsControlIndex;
 begin
-  inherited;
   for SE := Low(SE) to High(SE) do
-    if Shaders[SE] = nil then
+    for I := Low(TScreenEffectsControlIndex) to High(TScreenEffectsControlIndex) do
     begin
-      if GLFeatures.Shaders <> gsNone then
-      begin
-        try
-          Shaders[SE] := TGLSLScreenEffect.Create;
-          Shaders[SE].NeedsDepth := ScreenEffectsInfo[SE].NeedsDepth;
-          Shaders[SE].ScreenEffectShader := ScreenEffectsInfo[SE].Code;
-          Shaders[SE].Link;
-        except
-          on E: EGLSLError do
-          begin
-            WritelnWarning('GLSL', 'Error when initializing GLSL shader for ScreenEffect[' + ScreenEffectsInfo[SE].Name + ']: ' + E.Message);
-            FreeAndNil(Shaders[SE]);
-          end;
-        end;
-      end;
+      Nodes[SE, I].KeepExistingEnd;
+      FreeIfUnusedAndNil(Nodes[SE, I]);
     end;
-  ActiveEffectsRecalculate;
-end;
-
-procedure TScreenEffects.GLContextClose;
-var
-  SE: TScreenEffect;
-begin
-  for SE := Low(SE) to High(SE) do
-    FreeAndNil(Shaders[SE]);
   inherited;
 end;
 
-procedure TScreenEffects.ActiveEffectsRecalculate;
+procedure TScreenEffects.ActiveEffectsApply(
+  const ScreenEffectsControl: TCastleScreenEffects;
+  const ScreenEffectsControlIndex: TScreenEffectsControlIndex);
 var
   SE: TScreenEffect;
 begin
-  FActiveEffectsCount := 0;
+  // first remove all effects, to later add them in TScreenEffect order
   for SE := Low(SE) to High(SE) do
-    if MenuItems[SE].Checked and (Shaders[SE] <> nil) then
-      Inc(FActiveEffectsCount);
-end;
+    ScreenEffectsControl.RemoveScreenEffect(Nodes[SE, ScreenEffectsControlIndex]);
 
-function TScreenEffects.ActiveEffects(const Index: Integer): TGLSLProgram;
-var
-  SE: TScreenEffect;
-  I: Integer;
-begin
-  I := Index;
+  // add active effects
   for SE := Low(SE) to High(SE) do
-    if MenuItems[SE].Checked and (Shaders[SE] <> nil) then
-    begin
-      if I = 0 then
-        Exit(Shaders[SE]) else
-        Dec(I);
-    end;
-  raise EInternalError.Create('TScreenEffects.ActiveEffects: Invalid index');
-end;
+    if MenuItems[SE].Checked then
+      ScreenEffectsControl.AddScreenEffect(Nodes[SE, ScreenEffectsControlIndex]);
 
-function TScreenEffects.ActiveEffectsNeedDepth: boolean;
-var
-  SE: TScreenEffect;
-begin
-  for SE := Low(SE) to High(SE) do
-    if MenuItems[SE].Checked and
-       (Shaders[SE] <> nil) and
-       ScreenEffectsInfo[SE].NeedsDepth then
-      Exit(true);
-  Result := false;
+  { Note that we only add active effects, instead of adding all, and using effect
+    "Enabled" field. While it is a bit slower (shader must be recompiled),
+    but this way we avoid GLSL compilation warnings on broken systems
+    if user doesn't even activate shader effect. }
 end;
 
 initialization
