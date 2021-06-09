@@ -162,6 +162,7 @@ tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField val
 tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Separator" inside node "TransformSeparator"
 tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
 tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "Krzyzyk" undefined
+tovrmlx3d: Warning: X3D: Unknown "style" field value: "NONE"
 tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "fontStyle" by node "FontStyle" inside node "TransformSeparator"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "AsciiText"
 tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "AsciiText" inside node "TransformSeparator"
