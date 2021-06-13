@@ -3947,14 +3947,9 @@ begin
   ApplicationProperties.ApplicationName := 'view3dscene';
   ApplicationProperties.Version := Version;
 
-  // Initialize log as early as possible, but avoid messing --help/--version output
-  if not Parameters.IsPresent([
-        '-h',
-        '--help',
-        '-v',
-        '--version'
-      ]) then
-    InitializeLog;
+  // Initialize log as early as possible, but avoid messing --help/--version/--write output
+  LogEnableStandardOutput := false;
+  InitializeLog;
 
   Window := TCastleWindowBase.Create(Application);
 
