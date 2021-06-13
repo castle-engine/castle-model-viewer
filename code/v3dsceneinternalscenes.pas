@@ -86,6 +86,7 @@ constructor TBoundingBoxScene.Create(AOwner: TComponent);
 var
   Root: TX3DRootNode;
   Material: TUnlitMaterialNode;
+  Appearance: TAppearanceNode;
 begin
   inherited;
 
@@ -94,11 +95,14 @@ begin
   Material := TUnlitMaterialNode.Create;
   Material.EmissiveColor := GreenRGB;
 
+  Appearance := TAppearanceNode.Create;
+  Appearance.ShadowCaster := false;
+  Appearance.Material := Material;
+
   Shape := TShapeNode.Create;
   Shape.Geometry := Box;
   Shape.Shading := shWireframe;
-  Shape.Material := Material;
-  Shape.Appearance.ShadowCaster := false;
+  Shape.Appearance := Appearance;
 
   TransformNode := TTransformNode.Create;
   TransformNode.AddChildren(Shape);
