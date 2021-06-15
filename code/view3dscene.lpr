@@ -1248,7 +1248,7 @@ begin
   try
     ChangeNode(SceneChanges, Node);
     if StdOutStream = nil then
-      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "view3dscene input.gltf --write > output.x3d", see https://castle-engine.io/view3dscene.php#section_converting .');
+      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "view3dscene input.gltf --write > output.x3dv", see https://castle-engine.io/view3dscene.php#section_converting .');
     {$warnings off} // using internal CGE routine knowingly
     Save3D(Node, StdOutStream, SaveGenerator,
       ExtractURIName(ASceneURL), Encoding, ForceConvertingToX3D);
