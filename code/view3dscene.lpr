@@ -3964,6 +3964,7 @@ begin
     may use Window instance). }
   UserConfig.Load;
   SoundEngine.LoadFromConfig(UserConfig);
+  SoundEngine.DistanceModel := dmLinear; // corresponds to X3D spec closely
 
   { initialize RecentMenu }
   RecentMenu := TWindowRecentFiles.Create(nil);
