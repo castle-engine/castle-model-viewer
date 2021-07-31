@@ -20,21 +20,21 @@
   ----------------------------------------------------------------------------
 }
 
-{ view3dscene, a VRML/X3D browser and general 3D model viewer.
-  See [https://castle-engine.io/view3dscene.php] for user
-  documentation.
+{ View3dscene is a 3D / 2D model viewer for all scene formats supported by Castle Game Engine
+  (glTF, X3D, Spine JSON, sprite sheets... ).
+  See https://castle-engine.io/creating_data_model_formats.php for a list of supported formats.
+  See https://castle-engine.io/view3dscene.php for user documentation.
 
-  The real name of this program is "Castle Game Engine swiss army knife" :)
-  This program shows and uses a lot of our engine features.
-  It's basically a giant GUI to load everything,
-  and tweak every option from the menu and toolbar.
-
-  If you want to find out how to use "Castle Game Engine",
+  Note: If you want to learn how to use "Castle Game Engine",
   the view3dscene source code isn't the best place to study.
-  Look instead at simple examples in engine sources, like
-  ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
-  For an example 3D viewer using Lazarus forms, see
-  ../castle_game_engine/examples/lazarus/model_3d_viewer/
+  It's long and uses some obscure CGE features sometimes.
+  Look instead:
+
+  - at simple examples in engine sources, like
+    ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
+
+  - at our manual:
+    https://castle-engine.io/manual_intro.php
 }
 
 program view3dscene;

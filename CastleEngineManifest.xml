@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="view3dscene"
-  standalone_source="code/view3dscene.lpr"
+  standalone_source="view3dscene.lpr"
   author="Michalis Kamburelis"
   qualified_name="io.castleengine.view3dscene"
   >
@@ -26,6 +26,9 @@
   <data exists="false" />
 
   <compiler_options>
+    <search_paths>
+      <path value="code/" />
+    </search_paths>
     <custom_options>
       <!-- Use this to test OpenGLES rendering. -->
       <!-- <option>-dOpenGLES</option> -->

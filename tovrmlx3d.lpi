@@ -46,8 +46,13 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="../tovrmlx3d"/>
+      <Filename Value="tovrmlx3d"/>
     </Target>
+    <SearchPaths>
+      <IncludeFiles Value="code/"/>
+      <OtherUnitFiles Value="code/"/>
+      <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <CStyleMacros Value="True"/>

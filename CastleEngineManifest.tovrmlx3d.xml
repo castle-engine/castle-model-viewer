@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="tovrmlx3d"
-  standalone_source="code/tovrmlx3d.lpr"
+  standalone_source="tovrmlx3d.lpr"
   author="Michalis Kamburelis"
   qualified_name="io.castleengine.tovrmlx3d"
   >
@@ -9,4 +9,9 @@
     <dependency name="Https" /> <!-- read https links -->
   </dependencies>
   <data exists="false" />
+  <compiler_options>
+    <search_paths>
+      <path value="code/" />
+    </search_paths>
+  </compiler_options>
 </project>
