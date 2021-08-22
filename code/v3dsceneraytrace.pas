@@ -161,7 +161,7 @@ begin
   D^.Quit := true;
 end;
 
-procedure MenuClick(Container: TUIContainer; Item: TMenuItem);
+procedure MenuClick(Container: TCastleContainer; Item: TMenuItem);
 begin
   case Item.IntData of
     10: EventSave;
@@ -170,12 +170,12 @@ begin
 end;
 
 {$ifdef LCLCarbon}
-procedure PressWorking(Container: TUIContainer; const Event: TInputPressRelease);
+procedure PressWorking(Container: TCastleContainer; const Event: TInputPressRelease);
 begin
   if Event.IsKey(CharEscape) then EventEscape;
 end;
 
-procedure PressDone(Container: TUIContainer; const Event: TInputPressRelease);
+procedure PressDone(Container: TCastleContainer; const Event: TInputPressRelease);
 begin
   if Event.IsKey(CtrlS) then EventSave;
   if Event.IsKey(CharEscape) then EventEscape;

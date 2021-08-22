@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2018 Michalis Kamburelis.
+  Copyright 2010-2021 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -66,7 +66,7 @@ procedure InitializeViewports(ViewportClass: TViewportClass);
 
 { Redraw all viewports (and background underneath).
   This renders viewports for the off-screen rendering. }
-procedure ViewportsRender(const Container: TUIContainer);
+procedure ViewportsRender(const Container: TCastleContainer);
 
 implementation
 
@@ -265,7 +265,7 @@ begin
   Background.Color := Gray;
 end;
 
-procedure ViewportsRender(const Container: TUIContainer);
+procedure ViewportsRender(const Container: TCastleContainer);
 var
   I: Integer;
 const

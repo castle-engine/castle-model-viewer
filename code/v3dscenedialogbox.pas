@@ -42,10 +42,10 @@ type
     procedure ClickOK(Sender: TObject);
     procedure ClickCopyClipboard(Sender: TObject);
   protected
-    function StateContainer: TUIContainer; override;
+    function StateContainer: TCastleContainer; override;
   public
     { Assign these fields before starting the state. }
-    WantedStateContainer: TUIContainer;
+    WantedStateContainer: TCastleContainer;
     Message: String;
 
     procedure Start; override;
@@ -104,7 +104,7 @@ begin
   InsertFront(Ui);
 end;
 
-function TStateDialogBox.StateContainer: TUIContainer;
+function TStateDialogBox.StateContainer: TCastleContainer;
 begin
   Result := WantedStateContainer;
 end;

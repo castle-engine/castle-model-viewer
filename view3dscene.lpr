@@ -754,7 +754,7 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
-procedure Press(Container: TUIContainer; const Event: TInputPressRelease);
+procedure Press(Container: TCastleContainer; const Event: TInputPressRelease);
 begin
   { Support selecting item by ctrl + right button click. }
   if Event.IsMouseButton(buttonRight) and (mkCtrl in Window.Pressed.Modifiers) then
@@ -1261,7 +1261,7 @@ begin
   LoadScene(URL, []);
 end;
 
-procedure DropFiles(Container: TUIContainer; const FileNames: array of string);
+procedure DropFiles(Container: TCastleContainer; const FileNames: array of string);
 var
   URL: string;
 begin
@@ -1576,7 +1576,7 @@ begin
   finally FreeAndNil(Image) end;
 end;
 
-procedure MenuClick(Container: TUIContainer; MenuItem: TMenuItem);
+procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 var
   WalkNavigation: TCastleWalkNavigation;
 
@@ -3641,7 +3641,7 @@ begin
   UpdateStatusToolbarVisible;
 end;
 
-procedure Resize(Container: TUIContainer);
+procedure Resize(Container: TCastleContainer);
 begin
   ResizeViewports(V3DSceneWindow.Window, MainViewport);
 end;
