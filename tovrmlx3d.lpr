@@ -33,6 +33,7 @@ program tovrmlx3d;
 uses SysUtils,
   CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters,
   CastleFilesUtils, CastleURIUtils, CastleApplicationProperties, CastleLog,
+  X3DLoadInternalUtils,
   V3DSceneVersion;
 
 var
@@ -40,13 +41,14 @@ var
   ForceX3D: boolean = false;
 
 const
-  Options: array [0..4] of TOption =
+  Options: array [0..5] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'encoding'; Argument: oaRequired),
     (Short:  #0; Long: 'force-x3d'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-log'; Argument: oaNone)
+    (Short:  #0; Long: 'debug-log'; Argument: oaNone),
+    (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -70,6 +72,9 @@ begin
            '                        Note that this works sensibly only for VRML 2.0' +NL+
            '                        (not for older Inventor/VRML 1.0,' +NL+
            '                        we cannot convert them to valid X3D for now).' +NL+
+           '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' +NL+
+           '                        Particularly useful when combined with --write,' +NL+
+           '                        to have X3D valid in all browsers (but less functional).' +NL+
            NL+
            ApplicationProperties.Description);
          Halt;
@@ -85,6 +90,7 @@ begin
          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
     3: ForceX3D := true;
     4: InitializeLog;
+    5: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
   end;
 end;

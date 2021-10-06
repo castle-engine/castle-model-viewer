@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleControls, CastleGLShaders, CastleControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
-  CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
+  X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
   CastleRenderOptions, CastleShapes, CastleViewport,
   CastleMaterialProperties, CastleInternalRenderer,
   { view3dscene-specific units: }
@@ -3711,7 +3711,7 @@ var
   Param_EnableFixedFunction: boolean = false;
 
 const
-  Options: array [0..23] of TOption =
+  Options: array [0..24] of TOption =
   (
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
@@ -3736,7 +3736,8 @@ const
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
     (Short:  #0; Long: 'debug-enable-fixed-function'; Argument: oaNone),
-    (Short:  #0; Long: 'project'; Argument: oaRequired)
+    (Short:  #0; Long: 'project'; Argument: oaRequired),
+    (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -3819,6 +3820,9 @@ begin
             '                        Note that this works sensibly only for VRML 2.0' +NL+
             '                        (not for older Inventor/VRML 1.0,' +NL+
             '                        we cannot convert them to valid X3D for now).' +NL+
+            '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' +NL+
+            '                        Particularly useful when combined with --write,' +NL+
+            '                        to have X3D valid in all browsers (but less functional).' +NL+
             '  --screenshot TIME IMAGE-FILE-NAME' +NL+
             '                        Take a screenshot of the loaded scene' +NL+
             '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
@@ -3934,6 +3938,7 @@ begin
     21: Param_ScreenshotTransparent := true;
     22: Param_EnableFixedFunction := true;
     23: SetProject(Argument);
+    24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
