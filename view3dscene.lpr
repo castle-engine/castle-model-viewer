@@ -3960,6 +3960,11 @@ begin
 
   Window := TCastleWindowBase.Create(Application);
 
+  { Use F12, not F1, as F1 is used already by view3dcene menu.
+    Also enable F12 even in -dRELEASE: this is view3dscene,
+    let's make debug tools available always. }
+  Window.Container.InspectorKey := keyF12;
+
   Application.MainWindow := Window;
   Progress.UserInterface := WindowProgressInterface;
 
