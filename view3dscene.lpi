@@ -44,7 +44,7 @@
         <PackageName Value="castle_base"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="40">
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -165,6 +165,46 @@
         <Filename Value="code/v3dsceneinternalscenes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="embedded_data/designs/help_message.castle-user-interface.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="embedded_data/designs/main.castle-user-interface.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="embedded_data/scenes/clear_scene.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="embedded_data/scenes/welcome_scene.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="embedded_data/screen_effects/edge_detect.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="embedded_data/screen_effects/flashlight.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="embedded_data/screen_effects/grayscale.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="embedded_data/screen_effects/negative.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="embedded_data/screen_effects/power.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="embedded_data/screen_effects/visualize_depth.x3dv.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
