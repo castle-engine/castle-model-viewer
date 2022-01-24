@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2021 Michalis Kamburelis.
+  Copyright 2002-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -60,15 +60,15 @@ uses SysUtils, Math, Classes,
   CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
   CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
   CastleLog, DateUtils, CastleFrustum,
-  CastleImages, CastleCubeMaps, CastleCompositeImage, CastleTransform, CastleSoundEngine,
+  CastleImages, CastleInternalCubeMaps, CastleInternalCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
   CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
-  CastleWindowRecentFiles, CastleGLImages, CastleGLCubeMaps, CastleComponentSerialize,
-  CastleControls, CastleGLShaders, CastleControlsImages, CastleRenderContext,
+  CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
+  CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils, CastleInternalBackground,

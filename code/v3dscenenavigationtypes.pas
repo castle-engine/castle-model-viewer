@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2018 Michalis Kamburelis.
+  Copyright 2003-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -29,7 +29,7 @@ interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   CastleGLUtils, CastleViewport, Classes, CastleUIControls,
-  CastleControls, CastleControlsImages, CastleGLImages;
+  CastleControls, CastleInternalControlsImages, CastleGLImages;
 
 { Call this once on created Viewport.
   This will take care of using proper Viewport.Navigation. }
