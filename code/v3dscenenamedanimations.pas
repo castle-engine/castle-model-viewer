@@ -1,5 +1,5 @@
 {
-  Copyright 2014-2018 Michalis Kamburelis.
+  Copyright 2014-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -30,7 +30,7 @@ uses Classes,
 
 { Recreate UI to show animations on the scene.
   Scene may be @nil, to not show any animations. }
-procedure RefreshNamedAnimationsUi(const Window: TCastleWindowBase;
+procedure RefreshNamedAnimationsUi(const Window: TCastleWindow;
   const Scene: TCastleScene; const WindowMarginTop: Single);
 
 function GetNamedAnimationsUiExists: Boolean;
@@ -444,7 +444,7 @@ end;
 var
   NamedAnimationsUi: TNamedAnimationsUi;
 
-procedure RefreshNamedAnimationsUi(const Window: TCastleWindowBase;
+procedure RefreshNamedAnimationsUi(const Window: TCastleWindow;
   const Scene: TCastleScene; const WindowMarginTop: Single);
 var
   OldNamedAnimationsExists: Boolean;

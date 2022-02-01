@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2021 Michalis Kamburelis.
+  Copyright 2010-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -52,12 +52,12 @@ var
   ExtraViewports: array [0..2] of TCastleViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowBase; MainViewport: TCastleViewport);
+  Window: TCastleWindow; MainViewport: TCastleViewport);
 
 { Copy all Camera and Navigation settings from Source to Target. }
 procedure AssignCameraAndNavigation(const Target, Source: TCastleViewport);
 
-procedure ResizeViewports(Window: TCastleWindowBase; MainViewport: TCastleViewport);
+procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 
 { Copy NewNavigationType to all (existing) viewports. }
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
@@ -101,7 +101,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindowBase; MainViewport: TCastleViewport);
+  Window: TCastleWindow; MainViewport: TCastleViewport);
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
@@ -170,7 +170,7 @@ begin
   end;
 end;
 
-procedure ResizeViewports(Window: TCastleWindowBase; MainViewport: TCastleViewport);
+procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 var
   W, H: Cardinal;
 begin

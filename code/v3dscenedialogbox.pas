@@ -1,5 +1,5 @@
 {
-  Copyright 2019-2019 Michalis Kamburelis.
+  Copyright 2019-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -111,10 +111,10 @@ end;
 
 procedure WindowMessageOK(const S: String);
 var
-  Window: TCastleWindowBase;
+  Window: TCastleWindow;
   StateDialogBox: TStateDialogBox;
 begin
-  Window := TCastleWindowBase.Create(nil);
+  Window := TCastleWindow.Create(nil);
   try
     Window.Open;
 

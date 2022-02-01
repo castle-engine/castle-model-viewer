@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2018 Michalis Kamburelis.
+  Copyright 2003-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -21,7 +21,7 @@
 }
 
 { Simple unit that allows to incrementally display raytracer result
-  in TCastleWindowBase window. }
+  in TCastleWindow window. }
 unit V3DSceneRaytrace;
 
 interface

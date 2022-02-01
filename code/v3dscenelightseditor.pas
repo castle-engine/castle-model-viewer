@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2018 Michalis Kamburelis.
+  Copyright 2006-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -35,7 +35,7 @@ var
 function LightsEditorIsOpen: boolean;
 
 procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
-  const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
+  const AWindow: TCastleWindow; const AWindowMarginTop: Single);
 procedure LightsEditorClose;
 
 implementation
@@ -256,7 +256,7 @@ var
   { Local copy of MainViewport and Window for lights editor.
     Both @nil when we're closed, never @nil when we're open. }
   MainViewport: TCastleViewport;
-  Window: TCastleWindowBase;
+  Window: TCastleWindow;
   WindowMarginTop: Single;
 
   LightsMenu: TLightsMenu;
@@ -364,7 +364,7 @@ begin
 end;
 
 procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
-  const AWindow: TCastleWindowBase; const AWindowMarginTop: Single);
+  const AWindow: TCastleWindow; const AWindowMarginTop: Single);
 begin
   if MainViewport = AMainViewport then Exit;
   MainViewport := AMainViewport;
@@ -406,7 +406,7 @@ begin
 end;
 
 function MessageInputQueryDirection(
-  Window: TCastleWindowBase; const Title: string;
+  Window: TCastleWindow; const Title: string;
   var Value: TVector3): boolean;
 var
   Pos, Up: TVector3;

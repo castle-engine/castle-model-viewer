@@ -62,7 +62,7 @@ uses SysUtils, Math, Classes,
   CastleLog, DateUtils, CastleFrustum,
   CastleImages, CastleInternalCubeMaps, CastleInternalCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
-  CastleRays, CastleProjection, CastleVideos, CastleTextureImages,
+  CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
   {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
@@ -70,7 +70,8 @@ uses SysUtils, Math, Classes,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
-  X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene, X3DTriangles,
+  X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene,
+  CastleInternalBaseTriangleOctree,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
   CastleRenderOptions, CastleShapes, CastleViewport,
   CastleMaterialProperties, CastleInternalRenderer,
@@ -552,7 +553,7 @@ begin
 }
 end;
 
-{ TCastleWindowBase callbacks --------------------------------------------------------- }
+{ TCastleWindow callbacks --------------------------------------------------------- }
 
 { Update SceneBoundingBox look. }
 procedure SceneBoundingBoxUpdate(const RenderingCamera: TRenderingCamera);
@@ -1564,7 +1565,7 @@ begin
       ScreenShotName := ChangeURIExt(ExtractURIName(SceneURL), '_%d.png') else
       ScreenShotName := 'view3dscene_screen_%d.png';
     ScreenShotName := FileNameAutoInc(ScreenShotName);
-    { Below is a little expanded version of TCastleWindowBase.SaveScreenDialog.
+    { Below is a little expanded version of TCastleWindow.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
     if Window.FileDialog(Caption, ScreenShotName, false, SaveImage_FileFilters) then
@@ -2500,7 +2501,7 @@ var
     var
       Image: TGrayscaleImage;
     begin
-      { Just like TCastleWindowBase.SaveScreen, we have to force redisplay now
+      { Just like TCastleWindow.SaveScreen, we have to force redisplay now
         (otherwise we could be left here with random buffer contents from
         other window obscuring us, or we could have depth buffer from
         other drawing routine (like "frozen screen" drawn under FileDialog). }
@@ -3678,7 +3679,7 @@ end;
 
 { Try to lower anti-aliasing (multi-sampling) and shadows (stencil buffer)
   requirements and initialize worse GL context. }
-function RetryOpen(Window: TCastleWindowBase): boolean;
+function RetryOpen(Window: TCastleWindow): boolean;
 begin
   if Window.AntiAliasing <> aaNone then
   begin
@@ -3855,7 +3856,7 @@ begin
             '                        to resolve the "castle-data:/" URLs in files.' +NL+
             SoundEngine.ParseParametersHelp + NL+
             NL+
-            TCastleWindowBase.ParseParametersHelp(StandardParseOptions, true) +NL+
+            TCastleWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
             NL+
             'Debug options:' +NL+
             '  --debug-log           Deprecated. We now log by default.' +NL+
@@ -3958,7 +3959,7 @@ begin
   LogEnableStandardOutput := false;
   InitializeLog;
 
-  Window := TCastleWindowBase.Create(Application);
+  Window := TCastleWindow.Create(Application);
 
   { Enable F8 even in -dRELEASE: this is view3dscene,
     let's make debug tools available always. }
