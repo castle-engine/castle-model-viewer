@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2018 Michalis Kamburelis.
+  Copyright 2002-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -30,16 +30,9 @@ uses CastleColors, CastleViewport, V3DSceneViewports;
 var
   BGColor: TCastleColor;
 
-  { Should be used by viewports, Background method should return nil
-    if this is > 0. }
-  DisableBackground: Cardinal = 0;
-
 { Call always after changing BGColor, call also once at the beginning
   after ExtraViewports and MainViewport is ready. }
 procedure BGColorChanged;
-
-procedure BackgroundTransparent;
-procedure BackgroundOpaque;
 
 implementation
 
@@ -70,20 +63,6 @@ class procedure TConfigOptions.SaveToConfig(const Config: TCastleConfig);
 begin
   Config.SetDeleteVector4('video_options/default_background_color',
     BGColor, TCastleViewport.DefaultBackgroundColor);
-end;
-
-procedure BackgroundTransparent;
-begin
-  Inc(DisableBackground);
-  BGColor[3] := 0;
-  BGColorChanged;
-end;
-
-procedure BackgroundOpaque;
-begin
-  Dec(DisableBackground);
-  BGColor[3] := 1;
-  BGColorChanged;
 end;
 
 initialization

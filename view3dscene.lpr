@@ -72,7 +72,7 @@ uses SysUtils, Math, Classes,
   { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene,
   CastleInternalBaseTriangleOctree,
-  X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils, CastleInternalBackground,
+  X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
   CastleRenderOptions, CastleShapes, CastleViewport,
   CastleMaterialProperties, CastleInternalRenderer,
   { view3dscene-specific units: }
@@ -202,7 +202,6 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BeforeRender; override;
     procedure Render; override;
-    function Background: TBackground; override;
     function BaseLightsForRaytracer: TLightInstancesList;
   end;
 
@@ -216,13 +215,6 @@ constructor TV3DViewport.Create(AOwner: TComponent);
 begin
   inherited;
   PreventInfiniteFallingDown := true;
-end;
-
-function TV3DViewport.Background: TBackground;
-begin
-  if DisableBackground <> 0 then
-    Result := nil else
-    Result := inherited;
 end;
 
 function TV3DViewport.BaseLightsForRaytracer: TLightInstancesList;
@@ -1431,7 +1423,7 @@ begin
 
     if Transparency then
     begin
-      BackgroundTransparent;
+      ViewportsSetTransparent(true);
       if glGetInteger(GL_ALPHA_BITS) = 0 then
         { In case FBO is not available, and main context doesn't have alpha
           bits either. }
@@ -1443,7 +1435,7 @@ begin
     finally
       ScreenshotRender.RenderEnd;
       if Transparency then
-        BackgroundOpaque;
+        ViewportsSetTransparent(false);
     end;
   finally FreeAndNil(ScreenshotRender) end;
 end;
@@ -1515,7 +1507,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       Fbo.GLContextOpen;
       Fbo.RenderBegin;
       ImageClass := TRGBAlphaImage;
-      BackgroundTransparent;
+      ViewportsSetTransparent(true);
 
       if glGetInteger(GL_ALPHA_BITS) = 0 then
         { In case FBO is not available, and main context doesn't have alpha
@@ -1543,7 +1535,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       begin
         Fbo.RenderEnd;
         FreeAndNil(Fbo);
-        BackgroundOpaque;
+        ViewportsSetTransparent(false);
       end;
     end;
   end;

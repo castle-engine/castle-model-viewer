@@ -68,6 +68,8 @@ procedure InitializeViewports(ViewportClass: TViewportClass);
   This renders viewports for the off-screen rendering. }
 procedure ViewportsRender(const Container: TCastleContainer);
 
+procedure ViewportsSetTransparent(const Transparent: Boolean);
+
 implementation
 
 uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
@@ -276,6 +278,15 @@ begin
   for I := 0 to Visible[ViewportsConfig] - 1 do
     Container.RenderControl(ExtraViewports[I], Container.Rect);
   Container.RenderControl(MainViewport, Container.Rect);
+end;
+
+procedure ViewportsSetTransparent(const Transparent: Boolean);
+var
+  I: Integer;
+begin
+  MainViewport.Transparent := Transparent;
+  for I := 0 to High(ExtraViewports) do
+    ExtraViewports[I].Transparent := Transparent;
 end;
 
 procedure DoFinalization;
