@@ -17,27 +17,27 @@ const
     WireframeColor: TCastleColorRGB;
     BackgroundWireframe: boolean;
   end =
-  ( (Name: 'Normal'                               ; Mode: rmFull        ; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
-    (Name: 'Wireframe'                            ; Mode: rmFull        ; WireframeEffect: weWireframeOnly ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: true ; ),
-    (Name: 'Solid Wireframe'                      ; Mode: rmFull        ; WireframeEffect: weSolidWireframe; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: false; ),
-    (Name: 'Normal with Silhouette'               ; Mode: rmFull        ; WireframeEffect: weSilhouette    ; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: false; ),
+  ( (Name: 'Normal'                               ; Mode: rmFull        ; WireframeEffect: weNormal        ; WireframeColor: (X:0; Y: 0; Z: 0); BackgroundWireframe: false; ),
+    (Name: 'Wireframe'                            ; Mode: rmFull        ; WireframeEffect: weWireframeOnly ; WireframeColor: (X:0; Y: 0; Z: 0); BackgroundWireframe: true ; ),
+    (Name: 'Solid Wireframe'                      ; Mode: rmFull        ; WireframeEffect: weSolidWireframe; WireframeColor: (X:1; Y: 1; Z: 1); BackgroundWireframe: false; ),
+    (Name: 'Normal with Silhouette'               ; Mode: rmFull        ; WireframeEffect: weSilhouette    ; WireframeColor: (X:1; Y: 1; Z: 1); BackgroundWireframe: false; ),
 
-    (Name: 'Solid Shape'                          ; Mode: rmSolidColor; WireframeEffect: weNormal        ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
-    (Name: 'Wireframe (Single Color)'             ; Mode: rmSolidColor; WireframeEffect: weWireframeOnly ; WireframeColor: (Data: (1, 1, 1)); BackgroundWireframe: true ; ),
-    (Name: 'Solid Wireframe (Single Color)'       ; Mode: rmSolidColor; WireframeEffect: weSolidWireframe; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
-    (Name: 'Normal with Silhouette (Single Color)'; Mode: rmSolidColor; WireframeEffect: weSilhouette    ; WireframeColor: (Data: (0, 0, 0)); BackgroundWireframe: false; ),
+    (Name: 'Solid Shape'                          ; Mode: rmSolidColor; WireframeEffect: weNormal        ; WireframeColor: (X:0; Y: 0; Z: 0); BackgroundWireframe: false; ),
+    (Name: 'Wireframe (Single Color)'             ; Mode: rmSolidColor; WireframeEffect: weWireframeOnly ; WireframeColor: (X:1; Y: 1; Z: 1); BackgroundWireframe: true ; ),
+    (Name: 'Solid Wireframe (Single Color)'       ; Mode: rmSolidColor; WireframeEffect: weSolidWireframe; WireframeColor: (X:0; Y: 0; Z: 0); BackgroundWireframe: false; ),
+    (Name: 'Normal with Silhouette (Single Color)'; Mode: rmSolidColor; WireframeEffect: weSilhouette    ; WireframeColor: (X:0; Y: 0; Z: 0); BackgroundWireframe: false; ),
 
     (Name: 'Silhouette and Border Edges'          ;
       { Mode, WireframeEffect, WireframeColor don't matter here,
         we will not call normal T3DScene.Render in this case. }
       Mode: rmFull;
       WireframeEffect: weNormal;
-      WireframeColor: (Data: (0, 0, 0));
+      WireframeColor: (X:0; Y: 0; Z: 0);
       BackgroundWireframe: false)
   );
 
-  SolidColor: TCastleColorRGB = (Data: (1, 1, 1));
-  SolidShadowColor: TCastleColorRGB = (Data: (0.5, 0.5, 0.5));
+  SolidColor: TCastleColorRGB = (X:1; Y: 1; Z: 1);
+  SolidShadowColor: TCastleColorRGB = (X:0.5; Y: 0.5; Z: 0.5);
 
 var
   FillMode: TFillMode = 0;

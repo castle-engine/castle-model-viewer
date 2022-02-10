@@ -2107,7 +2107,7 @@ var
 
     function Vector3ToPascal(const V: TVector3): String;
     begin
-      Result := FormatDot('Vector3(%f, %f, %f)', [V.Data[0], V.Data[1], V.Data[2]]);
+      Result := FormatDot('Vector3(%f, %f, %f)', [V[0], V[1], V[2]]);
     end;
 
   var
@@ -2169,15 +2169,15 @@ var
         '    } } }',
         [ Box.ToNiceStr,
           Box.Middle.ToRawString,
-          FloatToRawStr(Box.Data[1].Data[0] - Box.Data[0].Data[0]),
-          FloatToRawStr(Box.Data[1].Data[1] - Box.Data[0].Data[1]),
-          FloatToRawStr(Box.Data[1].Data[2] - Box.Data[0].Data[2]) ]));
+          FloatToRawStr(Box.Data[1][0] - Box.Data[0][0]),
+          FloatToRawStr(Box.Data[1][1] - Box.Data[0][1]),
+          FloatToRawStr(Box.Data[1][2] - Box.Data[0][2]) ]));
       *)
 
       S1 := Box.Center.ToRawString;
-      S2 := FormatDot('%g', [Box.Data[1].Data[0] - Box.Data[0].Data[0]]);
-      S3 := FormatDot('%g', [Box.Data[1].Data[1] - Box.Data[0].Data[1]]);
-      S4 := FormatDot('%g', [Box.Data[1].Data[2] - Box.Data[0].Data[2]]);
+      S2 := FormatDot('%g', [Box.Data[1][0] - Box.Data[0][0]]);
+      S3 := FormatDot('%g', [Box.Data[1][1] - Box.Data[0][1]]);
+      S4 := FormatDot('%g', [Box.Data[1][2] - Box.Data[0][2]]);
       MessageReport(Format(
         '# ----------------------------------------' +nl+
         '# BoundingBox %s:' +nl+

@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2018 Michalis Kamburelis.
+  Copyright 2006-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -229,10 +229,10 @@ var
       ShapeTransform.MultPoint(T.Data[0]),
       ShapeTransform.MultPoint(T.Data[1]),
       ShapeTransform.MultPoint(T.Data[2]));
-    Result := (Plane.Data[0] * ObserverPos.Data[0] +
-               Plane.Data[1] * ObserverPos.Data[1] +
-               Plane.Data[2] * ObserverPos.Data[2] +
-               Plane.Data[3] * ObserverPos.Data[3]) > 0;
+    Result := (Plane[0] * ObserverPos[0] +
+               Plane[1] * ObserverPos[1] +
+               Plane[2] * ObserverPos[2] +
+               Plane[3] * ObserverPos[3]) > 0;
   end;
 
 var

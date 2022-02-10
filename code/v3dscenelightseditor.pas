@@ -293,7 +293,7 @@ end;
 
 procedure IniitalizeGizmo;
 const
-  LightGizmoPivot: TVector2 = (Data: (58.5, 146 - 58.5));
+  LightGizmoPivot: TVector2 = (X:58.5; Y: 146-58.5);
 var
   RootNode: TX3DRootNode;
   Billboard: TBillboardNode;
@@ -434,7 +434,7 @@ const
     correctly: X3D spec says to do "1 / max(c1 + c2 * dL + c3 * dL^2, 1)"
     (makes sense: never make light brighter by attenuation),
     but fixed-function OpenGL doesn't do it (our shader rendering does it Ok). }
-  AttenuationRange: TBox3D = (Data: ((Data: (1, 0, 0)), (Data: (2, 2, 2))));
+  AttenuationRange: TBox3D = (Data: ((X:1; Y: 0; Z: 0), (X:2; Y: 2; Z: 2)));
 
 { TMenuVector3Sliders -------------------------------------------------------- }
 
@@ -447,8 +447,8 @@ begin
   for I := 0 to 2 do
   begin
     Floats[I] := TCastleFloatSlider.Create(Self);
-    Floats[I].Min := Range.Data[0].Data[I];
-    Floats[I].Max := Range.Data[1].Data[I];
+    Floats[I].Min := Range.Data[0][I];
+    Floats[I].Max := Range.Data[1][I];
     Floats[I].Value := AValue[I];
     Floats[I].OnChange := @ChildSliderChanged;
   end;
@@ -483,7 +483,7 @@ var
   I: Integer;
 begin
   for I := 0 to 2 do
-    Result[I] := Floats[I].Value;
+    Result.InternalData[I] := Floats[I].Value;
 end;
 
 procedure TMenuVector3Sliders.SetValue(const AValue: TVector3);
