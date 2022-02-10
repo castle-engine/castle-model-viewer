@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2018 Michalis Kamburelis.
+  Copyright 2006-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -77,8 +77,8 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
 
 begin
   glDrawCorners(
-    Box.Data[0].Data[0], Box.Data[0].Data[1], Box.Data[0].Data[2],
-    Box.Data[1].Data[0], Box.Data[1].Data[1], Box.Data[1].Data[2]
+    Box.Data[0].X, Box.Data[0].Y, Box.Data[0].Z,
+    Box.Data[1].X, Box.Data[1].Y, Box.Data[1].Z
   );
 end;
 
