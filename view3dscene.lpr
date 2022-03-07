@@ -220,7 +220,7 @@ end;
 function TV3DViewport.BaseLightsForRaytracer: TLightInstancesList;
 begin
   Result := TLightInstancesList.Create;
-  InitializeLights(Result);
+  InitializeGlobalLights(Result);
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -2905,7 +2905,7 @@ begin
 
     91: with Scene.RenderOptions do Lighting := not Lighting;
     92: with Scene do HeadLightOn := not HeadLightOn;
-    93: with Scene.RenderOptions do UseSceneLights := not UseSceneLights;
+    93: with Scene.RenderOptions do ReceiveSceneLights := not ReceiveSceneLights;
     940: ChangeMaxLights;
     94: with Scene.RenderOptions do Textures := not Textures;
     95: ChangeLightModelAmbient;
@@ -3304,8 +3304,8 @@ begin
     MenuHeadlight := TMenuItemChecked.Create('_Headlight', 92, CtrlH,
       (Scene <> nil) and Scene.HeadlightOn, true);
     M.Append(MenuHeadlight);
-    M.Append(TMenuItemChecked.Create('Use Scene Lights',    93,
-      Scene.RenderOptions.UseSceneLights, true));
+    M.Append(TMenuItemChecked.Create('Receive Scene Lights',    93,
+      Scene.RenderOptions.ReceiveSceneLights, true));
     M.Append(TMenuItem.Create('Max Lights Per Shape ...'  , 940));
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
     M.Append(TMenuSeparator.Create);
@@ -3994,8 +3994,6 @@ begin
   MainViewport.FullSize := true;
   MainViewport.AutoCamera := true;
   MainViewport.AutoNavigation := true;
-  { do not use lights from MainViewport.Items.MainScene on other scenes }
-  MainViewport.UseGlobalLights := false;
   Window.Controls.InsertBack(MainViewport);
   MainViewport.OnBoundViewpointChanged :=
     {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundViewpointChanged;
@@ -4036,6 +4034,8 @@ begin
     try
       { makes X3D KeySensor and StringSensor working }
       Scene.ListenPressRelease := true;
+      { do not use lights from Scene on other scenes }
+      Scene.CastGlobalLights := false;
 
       AttributesLoadFromConfig(Scene.RenderOptions);
       MainViewport.Items.Add(Scene);
