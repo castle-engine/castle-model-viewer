@@ -3963,12 +3963,8 @@ begin
   Application.MainWindow := Window;
   Progress.UserInterface := WindowProgressInterface;
 
-  { load config, before SoundEngine.ParseParameters
-    (that may change SoundEngine.Enable by --no-sound) and
-    after creating Window (various OnLoad / OnSave listeners in V3DSceneXxx units
-    may use Window instance). }
   UserConfig.Load;
-  SoundEngine.LoadFromConfig(UserConfig);
+
   SoundEngine.DistanceModel := dmLinear; // corresponds to X3D spec closely
 
   { initialize RecentMenu }
@@ -4104,7 +4100,6 @@ begin
 
       AttributesSaveToConfig(Scene.RenderOptions);
 
-      SoundEngine.SaveToConfig(UserConfig);
       RecentMenu.SaveToConfig(UserConfig);
       UserConfig.Save;
     finally
