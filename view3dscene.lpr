@@ -2907,6 +2907,7 @@ begin
     92: with Scene do HeadLightOn := not HeadLightOn;
     93: with Scene.RenderOptions do ReceiveSceneLights := not ReceiveSceneLights;
     940: ChangeMaxLights;
+    950: with Scene.RenderOptions do RobustNegativeScale := not RobustNegativeScale;
     94: with Scene.RenderOptions do Textures := not Textures;
     95: ChangeLightModelAmbient;
     96: ShowFrustum := not ShowFrustum;
@@ -3308,6 +3309,8 @@ begin
       Scene.RenderOptions.ReceiveSceneLights, true));
     M.Append(TMenuItem.Create('Max Lights Per Shape ...'  , 940));
     M.Append(TMenuItem.Create('Light Global Ambient Color ...',  95));
+    M.Append(TMenuItemChecked.Create('Robust Negative Scale',    950,
+      Scene.RenderOptions.RobustNegativeScale, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('_Textures',           94, CtrlT,
       Scene.RenderOptions.Textures, true));
