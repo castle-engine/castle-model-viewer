@@ -13,10 +13,13 @@
    viewBox="0 0 1.5176403 4.056"
    id="svg2464"
    sodipodi:version="0.32"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
    sodipodi:docname="view3dscene.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   version="1.0">
+   version="1.0"
+   inkscape:export-filename="/home/michalis/sources/castle-engine/view3dscene/freedesktop/view3dscene.png"
+   inkscape:export-xdpi="2048"
+   inkscape:export-ydpi="2048">
   <metadata
      id="metadata2501">
     <rdf:RDF>
@@ -92,8 +95,8 @@
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
-     inkscape:window-height="961"
-     inkscape:window-width="1280"
+     inkscape:window-height="1009"
+     inkscape:window-width="1851"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      guidetolerance="10.0"
@@ -105,15 +108,16 @@
      id="base"
      showgrid="false"
      inkscape:zoom="11.313708"
-     inkscape:cx="18.538974"
-     inkscape:cy="6.8128768"
-     inkscape:window-x="0"
-     inkscape:window-y="30"
+     inkscape:cx="23.913298"
+     inkscape:cy="20.101138"
+     inkscape:window-x="69"
+     inkscape:window-y="34"
      inkscape:current-layer="svg2464"
      inkscape:showpageshadow="false"
      showborder="true"
      borderlayer="false"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0" />
   <title
      id="title2466">coubre de bezier : Curve</title>
   <desc
