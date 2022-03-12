@@ -8,6 +8,7 @@
     <icon path="windows/view3dscene.ico" />
     <icon path="freedesktop/view3dscene.svg" />
     <icon path="freedesktop/view3dscene.icns" />
+    <icon path="freedesktop/view3dscene.png" />
   </icons>
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->
@@ -40,4 +41,14 @@
       <option>-vm05063</option>
     </custom_options>
   </compiler_options>
+
+  <!-- Metadata for Debian package, test by
+       "castle-engine package -package-format=deb -fast"
+       (make double dashes above! we cannot write them verbatim in XML commment). -->
+  <debian
+    control_section="graphics"
+    menu_section="Applications/Graphics" />
+  <free_desktop
+    categories="Graphics;3DGraphics;Viewer"
+    comment="View 3D and 2D models in formats: glTF, X3D, VRML, Collada, 3DS, MD3, Wavefront OBJ, STL and (2D) Spine JSON and sprite sheets (in CGE, Cocos2d, Starling XML formats)." />
 </project>
