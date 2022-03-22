@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2018 Michalis Kamburelis.
+  Copyright 2003-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -78,7 +78,6 @@ end;
 
 procedure TStatusText.Render;
 begin
-  if not GetExists then Exit;
   Text.Clear;
   CalculateText;
   inherited;
@@ -119,7 +118,6 @@ procedure TStatusText.Update(const SecondsPassed: Single;
   var HandleInput: boolean);
 begin
   inherited;
-  if not GetExists then Exit;
   if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
     VisibleChange([chRender]);
   Time += SecondsPassed;

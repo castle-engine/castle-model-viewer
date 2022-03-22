@@ -145,7 +145,8 @@ begin
       ImageTooltip.Image := Examine_Tooltip;
     untWalk, untFly:
       ImageTooltip.Image := Walk_Fly_Tooltip;
-    unt2D:
+    else ;
+    // unt2D:
       //ImageTooltip.Image := Navigation2D_Tooltip; // TODO
   end;
 end;
