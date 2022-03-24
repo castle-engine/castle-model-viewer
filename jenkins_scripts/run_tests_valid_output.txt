@@ -56,6 +56,11 @@ tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "Visualiz
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOn_2" not bound (another node bound to the same name)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeOff_2" not bound (another node bound to the same name)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "VisualizeChanged_2" not bound (another node bound to the same name)
+tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
+tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
+tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
+tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
+tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
