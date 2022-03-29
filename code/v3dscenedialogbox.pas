@@ -41,11 +41,8 @@ type
     ButtonOK, ButtonCopyClipboard: TCastleButton;
     procedure ClickOK(Sender: TObject);
     procedure ClickCopyClipboard(Sender: TObject);
-  protected
-    function StateContainer: TCastleContainer; override;
   public
     { Assign these fields before starting the state. }
-    WantedStateContainer: TCastleContainer;
     Message: String;
 
     procedure Start; override;
@@ -104,11 +101,6 @@ begin
   InsertFront(Ui);
 end;
 
-function TStateDialogBox.StateContainer: TCastleContainer;
-begin
-  Result := WantedStateContainer;
-end;
-
 procedure WindowMessageOK(const S: String);
 var
   Window: TCastleWindow;
@@ -118,9 +110,11 @@ begin
   try
     Window.Open;
 
+    Application.MainWindow := Window;
+    // TODO: should use Application.CurrentView := StateDialogBox;, would be simpler
+
     { add TStateDialogBox instance to window }
     StateDialogBox := TStateDialogBox.Create(Window);
-    StateDialogBox.WantedStateContainer := Window.Container;
     StateDialogBox.Message := S;
     TUIState.Current := StateDialogBox;
 
