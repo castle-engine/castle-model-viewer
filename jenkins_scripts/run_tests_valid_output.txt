@@ -257,25 +257,21 @@ tovrmlx3d: Warning: X3D: Invalid X3D file: Invalid sequence in a string: "\D". B
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
 tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: Cannot save EXPORT statement to X3D: Exported node not set
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
-tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
 tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
+tovrmlx3d: Warning: Cannot save EXPORT statement to X3D: Exported node not set
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
-tovrmlx3d: Warning: VRML/X3D: Exported node name "KingsEye" not found
-tovrmlx3d: Warning: VRML/X3D: Exported node name "PosInterpBlah" not found
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
 tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
