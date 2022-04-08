@@ -52,6 +52,12 @@ program view3dscene;
   {$R *.res}
 {$endif}
 
+{ Catch exceptions at loading and saving, and display them as nice messages to user.
+  This should be defined for users.
+  For debug purposes you may want to not define it.
+  Then our standard exception handler will show, with a useful backtrace. }
+{$define CATCH_EXCEPTIONS}
+
 uses SysUtils, Math, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
@@ -1072,14 +1078,6 @@ end;
   I experienced it). }
 procedure LoadScene(ASceneURL: string;
   const SceneChanges: TSceneChanges);
-
-{ It's useful to undefine it only for debug purposes:
-  FPC dumps then backtrace of where exception happened,
-  which is often enough to trace the error.
-  In release versions this should be defined to produce a nice
-  message box in case of errors (instead of just a crash). }
-{$define CATCH_EXCEPTIONS}
-
 var
   RootNode: TX3DRootNode;
   SavedSceneWarnings: TSceneWarnings;
@@ -2641,7 +2639,10 @@ var
     ProposedSaveName := ChangeURIExt(SceneURL, Extension);
 
     if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
+    {$ifdef CATCH_EXCEPTIONS}
     try
+    {$endif}
+
       if Conversion then
         Scene.BeforeNodesFree;
 
@@ -2652,6 +2653,8 @@ var
 
       if Conversion then
         Scene.ChangedAll;
+
+    {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
       begin
@@ -2659,6 +2662,7 @@ var
           '": ' + E.Message);
       end;
     end;
+    {$endif}
   end;
 
   procedure SetLimitFPS;
