@@ -496,7 +496,7 @@ begin
     S := S + ' (octree resources released)';
   Text.Append(S); }
 
-  MainViewport.Camera.GetView(Pos, Dir, Up);
+  MainViewport.Camera.GetWorldView(Pos, Dir, Up);
   Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
     [ ValueColor, Pos.ToString,
       ValueColor, Dir.ToString,
@@ -1575,12 +1575,16 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up);
+    GravityUp := MainViewport.Camera.GravityUp;
+
     if VectorsParallel(Dir, NewUp) then
       Dir := AnyOrthogonalVector(NewUp);
     Up := NewUp;
     GravityUp := NewUp;
-    MainViewport.Camera.SetView(Pos, Dir, Up, GravityUp, false);
+
+    MainViewport.Camera.SetWorldView(Pos, Dir, Up, false);
+    MainViewport.Camera.GravityUp := GravityUp;
   end;
 
   procedure ChangeMoveSpeed;
@@ -2065,7 +2069,7 @@ var
     S: string;
     Pos, Dir, Up: TVector3;
   begin
-    MainViewport.Camera.GetView(Pos, Dir, Up);
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up);
 
     S := FormatDot(
        'Call rayhunter like this to render this view :' +nl+
@@ -2111,14 +2115,15 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up);
+    GravityUp := MainViewport.Camera.GravityUp;
     MessageReport(Format('// Set camera vectors using Castle Game Engine.' + NL +
-      'Viewport.Camera.SetView(' + NL +
+      'Viewport.Camera.SetWorldView(' + NL +
       '  %s, // position' + NL +
       '  %s, // direction' + NL +
-      '  %s, // up (current)' + NL +
-      '  %s // gravity up' + NL +
-      ');',
+      '  %s  // up (current)' + NL +
+      ');' + NL +
+      'Viewport.Camera.GravityUp := %s;',
       [ Vector3ToPascal(Pos),
         Vector3ToPascal(Dir),
         Vector3ToPascal(Up),
@@ -2131,7 +2136,8 @@ var
   var
     Pos, Dir, Up, GravityUp: TVector3;
   begin
-    MainViewport.Camera.GetView(Pos, Dir, Up, GravityUp);
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up);
+    GravityUp := MainViewport.Camera.GravityUp;
     MessageReport(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
   end;
 
@@ -2527,7 +2533,7 @@ var
     Pos, Dir, Up: TVector3;
     BaseLights: TLightInstancesList;
   begin
-    MainViewport.Camera.GetView(Pos, Dir, Up);
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up);
     BaseLights := TV3DViewport(MainViewport).BaseLightsForRaytracer;
     try
       {$warnings off} // using deprecated MainViewport.Projection, for now this is simplest
@@ -2731,14 +2737,14 @@ var
     { reopen saves/restores camera view and navigation type,
       this makes it more useful }
     SavedNavigationType := NavigationType;
-    MainViewport.Camera.GetView(Pos, Dir, Up{, GravityUp});
+    MainViewport.Camera.GetWorldView(Pos, Dir, Up{, GravityUp});
 
     LoadScene(SceneURL, []);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
       --- original scene's gravity is then lost) }
-    MainViewport.Camera.SetView(Pos, Dir, Up{, GravityUp});
+    MainViewport.Camera.SetWorldView(Pos, Dir, Up{, GravityUp});
     { restore NavigationType }
     SetNavigationType(SavedNavigationType);
     UpdateCameraUI;
@@ -3466,7 +3472,7 @@ begin
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal)',   104));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal) (Deprecated)',   104));
     M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
