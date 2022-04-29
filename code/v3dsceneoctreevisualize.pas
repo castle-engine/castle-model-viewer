@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2018 Michalis Kamburelis.
+  Copyright 2002-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -64,7 +64,7 @@ function OctreeDisplayStatus: string;
 implementation
 
 uses SysUtils,
-  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
+  {$ifdef FPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleColors, CastleGLUtils, CastleShapes, CastleGLBoxes, V3DSceneBoxes;
 
 { TOctreeDisplay ------------------------------------------------------------- }

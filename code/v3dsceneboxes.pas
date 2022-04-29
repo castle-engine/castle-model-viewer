@@ -39,7 +39,7 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single = 0.1)
 
 implementation
 
-uses {$ifdef CASTLE_OBJFPC} CastleGL {$else} GL, GLExt {$endif};
+uses {$ifdef FPC} CastleGL {$else} GL, GLExt {$endif};
 
 {$ifndef OpenGLES}
 

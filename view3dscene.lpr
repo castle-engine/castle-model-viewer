@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  {$ifdef CASTLE_OBJFPC} CastleGL, {$else} GL, GLExt, {$endif}
+  {$ifdef FPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
@@ -1017,7 +1017,7 @@ begin
     { update MenuHeadlight.Checked now, and make it always updated. }
     THelper.HeadlightOnChanged(Scene);
     Scene.OnHeadlightOnChanged :=
-      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).HeadlightOnChanged;
+      {$ifdef FPC}@{$endif} THelper(nil).HeadlightOnChanged;
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
@@ -1030,11 +1030,11 @@ begin
     SceneOctreeCreate;
 
     Scene.OnGeometryChanged :=
-      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).GeometryChanged;
+      {$ifdef FPC}@{$endif} THelper(nil).GeometryChanged;
     Scene.OnViewpointsChanged :=
-      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ViewpointsChanged;
+      {$ifdef FPC}@{$endif} THelper(nil).ViewpointsChanged;
     Scene.OnPointingDeviceSensorsChange :=
-      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
+      {$ifdef FPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
     Scene.ProcessEvents := ProcessEventsWanted;
 
     RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.EffectiveHeight);
@@ -2058,7 +2058,7 @@ var
     try
       Scene.BeforeNodesFree;
       Scene.RootNode.EnumerateReplaceChildren(
-        {$ifdef CASTLE_OBJFPC}@{$endif} R.Remove);
+        {$ifdef FPC}@{$endif} R.Remove);
       Scene.ChangedAll;
       MessageOK(Window, Format('Removed %d nodes.', [R.Count]));
     finally FreeAndNil(R) end;
@@ -2413,7 +2413,7 @@ var
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
           GLCaptureCubeMapImages(CubeMapImg, MainViewport.Camera.Position,
-            {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
+            {$ifdef FPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
             MainViewport.Camera.EffectiveProjectionNear,
             MainViewport.Camera.EffectiveProjectionFar);
           RenderContext.Viewport := Window.Rect;
@@ -2480,7 +2480,7 @@ var
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
         Composite := GLCaptureCubeMapComposite(Size, MainViewport.Camera.Position,
-          {$ifdef CASTLE_OBJFPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
+          {$ifdef FPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
           MainViewport.Camera.EffectiveProjectionNear,
           MainViewport.Camera.EffectiveProjectionFar);
         try
@@ -3571,35 +3571,35 @@ begin
     because we embed all images in view3dscene binary. }
 
   ButtonOpen := UiOwner.FindRequiredComponent('ButtonOpen') as TCastleButton;
-  ButtonOpen.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonOpen;
+  ButtonOpen.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonOpen;
   ButtonOpen.Image.Image := V3DSceneImages.Open;
   ButtonOpen.Image.OwnsImage := false;
   ButtonOpen.Image.AlphaChannel := acTest;
   ButtonOpen.MinImageHeight := MinImageHeight;
 
   ButtonCollisions := UiOwner.FindRequiredComponent('ButtonCollisions') as TCastleButton;
-  ButtonCollisions.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonCollisions;
+  ButtonCollisions.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonCollisions;
   ButtonCollisions.MinImageHeight := MinImageHeight;
   { When Scene = nil, make Pressed = true,
     because it means the Scene will be soon created with Scene.Collides = default true. }
   ButtonCollisions.Pressed := (Scene = nil) or Scene.Collides;
 
   ButtonScreenshot := UiOwner.FindRequiredComponent('ButtonScreenshot') as TCastleButton;
-  ButtonScreenshot.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonScreenshot;
+  ButtonScreenshot.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonScreenshot;
   ButtonScreenshot.Image.Image := V3DSceneImages.Screenshot;
   ButtonScreenshot.Image.OwnsImage := false;
   ButtonScreenshot.Image.AlphaChannel := acTest;
   ButtonScreenshot.MinImageHeight := MinImageHeight;
 
   ButtonAnimations := UiOwner.FindRequiredComponent('ButtonAnimations') as TCastleButton;
-  ButtonAnimations.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonAnimations;
+  ButtonAnimations.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonAnimations;
   ButtonAnimations.Toggle := true;
   ButtonAnimations.Image.Image := V3DSceneImages.Animations;
   ButtonAnimations.Image.OwnsImage := false;
   ButtonAnimations.MinImageHeight := MinImageHeight;
 
   ButtonWarnings := UiOwner.FindRequiredComponent('ButtonWarnings') as TCastleButton;
-  ButtonWarnings.OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickButtonWarnings;
+  ButtonWarnings.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonWarnings;
   ButtonWarnings.Image.Image := Warning_icon;
   ButtonWarnings.Image.OwnsImage := false;
   ButtonWarnings.MinImageHeight := MinImageHeight;
@@ -3631,7 +3631,7 @@ begin
     begin
       CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       CameraButtons[NT].Caption := NavigationNames[NT];
-      CameraButtons[NT].OnClick := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
+      CameraButtons[NT].OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
       CameraButtons[NT].Toggle := true;
       CameraButtons[NT].MinImageHeight := MinImageHeight;
       ToolbarHorizGroup.InsertControl(2 + Ord(NT), CameraButtons[NT]);
@@ -3982,7 +3982,7 @@ begin
 
   { initialize RecentMenu }
   RecentMenu := TWindowRecentFiles.Create(nil);
-  RecentMenu.OnOpenRecent := {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OpenRecent;
+  RecentMenu.OnOpenRecent := {$ifdef FPC}@{$endif} THelper(nil).OpenRecent;
   RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
@@ -4005,9 +4005,9 @@ begin
   MainViewport.AutoNavigation := true;
   Window.Controls.InsertBack(MainViewport);
   MainViewport.OnBoundViewpointChanged :=
-    {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundViewpointChanged;
+    {$ifdef FPC}@{$endif} THelper(nil).BoundViewpointChanged;
   MainViewport.OnBoundNavigationInfoChanged :=
-    {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
+    {$ifdef FPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
 
   InitializeViewports(TV3DViewport);
   BGColorChanged;
@@ -4019,7 +4019,7 @@ begin
   SceneWarnings := TSceneWarnings.Create;
   try
     ApplicationProperties.OnWarning.Add(
-      {$ifdef CASTLE_OBJFPC}@{$endif} THelper(nil).OnWarningHandle);
+      {$ifdef FPC}@{$endif} THelper(nil).OnWarningHandle);
 
     if WasParam_Write then
     begin

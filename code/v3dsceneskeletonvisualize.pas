@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2020 Michalis Kamburelis.
+  Copyright 2006-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -200,7 +200,7 @@ begin
   JointVisualizationBegin;
   try
     Node.EnumerateNodes(THAnimHumanoidNode,
-      {$ifdef CASTLE_OBJFPC}@{$endif} VisualizeHumanoid, false);
+      {$ifdef FPC}@{$endif} VisualizeHumanoid, false);
   finally JointVisualizationEnd end;
 end;
 
@@ -223,7 +223,7 @@ begin
   JointVisualizationBegin;
   try
     Node.EnumerateNodes(TTransformNode,
-      {$ifdef CASTLE_OBJFPC}@{$endif} VisualizeTransformation, false);
+      {$ifdef FPC}@{$endif} VisualizeTransformation, false);
   finally JointVisualizationEnd end;
 end;
 
