@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2021 Michalis Kamburelis.
+  Copyright 2003-2022 Michalis Kamburelis.
 
   This file is part of "Castle Game Engine".
 
@@ -89,7 +89,11 @@ begin
          Encoding := xeXML else
          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
     3: ForceX3D := true;
-    4: InitializeLog;
+    4: begin
+         LogEnableStandardOutput := false;
+         InitializeLog;
+         Writeln(ErrOutput, ApplicationProperties.ApplicationName, ': Logging to ', LogOutput);
+       end;
     5: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
   end;
