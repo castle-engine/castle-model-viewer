@@ -40,6 +40,10 @@ apps:
       - audio-playback
       - home
       - removable-media
+      # support all desktop versions on X, see https://forum.snapcraft.io/t/the-desktop-interfaces/2042 , as we initialize OpenGL using glX
+      - desktop
+      - desktop-legacy
+      - unity7
   tovrmlx3d:
     command: usr/bin/tovrmlx3d
     plugs:
@@ -118,7 +122,11 @@ parts:
     plugin: make
     # TODO: anything else? see compiling_from_sources.php
     stage-packages:
-      - libglx0
+      # about using OpenGL in Snaps see
+      # https://forum.snapcraft.io/t/opengl-interface/12705
+      # https://forum.snapcraft.io/t/adding-opengl-gpu-support-to-a-snap/6273
+      # https://snapcraft.io/docs/games-interfaces
+      - libglx-mesa0
       - libgl1
       - libgtk2.0-0
       # TODO: test openal
