@@ -203,7 +203,7 @@ type
   TV3DViewport = class(TV3DShadowsViewport)
   protected
     procedure RenderFromView3D(const Params: TRenderParams); override;
-    procedure Render3D(const Params: TRenderParams); override;
+    procedure RenderOnePass(const Params: TRenderParams); override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure BeforeRender; override;
@@ -702,7 +702,7 @@ begin
   end;
 end;
 
-procedure TV3DViewport.Render3D(const Params: TRenderParams);
+procedure TV3DViewport.RenderOnePass(const Params: TRenderParams);
 begin
   SceneBoundingBoxUpdate(Params.RenderingCamera);
   inherited;
@@ -730,7 +730,7 @@ begin
     SceneDebugEdges.UpdateEdges(Scene);
 
   inherited;
-  { inherited will call Render3D that will call RenderVisualizations }
+  { inherited will call RenderOnePass that will call RenderVisualizations }
 end;
 
 procedure TV3DViewport.BeforeRender;

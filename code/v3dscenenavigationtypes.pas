@@ -31,9 +31,15 @@ uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   CastleGLUtils, CastleViewport, Classes, CastleUIControls,
   CastleControls, CastleInternalControlsImages, CastleGLImages;
 
+{ Compile also with CGE branches that don't yet have new-cameras work merged.
+  Once new-cameras merged -> master, we can remove this. }
+{$if not declared(TCastleAutoNavigationViewport)}
+  {$define TCastleAutoNavigationViewport:=TCastleViewport}
+{$endif}
+
 { Call this once on created Viewport.
   This will take care of using proper Viewport.Navigation. }
-procedure InitNavigation(const Viewport: TCastleViewport);
+procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
 
 type
   { Navigation types useful in view3dscene, in order suitable for view3dscene
@@ -84,7 +90,7 @@ uses CastleParameters, CastleClassUtils, CastleImages,
 
 var
   { Saved Viewport from InitNavigation. }
-  FViewport: TCastleViewport;
+  FViewport: TCastleAutoNavigationViewport;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -99,7 +105,7 @@ begin
       CameraButtons[NT].Pressed := NT = NavigationType;
 end;
 
-procedure InitNavigation(const Viewport: TCastleViewport);
+procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
 begin
   FViewport := Viewport;
   UpdateCameraNavigationTypeUI;

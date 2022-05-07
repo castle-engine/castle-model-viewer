@@ -30,9 +30,15 @@ interface
 uses CastleViewport, CastleWindow, CastleCameras,
   V3DSceneNavigationTypes;
 
+{ Compile also with CGE branches that don't yet have new-cameras work merged.
+  Once new-cameras merged -> master, we can remove this. }
+{$if not declared(TCastleAutoNavigationViewport)}
+  {$define TCastleAutoNavigationViewport:=TCastleViewport}
+{$endif}
+
 type
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
-  TViewportClass = class of TCastleViewport;
+  TViewportClass = class of TCastleAutoNavigationViewport;
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
   ('_1 Viewport',
@@ -45,17 +51,17 @@ var
 
   { Main TCastleViewport.
     Set this before calling InitializeViewports. }
-  MainViewport: TCastleViewport;
+  MainViewport: TCastleAutoNavigationViewport;
 
   { Custom viewports, using the same Items as MainViewport.Items.
     Note that MainViewport is @italic(not listed here). }
-  ExtraViewports: array [0..2] of TCastleViewport;
+  ExtraViewports: array [0..2] of TCastleAutoNavigationViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindow; MainViewport: TCastleViewport);
+  Window: TCastleWindow; MainViewport: TCastleAutoNavigationViewport);
 
 { Copy all Camera and Navigation settings from Source to Target. }
-procedure AssignCameraAndNavigation(const Target, Source: TCastleViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TCastleAutoNavigationViewport);
 
 procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 
@@ -80,7 +86,7 @@ uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
 var
   Background: TCastleRectangleControl;
 
-procedure AssignCameraAndNavigation(const Target, Source: TCastleViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TCastleAutoNavigationViewport);
 var
   NavigationTypeStr: String;
 begin
@@ -103,7 +109,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindow; MainViewport: TCastleViewport);
+  Window: TCastleWindow; MainViewport: TCastleAutoNavigationViewport);
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
@@ -223,7 +229,7 @@ end;
 
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
-  procedure CoreSetNavigationType(const Viewport: TCastleViewport;
+  procedure CoreSetNavigationType(const Viewport: TCastleAutoNavigationViewport;
     const Value: TUserNavigationType);
   begin
     case Value of

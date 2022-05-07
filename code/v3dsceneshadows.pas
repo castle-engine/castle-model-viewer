@@ -7,13 +7,19 @@ interface
 uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleViewport,
   CastleRenderOptions;
 
+{ Compile also with CGE branches that don't yet have new-cameras work merged.
+  Once new-cameras merged -> master, we can remove this. }
+{$if not declared(TCastleAutoNavigationViewport)}
+  {$define TCastleAutoNavigationViewport:=TCastleViewport}
+{$endif}
+
 type
   { Takes care of setting shadow volume properties, and modifies a little
     shadow volume rendering to work nicely with all view3dscene
     configurations (bump mapping, fill modes etc.) }
-  TV3DShadowsViewport = class(TCastleViewport)
+  TV3DShadowsViewport = class(TCastleAutoNavigationViewport)
   protected
-    procedure Render3D(const Params: TRenderParams); override;
+    procedure RenderOnePass(const Params: TRenderParams); override;
   end;
 
 var
@@ -32,16 +38,16 @@ begin
   Viewport.ShadowVolumesRender := ShadowVolumesRender;
 end;
 
-procedure TV3DShadowsViewport.Render3D(const Params: TRenderParams);
+procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams);
 
-  procedure Render3DShadowsBegin(Scene: TCastleScene);
+  procedure RenderOnePassShadowsBegin(Scene: TCastleScene);
   begin
     { Thanks to using SolidShadowColor, shadow is visible
       even when rmSolidColor is used }
     Scene.RenderOptions.SolidColor := SolidShadowColor;
   end;
 
-  procedure Render3DNoShadowsBegin(Scene: TCastleScene);
+  procedure RenderOnePassNoShadowsBegin(Scene: TCastleScene);
   begin
     Scene.RenderOptions.SolidColor := SolidColor;
   end;
@@ -49,11 +55,11 @@ procedure TV3DShadowsViewport.Render3D(const Params: TRenderParams);
 begin
   if Params.InShadow then
   begin
-    Render3DShadowsBegin(Items.MainScene);
+    RenderOnePassShadowsBegin(Items.MainScene);
     inherited;
   end else
   begin
-    Render3DNoShadowsBegin(Items.MainScene);
+    RenderOnePassNoShadowsBegin(Items.MainScene);
     inherited;
   end;
 end;
