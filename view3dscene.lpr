@@ -1591,10 +1591,13 @@ var
   var
     MoveSpeed: Single;
   begin
-    MoveSpeed := Navigation.MoveSpeed;
-    if MessageInputQuery(Window, 'New move speed (units per second):', MoveSpeed) then
+    { TODO: before merging new-cameras branch, this is not entirely correct,
+      when switching navigations the examine navigation MoveSpeed may override
+      InternalWalkNavigation.MoveSpeed. }
+    MoveSpeed := MainViewport.InternalWalkNavigation.MoveSpeed;
+    if MessageInputQuery(Window, 'New move speed (units per second) when walking or flying:', MoveSpeed) then
     begin
-      Navigation.MoveSpeed := MoveSpeed;
+      MainViewport.InternalWalkNavigation.MoveSpeed := MoveSpeed;
       Window.Invalidate;
     end;
   end;
