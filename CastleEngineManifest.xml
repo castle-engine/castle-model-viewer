@@ -51,4 +51,62 @@
   <free_desktop
     categories="Graphics;3DGraphics;Viewer"
     comment="View 3D and 2D models in formats: glTF, X3D, VRML, Collada, 3DS, MD3, Wavefront OBJ, STL and (2D) Spine JSON and sprite sheets (in CGE, Cocos2d, Starling XML formats)." />
+
+  <associate_document_types>
+    <document_type caption="VRML document" name="vrml">
+      <mime>model/vrml</mime>
+      <extension>wrl</extension>
+      <extension>wrz</extension>
+      <extension>wrl.gz</extension>
+    </document_type>
+    <document_type caption="3DS model" name="3ds">
+      <mime>image/x-3ds</mime>
+      <extension>3ds</extension>
+    </document_type>
+    <document_type caption="X3D model (classic VRML encoding)" name="x3dv">
+      <mime>model/x3d+vrml</mime>
+      <extension>x3dv</extension>
+      <extension>x3dv.gz</extension>
+      <extension>x3dvz</extension>
+    </document_type>
+    <document_type caption="X3D model (XML encoding)" name="x3d">
+      <mime>model/x3d+xml</mime>
+      <extension>x3d</extension>
+      <extension>x3d.gz</extension>
+      <extension>x3dz</extension>
+    </document_type>
+    <document_type caption="COLLADA model" name="dae">
+      <mime>model/vnd.collada+xml</mime>
+      <extension>dae</extension>
+    </document_type>
+    <document_type caption="Inventor model" name="iv">
+      <mime>application/x-inventor</mime>
+      <extension>iv</extension>
+    </document_type>
+    <document_type caption="MD3 (Quake 3 engine) model" name="md3">
+      <mime>application/x-md3</mime>
+      <extension>md3</extension>
+    </document_type>
+    <document_type caption="Wavefront OBJ model" name="obj">
+      <mime>application/x-wavefront-obj</mime>
+      <extension>obj</extension>
+    </document_type>
+    <document_type caption="Videoscape GEO model" name="geo">
+      <mime>application/x-geo</mime>
+      <extension>geo</extension>
+    </document_type>
+    <document_type caption="Castle Animation Frames" name="castleanimframes">
+      <mime>application/x-castle-anim-frames</mime>
+      <extension>kanim</extension>
+      <extension>castle-anim-frames</extension>
+    </document_type>
+    <document_type caption="glTF" name="gltf">
+      <mime>model/gltf+json</mime>
+      <extension>gltf</extension>
+    </document_type>
+    <document_type caption="glTF Binary" name="glb">
+      <mime>model/gltf-binary</mime>
+      <extension>glb</extension>
+    </document_type>
+  </associate_document_types>
 </project>

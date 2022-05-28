@@ -5,6 +5,8 @@
 *.exe
 *.dll
 *.res
+*.app
+.DS_Store
 view3dscene
 tovrmlx3d
 automatic-windows-resources.res
