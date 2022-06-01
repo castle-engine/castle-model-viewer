@@ -18,6 +18,7 @@ pipeline {
   }
   agent any
   stages {
+    /*
     stage('Build Linux, Windows, Src') {
       agent {
         docker {
@@ -32,6 +33,7 @@ pipeline {
         archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
+    */
 
     stage('Raspberry Pi') {
       agent {
@@ -39,7 +41,7 @@ pipeline {
       }
       environment {
         CASTLE_ENGINE_PATH = "${WORKSPACE}/castle_game_engine"
-        PATH = "${PATH}:{$CASTLE_ENGINE_PATH}/bin"
+        PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
       }
       stages {
         stage('Setup CGE on Raspberry Pi') {
@@ -63,7 +65,7 @@ pipeline {
       }
       environment {
         CASTLE_ENGINE_PATH = "${WORKSPACE}/castle_game_engine"
-        PATH = "${PATH}:{$CASTLE_ENGINE_PATH}/bin"
+        PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
       }
       stages {
         stage('Setup CGE on macOS') {
