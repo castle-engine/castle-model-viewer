@@ -18,7 +18,6 @@ pipeline {
   }
   agent any
   stages {
-    /*
     stage('Build Linux, Windows, Src') {
       agent {
         docker {
@@ -30,11 +29,10 @@ pipeline {
         sh 'jenkins_scripts/build.sh'
         /* Do not defer "archiveArtifacts" to later (like post section),
            as this command must run in the same agent and Docker container
-           as build.sh. * /
+           as build.sh. */
         archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
-    */
 
     stage('Raspberry Pi') {
       agent {
