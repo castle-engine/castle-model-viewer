@@ -16,18 +16,39 @@ pipeline {
     pollSCM('H/4 * * * *')
     upstream(upstreamProjects: 'castle_game_engine_organization/castle-engine-cloud-builds-tools/master', threshold: hudson.model.Result.SUCCESS)
   }
-  agent {
-    docker {
-      image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
-    }
-  }
+  agent any
   stages {
-    stage('Build') {
+    stage('Build Linux, Windows, Src') {
+      agent {
+        docker {
+          image 'kambi/castle-engine-cloud-builds-tools:cge-unstable'
+        }
+      }
       steps {
         sh 'jenkins_scripts/build.sh'
         /* Do not defer "archiveArtifacts" to later (like post section),
            as this command must run in the same agent and Docker container
            as build.sh. */
+        archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+      }
+    }
+
+    stage('Build Raspberry Pi') {
+      agent {
+        label 'raspberry-pi-cge-builder'
+      }
+      steps {
+        sh 'jenkins_scripts/build.sh linux arm'
+        archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+      }
+    }
+
+    stage('Build macOS') {
+      agent {
+        label 'mac-cge-builder'
+      }
+      steps {
+        sh 'jenkins_scripts/build.sh darwin x86_64'
         archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
       }
     }
