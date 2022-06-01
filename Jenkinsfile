@@ -33,23 +33,51 @@ pipeline {
       }
     }
 
-    stage('Build Raspberry Pi') {
+    stage('Raspberry Pi') {
       agent {
         label 'raspberry-pi-cge-builder'
       }
-      steps {
-        sh 'jenkins_scripts/build.sh linux arm'
-        archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+      environment {
+        CASTLE_ENGINE_PATH = "${WORKSPACE}/castle_game_engine"
+        PATH = "${PATH}:{$CASTLE_ENGINE_PATH}/bin"
+      }
+      stages {
+        stage('Setup CGE on Raspberry Pi') {
+          steps {
+            copyArtifacts(projectName: 'castle_game_engine_raspberry_pi/master', filter: 'castle-engine*-linux-arm.zip')
+            sh 'unzip castle-engine*-linux-arm.zip'
+          }
+        }
+        stage('Build Raspberry Pi') {
+          steps {
+            sh 'jenkins_scripts/build.sh linux arm'
+            archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+          }
+        }
       }
     }
 
-    stage('Build macOS') {
+    stage('macOS') {
       agent {
         label 'mac-cge-builder'
       }
-      steps {
-        sh 'jenkins_scripts/build.sh darwin x86_64'
-        archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+      environment {
+        CASTLE_ENGINE_PATH = "${WORKSPACE}/castle_game_engine"
+        PATH = "${PATH}:{$CASTLE_ENGINE_PATH}/bin"
+      }
+      stages {
+        stage('Setup CGE on macOS') {
+          steps {
+            copyArtifacts(projectName: 'castle_game_engine_macos/master', filter: 'castle-engine*-darwin-x86_64.zip')
+            sh 'unzip castle-engine*-darwin-x86_64.zip'
+          }
+        }
+        stage('Build macOS') {
+          steps {
+            sh 'jenkins_scripts/build.sh darwin x86_64'
+            archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+          }
+        }
       }
     }
   }
