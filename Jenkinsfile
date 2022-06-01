@@ -26,6 +26,7 @@ pipeline {
         }
       }
       steps {
+        sh "repository_cleanup . --remove-unversioned"
         sh 'jenkins_scripts/build.sh'
         /* Do not defer "archiveArtifacts" to later (like post section),
            as this command must run in the same agent and Docker container
@@ -44,13 +45,18 @@ pipeline {
         PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
       }
       stages {
-        stage('Setup CGE on Raspberry Pi') {
+        stage('Cleanup (Raspberry Pi)') {
+          steps {
+            sh "repository_cleanup . --remove-unversioned"
+          }
+        }
+        stage('Setup CGE (Raspberry Pi)') {
           steps {
             copyArtifacts(projectName: 'castle_game_engine_raspberry_pi/master', filter: 'castle-engine*-linux-arm.zip')
             sh 'unzip castle-engine*-linux-arm.zip'
           }
         }
-        stage('Build Raspberry Pi') {
+        stage('Build (Raspberry Pi)') {
           steps {
             sh 'jenkins_scripts/build.sh linux arm'
             archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
@@ -68,13 +74,18 @@ pipeline {
         PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
       }
       stages {
-        stage('Setup CGE on macOS') {
+        stage('Cleanup (macOS)') {
+          steps {
+            sh "repository_cleanup . --remove-unversioned"
+          }
+        }
+        stage('Setup CGE (macOS)') {
           steps {
             copyArtifacts(projectName: 'castle_game_engine_macos/master', filter: 'castle-engine*-darwin-x86_64.zip')
             sh 'unzip castle-engine*-darwin-x86_64.zip'
           }
         }
-        stage('Build macOS') {
+        stage('Build (macOS)') {
           steps {
             sh 'jenkins_scripts/build.sh darwin x86_64'
             archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
