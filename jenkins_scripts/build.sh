@@ -35,6 +35,27 @@ package_platform ()
 
   # build and package view3dscene
   castle-engine package --os="${OS}" --cpu="${CPU}"
+
+  if [ "${OS}" = 'darwin' ]; then
+    # additional operations to make macOS bundle good, because CGE build tool
+    # - will not add 2nd exe "tovrmlx3d" to the bundle
+    # - will not zip the bundle
+    cp tovrmlx3d view3dscene.app/Contents/MacOS/
+
+    # determine GNU sed exe on source system
+    SED='sed'
+    if [ "`uname -s`" '=' 'FreeBSD' ]; then
+      SED='gsed'
+    fi
+    if [ "`uname -s`" '=' 'Darwin' ]; then
+      SED='gsed'
+    fi
+
+    # get version from CastleEngineManifest.xml
+    VERSION=`grep '<version' CastleEngineManifest.xml | sed -e 's|^ *<version value="\([^"]\+\)" code="\([^"]\+\)" /> *$|\1|' -`
+
+    zip -r view3dscene-"${VERSION}"-darwin-x86_64.zip view3dscene.app/
+  fi
 }
 
 if [ -n "${1:-}" ]; then
