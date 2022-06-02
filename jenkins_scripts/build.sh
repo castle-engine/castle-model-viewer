@@ -42,20 +42,7 @@ package_platform ()
     # - will not zip the bundle
     cp tovrmlx3d view3dscene.app/Contents/MacOS/
 
-    # determine GNU sed exe on source system
-    SED='sed'
-    if [ "`uname -s`" '=' 'FreeBSD' ]; then
-      SED='gsed'
-    fi
-    if [ "`uname -s`" '=' 'Darwin' ]; then
-      SED='gsed'
-    fi
-
-    # get version from CastleEngineManifest.xml
-    VERSION=`grep '<version' CastleEngineManifest.xml | $SED -e 's|^ *<version value="\([^"]\+\)" code="\([^"]\+\)" /> *$|\1|' -`
-    # TODO: use this, once new CGE is built
-    #VERSION=`castle-engine output version`
-
+    VERSION=`castle-engine output version`
     zip -r view3dscene-"${VERSION}"-darwin-x86_64.zip view3dscene.app/
   fi
 }
