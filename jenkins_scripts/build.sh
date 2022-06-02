@@ -53,6 +53,8 @@ package_platform ()
 
     # get version from CastleEngineManifest.xml
     VERSION=`grep '<version' CastleEngineManifest.xml | sed -e 's|^ *<version value="\([^"]\+\)" code="\([^"]\+\)" /> *$|\1|' -`
+    # TODO: use this, once new CGE is built
+    #VERSION=`castle-engine output version`
 
     zip -r view3dscene-"${VERSION}"-darwin-x86_64.zip view3dscene.app/
   fi
