@@ -34,16 +34,18 @@ package_platform ()
   castle-engine compile --os="${OS}" --cpu="${CPU}" --manifest-name=CastleEngineManifest.tovrmlx3d.xml
 
   # build and package view3dscene
-  castle-engine package --os="${OS}" --cpu="${CPU}"
 
   if [ "${OS}" = 'darwin' ]; then
-    # additional operations to make macOS bundle good, because CGE build tool
-    # - will not add 2nd exe "tovrmlx3d" to the bundle
-    # - will not zip the bundle
+    castle-engine package --os="${OS}" --cpu="${CPU}" --package-format=mac-app-bundle
+
+    # Add 2nd exe "tovrmlx3d" to the bundle.
+    # This also means we zip it later manually (TODO: we could add file to zip).
     cp tovrmlx3d view3dscene.app/Contents/MacOS/
 
     VERSION=`castle-engine output version`
     zip -r view3dscene-"${VERSION}"-darwin-x86_64.zip view3dscene.app/
+  else
+    castle-engine package --os="${OS}" --cpu="${CPU}"
   fi
 }
 
