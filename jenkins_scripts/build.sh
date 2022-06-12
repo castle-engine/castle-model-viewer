@@ -43,7 +43,9 @@ package_platform ()
     cp tovrmlx3d view3dscene.app/Contents/MacOS/
 
     VERSION=`castle-engine output version`
-    zip -r view3dscene-"${VERSION}"-darwin-x86_64.zip view3dscene.app/
+    ZIPNAME=view3dscene-"${VERSION}"-darwin-x86_64.zip
+    zip -r "${ZIPNAME}" view3dscene.app/
+    echo "Packed to ${ZIPNAME}"
   else
     castle-engine package --os="${OS}" --cpu="${CPU}"
   fi
