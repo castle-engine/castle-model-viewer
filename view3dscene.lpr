@@ -4011,6 +4011,8 @@ begin
     {$ifdef FPC}@{$endif} THelper(nil).BoundViewpointChanged;
   MainViewport.OnBoundNavigationInfoChanged :=
     {$ifdef FPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
+  MainViewport.InternalWalkNavigation.Input_IncreasePreferredHeight.Assign(keyInsert);
+  MainViewport.InternalWalkNavigation.Input_DecreasePreferredHeight.Assign(keyDelete);
 
   InitializeViewports(TV3DViewport);
   BGColorChanged;
