@@ -2027,7 +2027,8 @@ var
     CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
       WantedDirectionPositive, WantedUpPositive,
       Position, Direction, Up, GravityUp);
-    Scene.CameraTransition(MainViewport.Camera, Position, Direction, Up, GravityUp);
+    MainViewport.Camera.AnimateTo(Position, Direction, Up, CameraTransitionTime);
+    MainViewport.Camera.GravityUp := GravityUp;
   end;
 
   procedure RemoveNodesWithMatchingName;
@@ -2415,7 +2416,7 @@ var
           for Side := Low(Side) to High(Side) do
             CubeMapImg[Side] := TRGBImage.Create(Size, Size);
 
-          GLCaptureCubeMapImages(CubeMapImg, MainViewport.Camera.Position,
+          GLCaptureCubeMapImages(CubeMapImg, MainViewport.Camera.Translation,
             {$ifdef FPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
             MainViewport.Camera.EffectiveProjectionNear,
             MainViewport.Camera.EffectiveProjectionFar);
@@ -2482,7 +2483,7 @@ var
 
       if MessageInputQueryCardinal(Window, 'Size of cube map images', Size) then
       begin
-        Composite := GLCaptureCubeMapComposite(Size, MainViewport.Camera.Position,
+        Composite := GLCaptureCubeMapComposite(Size, MainViewport.Camera.Translation,
           {$ifdef FPC}@{$endif} TV3DViewport(MainViewport).RenderFromViewEverything,
           MainViewport.Camera.EffectiveProjectionNear,
           MainViewport.Camera.EffectiveProjectionFar);
@@ -2881,16 +2882,22 @@ begin
     36: RemoveSelectedShape;
     37: RemoveSelectedFace;
 
-    51: Scene.CameraTransition(MainViewport.Camera,
-          DefaultX3DCameraPosition[cvVrml1_Inventor],
-          DefaultX3DCameraDirection,
-          DefaultX3DCameraUp,
-          DefaultX3DGravityUp);
-    52: Scene.CameraTransition(MainViewport.Camera,
-          DefaultX3DCameraPosition[cvVrml2_X3d],
-          DefaultX3DCameraDirection,
-          DefaultX3DCameraUp,
-          DefaultX3DGravityUp);
+    51: begin
+          MainViewport.Camera.AnimateTo(
+            DefaultX3DCameraPosition[cvVrml1_Inventor],
+            DefaultX3DCameraDirection,
+            DefaultX3DCameraUp,
+            CameraTransitionTime);
+          MainViewport.Camera.GravityUp := DefaultX3DGravityUp;
+        end;
+    52: begin
+          MainViewport.Camera.AnimateTo(
+            DefaultX3DCameraPosition[cvVrml2_X3d],
+            DefaultX3DCameraDirection,
+            DefaultX3DCameraUp,
+            CameraTransitionTime);
+          MainViewport.Camera.GravityUp := DefaultX3DGravityUp;
+        end;
 
     53: SetViewpointForWholeScene(2, 1, false, true);
     54: SetViewpointForWholeScene(2, 1, true , true);

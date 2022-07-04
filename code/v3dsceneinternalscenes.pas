@@ -174,7 +174,7 @@ var
   Shape: TShape;
 begin
   if World.MainCamera = nil then Exit;
-  ObserverPos := Vector4(World.MainCamera.Position, 1);
+  ObserverPos := Vector4(World.MainCamera.Translation, 1);
 
   BorderLines.FdVertexCount.Items.Clear;
   BorderCoord.FdPoint.Items.Clear;

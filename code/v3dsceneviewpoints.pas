@@ -1,5 +1,5 @@
 {
-  Copyright 2004-2018 Michalis Kamburelis.
+  Copyright 2004-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -117,6 +117,9 @@ procedure SetInitialViewpoint(Scene: TCastleScene;
   TMenuViewpoints.BoundViewpoint). }
 procedure JumpToViewpoint(const Viewport: TCastleViewport;
   const Viewpoint: TAbstractViewpointNode);
+
+const
+  CameraTransitionTime = 0.5;
 
 implementation
 
@@ -433,7 +436,8 @@ begin
       otherwise nothing happens... So just explicitly go to viewpoint
       position. }
     Viewpoint.GetView(Pos, Dir, Up, GravityUp);
-    Scene.CameraTransition(Viewport.Camera, Pos, Dir, Up, GravityUp);
+    Viewport.Camera.AnimateTo(Pos, Dir, Up, CameraTransitionTime);
+    Viewport.Camera.GravityUp := GravityUp;
   end else
     Viewpoint.EventSet_Bind.Send(true);
 end;

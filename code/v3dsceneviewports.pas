@@ -259,8 +259,6 @@ begin
   for I := 0 to High(ExtraViewports) do
   begin
     ExtraViewports[I] := ViewportClass.Create(nil);
-    { do not use lights from Scene on other scenes }
-    ExtraViewports[I].UseGlobalLights := false;
     ExtraViewports[I].Items := MainViewport.Items;
     { We will explicitly initialize camera and navigation.
       This also prevents the AutoCamera mechanism from overriding
