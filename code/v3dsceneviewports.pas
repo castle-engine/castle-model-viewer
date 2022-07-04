@@ -259,6 +259,9 @@ begin
   for I := 0 to High(ExtraViewports) do
   begin
     ExtraViewports[I] := ViewportClass.Create(nil);
+    // Move extra cameras to shared Items.
+    ExtraViewports[I].Items.Remove(ExtraViewports[I].Camera);
+    MainViewport.Items.Add(ExtraViewports[I].Camera);
     ExtraViewports[I].Items := MainViewport.Items;
     { We will explicitly initialize camera and navigation.
       This also prevents the AutoCamera mechanism from overriding
