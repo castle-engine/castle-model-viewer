@@ -1680,9 +1680,9 @@ var
             SelectedGeometry.X3DName,
             SelectedShape.OriginalGeometry.X3DType,
             SelectedGeometry.X3DType,
-            SelectedShape.GeometryParentNodeName,
-            SelectedShape.GeometryGrandParentNodeName,
-            SelectedShape.GeometryGrandGrandParentNodeName,
+            SelectedShape.GeometryParentNode.X3DName,
+            SelectedShape.GeometryGrandParentNode.X3DName,
+            SelectedShape.GeometryGrandGrandParentNode.X3DName,
             SelectedShape.BoundingBox.ToString]);
 
       if (SelectedItem^.Face.IndexBegin <> -1) and
