@@ -429,12 +429,7 @@ begin
 end;
 
 const
-  { Although X3D allows attenuation[0] (constant) to be < 1, we don't allow it.
-    That's because when rendering with fixed-function, it's not honored
-    correctly: X3D spec says to do "1 / max(c1 + c2 * dL + c3 * dL^2, 1)"
-    (makes sense: never make light brighter by attenuation),
-    but fixed-function OpenGL doesn't do it (our shader rendering does it Ok). }
-  AttenuationRange: TBox3D = (Data: ((X:1; Y: 0; Z: 0), (X:2; Y: 2; Z: 2)));
+  AttenuationRange: TBox3D = (Data: ((X:0; Y: 0; Z: 0), (X:2; Y: 2; Z: 2)));
 
 { TMenuVector3Sliders -------------------------------------------------------- }
 
@@ -695,7 +690,7 @@ begin
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
-  IntensitySlider.Max := 1;
+  IntensitySlider.Max := 10;
   IntensitySlider.Value := Light.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
 
