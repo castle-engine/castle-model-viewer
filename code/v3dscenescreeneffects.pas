@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2018 Michalis Kamburelis.
+  Copyright 2010-2022 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -153,7 +153,7 @@ begin
       Nodes[SE, I].KeepExistingBegin;
       if ScreenEffectsInfo[SE].Exponent <> 0 then
       begin
-        ExponentField := Nodes[SE, I].FindNode('MyShader').Field('exponent', true) as TSFFloat;
+        ExponentField := Nodes[SE, I].FindNode(TComposedShaderNode, 'MyShader').Field('exponent', true) as TSFFloat;
         ExponentField.Send(ScreenEffectsInfo[SE].Exponent);
       end;
     end;
