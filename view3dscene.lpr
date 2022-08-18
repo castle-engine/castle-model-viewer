@@ -1655,7 +1655,6 @@ var
   procedure SelectedShowInformation;
   var
     S, TextureDescription: string;
-    VCOver, TCOver, VCNotOver, TCNotOver: Cardinal;
     M: TMaterialInfo;
     SelectedShape: TShape;
     SelectedGeometry: TAbstractGeometryNode;
@@ -1694,26 +1693,10 @@ var
             SelectedItem^.Face.IndexEnd ]);
       end;
 
-      VCNotOver := SelectedShape.VerticesCount(false);
-      TCNotOver := SelectedShape.TrianglesCount(false);
-      VCOver := SelectedShape.VerticesCount(true);
-      TCOver := SelectedShape.TrianglesCount(true);
-
-      if (VCOver = VCNotOver) and (TCOver = TCNotOver) then
-      begin
-       s := s + Format(
-              'Node has %d vertices and %d triangles '+
-              '(with and without over-triangulating).',
-              [VCNotOver, TCNotOver]);
-      end else
-      begin
-       s := s + Format(
-              'When we don''t use over-triangulating (e.g. for raytracing and '+
-              'collision-detection) node has %d vertices and %d triangles. '+
-              'When we use over-triangulating (e.g. for real-time rendering) '+
-              'node has %d vertices and %d triangles.',
-              [VCNotOver, TCNotOver, VCOver, TCOver]);
-      end;
+      s := s + Format('Node has %d vertices and %d triangles.', [
+        SelectedShape.VerticesCount,
+        SelectedShape.TrianglesCount
+      ]);
 
       { calculate Tex }
       Tex := SelectedItem^.State.MainTexture;
@@ -2755,27 +2738,9 @@ var
   end;
 
   function SceneVertexTriangleInfo(const Scene: TCastleScene): string;
-  const
-    SSceneInfoTriVertCounts_Same = 'Scene contains %d triangles and %d ' +
-      'vertices (with and without over-triangulating).';
-    SSceneInfoTriVertCounts_1 =
-      'When we don''t use over-triangulating (e.g. when we do collision '+
-      'detection or ray tracing) scene has %d triangles and %d vertices.';
-    SSceneInfoTriVertCounts_2 =
-      'When we use over-triangulating (e.g. when we do OpenGL rendering) '+
-      'scene has %d triangles and %d vertices.';
   begin
-    if (Scene.VerticesCount(false) = Scene.VerticesCount(true)) and
-       (Scene.TrianglesCount(false) = Scene.TrianglesCount(true)) then
-      Result := Format(SSceneInfoTriVertCounts_Same,
-        [Scene.TrianglesCount(false), Scene.VerticesCount(false)]) + NL else
-    begin
-      Result :=
-        Format(SSceneInfoTriVertCounts_1,
-          [Scene.TrianglesCount(false), Scene.VerticesCount(false)]) + NL +
-        Format(SSceneInfoTriVertCounts_2,
-          [Scene.TrianglesCount(true), Scene.VerticesCount(true)]) + NL;
-    end;
+    Result := Format('Scene contains %d triangles and %d vertices.',
+      [Scene.TrianglesCount, Scene.VerticesCount]) + NL;
   end;
 
   function SceneBoundingBoxInfo(const Scene: TCastleScene): string;
