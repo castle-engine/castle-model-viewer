@@ -57,18 +57,55 @@ var
   MultipleAnimations: boolean = false;
   Transition: Single = 0;
 
-{ TNamedAnimationsUi and friend classes -------------------------------------- }
+{ TButtonAnimation ----------------------------------------------------------- }
 
 type
   TButtonAnimation = class(TCastleButton)
+  strict private
+    FTimeSensor: TTimeSensorNode;
+    procedure SetTimeSensor(const Value: TTimeSensorNode);
+    procedure TimeSensorDestruction(const Node: TX3DNode);
   public
     AnimationName: String;
     { Store TTimeSensorNode reference, not only AnimationName,
       as time sensor better identifies the animation.
       Testcase: Bee_10.x3dv that Inlines and IMPORTs animations
       from multiple copies of the same glTF file. }
-    TimeSensor: TTimeSensorNode;
+    property TimeSensor: TTimeSensorNode read FTimeSensor write SetTimeSensor;
+    destructor Destroy; override;
   end;
+
+procedure TButtonAnimation.TimeSensorDestruction(const Node: TX3DNode);
+begin
+  { Free TButtonAnimation when associated TimeSensor is freed.
+    Testcase:
+    - open demo-models/x3d/data_uri.x3dv
+    - open "Animations" panel
+    - click on "Anchor to a model embedded using data URI"
+  }
+  FTimeSensor := nil; // no point doing FTimeSensor.RemoveDestructionNotification
+  Destroy;
+end;
+
+destructor TButtonAnimation.Destroy;
+begin
+  TimeSensor := nil;
+  inherited;
+end;
+
+procedure TButtonAnimation.SetTimeSensor(const Value: TTimeSensorNode);
+begin
+  if FTimeSensor <> Value then
+  begin
+    if FTimeSensor <> nil then
+      FTimeSensor.RemoveDestructionNotification(@TimeSensorDestruction);
+    FTimeSensor := Value;
+    if FTimeSensor <> nil then
+      FTimeSensor.AddDestructionNotification(@TimeSensorDestruction);
+  end;
+end;
+
+{ TNamedAnimationsUi and friend classes -------------------------------------- }
 
 type
   TNamedAnimationsUi = class(TCastleVerticalGroup)
