@@ -753,8 +753,79 @@ const
 
   SOnlyWhenOctreeAvailable = 'This is not possible when octree is not generated. Turn on "Navigation -> Collision Detection" to make it available.';
 
+procedure SetViewpointForWholeScene(
+  const WantedDirection, WantedUp: Integer;
+  const WantedDirectionPositive, WantedUpPositive: boolean);
+var
+  Position, Direction, Up, GravityUp: TVector3;
+begin
+  CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
+    WantedDirectionPositive, WantedUpPositive,
+    Position, Direction, Up, GravityUp);
+  MainViewport.Camera.AnimateTo(Position, Direction, Up, CameraTransitionTime);
+  MainViewport.Camera.GravityUp := GravityUp;
+end;
+
+procedure SetViewpointTop;
+begin
+  SetViewpointForWholeScene(1, 2, false, false);
+end;
+
+procedure SetViewpointBottom;
+begin
+  SetViewpointForWholeScene(1, 2, true , false);
+end;
+
+procedure SetViewpointFront;
+begin
+  SetViewpointForWholeScene(2, 1, false, true);
+end;
+
+procedure SetViewpointBack;
+begin
+  SetViewpointForWholeScene(2, 1, true , true);
+end;
+
+procedure SetViewpointRight;
+begin
+  SetViewpointForWholeScene(0, 1, false, true);
+end;
+
+procedure SetViewpointLeft;
+begin
+  SetViewpointForWholeScene(0, 1, true , true);
+end;
+
 procedure Press(Container: TCastleContainer; const Event: TInputPressRelease);
 begin
+  { Although some of these shortcuts are also assigned to menu items,
+    catching them here is more reliable -- allows to handle also Ctrl+number
+    combinations, and capture both numpad and non-numpad versions. }
+  if Event.IsKey(key7) or Event.IsKey(keyNumPad7) then
+  begin
+    if Event.ModifiersDown = [] then
+      SetViewpointTop
+    else
+    if Event.ModifiersDown = [mkCtrl] then
+      SetViewpointBottom;
+  end;
+  if Event.IsKey(key1) or Event.IsKey(keyNumPad1) then
+  begin
+    if Event.ModifiersDown = [] then
+      SetViewpointFront
+    else
+    if Event.ModifiersDown = [mkCtrl] then
+      SetViewpointBack;
+  end;
+  if Event.IsKey(key3) or Event.IsKey(keyNumPad3) then
+  begin
+    if Event.ModifiersDown = [] then
+      SetViewpointRight
+    else
+    if Event.ModifiersDown = [mkCtrl] then
+      SetViewpointLeft;
+  end;
+
   { Support selecting item by ctrl + right button click. }
   if Event.IsMouseButton(buttonRight) and (mkCtrl in Window.Pressed.Modifiers) then
   begin
@@ -2001,19 +2072,6 @@ var
       RenderContext.GlobalAmbient := C;
   end;
 
-  procedure SetViewpointForWholeScene(
-    const WantedDirection, WantedUp: Integer;
-    const WantedDirectionPositive, WantedUpPositive: boolean);
-  var
-    Position, Direction, Up, GravityUp: TVector3;
-  begin
-    CameraViewpointForWholeScene(Scene.BoundingBox, WantedDirection, WantedUp,
-      WantedDirectionPositive, WantedUpPositive,
-      Position, Direction, Up, GravityUp);
-    MainViewport.Camera.AnimateTo(Position, Direction, Up, CameraTransitionTime);
-    MainViewport.Camera.GravityUp := GravityUp;
-  end;
-
   procedure RemoveNodesWithMatchingName;
   var
     Wildcard: string;
@@ -2864,15 +2922,12 @@ begin
           MainViewport.Camera.GravityUp := DefaultX3DGravityUp;
         end;
 
-    53: SetViewpointForWholeScene(2, 1, false, true);
-    54: SetViewpointForWholeScene(2, 1, true , true);
-    55: SetViewpointForWholeScene(0, 1, false, true);
-    56: SetViewpointForWholeScene(0, 1, true , true);
-
-    57: SetViewpointForWholeScene(0, 2, false, true);
-    58: SetViewpointForWholeScene(0, 2, true , true);
-    59: SetViewpointForWholeScene(1, 2, false, true);
-    60: SetViewpointForWholeScene(1, 2, true , true);
+    53: SetViewpointTop;
+    54: SetViewpointBottom;
+    57: SetViewpointFront;
+    58: SetViewpointBack;
+    59: SetViewpointRight;
+    60: SetViewpointLeft;
 
     65: Viewpoints.Initial(MainViewport);
     66: Viewpoints.Previous(MainViewport);

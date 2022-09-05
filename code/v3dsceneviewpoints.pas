@@ -293,16 +293,15 @@ begin
   Append(TMenuItem.Create('Default VRML 1.0 viewpoint', 51));
   Append(TMenuItem.Create('Default VRML 2.0 (and X3D) viewpoint', 52));
   Append(TMenuSeparator.Create);
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -Z dir)', 53));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +Z dir)', 54));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, -X dir)', 55));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Y up, +X dir)', 56));
-  Append(TMenuSeparator.Create);
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -X dir)', 57));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +X dir)', 58));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, -Y dir)', 59));
-  Append(TMenuItem.Create('Calculated viewpoint to see the scene (+Z up, +Y dir)', 60));
-
+  { TODO: key shortcuts should handle both numpad and non-numpad key presses.
+    TODO: key shortcuts should show Ctrl+XXX versions.
+    For now we workaround both by handling more keys in Press. }
+  Append(TMenuItem.Create('Top', 53, '7'));
+  Append(TMenuItem.Create('Bottom', 54{ TODO: , Ctrl7}));
+  Append(TMenuItem.Create('Front', 57, '1'));
+  Append(TMenuItem.Create('Back', 58{ TODO: , Ctrl1}));
+  Append(TMenuItem.Create('Right', 59, '3'));
+  Append(TMenuItem.Create('Left', 60{ TODO: , Ctrl3}));
   MenuUpdateEnd;
 end;
 
