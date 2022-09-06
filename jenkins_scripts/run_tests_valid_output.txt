@@ -55,8 +55,6 @@ tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value
 tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
 tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
 tovrmlx3d: Warning: Setting float field Cylinder:TCylinderNode_1.radius to value < 0 (given: -0.48) is invalid
-tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node not assigned (look for warnings when reading this VRML file)
-tovrmlx3d: Warning: X3D: Cannot save VRML route: source node not assigned (look for warnings when reading this VRML file)
 tovrmlx3d: Warning: VRML/X3D: Cannot load external prototype from URL "file://DIR/demo-models/prototypes/not_existing.wrl": Error when downloading "file://DIR/demo-models/prototypes/not_existing.wrl": Exception "EFOpenError":
 Unable to open file "DIR/demo-models/prototypes/not_existing.wrl": No such file or directory
 tovrmlx3d: Warning: VRML/X3D: Unknown node URN "urn:not_existing"
@@ -150,37 +148,22 @@ tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "t
 tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
 tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
 tovrmlx3d: Warning: VRML/X3D: Converting VRML 1.0 or Inventor to X3D is not implemented. You will get VRML 1.0/Inventor nodes encoded like for X3D, which probably is not much useful.
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Group"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Group"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Coordinate3" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "IndexedLineSet" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "PointSet" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Separator" inside node "TransformSeparator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "TransformSeparator"
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "Krzyzyk" undefined
-tovrmlx3d: Warning: X3D: Unknown "style" field value: "NONE"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "fontStyle" by node "FontStyle" inside node "TransformSeparator"
-tovrmlx3d: Warning: X3D: Unknown X3D node type "AsciiText"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "AsciiText" inside node "TransformSeparator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Group" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cone"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cone" inside node "Separator"
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "RenderBefore" undefined
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "material" by node "Material" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (unhandled X3D XML attribute) "parts" in node "Cylinder"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "geometry" by node "Cylinder" inside node "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D node type "Info"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Info" inside node "Group"
 tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
 tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
 WARNING: input/output headers differ:
@@ -210,12 +193,6 @@ tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of t
 tovrmlx3d: Warning: X3D: Node "Coordinate" is not allowed in the field "children" of the node "Group"
 tovrmlx3d: Warning: X3D: Node "Color" is not allowed in the field "fontStyle" of the node "Text"
 tovrmlx3d: Warning: X3D: Node "Text" is not allowed in the field "children" of the node "Group"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Translation" inside node "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Shape" inside node "Separator"
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: Warning: X3D: Incorrect USE clause: node name "VRML2Cube" undefined
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "children" by node "Transform" inside node "Separator"
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsNose" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
