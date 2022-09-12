@@ -6,7 +6,7 @@ name: view3dscene
 # The base snap is the execution environment for this snap.
 base: core20
 
-version: '4.2.0'
+version: '4.3.0'
 summary: Viewer for 3D and 2D models - glTF, X3D, VRML, Spine JSON and more # 79 char long summary
 description: |
   Viewer for all 3D and 2D models suported by Castle Game Engine:
