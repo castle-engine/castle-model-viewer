@@ -85,7 +85,7 @@ pipeline {
             }
             stage('Setup CGE (macOS)') {
               steps {
-                copyArtifacts(projectName: 'castle_game_engine_macos/master', filter: 'castle-engine*-darwin-x86_64.zip')
+                copyArtifacts(projectName: 'castle_game_engine_organization/castle-engine/master', filter: 'castle-engine*-darwin-x86_64.zip')
                 sh 'unzip castle-engine*-darwin-x86_64.zip'
               }
             }
