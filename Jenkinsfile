@@ -56,7 +56,7 @@ pipeline {
             }
             stage('Setup CGE (Raspberry Pi)') {
               steps {
-                copyArtifacts(projectName: 'castle_game_engine_raspberry_pi/master', filter: 'castle-engine*-linux-arm.zip')
+                copyArtifacts(projectName: 'castle_game_engine_organization/castle-engine/master', filter: 'castle-engine*-linux-arm.zip')
                 sh 'unzip castle-engine*-linux-arm.zip'
               }
             }
