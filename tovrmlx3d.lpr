@@ -31,7 +31,8 @@
 program tovrmlx3d;
 
 uses SysUtils,
-  CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters,
+  {$ifndef VER3_0} OpenSSLSockets, {$endif}
+  CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters, CastleDownload,
   CastleFilesUtils, CastleURIUtils, CastleApplicationProperties, CastleLog,
   X3DLoadInternalUtils,
   V3DSceneVersion;
@@ -41,14 +42,15 @@ var
   ForceX3D: boolean = false;
 
 const
-  Options: array [0..5] of TOption =
+  Options: array [0..6] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'encoding'; Argument: oaRequired),
     (Short:  #0; Long: 'force-x3d'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
-    (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
+    (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone),
+    (Short:  #0; Long: 'enable-downloads'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -95,6 +97,7 @@ begin
          Writeln(ErrOutput, ApplicationProperties.ApplicationName, ': Logging to ', LogOutput);
        end;
     5: CastleX3dExtensions := false;
+    6: EnableBlockingDownloads := true;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
