@@ -77,6 +77,8 @@ begin
            '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' +NL+
            '                        Particularly useful when combined with --write,' +NL+
            '                        to have X3D valid in all browsers (but less functional).' +NL+
+           '  --enable-downloads    Enable (blocking) downloads from the net.' +NL+
+           '                        These happen if model references e.g. EXTERNPROTO using http(s).' +NL+
            NL+
            ApplicationProperties.Description);
          Halt;
