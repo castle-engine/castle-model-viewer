@@ -189,13 +189,13 @@ begin
         W := Window.Width div 2;
         H := Window.Height;
 
-        MainViewport.Left := 0;
-        MainViewport.Bottom := 0;
+        MainViewport.Anchor(hpLeft);
+        MainViewport.Anchor(vpBottom);
         MainViewport.Width := W - 1;
         MainViewport.Height := H;
 
-        ExtraViewports[0].Left := W + 1;
-        ExtraViewports[0].Bottom := 0;
+        ExtraViewports[0].Anchor(hpRight);
+        ExtraViewports[0].Anchor(vpBottom);
         ExtraViewports[0].Width := W - 1;
         ExtraViewports[0].Height := H;
       end;
@@ -204,23 +204,23 @@ begin
         W := Window.Width div 2;
         H := Window.Height div 2;
 
-        MainViewport.Left := 0;
-        MainViewport.Bottom := H + 1;
+        MainViewport.Anchor(hpLeft);
+        MainViewport.Anchor(vpTop);
         MainViewport.Width := W - 1;
         MainViewport.Height := H - 1;
 
-        ExtraViewports[0].Left := W + 1;
-        ExtraViewports[0].Bottom := H + 1;
+        ExtraViewports[0].Anchor(hpRight);
+        ExtraViewports[0].Anchor(vpTop);
         ExtraViewports[0].Width := W - 1;
         ExtraViewports[0].Height := H - 1;
 
-        ExtraViewports[1].Left := 0;
-        ExtraViewports[1].Bottom := 0;
+        ExtraViewports[1].Anchor(hpLeft);
+        ExtraViewports[1].Anchor(vpBottom);
         ExtraViewports[1].Width := W - 1;
         ExtraViewports[1].Height := H - 1;
 
-        ExtraViewports[2].Left := W + 1;
-        ExtraViewports[2].Bottom := 0;
+        ExtraViewports[2].Anchor(hpRight);
+        ExtraViewports[2].Anchor(vpBottom);
         ExtraViewports[2].Width := W - 1;
         ExtraViewports[2].Height := H - 1;
       end;

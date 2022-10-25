@@ -957,7 +957,7 @@ begin
 
       Scene.TriangleOctreeProgressTitle := 'Building triangle octree';
       Scene.ShapeOctreeProgressTitle := 'Building Shape octree';
-      Scene.Spatial := [ssRendering, ssDynamicCollisions];
+      Scene.PreciseCollisions := true;
     finally
       Window.OnRender := OldRender;
       Window.OnBeforeRender := OldBeforeRender;
@@ -976,7 +976,7 @@ begin
       (by calling OnPointingDeviceSensorsChange that leads to our method). }
     Scene.PointingDeviceClear;
 
-    Scene.Spatial := [];
+    Scene.PreciseCollisions := false;
   end;
 end;
 
