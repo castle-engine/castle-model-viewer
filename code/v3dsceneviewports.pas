@@ -242,6 +242,10 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
       else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
       {$endif}
     end;
+
+    { Always set ZoomEnabled=true, even on TCastleWalkNavigation }
+    if Viewport.Navigation <> nil then
+      Viewport.Navigation.ZoomEnabled := true;
   end;
 
 var
