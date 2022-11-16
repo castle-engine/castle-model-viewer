@@ -6,6 +6,7 @@ warning_icon.svg
 open.png,svg
 - from https://github.com/FortAwesome/Font-Awesome/blob/6.x/svgs/regular/folder-open.svg
 - license: https://github.com/FortAwesome/Font-Awesome (CC BY 4.0 License , SIL OFL 1.1 License , MIT License ), https://github.com/FortAwesome/Font-Awesome/blob/6.x/LICENSE.txt
+- remade to open-thin.svg by Michalis
 
 walk.svg based on
 - http://www.openclipart.org/people/ryanlerch/ryanlerch_No_entry_sign_with_a_man.svg

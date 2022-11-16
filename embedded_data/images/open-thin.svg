@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 576 512"
+   version="1.1"
+   id="svg827"
+   sodipodi:docname="open-thin.svg"
+   inkscape:export-filename="/home/michalis/sources/castle-engine/view3dscene/embedded_data/images/open.png"
+   inkscape:export-xdpi="4.125"
+   inkscape:export-ydpi="4.125"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs831" />
+  <sodipodi:namedview
+     id="namedview829"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="0.49649392"
+     inkscape:cx="57.402516"
+     inkscape:cy="330.31623"
+     inkscape:window-width="1850"
+     inkscape:window-height="1010"
+     inkscape:window-x="70"
+     inkscape:window-y="33"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg827"
+     inkscape:snap-global="false" />
+  <!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+  <path
+     id="path825"
+     d="M 64,32 C 28.65,32 0,60.66 0,96 v 320 c 0,35.34 28.65,64 64,64 h 191.55078 191.54883 c 13,0 24.1,-6.79922 29.5,-17.69922 l 96,-192 C 583.19961,249.00078 567.7,224 544,224 H 147.80078 c -12.1,0 -23.20062,6.79922 -28.64062,17.69922 L 19.185547,431.33008 19.650391,96.441406 C 20.033108,72.490836 39.12788,53.31199 64,53.248047 l 121.87695,-0.3125 c 25.8476,-0.06645 29.77279,14.600283 45.66211,26.265625 L 268.08008,114.75586 416,114.32227 c 34.97285,-0.14043 45.84704,21.95874 46.45898,43.15039 L 463.45508,192 H 480 V 160 C 480,124.66 451.35,96 416,96 H 275.90039 L 226.75977,50.75 C 214.74977,38.742 198.47,32 181.5,32 Z m 466.78596,212.41626 c 15.93594,-0.13191 20.96545,8.23347 15.42694,19.94455 -30.62227,64.75015 -87.24622,182.63148 -87.24622,182.63148 0,0 -4.42715,12.36352 -30.94182,11.88842 -26.51468,-0.47509 -354.827691,-2.65661 -371.724182,-2.21638 -16.896491,0.44023 -17.708656,-13.13257 -9.481235,-28.94076 8.227422,-15.80818 41.569692,-84.07016 81.892697,-159.46433 13.82014,-25.84029 8.87087,-24.61198 49.69899,-24.91338 91.24999,-0.67362 239.33558,2.00615 352.37483,1.0704 z"
+     sodipodi:nodetypes="sssscsccsscccccccccccssccssssczzzsss" />
+</svg>
