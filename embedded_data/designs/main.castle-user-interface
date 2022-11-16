@@ -229,6 +229,7 @@
       "PaddingHorizontal" : 2.0000000000000000E+000,
       "PaddingVertical" : 2.0000000000000000E+000,
       "Tooltip" : "Support Castle Game Engine",
+      "TooltipControl" : "TooltipPatreon",
       "TranslationPersistent" : {
         "$$ClassName" : "TCastleVector2Persistent",
         "X" : -5.0000000000000000E+000,
@@ -240,7 +241,8 @@
     },
     {
       "$$ClassName" : "TCastleUserInterface",
-      "Height" : 5.6000000000000000E+001,
+      "Exists" : false,
+      "Height" : 2.9600000000000000E+002,
       "HorizontalAnchorParent" : "hpRight",
       "HorizontalAnchorSelf" : "hpRight",
       "Name" : "TooltipPatreon",
@@ -251,7 +253,7 @@
       },
       "VerticalAnchorParent" : "vpTop",
       "VerticalAnchorSelf" : "vpTop",
-      "Width" : 3.0000000000000000E+002,
+      "Width" : 3.1000000000000000E+002,
       "$Children" : [
         {
           "$$ClassName" : "TCastleRectangleControl",
@@ -262,11 +264,6 @@
           },
           "Height" : 2.7400000000000000E+002,
           "Name" : "TooltipPatreonLabelContainer",
-          "TranslationPersistent" : {
-            "$$ClassName" : "TCastleVector2Persistent",
-            "X" : -7.0000000000000000E+000,
-            "Y" : -2.4300000000000000E+002
-          },
           "Width" : 3.1000000000000000E+002,
           "$Children" : [
             {
@@ -308,8 +305,8 @@
           "ShapeType" : "stTriangleUp",
           "TranslationPersistent" : {
             "$$ClassName" : "TCastleVector2Persistent",
-            "X" : 2.6400000000000000E+002,
-            "Y" : 2.8000000000000000E+001
+            "X" : 2.7400000000000000E+002,
+            "Y" : 2.6800000000000000E+002
           },
           "Width" : 3.0000000000000000E+001
         }

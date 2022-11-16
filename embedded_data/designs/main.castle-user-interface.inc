@@ -231,6 +231,7 @@
 '      "PaddingHorizontal" : 2.0000000000000000E+000,' + LineEnding +
 '      "PaddingVertical" : 2.0000000000000000E+000,' + LineEnding +
 '      "Tooltip" : "Support Castle Game Engine",' + LineEnding +
+'      "TooltipControl" : "TooltipPatreon",' + LineEnding +
 '      "TranslationPersistent" : {' + LineEnding +
 '        "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
 '        "X" : -5.0000000000000000E+000,' + LineEnding +
@@ -242,7 +243,8 @@
 '    },' + LineEnding +
 '    {' + LineEnding +
 '      "$$ClassName" : "TCastleUserInterface",' + LineEnding +
-'      "Height" : 5.6000000000000000E+001,' + LineEnding +
+'      "Exists" : false,' + LineEnding +
+'      "Height" : 2.9600000000000000E+002,' + LineEnding +
 '      "HorizontalAnchorParent" : "hpRight",' + LineEnding +
 '      "HorizontalAnchorSelf" : "hpRight",' + LineEnding +
 '      "Name" : "TooltipPatreon",' + LineEnding +
@@ -253,7 +255,7 @@
 '      },' + LineEnding +
 '      "VerticalAnchorParent" : "vpTop",' + LineEnding +
 '      "VerticalAnchorSelf" : "vpTop",' + LineEnding +
-'      "Width" : 3.0000000000000000E+002,' + LineEnding +
+'      "Width" : 3.1000000000000000E+002,' + LineEnding +
 '      "$Children" : [' + LineEnding +
 '        {' + LineEnding +
 '          "$$ClassName" : "TCastleRectangleControl",' + LineEnding +
@@ -264,11 +266,6 @@
 '          },' + LineEnding +
 '          "Height" : 2.7400000000000000E+002,' + LineEnding +
 '          "Name" : "TooltipPatreonLabelContainer",' + LineEnding +
-'          "TranslationPersistent" : {' + LineEnding +
-'            "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
-'            "X" : -7.0000000000000000E+000,' + LineEnding +
-'            "Y" : -2.4300000000000000E+002' + LineEnding +
-'          },' + LineEnding +
 '          "Width" : 3.1000000000000000E+002,' + LineEnding +
 '          "$Children" : [' + LineEnding +
 '            {' + LineEnding +
@@ -310,8 +307,8 @@
 '          "ShapeType" : "stTriangleUp",' + LineEnding +
 '          "TranslationPersistent" : {' + LineEnding +
 '            "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
-'            "X" : 2.6400000000000000E+002,' + LineEnding +
-'            "Y" : 2.8000000000000000E+001' + LineEnding +
+'            "X" : 2.7400000000000000E+002,' + LineEnding +
+'            "Y" : 2.6800000000000000E+002' + LineEnding +
 '          },' + LineEnding +
 '          "Width" : 3.0000000000000000E+001' + LineEnding +
 '        }' + LineEnding +
