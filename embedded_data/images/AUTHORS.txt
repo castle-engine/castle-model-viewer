@@ -3,10 +3,9 @@ warning_icon.svg
 - by http://commons.wikimedia.org/wiki/User:Amada44
 - license: public domain
 
-open.png
-- from http://tango.freedesktop.org/Tango_Desktop_Project
-- license: public domain
-- color modified by Kambi (using GIMP)
+open.png,svg
+- from https://github.com/FortAwesome/Font-Awesome/blob/6.x/svgs/regular/folder-open.svg
+- license: https://github.com/FortAwesome/Font-Awesome (CC BY 4.0 License , SIL OFL 1.1 License , MIT License ), https://github.com/FortAwesome/Font-Awesome/blob/6.x/LICENSE.txt
 
 walk.svg based on
 - http://www.openclipart.org/people/ryanlerch/ryanlerch_No_entry_sign_with_a_man.svg

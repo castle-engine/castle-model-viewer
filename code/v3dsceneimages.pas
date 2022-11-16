@@ -37,6 +37,8 @@ function Light_gizmo: TRGBAlphaImage;
 
 function Open: TRGBAlphaImage;
 
+function Path825: TRGBAlphaImage;
+
 function Screenshot: TRGBAlphaImage;
 
 function Walk: TRGBAlphaImage;
@@ -70,6 +72,7 @@ finalization
   FreeAndNil(FFly);
   FreeAndNil(FLight_gizmo);
   FreeAndNil(FOpen);
+  FreeAndNil(FPath825);
   FreeAndNil(FScreenshot);
   FreeAndNil(FWalk);
   FreeAndNil(FWarning_icon);

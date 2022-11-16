@@ -3612,7 +3612,6 @@ begin
   ButtonOpen.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonOpen;
   ButtonOpen.Image.Image := V3DSceneImages.Open;
   ButtonOpen.Image.OwnsImage := false;
-  ButtonOpen.Image.AlphaChannel := acTest;
   ButtonOpen.MinImageHeight := MinImageHeight;
 
   ButtonCollisions := UiOwner.FindRequiredComponent('ButtonCollisions') as TCastleButton;
@@ -3626,7 +3625,6 @@ begin
   ButtonScreenshot.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonScreenshot;
   ButtonScreenshot.Image.Image := V3DSceneImages.Screenshot;
   ButtonScreenshot.Image.OwnsImage := false;
-  ButtonScreenshot.Image.AlphaChannel := acTest;
   ButtonScreenshot.MinImageHeight := MinImageHeight;
 
   ButtonAnimations := UiOwner.FindRequiredComponent('ButtonAnimations') as TCastleButton;
