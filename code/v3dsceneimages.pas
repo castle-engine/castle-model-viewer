@@ -9,31 +9,37 @@ interface
 
 uses CastleImages;
 
-function Warning_icon: TRGBAlphaImage;
+function ButtonDisabled: TGrayscaleAlphaImage;
+
+function ButtonFocused: TGrayscaleAlphaImage;
+
+function ButtonNormal: TGrayscaleAlphaImage;
+
+function ButtonPressed: TGrayscaleAlphaImage;
+
+function Panel: TGrayscaleAlphaImage;
+
+function PanelSeparator: TRGBAlphaImage;
+
+function TooltipArrow: TRGBAlphaImage;
+
+function Animations: TRGBAlphaImage;
+
+function Castle_game_engine_icon: TRGBAlphaImage;
 
 function Examine: TRGBAlphaImage;
 
-function Walk: TRGBAlphaImage;
-
 function Fly: TRGBAlphaImage;
+
+function Light_gizmo: TRGBAlphaImage;
 
 function Open: TRGBAlphaImage;
 
 function Screenshot: TRGBAlphaImage;
 
-function TooltipArrow: TRGBAlphaImage;
+function Walk: TRGBAlphaImage;
 
-function Light_gizmo: TRGBAlphaImage;
-
-function Animations: TRGBAlphaImage;
-
-function Panel: TRGBAlphaImage;
-
-function PanelSeparator: TRGBImage;
-
-function Examine_tooltip: TRGBImage;
-
-function Walk_fly_tooltip: TRGBImage;
+function Warning_icon: TRGBAlphaImage;
 
 implementation
 
@@ -48,17 +54,20 @@ uses SysUtils;
 
 initialization
 finalization
-  FreeAndNil(FWarning_icon);
-  FreeAndNil(FExamine);
-  FreeAndNil(FWalk);
-  FreeAndNil(FFly);
-  FreeAndNil(FOpen);
-  FreeAndNil(FScreenshot);
-  FreeAndNil(FTooltipArrow);
-  FreeAndNil(FLight_gizmo);
-  FreeAndNil(FAnimations);
+  FreeAndNil(FButtonDisabled);
+  FreeAndNil(FButtonFocused);
+  FreeAndNil(FButtonNormal);
+  FreeAndNil(FButtonPressed);
   FreeAndNil(FPanel);
   FreeAndNil(FPanelSeparator);
-  FreeAndNil(FExamine_tooltip);
-  FreeAndNil(FWalk_fly_tooltip);
+  FreeAndNil(FTooltipArrow);
+  FreeAndNil(FAnimations);
+  FreeAndNil(FCastle_game_engine_icon);
+  FreeAndNil(FExamine);
+  FreeAndNil(FFly);
+  FreeAndNil(FLight_gizmo);
+  FreeAndNil(FOpen);
+  FreeAndNil(FScreenshot);
+  FreeAndNil(FWalk);
+  FreeAndNil(FWarning_icon);
 end.

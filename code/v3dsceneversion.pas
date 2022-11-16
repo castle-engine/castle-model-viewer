@@ -4,6 +4,6 @@ interface
 const
   Version = '4.3.0';
   View3dsceneURL = 'https://castle-engine.io/view3dscene.php';
-  SupportURL = 'https://castle-engine.io/donate.php';
+  SupportURL = 'https://www.patreon.com/castleengine';
 implementation
 end.

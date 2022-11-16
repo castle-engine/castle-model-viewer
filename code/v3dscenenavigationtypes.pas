@@ -60,7 +60,7 @@ const
 
 var
   CameraRadios: array [TUserNavigationType] of TMenuItemRadio;
-  CameraButtons: array [TUserNavigationType] of TCastleButton;
+  NavigationButtons: array [TUserNavigationType] of TCastleButton;
 
 function NavigationType: TUserNavigationType;
 
@@ -86,7 +86,7 @@ function Navigation: TCastleNavigation;
 implementation
 
 uses CastleParameters, CastleClassUtils, CastleImages,
-  V3DSceneImages, CastleRectangles;
+  V3DSceneImages, V3DSceneOpaqueImages, CastleRectangles;
 
 var
   { Saved Viewport from InitNavigation. }
@@ -101,8 +101,8 @@ begin
   for NT := Low(NT) to High(NT) do
     { check <> nil, since for ntNone and not StableNavigationType
       we don't show buttons }
-    if CameraButtons[NT] <> nil then
-      CameraButtons[NT].Pressed := NT = NavigationType;
+    if NavigationButtons[NT] <> nil then
+      NavigationButtons[NT].Pressed := NT = NavigationType;
 end;
 
 procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
@@ -213,8 +213,8 @@ begin
   ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
 end;
 
-initialization
-  Theme.ImagesPersistent[tiTooltip].Image := TooltipRounded;
-  Theme.ImagesPersistent[tiTooltip].OwnsImage := false;
-  Theme.ImagesPersistent[tiTooltip].ProtectedSides.AllSides := 9;
+// initialization
+//   Theme.ImagesPersistent[tiTooltip].Image := TooltipRounded;
+//   Theme.ImagesPersistent[tiTooltip].OwnsImage := false;
+//   Theme.ImagesPersistent[tiTooltip].ProtectedSides.AllSides := 9;
 end.

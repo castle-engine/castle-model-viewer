@@ -165,6 +165,7 @@ var
   ToolbarPanel: TCastleUserInterface;
   ButtonCollisions: TCastleButton;
   ButtonAnimations: TCastleButton;
+  ButtonPatreon: TCastleButton;
 
   AnimationTimePlaying: boolean = true;
   MenuAnimationTimePlaying: TMenuItemChecked;
@@ -189,6 +190,7 @@ type
     class procedure PointingDeviceSensorsChange(Sender: TObject);
     class procedure HeadlightOnChanged(Sender: TObject);
     class procedure ClickButtonWarnings(Sender: TObject);
+    class procedure ClickButtonPatreon(Sender: TObject);
     class procedure ClickNavigationTypeButton(Sender: TObject);
     class procedure ClickButtonOpen(Sender: TObject);
     class procedure ClickButtonCollisions(Sender: TObject);
@@ -1379,6 +1381,12 @@ begin
   );
   ButtonWarningsEnabled := false;
   UpdateButtonWarnings;
+end;
+
+class procedure THelper.ClickButtonPatreon(Sender: TObject);
+begin
+  if not OpenURL(SupportURL) then
+    Window.MessageOk(SCannotOpenURL, mtError);
 end;
 
 procedure AttributesLoadFromConfig(RenderOptions: TCastleRenderOptions);
@@ -3058,8 +3066,7 @@ begin
          end;
     132: if not OpenURL(View3dsceneURL) then
            Window.MessageOk(SCannotOpenURL, mtError);
-    134: if not OpenURL(SupportURL) then
-           Window.MessageOk(SCannotOpenURL, mtError);
+    134: THelper.ClickButtonPatreon(nil);
 
     171: SelectedShowInformation;
     172: SelectedShowLightsInformation;
@@ -3546,7 +3553,7 @@ begin
     M.Append(TMenuItem.Create('OpenGL Information',                 173));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Visit view3dscene website',          132));
-    M.Append(TMenuItem.Create('Support the development of view3dscene', 134));
+    M.Append(TMenuItem.Create('Support us', 134));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('About view3dscene',                  131));
     Result.Append(M);
@@ -3579,9 +3586,9 @@ end;
 { Initialize StatusText and ToolbarPanel and various buttons instances }
 procedure CreateMainUserInterface;
 var
-  ToolbarHorizGroup: TCastleHorizontalGroup;
+  NavigationButtonsGroup: TCastleHorizontalGroup;
   NT: TUserNavigationType;
-  ToolbarBackground, PanelSeparator1, PanelSeparator2: TCastleImageControl;
+  ToolbarBackground: TCastleImageControl;
   UiOwner: TComponent;
   Ui: TCastleUserInterface;
 const
@@ -3634,24 +3641,28 @@ begin
   ButtonWarnings.Image.OwnsImage := false;
   ButtonWarnings.MinImageHeight := MinImageHeight;
 
+  ButtonPatreon := UiOwner.FindRequiredComponent('ButtonPatreon') as TCastleButton;
+  ButtonPatreon.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonPatreon;
+  ButtonPatreon.CustomBackgroundNormal.Image := Castle_Game_Engine_Icon;
+  ButtonPatreon.CustomBackgroundNormal.OwnsImage := false;
+  ButtonPatreon.CustomBackgroundDisabled.Image := Castle_Game_Engine_Icon;
+  ButtonPatreon.CustomBackgroundDisabled.OwnsImage := false;
+  ButtonPatreon.CustomBackgroundPressed.Image := Castle_Game_Engine_Icon;
+  ButtonPatreon.CustomBackgroundPressed.OwnsImage := false;
+  ButtonPatreon.CustomBackgroundFocused.Image := Castle_Game_Engine_Icon;
+  ButtonPatreon.CustomBackgroundFocused.OwnsImage := false;
+  ButtonPatreon.MinImageHeight := MinImageHeight;
+
   ToolbarBackground := UiOwner.FindRequiredComponent('ToolbarBackground') as TCastleImageControl;
   ToolbarBackground.Image := Panel;
   ToolbarBackground.OwnsImage := false;
-
-  PanelSeparator1 := UiOwner.FindRequiredComponent('PanelSeparator1') as TCastleImageControl;
-  PanelSeparator1.Image := PanelSeparator;
-  PanelSeparator1.OwnsImage := false;
-
-  PanelSeparator2 := UiOwner.FindRequiredComponent('PanelSeparator2') as TCastleImageControl;
-  PanelSeparator2.Image := PanelSeparator;
-  PanelSeparator2.OwnsImage := false;
 
   if SceneWarnings <> nil then
     UpdateButtonWarnings
   else
     ButtonWarnings.Exists := false; { at least initialize Exists }
 
-  ToolbarHorizGroup := UiOwner.FindRequiredComponent('ToolbarHorizGroup') as TCastleHorizontalGroup;
+  NavigationButtonsGroup := UiOwner.FindRequiredComponent('NavigationButtonsGroup') as TCastleHorizontalGroup;
 
   for NT := Low(NT) to High(NT) do
     { Don't show button for ntNone.
@@ -3659,20 +3670,20 @@ begin
       The "none" navigation type is visible in menu. }
     if NT <> untNone then
     begin
-      CameraButtons[NT] := TNavigationTypeButton.Create(Application, NT);
-      CameraButtons[NT].Caption := NavigationNames[NT];
-      CameraButtons[NT].OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
-      CameraButtons[NT].Toggle := true;
-      CameraButtons[NT].MinImageHeight := MinImageHeight;
-      ToolbarHorizGroup.InsertControl(2 + Ord(NT), CameraButtons[NT]);
+      NavigationButtons[NT] := TNavigationTypeButton.Create(Application, NT);
+      NavigationButtons[NT].Caption := NavigationNames[NT];
+      NavigationButtons[NT].OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
+      NavigationButtons[NT].Toggle := true;
+      NavigationButtons[NT].MinImageHeight := MinImageHeight;
+      NavigationButtonsGroup.InsertFront(NavigationButtons[NT]);
     end;
 
-  CameraButtons[untExamine].Image.Image := V3DSceneImages.Examine;
-  CameraButtons[untExamine].Image.OwnsImage := false;
-  CameraButtons[untFly].Image.Image := V3DSceneImages.Fly;
-  CameraButtons[untFly].Image.OwnsImage := false;
-  CameraButtons[untWalk].Image.Image := V3DSceneImages.Walk;
-  CameraButtons[untWalk].Image.OwnsImage := false;
+  NavigationButtons[untExamine].Image.Image := V3DSceneImages.Examine;
+  NavigationButtons[untExamine].Image.OwnsImage := false;
+  NavigationButtons[untFly].Image.Image := V3DSceneImages.Fly;
+  NavigationButtons[untFly].Image.OwnsImage := false;
+  NavigationButtons[untWalk].Image.Image := V3DSceneImages.Walk;
+  NavigationButtons[untWalk].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
 end;
@@ -4005,6 +4016,19 @@ begin
 
   Application.MainWindow := Window;
   Progress.UserInterface := WindowProgressInterface;
+
+  Theme.ImagesPersistent[tiButtonNormal].Image := ButtonNormal;
+  Theme.ImagesPersistent[tiButtonNormal].OwnsImage := false;
+  Theme.ImagesPersistent[tiButtonNormal].ProtectedSides.AllSides := 2;
+  Theme.ImagesPersistent[tiButtonPressed].Image := ButtonPressed;
+  Theme.ImagesPersistent[tiButtonPressed].OwnsImage := false;
+  Theme.ImagesPersistent[tiButtonPressed].ProtectedSides.AllSides := 2;
+  Theme.ImagesPersistent[tiButtonFocused].Image := ButtonFocused;
+  Theme.ImagesPersistent[tiButtonFocused].OwnsImage := false;
+  Theme.ImagesPersistent[tiButtonFocused].ProtectedSides.AllSides := 2;
+  Theme.ImagesPersistent[tiButtonDisabled].Image := ButtonDisabled;
+  Theme.ImagesPersistent[tiButtonDisabled].OwnsImage := false;
+  Theme.ImagesPersistent[tiButtonDisabled].ProtectedSides.AllSides := 2;
 
   UserConfig.Load;
 
