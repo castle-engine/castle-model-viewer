@@ -3591,6 +3591,7 @@ var
   ToolbarBackground: TCastleImageControl;
   UiOwner: TComponent;
   Ui: TCastleUserInterface;
+  ImagePatreon: TCastleImageControl;
 const
   MinImageHeight = 22;
 begin
@@ -3652,6 +3653,10 @@ begin
   ButtonPatreon.CustomBackgroundFocused.Image := Castle_Game_Engine_Icon;
   ButtonPatreon.CustomBackgroundFocused.OwnsImage := false;
   ButtonPatreon.MinImageHeight := MinImageHeight;
+
+  ImagePatreon := UiOwner.FindRequiredComponent('ImagePatreon') as TCastleImageControl;
+  ImagePatreon.Image := Cge_Heart;
+  ImagePatreon.OwnsImage := false;
 
   ToolbarBackground := UiOwner.FindRequiredComponent('ToolbarBackground') as TCastleImageControl;
   ToolbarBackground.Image := Panel;

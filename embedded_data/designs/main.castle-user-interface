@@ -237,6 +237,83 @@
       "VerticalAnchorParent" : "vpTop",
       "VerticalAnchorSelf" : "vpTop",
       "Width" : 4.2000000000000000E+001
+    },
+    {
+      "$$ClassName" : "TCastleUserInterface",
+      "Height" : 5.6000000000000000E+001,
+      "HorizontalAnchorParent" : "hpRight",
+      "HorizontalAnchorSelf" : "hpRight",
+      "Name" : "TooltipPatreon",
+      "TranslationPersistent" : {
+        "$$ClassName" : "TCastleVector2Persistent",
+        "X" : -6.0000000000000000E+000,
+        "Y" : -4.9000000000000000E+001
+      },
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "Width" : 3.0000000000000000E+002,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleRectangleControl",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 6.6274511814117432E-001,
+            "Green" : 9.1764706373214722E-001
+          },
+          "Height" : 2.7400000000000000E+002,
+          "Name" : "TooltipPatreonLabelContainer",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : -7.0000000000000000E+000,
+            "Y" : -2.4300000000000000E+002
+          },
+          "Width" : 3.1000000000000000E+002,
+          "$Children" : [
+            {
+              "$$ClassName" : "TCastleLabel",
+              "HorizontalAnchorParent" : "hpMiddle",
+              "HorizontalAnchorSelf" : "hpMiddle",
+              "Name" : "TooltipPatreonLabel",
+              "Padding" : 5.0000000000000000E+000,
+              "Text" : [
+                "Support Castle Game Engine"
+              ],
+              "TranslationPersistent" : {
+                "$$ClassName" : "TCastleVector2Persistent",
+                "Y" : -5.0000000000000000E+000
+              },
+              "VerticalAnchorParent" : "vpTop",
+              "VerticalAnchorSelf" : "vpTop"
+            },
+            {
+              "$$ClassName" : "TCastleImageControl",
+              "Content" : {
+                "$$ClassName" : "TCastleImagePersistent"
+              },
+              "HorizontalAnchorParent" : "hpMiddle",
+              "HorizontalAnchorSelf" : "hpMiddle",
+              "Name" : "ImagePatreon"
+            }
+          ]
+        },
+        {
+          "$$ClassName" : "TCastleShape",
+          "ColorPersistent" : {
+            "$$ClassName" : "TCastleColorPersistent",
+            "Blue" : 6.6274511814117432E-001,
+            "Green" : 9.1764706373214722E-001
+          },
+          "Height" : 2.6000000000000000E+001,
+          "Name" : "TooltipPatreonTriangle",
+          "ShapeType" : "stTriangleUp",
+          "TranslationPersistent" : {
+            "$$ClassName" : "TCastleVector2Persistent",
+            "X" : 2.6400000000000000E+002,
+            "Y" : 2.8000000000000000E+001
+          },
+          "Width" : 3.0000000000000000E+001
+        }
+      ]
     }
   ]
 }

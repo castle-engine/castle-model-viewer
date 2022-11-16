@@ -27,6 +27,8 @@ function Animations: TRGBAlphaImage;
 
 function Castle_game_engine_icon: TRGBAlphaImage;
 
+function Cge_heart: TRGBAlphaImage;
+
 function Examine: TRGBAlphaImage;
 
 function Fly: TRGBAlphaImage;
@@ -63,6 +65,7 @@ finalization
   FreeAndNil(FTooltipArrow);
   FreeAndNil(FAnimations);
   FreeAndNil(FCastle_game_engine_icon);
+  FreeAndNil(FCge_heart);
   FreeAndNil(FExamine);
   FreeAndNil(FFly);
   FreeAndNil(FLight_gizmo);

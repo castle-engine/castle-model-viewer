@@ -239,6 +239,83 @@
 '      "VerticalAnchorParent" : "vpTop",' + LineEnding +
 '      "VerticalAnchorSelf" : "vpTop",' + LineEnding +
 '      "Width" : 4.2000000000000000E+001' + LineEnding +
+'    },' + LineEnding +
+'    {' + LineEnding +
+'      "$$ClassName" : "TCastleUserInterface",' + LineEnding +
+'      "Height" : 5.6000000000000000E+001,' + LineEnding +
+'      "HorizontalAnchorParent" : "hpRight",' + LineEnding +
+'      "HorizontalAnchorSelf" : "hpRight",' + LineEnding +
+'      "Name" : "TooltipPatreon",' + LineEnding +
+'      "TranslationPersistent" : {' + LineEnding +
+'        "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'        "X" : -6.0000000000000000E+000,' + LineEnding +
+'        "Y" : -4.9000000000000000E+001' + LineEnding +
+'      },' + LineEnding +
+'      "VerticalAnchorParent" : "vpTop",' + LineEnding +
+'      "VerticalAnchorSelf" : "vpTop",' + LineEnding +
+'      "Width" : 3.0000000000000000E+002,' + LineEnding +
+'      "$Children" : [' + LineEnding +
+'        {' + LineEnding +
+'          "$$ClassName" : "TCastleRectangleControl",' + LineEnding +
+'          "ColorPersistent" : {' + LineEnding +
+'            "$$ClassName" : "TCastleColorPersistent",' + LineEnding +
+'            "Blue" : 6.6274511814117432E-001,' + LineEnding +
+'            "Green" : 9.1764706373214722E-001' + LineEnding +
+'          },' + LineEnding +
+'          "Height" : 2.7400000000000000E+002,' + LineEnding +
+'          "Name" : "TooltipPatreonLabelContainer",' + LineEnding +
+'          "TranslationPersistent" : {' + LineEnding +
+'            "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'            "X" : -7.0000000000000000E+000,' + LineEnding +
+'            "Y" : -2.4300000000000000E+002' + LineEnding +
+'          },' + LineEnding +
+'          "Width" : 3.1000000000000000E+002,' + LineEnding +
+'          "$Children" : [' + LineEnding +
+'            {' + LineEnding +
+'              "$$ClassName" : "TCastleLabel",' + LineEnding +
+'              "HorizontalAnchorParent" : "hpMiddle",' + LineEnding +
+'              "HorizontalAnchorSelf" : "hpMiddle",' + LineEnding +
+'              "Name" : "TooltipPatreonLabel",' + LineEnding +
+'              "Padding" : 5.0000000000000000E+000,' + LineEnding +
+'              "Text" : [' + LineEnding +
+'                "Support Castle Game Engine"' + LineEnding +
+'              ],' + LineEnding +
+'              "TranslationPersistent" : {' + LineEnding +
+'                "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'                "Y" : -5.0000000000000000E+000' + LineEnding +
+'              },' + LineEnding +
+'              "VerticalAnchorParent" : "vpTop",' + LineEnding +
+'              "VerticalAnchorSelf" : "vpTop"' + LineEnding +
+'            },' + LineEnding +
+'            {' + LineEnding +
+'              "$$ClassName" : "TCastleImageControl",' + LineEnding +
+'              "Content" : {' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'              },' + LineEnding +
+'              "HorizontalAnchorParent" : "hpMiddle",' + LineEnding +
+'              "HorizontalAnchorSelf" : "hpMiddle",' + LineEnding +
+'              "Name" : "ImagePatreon"' + LineEnding +
+'            }' + LineEnding +
+'          ]' + LineEnding +
+'        },' + LineEnding +
+'        {' + LineEnding +
+'          "$$ClassName" : "TCastleShape",' + LineEnding +
+'          "ColorPersistent" : {' + LineEnding +
+'            "$$ClassName" : "TCastleColorPersistent",' + LineEnding +
+'            "Blue" : 6.6274511814117432E-001,' + LineEnding +
+'            "Green" : 9.1764706373214722E-001' + LineEnding +
+'          },' + LineEnding +
+'          "Height" : 2.6000000000000000E+001,' + LineEnding +
+'          "Name" : "TooltipPatreonTriangle",' + LineEnding +
+'          "ShapeType" : "stTriangleUp",' + LineEnding +
+'          "TranslationPersistent" : {' + LineEnding +
+'            "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'            "X" : 2.6400000000000000E+002,' + LineEnding +
+'            "Y" : 2.8000000000000000E+001' + LineEnding +
+'          },' + LineEnding +
+'          "Width" : 3.0000000000000000E+001' + LineEnding +
+'        }' + LineEnding +
+'      ]' + LineEnding +
 '    }' + LineEnding +
 '  ]' + LineEnding +
 '}' + LineEnding +
