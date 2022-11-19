@@ -955,10 +955,6 @@ begin
     Window.OnRender := nil;
     Window.OnBeforeRender := nil;
     try
-      { For now we construct and store octrees only for the 1st animation frame. }
-
-      Scene.TriangleOctreeProgressTitle := 'Building triangle octree';
-      Scene.ShapeOctreeProgressTitle := 'Building Shape octree';
       Scene.PreciseCollisions := true;
     finally
       Window.OnRender := OldRender;
