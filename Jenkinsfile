@@ -11,6 +11,10 @@ pipeline {
        and get stuck.
        Using disableConcurrentBuilds as a workaround. */
     disableConcurrentBuilds()
+    /* Makes failure in any paralel job to stop the build,
+       instead of needlessly trying to finish on one node,
+       when another node already failed. */
+    parallelsAlwaysFailFast()
   }
   triggers {
     pollSCM('H/4 * * * *')
