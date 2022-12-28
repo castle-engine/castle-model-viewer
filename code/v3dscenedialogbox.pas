@@ -110,21 +110,19 @@ begin
   try
     Window.Open;
 
-    Application.MainWindow := Window;
-    // TODO: should use Application.CurrentView := StateDialogBox;, would be simpler
-
     { add TStateDialogBox instance to window }
     StateDialogBox := TStateDialogBox.Create(Window);
     StateDialogBox.Message := S;
-    TUIState.Current := StateDialogBox;
+    Window.Container.View := StateDialogBox;
 
     while (not Window.Closed) and
           (not StateDialogBox.ButtonClicked) do
       Application.ProcessAllMessages;
 
-    { call StateDialogBox when Window is still assigned,
-      otherwise TStateDialogBox.StateContainer would return wrong value }
-    TUIState.Current := nil;
+    { Call StateDialogBox.Stop when Window is still assigned,
+      otherwise TStateDialogBox.Container would turn into invalid value.
+      TODO: TCastleView should be ready for the container being freed while it works. }
+    Window.Container.View := nil;
   finally FreeAndNil(Window) end;
 end;
 

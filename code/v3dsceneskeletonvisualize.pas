@@ -128,7 +128,7 @@ begin
   Result.AddChildren(TextShape);
 
   TextGeometry := TTextNode.Create;
-  TextGeometry.SetString([JointName]);
+  TextGeometry.SetText([JointName]);
   TextShape.Geometry := TextGeometry;
 
   FontStyle := TFontStyleNode.Create;
