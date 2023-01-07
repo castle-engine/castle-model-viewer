@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2022 Michalis Kamburelis.
+  Copyright 2003-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -66,8 +66,8 @@ constructor TStatusText.Create(AOwner: TComponent);
 begin
   inherited;
   Html := true;
-  Left := 5;
-  Bottom := 5;
+  Anchor(hpLeft, 5);
+  Anchor(vpBottom, 5);
   Color := Yellow;
   PaddingHorizontal := 5;
   PaddingVertical := 5;
@@ -104,7 +104,7 @@ begin
   CharWidth := Font.TextWidth('W');
   if CharWidth > 0 then
     FMaxLineChars := Max(10, Floor(
-      (ContainerWidth - PaddingHorizontal * 2 - Left * 2) / CharWidth)) else
+      (ContainerWidth - PaddingHorizontal * 2 - Translation.X * 2) / CharWidth)) else
     FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 

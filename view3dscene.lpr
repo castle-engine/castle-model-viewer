@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2022 Michalis Kamburelis.
+  Copyright 2002-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -324,21 +324,6 @@ begin
      (Scene.InternalOctreeRendering <> nil) then
     Result := Scene.InternalOctreeRendering else
     Result := nil;
-end;
-
-{ This calls MainViewport.PrepareResources
-  (that causes Scene.PrepareResources).
-  Additionally, if AllowProgess and some other conditions are met,
-  this shows progress of operation.
-
-  Remember that you can call this only when gl context is already active
-  (Scene.PrepareResources requires this) }
-procedure PrepareResources(AllowProgress: boolean);
-begin
-  if AllowProgress then
-    MainViewport.PrepareResources('Preparing animation')
-  else
-    MainViewport.PrepareResources;
 end;
 
 procedure SceneOctreeCreate; forward;
@@ -1225,11 +1210,10 @@ begin
   if not MakingScreenShot then
     RecentMenu.Add(ASceneURL);
 
-  { We call PrepareResources to make Scene.PrepareResources to gather
+  { We call MainViewport.PrepareResources to make Scene.PrepareResources to gather
     warnings (because some warnings, e.g. invalid texture URL,
-    are reported only from Scene.PrepareResources).
-    Also, this allows us to show first PrepareResources with progress bar. }
-  PrepareResources(true);
+    are reported only from Scene.PrepareResources). }
+  MainViewport.PrepareResources;
   ButtonWarningsEnabled := true;
   UpdateButtonWarnings;
 
