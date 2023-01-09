@@ -6,27 +6,6 @@
   {$endif}
 {$endif}
 
-{ Whether we use OpenGL ES or normal OpenGL.
-
-  view3dscene and CGE by default use OpenGL.
-  Only on mobile (Android, iOS) we use OpenGL ES automatically,
-
-  But you can use this to test OpenGLES renderer with view3dscene.
-  Under Debian, install libegl1-mesa-dev and libgles2-mesa-dev. }
-{.$define OpenGLES}
-{$ifdef ANDROID} {$define OpenGLES} {$endif}
-{$ifdef iOS} {$define OpenGLES} {$endif}
-
-{$ifdef OpenGLES}
-  {$ifndef FPC}
-    {$error We do not support OpenGLES (necessary for Android, iOS) with Delphi yet}
-  {$else}
-    {$define CastleGL := CastleGLES}
-  {$endif}
-{$else}
-  {$define CastleGL := GL, GLExt}
-{$endif}
-
 {$ifdef FPC}
   {$ifndef VER3_0}
     {$ifndef VER3_1}

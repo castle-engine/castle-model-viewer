@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2022 Michalis Kamburelis.
+  Copyright 2002-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -64,7 +64,6 @@ function OctreeDisplayStatus: string;
 implementation
 
 uses SysUtils,
-  {$ifdef FPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleColors, CastleGLUtils, CastleShapes, CastleGLBoxes, V3DSceneBoxes;
 
 { TOctreeDisplay ------------------------------------------------------------- }
@@ -120,15 +119,8 @@ end;
 
 procedure OctreeDisplay(Scene: TCastleScene);
 
-(* TODO:
-  This should be rewritten to construct a TCastleScene with TLineSet inside.
-  Rendering using glDrawBox3DWire relies on OpenGL immediate mode,
-  not possible under OpenGLES,
-  cumbersome (needs PushMatrix hack in view3dscene.lpr)
-  under modern OpenGL with EnabledFixedFunction = false.
-*)
-
-{$ifndef OpenGLES} //TODO-es
+// TODO TCastleRenderUnlitMesh
+(*
 
   procedure DisplayOctreeDepth(octreenode: TOctreeNode;
     OctreeDisplayDepth: integer);
@@ -259,9 +251,9 @@ begin
     DisplayOctreeDepth(Scene.InternalOctreeDynamicCollisions.TreeRoot,
       OctreeCollidableShapesDisplay.Depth);
   end;
-{$else}
+*)
+
 begin
-{$endif}
 end;
 
 function OctreeDisplayStatus: string;

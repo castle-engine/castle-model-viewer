@@ -32,7 +32,7 @@
       <path value="code/" />
     </search_paths>
     <custom_options>
-      <!-- Use this to test OpenGLES rendering. -->
+      <!-- Use this to test OpenGLES rendering. CGE honors it. -->
       <!-- <option>-dOpenGLES</option> -->
       <!-- Test "slim" mode (see castleconf.inc for explanation) -->
       <!-- <option>-dCASTLE_SLIM_NODES</option> -->

@@ -71,7 +71,6 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  {$ifdef FPC} CastleGL, {$else} GL, GLExt, {$endif}
   CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
@@ -558,10 +557,8 @@ end;
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
-  { TODO:
-    Rendering below for now uses OpenGL fixed-function pipeline,
-    and it requires fixed-function matrix set up. }
-  {$ifndef OpenGLES}
+  // TODO TCastleRenderUnlitMesh
+  (*
   procedure PushMatrix;
   var
     CameraMatrix: PMatrix4;
@@ -611,12 +608,13 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
       if AlwaysVisible then glPopAttrib;
     end;
   end;
-  {$endif not OpenGLES}
+  *)
 
 begin
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
-    {$ifndef OpenGLES}
+    // TODO TCastleRenderUnlitMesh
+    (*
     PushMatrix;
 
     { Visualization below depends on DEPTH_TEST enabled
@@ -682,7 +680,7 @@ begin
     end;
 
     PopMatrix;
-    {$endif not OpenGLES}
+    *)
   end else
   begin
     SceneBoundingBox.Exists := false;
@@ -1481,7 +1479,7 @@ begin
     if Transparency then
     begin
       ViewportsSetTransparent(true);
-      if glGetInteger(GL_ALPHA_BITS) = 0 then
+      if not RenderContext.ColorBufferHasAlpha then
         { In case FBO is not available, and main context doesn't have alpha
           bits either. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
@@ -1566,7 +1564,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       ImageClass := TRGBAlphaImage;
       ViewportsSetTransparent(true);
 
-      if glGetInteger(GL_ALPHA_BITS) = 0 then
+      if not RenderContext.ColorBufferHasAlpha then
         { In case FBO is not available, and main context doesn't have alpha
           bits either. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
@@ -2536,15 +2534,8 @@ var
         other drawing routine (like "frozen screen" drawn under FileDialog). }
       Window.Container.EventBeforeRender;
       Window.Container.EventRender;
-
-      Image := TGrayscaleImage.Create(Window.Width, Window.Height);
+      Image := SaveScreenDepth_NoFlush(Window.Rect);
       try
-        BeforePackImage(Image);
-        try
-          glReadPixels(0, 0, Window.Width, Window.Height, GL_DEPTH_COMPONENT,
-            ImageGLType(Image), Image.RawPixels);
-        finally AfterPackImage(Image) end;
-
         SaveImage(Image, URL);
       finally FreeAndNil(Image) end;
     end;

@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2022 Michalis Kamburelis.
+  Copyright 2006-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -29,19 +29,11 @@ interface
 
 uses CastleBoxes;
 
-{$ifndef OpenGLES}
-
 { Draw corner markers (3 lines) at the 8 corners of the box.
   Proportion is the fraction of the box length, the marker extends too. }
 procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single = 0.1);
 
-{$endif}
-
 implementation
-
-uses {$ifdef FPC} CastleGL {$else} GL, GLExt {$endif};
-
-{$ifndef OpenGLES}
 
 procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
 
@@ -49,12 +41,15 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
 
     procedure glDrawCornerLines(const x, y, z, dx, dy, dz: Single);
     begin
+      // TODO TCastleRenderUnlitMesh
+      (*
       glVertex3f(x, y, z);
       glVertex3f(x+dx, y, z);
       glVertex3f(x, y, z);
       glVertex3f(x, y+dy, z);
       glVertex3f(x, y, z);
       glVertex3f(x, y, z+dz);
+      *)
     end;
 
   var
@@ -63,16 +58,16 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
     Xlength := (maxx - minx) * Proportion;
     Ylength := (maxy - miny) * Proportion;
     Zlength := (maxz - minz) * Proportion;
-    glBegin(GL_LINES);
-      glDrawCornerLines(minx,miny,minz,Xlength,Ylength,Zlength);
-      glDrawCornerLines(minx,miny,maxz,Xlength,Ylength,-Zlength);
-      glDrawCornerLines(minx,maxy,minz,Xlength,-Ylength,Zlength);
-      glDrawCornerLines(minx,maxy,maxz,Xlength,-Ylength,-Zlength);
-      glDrawCornerLines(maxx,miny,minz,-Xlength,Ylength,Zlength);
-      glDrawCornerLines(maxx,miny,maxz,-Xlength,Ylength,-Zlength);
-      glDrawCornerLines(maxx,maxy,minz,-Xlength,-Ylength,Zlength);
-      glDrawCornerLines(maxx,maxy,maxz,-Xlength,-Ylength,-Zlength);
-    glEnd;
+    //glBegin(GL_LINES); // TODO TCastleRenderUnlitMesh
+      glDrawCornerLines(minx, miny, minz,  Xlength,  Ylength,  Zlength);
+      glDrawCornerLines(minx, miny, maxz,  Xlength,  Ylength, -Zlength);
+      glDrawCornerLines(minx, maxy, minz,  Xlength, -Ylength,  Zlength);
+      glDrawCornerLines(minx, maxy, maxz,  Xlength, -Ylength, -Zlength);
+      glDrawCornerLines(maxx, miny, minz, -Xlength,  Ylength,  Zlength);
+      glDrawCornerLines(maxx, miny, maxz, -Xlength,  Ylength, -Zlength);
+      glDrawCornerLines(maxx, maxy, minz, -Xlength, -Ylength,  Zlength);
+      glDrawCornerLines(maxx, maxy, maxz, -Xlength, -Ylength, -Zlength);
+    //glEnd; // TODO TCastleRenderUnlitMesh
   end;
 
 begin
@@ -81,7 +76,5 @@ begin
     Box.Data[1].X, Box.Data[1].Y, Box.Data[1].Z
   );
 end;
-
-{$endif}
 
 end.
