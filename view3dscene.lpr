@@ -613,13 +613,13 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 begin
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
+    { Visualization below depends on depth test enabled }
+    RenderContext.DepthTest := true;
+
     // TODO TCastleRenderUnlitMesh
     (*
     PushMatrix;
 
-    { Visualization below depends on DEPTH_TEST enabled
-      (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
-    glEnable(GL_DEPTH_TEST);
 
     { Use Scene.RenderOptions.LineWidth for our visualizations as well }
     RenderContext.LineWidth := Scene.RenderOptions.LineWidth;
