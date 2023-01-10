@@ -1703,13 +1703,23 @@ var
       NL +
       'This is only applied when loading animation from file. You can use "File -> Reopen" command to apply this to the currently loaded animation.' + NL +
       NL +
-      'This has no effect on non-baked animations, like played from X3D or Spine JSON.' + NL+
+      'This has no effect on non-baked animations, like played from X3D or Spine JSON.' + NL +
       NL +
       'New baked animation smoothness:', S) then
       BakedAnimationSmoothness := S;
   end;
 
   procedure SelectedShowInformation;
+
+    { Node nice name, or '' if Node = @nil. }
+    function OptionalNodeNiceName(const Node: TX3DNode): String;
+    begin
+      if Node <> nil then
+        Result := Node.NiceName
+      else
+        Result := '';
+    end;
+
   var
     S, TextureDescription: string;
     M: TMaterialInfo;
@@ -1724,22 +1734,24 @@ var
     begin
       SelectedShape := TShape(SelectedItem^.Shape);
       SelectedGeometry := SelectedShape.Geometry;
-      s := Format(
-           'Selected point %s from triangle'+ NL +
-           '%s.' +nl+
-           nl+
-           'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node name: "%s", grand-parent node name: "%s", grand-grand-parent node name: "%s".' +nl+
-           nl+
-           'Node''s bounding box is %s. ',
-           [SelectedPointWorld.ToString,
-            SelectedItem^.World.Triangle.ToString,
-            SelectedGeometry.X3DName,
-            SelectedShape.OriginalGeometry.X3DType,
-            SelectedGeometry.X3DType,
-            SelectedShape.GeometryParentNode.X3DName,
-            SelectedShape.GeometryGrandParentNode.X3DName,
-            SelectedShape.GeometryGrandGrandParentNode.X3DName,
-            SelectedShape.BoundingBox.ToString]);
+      S := Format(
+             'Selected point %s from triangle'+ NL +
+             '%s.' + NL +
+             NL +
+             'This triangle is part of the geometry node named "%s" (original geometry type %s, rendered through type %s). Parent node: "%s", grand-parent node: "%s", grand-grand-parent node: "%s".' + NL +
+             NL +
+             'Node''s bounding box is %s. ',
+           [
+             SelectedPointWorld.ToString,
+             SelectedItem^.World.Triangle.ToString,
+             SelectedGeometry.X3DName,
+             SelectedShape.OriginalGeometry.X3DType,
+             SelectedGeometry.X3DType,
+             OptionalNodeNiceName(SelectedShape.GeometryParentNode),
+             OptionalNodeNiceName(SelectedShape.GeometryGrandParentNode),
+             OptionalNodeNiceName(SelectedShape.GeometryGrandGrandParentNode),
+             SelectedShape.BoundingBox.ToString
+           ]);
 
       if (SelectedItem^.Face.IndexBegin <> -1) and
          (SelectedItem^.Face.IndexEnd <> -1) then
@@ -1763,9 +1775,9 @@ var
         TextureDescription := 'none' else
         TextureDescription := Tex.TextureDescription;
 
-      S := S + Format(nl +nl+ 'Node''s texture : %s.', [TextureDescription]);
+      S := S + Format(nl + NL + 'Node''s texture : %s.', [TextureDescription]);
 
-      S := S + nl+ nl;
+      S := S + NL + NL;
       M := SelectedItem^.State.MaterialInfo;
       if M <> nil then
       begin
@@ -2103,11 +2115,11 @@ var
     MainViewport.Camera.GetWorldView(Pos, Dir, Up);
 
     S := FormatDot(
-       'Call rayhunter like this to render this view :' +nl+
-       '  rayhunter classic %d %d %d "%s" "%s" \' +nl+
-       '    --camera-pos %s \' +nl+
-       '    --camera-dir %s \' +nl+
-       '    --camera-up %s \' +nl+
+       'Call rayhunter like this to render this view :' + NL +
+       '  rayhunter classic %d %d %d "%s" "%s" \' + NL +
+       '    --camera-pos %s \' + NL +
+       '    --camera-dir %s \' + NL +
+       '    --camera-up %s \' + NL +
        '    --scene-bg-color %f %f %f \' +nl,
        [ DefaultRaytracerDepth,
          Window.Width, Window.Height,
@@ -2182,25 +2194,25 @@ var
       { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
       (*
       MessageReport(Format(
-        '# ----------------------------------------' +nl+
-        '# BoundingBox %s:' +nl+
-        '# Version for VRML 1.0' +nl+
-        'DEF BoundingBox Separator {' +nl+
-        '  Translation {' +nl+
-        '    translation %s' +nl+
-        '  }' +nl+
-        '  Cube {' +nl+
-        '    width %s' +nl+
-        '    height %s' +nl+
-        '    depth %s' +nl+
-        '  } }' +nl+
-        nl+
-        '# Version for VRML 2.0 / X3D' +nl+
-        'DEF BoundingBox Transform {' +nl+
-        '  translation %1:s' +nl+
-        '  children Shape {' +nl+
-        '    geometry Box {' +nl+
-        '      size %2:s %3:s %4:s' +nl+
+        '# ----------------------------------------' + NL +
+        '# BoundingBox %s:' + NL +
+        '# Version for VRML 1.0' + NL +
+        'DEF BoundingBox Separator {' + NL +
+        '  Translation {' + NL +
+        '    translation %s' + NL +
+        '  }' + NL +
+        '  Cube {' + NL +
+        '    width %s' + NL +
+        '    height %s' + NL +
+        '    depth %s' + NL +
+        '  } }' + NL +
+        NL +
+        '# Version for VRML 2.0 / X3D' + NL +
+        'DEF BoundingBox Transform {' + NL +
+        '  translation %1:s' + NL +
+        '  children Shape {' + NL +
+        '    geometry Box {' + NL +
+        '      size %2:s %3:s %4:s' + NL +
         '    } } }',
         [ Box.ToNiceStr,
           Box.Middle.ToRawString,
@@ -2214,25 +2226,25 @@ var
       S3 := FormatDot('%g', [Box.Data[1][1] - Box.Data[0][1]]);
       S4 := FormatDot('%g', [Box.Data[1][2] - Box.Data[0][2]]);
       MessageReport(Format(
-        '# ----------------------------------------' +nl+
-        '# BoundingBox %s:' +nl+
-        '# Version for VRML 1.0' +nl+
-        'DEF BoundingBox Separator {' +nl+
-        '  Translation {' +nl+
-        '    translation %s' +nl+
-        '  }' +nl+
-        '  Cube {' +nl+
-        '    width %s' +nl+
-        '    height %s' +nl+
-        '    depth %s' +nl+
-        '  } }' +nl+
-        nl+
-        '# Version for VRML 2.0 / X3D' +nl+
-        'DEF BoundingBox Transform {' +nl+
-        '  translation %1:s' +nl+
-        '  children Shape {' +nl+
-        '    geometry Box {' +nl+
-        '      size %2:s %3:s %4:s' +nl+
+        '# ----------------------------------------' + NL +
+        '# BoundingBox %s:' + NL +
+        '# Version for VRML 1.0' + NL +
+        'DEF BoundingBox Separator {' + NL +
+        '  Translation {' + NL +
+        '    translation %s' + NL +
+        '  }' + NL +
+        '  Cube {' + NL +
+        '    width %s' + NL +
+        '    height %s' + NL +
+        '    depth %s' + NL +
+        '  } }' + NL +
+        NL +
+        '# Version for VRML 2.0 / X3D' + NL +
+        'DEF BoundingBox Transform {' + NL +
+        '  translation %1:s' + NL +
+        '  children Shape {' + NL +
+        '    geometry Box {' + NL +
+        '      size %2:s %3:s %4:s' + NL +
         '    } } }',
         [Box.ToString, S1, S2, S3, S4]));
     end;
@@ -2264,9 +2276,11 @@ var
     URLPattern := 'image@counter(4).png';
 
     if MessageInputQuery(Window, 'Input start time for recording movie:', TimeBegin) then
-      if MessageInputQuery(Window, 'Time step between capturing movie frames:' +NL+NL+
+      if MessageInputQuery(Window, 'Time step between capturing movie frames:' + NL +
+        NL +
         'Note that if you later choose to record to a single movie file, like "output.avi", then we''ll generate a movie with 25 frames per second. ' +
-        'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' +NL+NL+
+        'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' + NL +
+        NL +
         'Input time step between capturing movie frames:', TimeStep) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount) then
           if Window.FileDialog('Images pattern or movie file to save', URLPattern, false) then
@@ -2315,8 +2329,8 @@ var
     TimeEnd := 10;
     ScenesPerTime := 25;
 
-    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation.' + ' This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' +nl+
-         nl+
+    if MessageInputQuery(Window, 'This will "record" an interactive animation (done by VRML/X3D events, interpolators, sensors etc.) into a non-interactive precalculated animation.' + ' This allows an animation to be played ultra-fast, although may also be memory-consuming for long ranges of time.' + NL +
+         NL +
          'World BEGIN time of recording:', TimeBegin) and
        MessageInputQuery(Window,
          'World END time of recording:', TimeEnd) and
@@ -2701,12 +2715,12 @@ var
   begin
     F := ApplicationProperties.LimitFPS;
     if MessageInputQuery(Window,
-      'Set approximate FPS (Frames Per Second) limit.' +NL+
-      NL+
-      'Smaller values give OS and CPU some rest, to run other applications or conserve laptop battery. Your monitor has a fixed refresh rate anyway, so limiting FPS doesn''t necessarily mean worse visuals (unless you set it to some really small value).' +NL+
-      NL+
-      'This is only an approximation of desired FPS. Usually it''s quite precise, but on some systems some values may be actually capped by monitor refresh rate.' +NL+
-      NL+
+      'Set approximate FPS (Frames Per Second) limit.' + NL +
+      NL +
+      'Smaller values give OS and CPU some rest, to run other applications or conserve laptop battery. Your monitor has a fixed refresh rate anyway, so limiting FPS doesn''t necessarily mean worse visuals (unless you set it to some really small value).' + NL +
+      NL +
+      'This is only an approximation of desired FPS. Usually it''s quite precise, but on some systems some values may be actually capped by monitor refresh rate.' + NL +
+      NL +
       'Special value 0 means "do not limit FPS".',
       F, Format('%f', [F])) then
       ApplicationProperties.LimitFPS := Max(F, 0.0);
@@ -2963,12 +2977,12 @@ begin
 
   { Only for debugging:
            WritelnLog(
-             'Current camera frustum planes :' +nl+
-             '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' +nl+
-             '  Left   : ' + MainViewport.Camera.Frustum.Planes[fpLeft].ToRawString +nl+
-             '  Right  : ' + MainViewport.Camera.Frustum.Planes[fpRight].ToRawString +nl+
-             '  Bottom : ' + MainViewport.Camera.Frustum.Planes[fpBottom].ToRawString +nl+
-             '  Top    : ' + MainViewport.Camera.Frustum.Planes[fpTop].ToRawString +nl+
+             'Current camera frustum planes :' + NL +
+             '((A, B, C, D) means a plane given by equation A*x + B*y + C*z + D = 0.)' + NL +
+             '  Left   : ' + MainViewport.Camera.Frustum.Planes[fpLeft].ToRawString + NL +
+             '  Right  : ' + MainViewport.Camera.Frustum.Planes[fpRight].ToRawString + NL +
+             '  Bottom : ' + MainViewport.Camera.Frustum.Planes[fpBottom].ToRawString + NL +
+             '  Top    : ' + MainViewport.Camera.Frustum.Planes[fpTop].ToRawString + NL +
              '  Near   : ' + MainViewport.Camera.Frustum.Planes[fpNear].ToRawString);
            if MainViewport.Camera.Frustum.ZFarInfinity then
              WritelnLog(
@@ -3811,101 +3825,101 @@ begin
     4 : begin
           S :=
             'viewer for all 3D and 2D model formats supported by Castle Game Engine,' + NL +
-            'including glTF, X3D, Spine, sprite sheets etc.' +NL+
-            'You can navigate in the (animated and interactive) scene,' +NL+
-            'with collision-checking, gravity, and a wealth of graphic effects.' +NL+
-            'You can also convert models in other formats to X3D.' +NL+
-            NL+
-            'Call as' +NL+
-            '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' +NL+
-            NL+
-            'You can provide FILE-NAME-TO-OPEN on the command-line.' +NL+
-            'As usual, dash (-) means that standard input will be read' +NL+
-            '(in this case the input must be in X3D format).' +NL+
-            NL+
-            'Available options are:' +NL+
-            HelpOptionHelp +NL+
-            VersionOptionHelp +NL+
-            '  -H / --hide-extras    Do not show anything extra (like status text' +NL+
-            '                        or toolbar or bounding box) when program starts.' +NL+
-            '                        Show only the 3D world.' +NL+
-            '  --hide-menu           Hide menu bar.' +NL+
-            '  --write               Load the scene,'+NL+
-            '                        optionally process by --scene-change-xxx,' +NL+
-            '                        save it as VRML/X3D to the standard output,' +NL+
-            '                        exit. Use --write-encoding to choose encoding.' +NL+
-            '  --write-encoding classic|xml' +NL+
-            '                        Choose X3D encoding to use with --write option.' +NL+
-            '                        Default is "classic".' +NL+
-            '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' +NL+
-            '                        Note that if you choose XML encoding' +NL+
-            '                        (by --write-encoding=xml), this is automatic.' +NL+
-            '                        Note that this works sensibly only for VRML 2.0' +NL+
-            '                        (not for older Inventor/VRML 1.0,' +NL+
-            '                        we cannot convert them to valid X3D for now).' +NL+
-            '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' +NL+
-            '                        Particularly useful when combined with --write,' +NL+
-            '                        to have X3D valid in all browsers (but less functional).' +NL+
-            '  --screenshot TIME IMAGE-FILE-NAME' +NL+
-            '                        Take a screenshot of the loaded scene' +NL+
-            '                        at given TIME, and save it to IMAGE-FILE-NAME.' +NL+
-            '                        You most definitely want to pass 3D model' +NL+
-            '                        file to load at command-line too, otherwise' +NL+
-            '                        we''ll just make a screenshot of the default' +NL+
-            '                        black scene.' +NL+
-            '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' +NL+
-            '                        Take a FRAMES-COUNT number of screenshots from' +NL+
-            '                        TIME-BEGIN by step TIME-STEP. Save them to' +NL+
-            '                        a single movie file (like .avi) (ffmpeg must' +NL+
-            '                        be installed and available on $PATH for this)' +NL+
-            '                        or to a sequence of image files (FILE-NAME' +NL+
-            '                        must then be specified like image@counter(4).png).' +NL+
-            '  --screenshot-transparent' +NL+
-            '                        Screenshots background is transparent.' +NL+
-            '                        Useful only together' +NL+
-            '                        with --screenshot-range or --screenshot options.' +NL+
-            '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' +NL+
-            '                        Especially useful to make a screenshot from given viewpoint.' +NL+
-            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' +NL+
-            '                        Argument AMOUNT is an integer >= 0.' +NL+
-            '                        Exact 0 means "no anti-aliasing",' +NL+
-            '                        this is the default. Each successive integer' +NL+
-            '                        generally makes method one step better.' +NL+
-            '                        Especially useful to make a screenshot with' +NL+
-            '                        anti-aliasing quality.' +NL+
-            '  --project DIR         Point view3dscene to Castle Game Engine' +NL+
-            '                        project directory (or CastleEngineManifest.xml file)' +NL+
-            '                        to resolve the "castle-data:/" URLs in files.' +NL+
-            SoundEngine.ParseParametersHelp + NL+
-            NL+
-            TCastleWindow.ParseParametersHelp(StandardParseOptions, true) +NL+
-            NL+
-            'Debug options:' +NL+
-            '  --debug-log           Deprecated. We now log by default.' +NL+
-            '  --debug-log-cache     Write log info, including cache.' +nl+
-            '  --debug-log-shaders   Write log info, including shader source and log.' +nl+
-            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' +nl+
-            '  --debug-log-videos    Write log info, including videos loading and cache.' +nl+
-            '  --debug-texture-memory Profile GPU texture memory usage.' +nl+
-            OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') +NL+
-            NL+
-            'Deprecated options:' +NL+
-            '  --scene-change-no-normals' +NL+
-            '                        Remove normals information from the loaded scene.' +NL+
-            '                        Forces automatic calculation of normal vectors.' +NL+
-            '                        Deprecated, doing this from command-line is not' +NL+
-            '                        usually useful.' +NL+
-            '  --scene-change-no-solid-objects' +NL+
-            '                        Make all shapes not solid in the loaded scene.' +NL+
-            '                        Disables backface culling.' +NL+
-            '                        Deprecated, doing this from command-line is not' +NL+
-            '                        usually useful.' +NL+
-            '  --scene-change-no-convex-faces' +NL+
-            '                        Treat all faces as potentially concave in the loaded scene.' +NL+
-            '                        Deprecated, doing this from command-line is not' +NL+
-            '                        usually useful.' +NL+
-            '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' +NL+
-            NL+
+            'including glTF, X3D, Spine, sprite sheets etc.' + NL +
+            'You can navigate in the (animated and interactive) scene,' + NL +
+            'with collision-checking, gravity, and a wealth of graphic effects.' + NL +
+            'You can also convert models in other formats to X3D.' + NL +
+            NL +
+            'Call as' + NL +
+            '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' + NL +
+            NL +
+            'You can provide FILE-NAME-TO-OPEN on the command-line.' + NL +
+            'As usual, dash (-) means that standard input will be read' + NL +
+            '(in this case the input must be in X3D format).' + NL +
+            NL +
+            'Available options are:' + NL +
+            HelpOptionHelp + NL +
+            VersionOptionHelp + NL +
+            '  -H / --hide-extras    Do not show anything extra (like status text' + NL +
+            '                        or toolbar or bounding box) when program starts.' + NL +
+            '                        Show only the 3D world.' + NL +
+            '  --hide-menu           Hide menu bar.' + NL +
+            '  --write               Load the scene,'+ NL +
+            '                        optionally process by --scene-change-xxx,' + NL +
+            '                        save it as VRML/X3D to the standard output,' + NL +
+            '                        exit. Use --write-encoding to choose encoding.' + NL +
+            '  --write-encoding classic|xml' + NL +
+            '                        Choose X3D encoding to use with --write option.' + NL +
+            '                        Default is "classic".' + NL +
+            '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' + NL +
+            '                        Note that if you choose XML encoding' + NL +
+            '                        (by --write-encoding=xml), this is automatic.' + NL +
+            '                        Note that this works sensibly only for VRML 2.0' + NL +
+            '                        (not for older Inventor/VRML 1.0,' + NL +
+            '                        we cannot convert them to valid X3D for now).' + NL +
+            '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' + NL +
+            '                        Particularly useful when combined with --write,' + NL +
+            '                        to have X3D valid in all browsers (but less functional).' + NL +
+            '  --screenshot TIME IMAGE-FILE-NAME' + NL +
+            '                        Take a screenshot of the loaded scene' + NL +
+            '                        at given TIME, and save it to IMAGE-FILE-NAME.' + NL +
+            '                        You most definitely want to pass 3D model' + NL +
+            '                        file to load at command-line too, otherwise' + NL +
+            '                        we''ll just make a screenshot of the default' + NL +
+            '                        black scene.' + NL +
+            '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' + NL +
+            '                        Take a FRAMES-COUNT number of screenshots from' + NL +
+            '                        TIME-BEGIN by step TIME-STEP. Save them to' + NL +
+            '                        a single movie file (like .avi) (ffmpeg must' + NL +
+            '                        be installed and available on $PATH for this)' + NL +
+            '                        or to a sequence of image files (FILE-NAME' + NL +
+            '                        must then be specified like image@counter(4).png).' + NL +
+            '  --screenshot-transparent' + NL +
+            '                        Screenshots background is transparent.' + NL +
+            '                        Useful only together' + NL +
+            '                        with --screenshot-range or --screenshot options.' + NL +
+            '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' + NL +
+            '                        Especially useful to make a screenshot from given viewpoint.' + NL +
+            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' + NL +
+            '                        Argument AMOUNT is an integer >= 0.' + NL +
+            '                        Exact 0 means "no anti-aliasing",' + NL +
+            '                        this is the default. Each successive integer' + NL +
+            '                        generally makes method one step better.' + NL +
+            '                        Especially useful to make a screenshot with' + NL +
+            '                        anti-aliasing quality.' + NL +
+            '  --project DIR         Point view3dscene to Castle Game Engine' + NL +
+            '                        project directory (or CastleEngineManifest.xml file)' + NL +
+            '                        to resolve the "castle-data:/" URLs in files.' + NL +
+            SoundEngine.ParseParametersHelp + NL +
+            NL +
+            TCastleWindow.ParseParametersHelp(StandardParseOptions, true) + NL +
+            NL +
+            'Debug options:' + NL +
+            '  --debug-log           Deprecated. We now log by default.' + NL +
+            '  --debug-log-cache     Write log info, including cache.' + NL +
+            '  --debug-log-shaders   Write log info, including shader source and log.' + NL +
+            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' + NL +
+            '  --debug-log-videos    Write log info, including videos loading and cache.' + NL +
+            '  --debug-texture-memory Profile GPU texture memory usage.' + NL +
+            OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') + NL +
+            NL +
+            'Deprecated options:' + NL +
+            '  --scene-change-no-normals' + NL +
+            '                        Remove normals information from the loaded scene.' + NL +
+            '                        Forces automatic calculation of normal vectors.' + NL +
+            '                        Deprecated, doing this from command-line is not' + NL +
+            '                        usually useful.' + NL +
+            '  --scene-change-no-solid-objects' + NL +
+            '                        Make all shapes not solid in the loaded scene.' + NL +
+            '                        Disables backface culling.' + NL +
+            '                        Deprecated, doing this from command-line is not' + NL +
+            '                        usually useful.' + NL +
+            '  --scene-change-no-convex-faces' + NL +
+            '                        Treat all faces as potentially concave in the loaded scene.' + NL +
+            '                        Deprecated, doing this from command-line is not' + NL +
+            '                        usually useful.' + NL +
+            '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' + NL +
+            NL +
             ApplicationProperties.Description;
 
           if IsConsole then
