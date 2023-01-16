@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
@@ -554,77 +554,63 @@ begin
   end;
 end;
 
+var
+  HasWalkFrustum: Boolean; //< Secures from case when user never used Walk navigation, and so WalkFrustum is undefined
+  WalkFrustum: TFrustum;
+
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
-  // TODO TCastleRenderUnlitMesh
-  (*
-  procedure PushMatrix;
-  var
-    CameraMatrix: PMatrix4;
-  begin
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadMatrix(RenderContext.ProjectionMatrix);
-
-    if RenderingCamera.RotationOnly then
-      CameraMatrix := @RenderingCamera.RotationMatrix
-    else
-      CameraMatrix := @RenderingCamera.Matrix;
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-    glLoadMatrix(CameraMatrix^);
-  end;
-
-  procedure PopMatrix;
-  begin
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
-  end;
-
-  procedure RenderFrustum(AlwaysVisible: boolean);
+  procedure RenderFrustum(const AlwaysVisible: boolean);
   var
     FrustumPoints: TFrustumPoints;
+    SavedDepthTest: Boolean;
+    Mesh: TCastleRenderUnlitMesh;
   begin
+    if not HasWalkFrustum then
+      Exit;
+
     if AlwaysVisible then
     begin
-      glPushAttrib(GL_ENABLE_BIT);
-      glDisable(GL_DEPTH_TEST);
+      SavedDepthTest := RenderContext.DepthTest;
+      RenderContext.DepthTest := false;
     end;
     try
-      {$warnings off} // using deprecated, but for now this is easiest for view3dscene
-      MainViewport.InternalWalkNavigation.Camera.Frustum.CalculatePoints(FrustumPoints);
-      {$warnings on}
-      glColor3f(1, 1, 1);
-      glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
-        glDrawElements(GL_LINES, 12 * 2, GL_UNSIGNED_INT,
-          @FrustumPointsLinesIndexes);
-      glDisableClientState(GL_VERTEX_ARRAY);
+      WalkFrustum.CalculatePoints(FrustumPoints);
+
+      Mesh := TCastleRenderUnlitMesh.Create(true);
+      try
+        Mesh.ModelViewProjection := RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix;
+        Mesh.SetVertexes(@FrustumPoints, High(FrustumPoints) + 1, false);
+        Mesh.SetIndexes(@FrustumPointsLinesIndexes, (High(FrustumPointsLinesIndexes) + 1) * 2);
+        Mesh.Render(pmLines);
+      finally FreeAndNil(Mesh) end;
     finally
-      if AlwaysVisible then glPopAttrib;
+      if AlwaysVisible then
+        RenderContext.DepthTest := SavedDepthTest;
     end;
   end;
-  *)
 
 begin
+  { Save WalkFrustum for future RenderFrustum rendering. }
+  if (RenderingCamera.Target = rtScreen) and (CurrentWalkNavigation <> nil) then
+  begin
+    HasWalkFrustum := true;
+    WalkFrustum := MainViewport.Camera.Frustum;
+  end;
+
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
     { Visualization below depends on depth test enabled }
     RenderContext.DepthTest := true;
 
-    // TODO TCastleRenderUnlitMesh
-    (*
-    PushMatrix;
-
-
     { Use Scene.RenderOptions.LineWidth for our visualizations as well }
     RenderContext.LineWidth := Scene.RenderOptions.LineWidth;
 
+    // TODO TCastleRenderUnlitMesh
+    (*
     OctreeDisplay(Scene);
+    *)
 
     { Note that there is no sense in showing viewing frustum if
       Camera is TCastleWalkNavigation, since InternalWalkNavigation.Frustum should not
@@ -632,6 +618,7 @@ begin
     if ShowFrustum and not (Navigation is TCastleWalkNavigation) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
+    (*
     if SelectedItem <> nil then
     begin
       SelectedShape := TShape(SelectedItem^.Shape);
@@ -678,8 +665,6 @@ begin
       glColorv(Vector4(0.2, 0.2, 1, 1));
       glDrawCornerMarkers(SelectedShape.BoundingBox);
     end;
-
-    PopMatrix;
     *)
   end else
   begin
