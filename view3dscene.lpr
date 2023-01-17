@@ -3743,11 +3743,10 @@ var
   Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
-  Param_EnableFixedFunction: boolean = false;
-  Param_ForceFixedFunction: boolean = false;
+  Param_FixedFunction: boolean = false;
 
 const
-  Options: array [0..25] of TOption =
+  Options: array [0..24] of TOption =
   (
     (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
     (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
@@ -3771,8 +3770,7 @@ const
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-enable-fixed-function'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-force-fixed-function'; Argument: oaNone),
+    (Short:  #0; Long: 'debug-fixed-function'; Argument: oaNone),
     (Short:  #0; Long: 'project'; Argument: oaRequired),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
   );
@@ -3901,7 +3899,7 @@ begin
             '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' + NL +
             '  --debug-log-videos    Write log info, including videos loading and cache.' + NL +
             '  --debug-texture-memory Profile GPU texture memory usage.' + NL +
-            OptionDescription('--debug-enable-fixed-function', 'Enable OpenGL fixed-function pipeline for some rendering.') + NL +
+            OptionDescription('--debug-fixed-function', 'Use OpenGL fixed-function pipeline for the rendering.') + NL +
             NL +
             'Deprecated options:' + NL +
             '  --scene-change-no-normals' + NL +
@@ -3973,10 +3971,9 @@ begin
     19: Param_HideMenu := true;
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
-    22: Param_EnableFixedFunction := true;
-    23: Param_ForceFixedFunction := true;
-    24: SetProject(Argument);
-    25: CastleX3dExtensions := false;
+    22: Param_FixedFunction := true;
+    23: SetProject(Argument);
+    24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -4136,10 +4133,8 @@ begin
         Window.StencilBits := 8;
 
         Window.Open(@RetryOpen);
-        if Param_ForceFixedFunction or Param_EnableFixedFunction then
-          GLFeatures.EnableFixedFunction := true; // force EnableFixedFunction even before loading Param_SceneURL
-        if Param_ForceFixedFunction then
-          GLFeatures.Shaders := gsNone;
+        if Param_FixedFunction then
+          GLFeatures.EnableFixedFunction := true; // set EnableFixedFunction even before loading Param_SceneURL
 
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges)
