@@ -4141,7 +4141,7 @@ begin
 
         Window.Open(@RetryOpen);
         if Param_FixedFunction then
-          GLFeatures.EnableFixedFunction := true; // set EnableFixedFunction even before loading Param_SceneURL
+          GLFeatures.ForceFixedFunction; // force fixed-function even before loading Param_SceneURL
 
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges)
