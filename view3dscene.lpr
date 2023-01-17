@@ -673,10 +673,7 @@ begin
     { Use Scene.RenderOptions.LineWidth for our visualizations as well }
     RenderContext.LineWidth := Scene.RenderOptions.LineWidth;
 
-    // TODO TCastleRenderUnlitMesh
-    (*
-    OctreeDisplay(Scene);
-    *)
+    OctreeDisplay(Scene, RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix);
 
     { Note that there is no sense in showing WalkFrustum if CurrentWalkNavigation <> nil
       since then the WalkFrustum matches currently used frustum. }
