@@ -591,6 +591,72 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
     end;
   end;
 
+  procedure RenderSelected(const Box: TBox3D; const Triangle: TTriangle3; const Point: TVector3);
+  var
+    SavedDepthTest, SavedCullFace: Boolean;
+    ModelViewProjection: TMatrix4;
+    Mesh: TCastleRenderUnlitMesh;
+    SavedLineWidth, SavedPointSize: Single;
+  begin
+    SavedDepthTest := RenderContext.DepthTest;
+    SavedCullFace := RenderContext.CullFace;
+    SavedLineWidth := RenderContext.LineWidth;
+    SavedPointSize := RenderContext.PointSize;
+
+    RenderContext.DepthTest := false; // draw stuff visible through other geometry here
+    RenderContext.CullFace := true; // note: it doesn't matter for lines, but matters for triangles below
+    RenderContext.LineWidth := 2.0;
+    RenderContext.PointSize := 5.0;
+
+    ModelViewProjection := RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix;
+
+    // draw red selection corner markers
+    glDrawCornerMarkers(Box, Vector4(0.5, 0.3, 0.3, 1), ModelViewProjection);
+
+    Mesh := TCastleRenderUnlitMesh.Create(true);
+    try
+      Mesh.ModelViewProjection := ModelViewProjection;
+
+      RenderContext.BlendingEnable(bsSrcAlpha, bdOneMinusSrcAlpha);
+
+      Mesh.Color := Vector4(0.5, 0.3, 0.3, 0.5); // draw face back in red
+      Mesh.SetVertexes([
+        Vector4(Triangle.Data[0], 1),
+        Vector4(Triangle.Data[2], 1),
+        Vector4(Triangle.Data[1], 1)
+      ], false);
+      Mesh.Render(pmTriangles);
+
+      Mesh.Color := Vector4(0.4, 0.4, 1, 0.4); // draw face front in blue
+      Mesh.SetVertexes([
+        Vector4(Triangle.Data[0], 1),
+        Vector4(Triangle.Data[1], 1),
+        Vector4(Triangle.Data[2], 1)
+      ], false);
+      Mesh.Render(pmTriangles);
+
+      RenderContext.BlendingDisable;
+
+      // draw face outline in white
+      Mesh.Color := White;
+      Mesh.Render(pmLineLoop); // note: we use vertexes set previously
+
+      // draw hit point
+      Mesh.SetVertexes([Vector4(Point, 1)], false);
+      Mesh.Render(pmPoints);
+    finally FreeAndNil(Mesh) end;
+
+    { Draw blue corner markers, these overwrite the red markers, but only when in front.
+      So corners in front are blue, those behind are red.
+      Gives depth impression and is generally visible against various geometry. }
+    glDrawCornerMarkers(Box, Vector4(0.2, 0.2, 1, 1), ModelViewProjection);
+
+    RenderContext.DepthTest := SavedDepthTest;
+    RenderContext.CullFace := SavedCullFace;
+    RenderContext.LineWidth := SavedLineWidth;
+    RenderContext.PointSize := SavedPointSize;
+  end;
+
 begin
   { Save WalkFrustum for future RenderFrustum rendering. }
   if (RenderingCamera.Target = rtScreen) and (CurrentWalkNavigation <> nil) then
@@ -612,60 +678,19 @@ begin
     OctreeDisplay(Scene);
     *)
 
-    { Note that there is no sense in showing viewing frustum if
-      Camera is TCastleWalkNavigation, since InternalWalkNavigation.Frustum should not
-      be visible then (as it's just the *currently used* frustum in this case). }
-    if ShowFrustum and not (Navigation is TCastleWalkNavigation) then
+    { Note that there is no sense in showing WalkFrustum if CurrentWalkNavigation <> nil
+      since then the WalkFrustum matches currently used frustum. }
+    if ShowFrustum and (CurrentWalkNavigation = nil) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
-    (*
     if SelectedItem <> nil then
-    begin
-      SelectedShape := TShape(SelectedItem^.Shape);
-      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
-        glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-        glColorv(Vector4(0.5, 0.3, 0.3, 1));
-        glDrawCornerMarkers(SelectedShape.BoundingBox);   // draw red selection corner markers, visible through geometry
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
-        glEnable(GL_BLEND);
-        glEnable(GL_CULL_FACE);  { saved by GL_ENABLE_BIT }
-        glColorv(Vector4(0.5, 0.3, 0.3, 0.5));
-        glBegin(GL_TRIANGLES);   // draw face back in red, visible through geometry
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-        glEnd;
-        glColorv(Vector4(0.4, 0.4, 1, 0.4));
-        glBegin(GL_TRIANGLES);  // draw face front in blue,  visible through geometry
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-        glEnd;
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glColorv(Vector4(1, 1, 1, 1));
-
-        RenderContext.LineWidth := 2.0;
-        glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-        glEnd;
-
-        RenderContext.PointSize := 5.0;
-        glDisable(GL_DEPTH_TEST);
-        glBegin(GL_POINTS);     // draw hit point, visible through
-          glVertexv(SelectedPointWorld);
-        glEnd;
-      glPopAttrib;
-      // draw blue corner markers, these overwrite the red markers, but only when infront
-      // so corners infront are blue, those behind are red.
-      // gives depth impression and is generally visible against various geometry .
-      glColorv(Vector4(0.2, 0.2, 1, 1));
-      glDrawCornerMarkers(SelectedShape.BoundingBox);
-    end;
-    *)
+      { Note that this assumes that Scene transformation is identity.
+        We only transform selected stuff into scene coordinate-system. }
+      RenderSelected(
+        TShape(SelectedItem^.Shape).BoundingBox,
+        SelectedItem^.World.Triangle,
+        SelectedPointWorld
+      );
   end else
   begin
     SceneBoundingBox.Exists := false;
