@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2018 Michalis Kamburelis.
+  Copyright 2003-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -90,7 +90,9 @@ end;
 
 class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
 begin
+  {$warnings off} // using deprecated to support VRML 1
   (Node as TShapeHintsNode_1).FdShapeType.Value := SHTYPE_UNKNOWN;
+  {$warnings on}
 end;
 
 class procedure TSceneChangesDo.NoSolid_AbstractGeometry(Node: TX3DNode);
@@ -107,7 +109,9 @@ end;
 
 class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
 begin
+  {$warnings off} // using deprecated to support VRML 1
   (Node as TShapeHintsNode_1).FdFaceType.Value := FACETYPE_UNKNOWN;
+  {$warnings on}
 end;
 
 class procedure TSceneChangesDo.NoConvex_AbstractGeometry(node: TX3DNode);
@@ -196,7 +200,9 @@ begin
   if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
   begin
     SH := TShapeHintsNode_1.Create('', Node.BaseUrl);
+    {$warnings off} // using deprecated to support VRML 1
     SH.FdFaceType.Value := FACETYPE_UNKNOWN;
+    {$warnings on}
     Node.FdChildren.Add(0, SH);
   end;
 end;
