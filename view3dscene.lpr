@@ -3750,7 +3750,6 @@ var
   Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
-  Param_FixedFunction: boolean = false;
 
 const
   Options: array [0..24] of TOption =
@@ -3978,7 +3977,10 @@ begin
     19: Param_HideMenu := true;
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
-    22: Param_FixedFunction := true;
+    { We can do TGLFeatures.ForceFixedFunction immediately,
+      during parsing of command-line options. In fact it's good --
+      we should not call TGLFeatures.ForceFixedFunction once the context is open. }
+    22: TGLFeatures.ForceFixedFunction;
     23: SetProject(Argument);
     24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
@@ -4140,8 +4142,6 @@ begin
         Window.StencilBits := 8;
 
         Window.Open(@RetryOpen);
-        if Param_FixedFunction then
-          GLFeatures.ForceFixedFunction; // force fixed-function even before loading Param_SceneURL
 
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges)
