@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleInternalGLUtils,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
@@ -3977,10 +3977,10 @@ begin
     19: Param_HideMenu := true;
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
-    { We can do TGLFeatures.ForceFixedFunction immediately,
+    { We can change TGLFeatures.RequestCapabilities immediately,
       during parsing of command-line options. In fact it's good --
-      we should not call TGLFeatures.ForceFixedFunction once the context is open. }
-    22: TGLFeatures.ForceFixedFunction;
+      we should not change TGLFeatures.RequestCapabilities once the context is open. }
+    22: TGLFeatures.RequestCapabilities := rcForceFixedFunction;
     23: SetProject(Argument);
     24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
