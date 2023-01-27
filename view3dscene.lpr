@@ -4168,8 +4168,10 @@ begin
         Window.StencilBits := 8;
 
         Window.Open(@RetryOpen);
-        if Param_FixedFunction then
-          GLFeatures.ForceFixedFunction; // force fixed-function even before loading Param_SceneURL
+
+        // TODO: Functioning of this fixed in shadow-volumes-new branch
+        // if Param_FixedFunction then
+        //   GLFeatures.ForceFixedFunction; // force fixed-function even before loading Param_SceneURL
 
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges)
