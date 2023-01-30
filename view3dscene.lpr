@@ -3925,7 +3925,7 @@ begin
             '                        to resolve the "castle-data:/" URLs in files.' + NL +
             SoundEngine.ParseParametersHelp + NL +
             NL +
-            TCastleWindow.ParseParametersHelp(StandardParseOptions, true) + NL +
+            TCastleWindow.ParseParametersHelp + NL +
             NL +
             'Debug options:' + NL +
             '  --debug-log           Deprecated. We now log by default.' + NL +
