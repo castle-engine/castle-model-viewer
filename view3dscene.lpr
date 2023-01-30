@@ -999,6 +999,35 @@ type
   TLoadSceneOption = (lsoCommandLineCustomization);
   TLoadSceneOptions = set of TLoadSceneOption;
 
+{ Set proper Camera.ProjectionNear and Navigation.Radius based on predicted
+  bounding box we need to display.
+
+  Navigation may be @nil.
+
+  CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
+  automatically based on box. }
+procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
+  const Navigation: TCastleNavigation;
+  const Box: TBox3D);
+const
+  WorldBoxSizeToRadius = 0.005;
+var
+  Radius: Single;
+begin
+  Radius := Box.AverageSize(false, 1.0) * WorldBoxSizeToRadius;
+  { Make Radius at most DefaultCameraRadius?
+    Commented out, not necessary and could be troublesome -- we want the autocalculate
+    it to be have good near (good near clipping plane) and good depth precision. }
+  // MaxVar(Radius, DefaultCameraRadius);
+  if Navigation <> nil then
+    Navigation.Radius := Radius;
+  Camera.ProjectionNear := Radius * RadiusToProjectionNear;
+  WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
+    Radius,
+    Camera.ProjectionNear
+  ]);
+end;
+
 { Calls FreeScene and then inits "scene global variables".
 
   Camera settings for scene are inited from VRML/X3D defaults and
@@ -1066,6 +1095,12 @@ begin
     MainViewport.AssignDefaultCamera;
     MainViewport.AssignDefaultNavigation;
     // UpdateCameraUI, called below, will make UI reflect current navigation
+
+    { Set proper Camera.ProjectionNear and Navigation.Radius,
+      before AssignCameraAndNavigation for other viewports (as they will copy us).
+      CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
+      automatically based on box. }
+    UpdateRadiusProjectionNear(MainViewport.Camera, MainViewport.Navigation, Scene.LocalBoundingBox);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
@@ -3896,7 +3931,7 @@ begin
             '                        to resolve the "castle-data:/" URLs in files.' + NL +
             SoundEngine.ParseParametersHelp + NL +
             NL +
-            TCastleWindow.ParseParametersHelp(StandardParseOptions, true) + NL +
+            TCastleWindow.ParseParametersHelp + NL +
             NL +
             'Debug options:' + NL +
             '  --debug-log           Deprecated. We now log by default.' + NL +
