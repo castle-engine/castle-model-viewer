@@ -4060,7 +4060,7 @@ begin
   RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
-  Window.ParseParameters(StandardParseOptions);
+  Window.ParseParameters;
   SoundEngine.ParseParameters;
   ViewpointsParseParameters;
   Parameters.Parse(Options, @OptionProc, nil);
