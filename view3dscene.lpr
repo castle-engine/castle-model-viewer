@@ -1896,7 +1896,7 @@ var
 
   procedure RemoveSelectedFace;
 
-    function MFNonEmpty(Field: TLongIntList): boolean;
+    function MFNonEmpty(Field: TInt32List): boolean;
     begin
       Result := (Field <> nil) and (Field.Count > 0) and
         { Single "-1" value in an MF field is the VRML 1.0 default
@@ -1908,7 +1908,7 @@ var
 
   var
     Geometry: TAbstractGeometryNode;
-    Colors, Coords, Materials, Normals, TexCoords: TLongIntList;
+    Colors, Coords, Materials, Normals, TexCoords: TInt32List;
     CoordsField, TexCoordsField: TMFLong;
     IndexBegin, IndexCount: Integer;
   begin
@@ -3877,8 +3877,8 @@ begin
             '(in this case the input must be in X3D format).' + NL +
             NL +
             'Available options are:' + NL +
-            HelpOptionHelp + NL +
-            VersionOptionHelp + NL +
+            OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
+            OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
             '  -H / --hide-extras    Do not show anything extra (like status text' + NL +
             '                        or toolbar or bounding box) when program starts.' + NL +
             '                        Show only the 3D world.' + NL +
@@ -4069,7 +4069,7 @@ begin
   RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
-  Window.ParseParameters(StandardParseOptions);
+  Window.ParseParameters;
   SoundEngine.ParseParameters;
   ViewpointsParseParameters;
   Parameters.Parse(Options, @OptionProc, nil);
