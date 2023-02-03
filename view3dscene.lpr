@@ -3535,8 +3535,8 @@ begin
   M := TMenu.Create('_Clipboard');
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal) (Deprecated)',   104));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0, deprecated)',   106));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal)',   104));
     M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
