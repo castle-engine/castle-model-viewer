@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2022 Michalis Kamburelis.
+  Copyright 2006-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -60,10 +60,15 @@ type
 
   TString3 = array [0..2] of string;
 
+  TMyFloatSlider = class(TCastleFloatSlider)
+  public
+    constructor Create(AOwner: TComponent); override;
+  end;
+
   { Three float sliders to control TVector3 value. }
   TMenuVector3Sliders = class(TComponent)
   strict private
-    Floats: array [0..2] of TCastleFloatSlider;
+    Floats: array [0..2] of TMyFloatSlider;
     FOnChange: TNotifyEvent;
     procedure ChildSliderChanged(Sender: TObject);
     function GetValue: TVector3;
@@ -106,8 +111,8 @@ type
   strict private
     Light: TAbstractLightNode;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TCastleFloatSlider;
-    AmbientIntensitySlider: TCastleFloatSlider;
+    IntensitySlider: TMyFloatSlider;
+    AmbientIntensitySlider: TMyFloatSlider;
     OnToggle: TCastleOnScreenMenuItemToggle;
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
@@ -145,8 +150,8 @@ type
   TSpot1LightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode_1;
-    CutOffAngleSlider: TCastleFloatSlider;
-    DropOffRateSlider: TCastleFloatSlider;
+    CutOffAngleSlider: TMyFloatSlider;
+    DropOffRateSlider: TMyFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure DropOffRateChanged(Sender: TObject);
     procedure ClickDirection(Sender: TObject);
@@ -157,8 +162,8 @@ type
   TSpotLightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode;
-    CutOffAngleSlider: TCastleFloatSlider;
-    BeamWidthSlider: TCastleFloatSlider;
+    CutOffAngleSlider: TMyFloatSlider;
+    BeamWidthSlider: TMyFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure BeamWidthChanged(Sender: TObject);
     procedure ClickDirection(Sender: TObject);
@@ -177,9 +182,9 @@ type
   THeadLightMenu = class(TV3DOnScreenMenu)
   strict private
     Headlight: TAbstractLightNode;
-    AmbientIntensitySlider: TCastleFloatSlider;
+    AmbientIntensitySlider: TMyFloatSlider;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TCastleFloatSlider;
+    IntensitySlider: TMyFloatSlider;
     AttenuationSlider: TMenuVector3Sliders;
     procedure ColorChanged(Sender: TObject);
     procedure AttenuationChanged(Sender: TObject);
@@ -201,8 +206,8 @@ type
     ShadowVolumesToggle: TCastleOnScreenMenuItemToggle;
     ShadowVolumesMainToggle: TCastleOnScreenMenuItemToggle;
     SliderMapSizeExponent: TCastle2ExponentSlider;
-    SliderMapBias: TCastleFloatSlider;
-    SliderMapScale: TCastleFloatSlider;
+    SliderMapBias: TMyFloatSlider;
+    SliderMapScale: TMyFloatSlider;
     CurrentProjectionLabel: TCastleLabel;
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
@@ -431,6 +436,14 @@ end;
 const
   AttenuationRange: TBox3D = (Data: ((X:0; Y: 0; Z: 0), (X:2; Y: 2; Z: 2)));
 
+{ TMyFloatSlider ------------------------------------------------------------- }
+
+constructor TMyFloatSlider.Create(AOwner: TComponent);
+begin
+  inherited;
+  FontSize := 10;
+end;
+
 { TMenuVector3Sliders -------------------------------------------------------- }
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
@@ -441,7 +454,7 @@ begin
   inherited Create(AOwner);
   for I := 0 to 2 do
   begin
-    Floats[I] := TCastleFloatSlider.Create(Self);
+    Floats[I] := TMyFloatSlider.Create(Self);
     Floats[I].Min := Range.Data[0][I];
     Floats[I].Max := Range.Data[1][I];
     Floats[I].Value := AValue[I];
@@ -688,13 +701,13 @@ begin
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.Color);
   ColorSlider.OnChange := @ColorChanged;
 
-  IntensitySlider := TCastleFloatSlider.Create(Self);
+  IntensitySlider := TMyFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 10;
   IntensitySlider.Value := Light.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
 
-  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
+  AmbientIntensitySlider := TMyFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Light.AmbientIntensity;
@@ -840,13 +853,13 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
+  CutOffAngleSlider := TMyFloatSlider.Create(Self);
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
   CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  DropOffRateSlider := TCastleFloatSlider.Create(Self);
+  DropOffRateSlider := TMyFloatSlider.Create(Self);
   DropOffRateSlider.Min := 0;
   DropOffRateSlider.Max := 1;
   DropOffRateSlider.Value := Light.FdDropOffRate.Value;
@@ -885,13 +898,13 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
+  CutOffAngleSlider := TMyFloatSlider.Create(Self);
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.CutOffAngle;
   CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  BeamWidthSlider := TCastleFloatSlider.Create(Self);
+  BeamWidthSlider := TMyFloatSlider.Create(Self);
   BeamWidthSlider.Min := 0.01;
   BeamWidthSlider.Max := Pi/2;
   BeamWidthSlider.Value := Light.BeamWidth;
@@ -952,7 +965,7 @@ begin
 
   AddTitle('Headlight:');
 
-  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
+  AmbientIntensitySlider := TMyFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Headlight.AmbientIntensity;
@@ -963,7 +976,7 @@ begin
   ColorSlider.OnChange := @ColorChanged;
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
 
-  IntensitySlider := TCastleFloatSlider.Create(Self);
+  IntensitySlider := TMyFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 1;
   IntensitySlider.Value := Headlight.Intensity;
@@ -1046,13 +1059,13 @@ begin
   SliderMapSizeExponent.Value := MapSizeExponent;
   SliderMapSizeExponent.OnChange := @MapSizeExponentChanged;
 
-  SliderMapBias := TCastleFloatSlider.Create(Self);
+  SliderMapBias := TMyFloatSlider.Create(Self);
   SliderMapBias.Min := 0.0;
   SliderMapBias.Max := 10.0;
   SliderMapBias.Value := MapBias;
   SliderMapBias.OnChange := @MapBiasChanged;
 
-  SliderMapScale := TCastleFloatSlider.Create(Self);
+  SliderMapScale := TMyFloatSlider.Create(Self);
   SliderMapScale.Min := 0.0;
   SliderMapScale.Max := 10.0;
   SliderMapScale.Value := MapScale;
