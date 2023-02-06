@@ -3811,7 +3811,7 @@ const
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-fixed-function'; Argument: oaNone),
+    (Short:  #0; Long: 'capabilities'; Argument: oaRequired),
     (Short:  #0; Long: 'project'; Argument: oaRequired),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
   );
@@ -3940,7 +3940,7 @@ begin
             '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' + NL +
             '  --debug-log-videos    Write log info, including videos loading and cache.' + NL +
             '  --debug-texture-memory Profile GPU texture memory usage.' + NL +
-            OptionDescription('--debug-fixed-function', 'Use OpenGL fixed-function pipeline for the rendering.') + NL +
+            OptionDescription('--capabilities automatic|force-fixed-function|force-modern', 'Force OpenGL context to have specific capabilities, to test rendering on modern or ancient GPUs.') + NL +
             NL +
             'Deprecated options:' + NL +
             '  --scene-change-no-normals' + NL +
@@ -4015,7 +4015,7 @@ begin
     { We can change TGLFeatures.RequestCapabilities immediately,
       during parsing of command-line options. In fact it's good --
       we should not change TGLFeatures.RequestCapabilities once the context is open. }
-    22: TGLFeatures.RequestCapabilities := rcForceFixedFunction;
+    22: TGLFeatures.RequestCapabilities := StrToCapabilities(Argument);
     23: SetProject(Argument);
     24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
