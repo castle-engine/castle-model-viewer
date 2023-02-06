@@ -1521,9 +1521,9 @@ begin
     if Transparency then
     begin
       ViewportsSetTransparent(true);
-      if not RenderContext.ColorBufferHasAlpha then
-        { In case FBO is not available, and main context doesn't have alpha
-          bits either. }
+      if GLFeatures.AlphaBits = 0 then
+        { In case FBO is not available, and main context doesn't have alpha bits either.
+          TODO: Above only queries for alpha bits in default color buffer, not in FBO. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end;
 
@@ -1606,9 +1606,9 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       ImageClass := TRGBAlphaImage;
       ViewportsSetTransparent(true);
 
-      if not RenderContext.ColorBufferHasAlpha then
-        { In case FBO is not available, and main context doesn't have alpha
-          bits either. }
+      if GLFeatures.AlphaBits = 0 then
+        { In case FBO is not available, and main context doesn't have alpha bits either.
+          TODO: Above only queries for alpha bits in default color buffer, not in FBO. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end else
     begin
