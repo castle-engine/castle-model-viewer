@@ -773,14 +773,14 @@ begin
     as Light.SceneLocation may not fit within range,
     which is uncomfortable (works Ok, but not nice for user). }
   Box := ViewportLargerBox(MainViewport);
-  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionSceneLocation);
+  LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionWorldLocation);
   LocationSlider.OnChange := @LocationChanged;
 
   LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
   Add('Shadows Settings...', @ClickShadowsMenu);
 
   Gizmo.Exists := true;
-  Gizmo.Translation := Light.ProjectionSceneLocation;
+  Gizmo.Translation := Light.ProjectionWorldLocation;
 end;
 
 procedure TPunctualLightMenu.ClickShadowsMenu(Sender: TObject);
@@ -801,7 +801,7 @@ end;
 
 procedure TPunctualLightMenu.LocationChanged(Sender: TObject);
 begin
-  Light.ProjectionSceneLocation := LocationSlider.Value;
+  Light.ProjectionWorldLocation := LocationSlider.Value;
   Gizmo.Translation := LocationSlider.Value;
 end;
 
@@ -819,7 +819,7 @@ begin
     (it may be animated by X3D events, it may change when we turn on
     shadows:=TRUE for DirectionalLight...).
     So just update it continuously. }
-  V := Light.ProjectionSceneLocation;
+  V := Light.ProjectionWorldLocation;
   if not TVector3.Equals(V, LocationSlider.Value) then
   begin
     LocationSlider.Value := V;
@@ -874,11 +874,11 @@ procedure TSpot1LightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3;
 begin
-  Vector := Light.ProjectionSceneDirection;
+  Vector := Light.ProjectionWorldDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.ProjectionSceneDirection := Vector;
+    Light.ProjectionWorldDirection := Vector;
 end;
 
 procedure TSpot1LightMenu.CutOffAngleChanged(Sender: TObject);
@@ -919,11 +919,11 @@ procedure TSpotLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3;
 begin
-  Vector := Light.ProjectionSceneDirection;
+  Vector := Light.ProjectionWorldDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.ProjectionSceneDirection := Vector;
+    Light.ProjectionWorldDirection := Vector;
 end;
 
 procedure TSpotLightMenu.CutOffAngleChanged(Sender: TObject);
@@ -949,11 +949,11 @@ procedure TDirectionalLightMenu.ClickDirection(Sender: TObject);
 var
   Vector: TVector3;
 begin
-  Vector := Light.ProjectionSceneDirection;
+  Vector := Light.ProjectionWorldDirection;
   if MessageInputQueryDirection(Window, 'Change direction' +nl+
     '(Input "C" to use current camera''s direction)',
     Vector) then
-    Light.ProjectionSceneDirection := Vector;
+    Light.ProjectionWorldDirection := Vector;
 end;
 
 { THeadLightMenu --------------------------------------------------------- }
