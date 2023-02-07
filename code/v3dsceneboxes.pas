@@ -37,7 +37,7 @@ procedure glDrawCornerMarkers(const Box: TBox3D;
 implementation
 
 uses SysUtils,
-  CastleInternalGLUtils, CastleGLUtils;
+  CastleRenderPrimitives, CastleGLUtils;
 
 procedure glDrawCornerMarkers(const Box: TBox3D;
   const Color: TCastleColor; const ModelViewProjection: TMatrix4);

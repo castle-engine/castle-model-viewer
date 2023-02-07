@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleInternalGLUtils,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
