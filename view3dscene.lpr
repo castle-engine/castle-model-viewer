@@ -2927,7 +2927,6 @@ begin
     3500: with Scene do ShadowMaps := not ShadowMaps;
     3510..3519: Scene.RenderOptions.ShadowSampling :=
       TShadowSampling(Ord(MenuItem.IntData) - 3510);
-    3520: with Scene.RenderOptions do VisualizeDepthMap := not VisualizeDepthMap;
     3530:
       begin
         C := Scene.ShadowMapsDefaultSize;
@@ -3357,8 +3356,6 @@ begin
       M2.Append(TMenuSeparator.Create);
       M2.AppendRadioGroup(ShadowSamplingNames, 3510,
         Ord(Scene.RenderOptions.ShadowSampling), true);
-      M2.Append(TMenuSeparator.Create);
-      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, Scene.RenderOptions.VisualizeDepthMap, true));
       M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
