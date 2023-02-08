@@ -27,7 +27,7 @@ unit V3DSceneOctreeVisualize;
 
 interface
 
-uses CastleInternalOctree, CastleWindow, CastleScene;
+uses CastleInternalOctree, CastleWindow, CastleScene, CastleVectors;
 
 type
   TOctreeDisplay = object
@@ -57,14 +57,14 @@ var
   OctreeVisibleShapesDisplay: TOctreeDisplay;
   OctreeCollidableShapesDisplay: TOctreeDisplay;
 
-procedure OctreeDisplay(Scene: TCastleScene);
+procedure OctreeDisplay(const Scene: TCastleScene; const ModelViewProjection: TMatrix4);
 
 function OctreeDisplayStatus: string;
 
 implementation
 
 uses SysUtils,
-  CastleColors, CastleGLUtils, CastleShapes;
+  CastleColors, CastleGLUtils, CastleShapes, CastleBoxes, CastleRenderPrimitives;
 
 { TOctreeDisplay ------------------------------------------------------------- }
 
@@ -117,32 +117,103 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-procedure OctreeDisplay(Scene: TCastleScene);
+procedure AddBox(const Box: TBox3D; const Vertexes: TVector4List);
 
-// TODO TCastleRenderUnlitMesh
-(*
-
-  procedure DisplayOctreeDepth(octreenode: TOctreeNode;
-    OctreeDisplayDepth: integer);
+  procedure AddLoop(const V: array of TVector4);
   var
-    b0, b1, b2: boolean;
+    I: Integer;
   begin
-    with octreenode do
-      if Depth = OctreeDisplayDepth then
+    for I := 0 to High(V) - 1 do
+    begin
+      Vertexes.Add(V[I]);
+      Vertexes.Add(V[I + 1]);
+    end;
+
+    Vertexes.Add(V[High(V)]);
+    Vertexes.Add(V[0]);
+  end;
+
+var
+  X0, X1, Y0, Y1, Z0, Z1: Single;
+begin
+  // get box to easier variables
+  X0 := Box.Data[0].X;
+  X1 := Box.Data[1].X;
+  Y0 := Box.Data[0].Y;
+  Y1 := Box.Data[1].Y;
+  Z0 := Box.Data[0].Z;
+  Z1 := Box.Data[1].Z;
+
+  // line loop on Z0
+  AddLoop([
+    Vector4(X0, Y0, Z0, 1),
+    Vector4(X1, Y0, Z0, 1),
+    Vector4(X1, Y1, Z0, 1),
+    Vector4(X0, Y1, Z0, 1)
+  ]);
+
+  // line loop on Z1
+  AddLoop([
+    Vector4(X0, Y0, Z1, 1),
+    Vector4(X1, Y0, Z1, 1),
+    Vector4(X1, Y1, Z1, 1),
+    Vector4(X0, Y1, Z1, 1)
+  ]);
+
+  // connect Z0 with Z1
+  Vertexes.AddRange([
+    Vector4(X0, Y0, Z0, 1),
+    Vector4(X0, Y0, Z1, 1),
+
+    Vector4(X1, Y0, Z0, 1),
+    Vector4(X1, Y0, Z1, 1),
+
+    Vector4(X1, Y1, Z0, 1),
+    Vector4(X1, Y1, Z1, 1),
+
+    Vector4(X0, Y1, Z0, 1),
+    Vector4(X0, Y1, Z1, 1)
+  ]);
+end;
+
+procedure OctreeDisplay(const Scene: TCastleScene; const ModelViewProjection: TMatrix4);
+var
+  Vertexes: TVector4List;
+  Mesh: TCastleRenderUnlitMesh;
+
+  { Reinitialize (clear and set) Vertexes to define the necessary mesh,
+    use Mesh once to render them. }
+  procedure DisplayOctreeDepth(const OctreeNode: TOctreeNode;
+    const OctreeDisplayDepth: integer; const ModelViewProjection: TMatrix4);
+
+    procedure DisplayOctreeDepthRecursion(const OctreeNode: TOctreeNode;
+      const OctreeDisplayDepth: integer);
+    var
+      b0, b1, b2: boolean;
+    begin
+      if OctreeNode.Depth = OctreeDisplayDepth then
       begin
-        if not (IsLeaf and (ItemsCount = 0)) then
-          glDrawBox3DWire(Box);
+        if not (OctreeNode.IsLeaf and (OctreeNode.ItemsCount = 0)) then
+          AddBox(OctreeNode.Box, Vertexes);
       end else
-      if not IsLeaf then
+      if not OctreeNode.IsLeaf then
       begin
         for b0 := false to true do
           for b1 := false to true do
             for b2 := false to true do
-              DisplayOctreeDepth(TreeSubNodes[b0, b1, b2], OctreeDisplayDepth);
+              DisplayOctreeDepthRecursion(OctreeNode.TreeSubNodes[b0, b1, b2], OctreeDisplayDepth);
       end;
+    end;
+
+  begin
+    Vertexes.Clear;
+    DisplayOctreeDepthRecursion(OctreeNode, OctreeDisplayDepth);
+    Mesh.ModelViewProjection := ModelViewProjection;
+    Mesh.SetVertexes(Vertexes, true);
+    Mesh.Render(pmLines);
   end;
 
-  procedure DisplayOctreeTrianglesDepth(OctreeDisplayDepth: integer);
+  procedure DisplayOctreeTrianglesDepth(const OctreeDisplayDepth: integer);
   var
     ShapeList: TShapeList;
     Shape: TShape;
@@ -160,33 +231,38 @@ procedure OctreeDisplay(Scene: TCastleScene);
       ShapeList := Scene.Shapes.TraverseList(true);
       for Shape in ShapeList do
         if Shape.InternalOctreeTriangles <> nil then
-        begin
-          glPushMatrix;
-            glMultMatrix(Shape.State.Transformation.Transform);
-            DisplayOctreeDepth(Shape.InternalOctreeTriangles.TreeRoot,
-              OctreeDisplayDepth);
-          glPopMatrix;
-        end;
+          DisplayOctreeDepth(Shape.InternalOctreeTriangles.TreeRoot,
+            OctreeDisplayDepth, ModelViewProjection * Shape.State.Transformation.Transform);
     end;
   end;
 
-  procedure DisplayOctreeWhole(OctreeNode: TOctreeNode);
-  var
-    b0, b1, b2: boolean;
-  begin
-    with OctreeNode do
-    begin
-      if not (IsLeaf and (ItemsCount = 0)) then
-        glDrawBox3DWire(Box);
+  { Reinitialize (clear and set) Vertexes to define the necessary mesh,
+    use Mesh once to render them. }
+  procedure DisplayOctreeWhole(const OctreeNode: TOctreeNode;
+    const ModelViewProjection: TMatrix4);
 
-      if not IsLeaf then
+    procedure DisplayOctreeWholeRecursion(const OctreeNode: TOctreeNode);
+    var
+      b0, b1, b2: boolean;
+    begin
+      if not (OctreeNode.IsLeaf and (OctreeNode.ItemsCount = 0)) then
+        AddBox(OctreeNode.Box, Vertexes);
+
+      if not OctreeNode.IsLeaf then
       begin
         for b0 := false to true do
           for b1 := false to true do
             for b2 := false to true do
-              DisplayOctreeWhole(TreeSubNodes[b0, b1, b2]);
+              DisplayOctreeWholeRecursion(OctreeNode.TreeSubNodes[b0, b1, b2]);
       end;
     end;
+
+  begin
+    Vertexes.Clear;
+    DisplayOctreeWholeRecursion(OctreeNode);
+    Mesh.ModelViewProjection := ModelViewProjection;
+    Mesh.SetVertexes(Vertexes, true);
+    Mesh.Render(pmLines);
   end;
 
   procedure DisplayOctreeTrianglesWhole;
@@ -207,53 +283,49 @@ procedure OctreeDisplay(Scene: TCastleScene);
       ShapeList := Scene.Shapes.TraverseList(true);
       for Shape in ShapeList do
         if Shape.InternalOctreeTriangles <> nil then
-        begin
-          glPushMatrix;
-            glMultMatrix(Shape.State.Transformation.Transform);
-            DisplayOctreeWhole(Shape.InternalOctreeTriangles.TreeRoot);
-          glPopMatrix;
-        end;
+          DisplayOctreeWhole(Shape.InternalOctreeTriangles.TreeRoot,
+            ModelViewProjection * Shape.State.Transformation.Transform);
     end;
   end;
 
 begin
-  if OctreeTrianglesDisplay.Whole then
-  begin
-    glColorv(Yellow);
-    DisplayOctreeTrianglesWhole;
-  end else
-  if OctreeTrianglesDisplay.Depth >= 0 then
-  begin
-    glColorv(Yellow);
-    DisplayOctreeTrianglesDepth(OctreeTrianglesDisplay.Depth);
-  end;
+  Vertexes := TVector4List.Create;
+  try
+    Mesh := TCastleRenderUnlitMesh.Create(true);
+    try
+      Mesh.Color := Yellow;
+      if OctreeTrianglesDisplay.Whole then
+      begin
+        DisplayOctreeTrianglesWhole;
+      end else
+      if OctreeTrianglesDisplay.Depth >= 0 then
+      begin
+        DisplayOctreeTrianglesDepth(OctreeTrianglesDisplay.Depth);
+      end;
 
-  if OctreeVisibleShapesDisplay.Whole then
-  begin
-    glColorv(Blue);
-    DisplayOctreeWhole(Scene.InternalOctreeRendering.TreeRoot);
-  end else
-  if OctreeVisibleShapesDisplay.Depth >= 0 then
-  begin
-    glColorv(Blue);
-    DisplayOctreeDepth(Scene.InternalOctreeRendering.TreeRoot,
-      OctreeVisibleShapesDisplay.Depth);
-  end;
+      Mesh.Color := Blue;
+      if OctreeVisibleShapesDisplay.Whole then
+      begin
+        DisplayOctreeWhole(Scene.InternalOctreeRendering.TreeRoot, ModelViewProjection);
+      end else
+      if OctreeVisibleShapesDisplay.Depth >= 0 then
+      begin
+        DisplayOctreeDepth(Scene.InternalOctreeRendering.TreeRoot,
+          OctreeVisibleShapesDisplay.Depth, ModelViewProjection);
+      end;
 
-  if OctreeCollidableShapesDisplay.Whole then
-  begin
-    glColorv(Red);
-    DisplayOctreeWhole(Scene.InternalOctreeDynamicCollisions.TreeRoot);
-  end else
-  if OctreeCollidableShapesDisplay.Depth >= 0 then
-  begin
-    glColorv(Red);
-    DisplayOctreeDepth(Scene.InternalOctreeDynamicCollisions.TreeRoot,
-      OctreeCollidableShapesDisplay.Depth);
-  end;
-*)
-
-begin
+      Mesh.Color := Red;
+      if OctreeCollidableShapesDisplay.Whole then
+      begin
+        DisplayOctreeWhole(Scene.InternalOctreeDynamicCollisions.TreeRoot, ModelViewProjection);
+      end else
+      if OctreeCollidableShapesDisplay.Depth >= 0 then
+      begin
+        DisplayOctreeDepth(Scene.InternalOctreeDynamicCollisions.TreeRoot,
+          OctreeCollidableShapesDisplay.Depth, ModelViewProjection);
+      end;
+    finally FreeAndNil(Mesh) end;
+  finally FreeAndNil(Vertexes) end;
 end;
 
 function OctreeDisplayStatus: string;

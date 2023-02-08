@@ -71,7 +71,7 @@ uses SysUtils, Math, Classes,
   CastleProjection, CastleVideos, CastleTextureImages,
   CastleLoadGltf,
   { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   { VRML/X3D (and possibly OpenGL) related units: }
@@ -554,133 +554,140 @@ begin
   end;
 end;
 
+var
+  HasWalkFrustum: Boolean; //< Secures from case when user never used Walk navigation, and so WalkFrustum is undefined
+  WalkFrustum: TFrustum;
+
 { Render visualization of various stuff, like octree and such. }
 procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
-  // TODO TCastleRenderUnlitMesh
-  (*
-  procedure PushMatrix;
-  var
-    CameraMatrix: PMatrix4;
-  begin
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix;
-    glLoadMatrix(RenderContext.ProjectionMatrix);
-
-    if RenderingCamera.RotationOnly then
-      CameraMatrix := @RenderingCamera.RotationMatrix
-    else
-      CameraMatrix := @RenderingCamera.Matrix;
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
-    glLoadMatrix(CameraMatrix^);
-  end;
-
-  procedure PopMatrix;
-  begin
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix;
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix;
-  end;
-
-  procedure RenderFrustum(AlwaysVisible: boolean);
+  procedure RenderFrustum(const AlwaysVisible: boolean);
   var
     FrustumPoints: TFrustumPoints;
+    SavedDepthTest: Boolean;
+    Mesh: TCastleRenderUnlitMesh;
   begin
+    if not HasWalkFrustum then
+      Exit;
+
     if AlwaysVisible then
     begin
-      glPushAttrib(GL_ENABLE_BIT);
-      glDisable(GL_DEPTH_TEST);
+      SavedDepthTest := RenderContext.DepthTest;
+      RenderContext.DepthTest := false;
     end;
     try
-      {$warnings off} // using deprecated, but for now this is easiest for view3dscene
-      MainViewport.InternalWalkNavigation.Camera.Frustum.CalculatePoints(FrustumPoints);
-      {$warnings on}
-      glColor3f(1, 1, 1);
-      glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(4, GL_FLOAT, 0, @FrustumPoints);
-        glDrawElements(GL_LINES, 12 * 2, GL_UNSIGNED_INT,
-          @FrustumPointsLinesIndexes);
-      glDisableClientState(GL_VERTEX_ARRAY);
+      WalkFrustum.CalculatePoints(FrustumPoints);
+
+      Mesh := TCastleRenderUnlitMesh.Create(true);
+      try
+        Mesh.ModelViewProjection := RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix;
+        Mesh.SetVertexes(@FrustumPoints, High(FrustumPoints) + 1, false);
+        Mesh.SetIndexes(@FrustumPointsLinesIndexes, (High(FrustumPointsLinesIndexes) + 1) * 2);
+        Mesh.Render(pmLines);
+      finally FreeAndNil(Mesh) end;
     finally
-      if AlwaysVisible then glPopAttrib;
+      if AlwaysVisible then
+        RenderContext.DepthTest := SavedDepthTest;
     end;
   end;
-  *)
+
+  procedure RenderSelected(const Box: TBox3D; const Triangle: TTriangle3; const Point: TVector3);
+  var
+    SavedDepthTest, SavedCullFace: Boolean;
+    ModelViewProjection: TMatrix4;
+    Mesh: TCastleRenderUnlitMesh;
+    SavedLineWidth, SavedPointSize: Single;
+  begin
+    SavedDepthTest := RenderContext.DepthTest;
+    SavedCullFace := RenderContext.CullFace;
+    SavedLineWidth := RenderContext.LineWidth;
+    SavedPointSize := RenderContext.PointSize;
+
+    RenderContext.DepthTest := false; // draw stuff visible through other geometry here
+    RenderContext.CullFace := true; // note: it doesn't matter for lines, but matters for triangles below
+    RenderContext.LineWidth := 2.0;
+    RenderContext.PointSize := 5.0;
+
+    ModelViewProjection := RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix;
+
+    // draw red selection corner markers
+    glDrawCornerMarkers(Box, Vector4(0.5, 0.3, 0.3, 1), ModelViewProjection);
+
+    Mesh := TCastleRenderUnlitMesh.Create(true);
+    try
+      Mesh.ModelViewProjection := ModelViewProjection;
+
+      RenderContext.BlendingEnable(bsSrcAlpha, bdOneMinusSrcAlpha);
+
+      Mesh.Color := Vector4(0.5, 0.3, 0.3, 0.5); // draw face back in red
+      Mesh.SetVertexes([
+        Vector4(Triangle.Data[0], 1),
+        Vector4(Triangle.Data[2], 1),
+        Vector4(Triangle.Data[1], 1)
+      ], false);
+      Mesh.Render(pmTriangles);
+
+      Mesh.Color := Vector4(0.4, 0.4, 1, 0.4); // draw face front in blue
+      Mesh.SetVertexes([
+        Vector4(Triangle.Data[0], 1),
+        Vector4(Triangle.Data[1], 1),
+        Vector4(Triangle.Data[2], 1)
+      ], false);
+      Mesh.Render(pmTriangles);
+
+      RenderContext.BlendingDisable;
+
+      // draw face outline in white
+      Mesh.Color := White;
+      Mesh.Render(pmLineLoop); // note: we use vertexes set previously
+
+      // draw hit point
+      Mesh.SetVertexes([Vector4(Point, 1)], false);
+      Mesh.Render(pmPoints);
+    finally FreeAndNil(Mesh) end;
+
+    { Draw blue corner markers, these overwrite the red markers, but only when in front.
+      So corners in front are blue, those behind are red.
+      Gives depth impression and is generally visible against various geometry. }
+    glDrawCornerMarkers(Box, Vector4(0.2, 0.2, 1, 1), ModelViewProjection);
+
+    RenderContext.DepthTest := SavedDepthTest;
+    RenderContext.CullFace := SavedCullFace;
+    RenderContext.LineWidth := SavedLineWidth;
+    RenderContext.PointSize := SavedPointSize;
+  end;
 
 begin
+  { Save WalkFrustum for future RenderFrustum rendering. }
+  if (RenderingCamera.Target = rtScreen) and (CurrentWalkNavigation <> nil) then
+  begin
+    HasWalkFrustum := true;
+    WalkFrustum := MainViewport.Camera.Frustum;
+  end;
+
   if (RenderingCamera.Target = rtScreen) and (not HideExtraScenesForScreenshot) then
   begin
-    // TODO TCastleRenderUnlitMesh
-    (*
-    PushMatrix;
-
-    { Visualization below depends on DEPTH_TEST enabled
-      (and after rendering scene, it is disabled by TGLRenderer.RenderCleanState) }
-    glEnable(GL_DEPTH_TEST);
+    { Visualization below depends on depth test enabled }
+    RenderContext.DepthTest := true;
 
     { Use Scene.RenderOptions.LineWidth for our visualizations as well }
     RenderContext.LineWidth := Scene.RenderOptions.LineWidth;
 
-    OctreeDisplay(Scene);
+    OctreeDisplay(Scene, RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix);
 
-    { Note that there is no sense in showing viewing frustum if
-      Camera is TCastleWalkNavigation, since InternalWalkNavigation.Frustum should not
-      be visible then (as it's just the *currently used* frustum in this case). }
-    if ShowFrustum and not (Navigation is TCastleWalkNavigation) then
+    { Note that there is no sense in showing WalkFrustum if CurrentWalkNavigation <> nil
+      since then the WalkFrustum matches currently used frustum. }
+    if ShowFrustum and (CurrentWalkNavigation = nil) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
-    begin
-      SelectedShape := TShape(SelectedItem^.Shape);
-      glPushAttrib(GL_ENABLE_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
-        glDisable(GL_DEPTH_TEST); { saved by GL_ENABLE_BIT }
-        glColorv(Vector4(0.5, 0.3, 0.3, 1));
-        glDrawCornerMarkers(SelectedShape.BoundingBox);   // draw red selection corner markers, visible through geometry
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); { saved by GL_COLOR_BUFFER_BIT }
-        glEnable(GL_BLEND);
-        glEnable(GL_CULL_FACE);  { saved by GL_ENABLE_BIT }
-        glColorv(Vector4(0.5, 0.3, 0.3, 0.5));
-        glBegin(GL_TRIANGLES);   // draw face back in red, visible through geometry
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-        glEnd;
-        glColorv(Vector4(0.4, 0.4, 1, 0.4));
-        glBegin(GL_TRIANGLES);  // draw face front in blue,  visible through geometry
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-        glEnd;
-
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glColorv(Vector4(1, 1, 1, 1));
-
-        RenderContext.LineWidth := 2.0;
-        glBegin(GL_LINE_LOOP);   // draw face outline in white from front only, not visible through geometry.
-          glVertexv(SelectedItem^.World.Triangle.Data[0]);
-          glVertexv(SelectedItem^.World.Triangle.Data[1]);
-          glVertexv(SelectedItem^.World.Triangle.Data[2]);
-        glEnd;
-
-        RenderContext.PointSize := 5.0;
-        glDisable(GL_DEPTH_TEST);
-        glBegin(GL_POINTS);     // draw hit point, visible through
-          glVertexv(SelectedPointWorld);
-        glEnd;
-      glPopAttrib;
-      // draw blue corner markers, these overwrite the red markers, but only when infront
-      // so corners infront are blue, those behind are red.
-      // gives depth impression and is generally visible against various geometry .
-      glColorv(Vector4(0.2, 0.2, 1, 1));
-      glDrawCornerMarkers(SelectedShape.BoundingBox);
-    end;
-
-    PopMatrix;
-    *)
+      { Note that this assumes that Scene transformation is identity.
+        We only transform selected stuff into scene coordinate-system. }
+      RenderSelected(
+        TShape(SelectedItem^.Shape).BoundingBox,
+        SelectedItem^.World.Triangle,
+        SelectedPointWorld
+      );
   end else
   begin
     SceneBoundingBox.Exists := false;
@@ -1514,9 +1521,9 @@ begin
     if Transparency then
     begin
       ViewportsSetTransparent(true);
-      if not RenderContext.ColorBufferHasAlpha then
-        { In case FBO is not available, and main context doesn't have alpha
-          bits either. }
+      if GLFeatures.AlphaBits = 0 then
+        { In case FBO is not available, and main context doesn't have alpha bits either.
+          TODO: Above only queries for alpha bits in default color buffer, not in FBO. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end;
 
@@ -1599,9 +1606,9 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
       ImageClass := TRGBAlphaImage;
       ViewportsSetTransparent(true);
 
-      if not RenderContext.ColorBufferHasAlpha then
-        { In case FBO is not available, and main context doesn't have alpha
-          bits either. }
+      if GLFeatures.AlphaBits = 0 then
+        { In case FBO is not available, and main context doesn't have alpha bits either.
+          TODO: Above only queries for alpha bits in default color buffer, not in FBO. }
         WritelnWarning('OpenGL', 'We did not manage to create a render buffer with alpha channel. This means that screenshot will not capture the transparency. You need a better GPU for this to work.');
     end else
     begin
@@ -1889,7 +1896,7 @@ var
 
   procedure RemoveSelectedFace;
 
-    function MFNonEmpty(Field: TLongIntList): boolean;
+    function MFNonEmpty(Field: TInt32List): boolean;
     begin
       Result := (Field <> nil) and (Field.Count > 0) and
         { Single "-1" value in an MF field is the VRML 1.0 default
@@ -1901,7 +1908,7 @@ var
 
   var
     Geometry: TAbstractGeometryNode;
-    Colors, Coords, Materials, Normals, TexCoords: TLongIntList;
+    Colors, Coords, Materials, Normals, TexCoords: TInt32List;
     CoordsField, TexCoordsField: TMFLong;
     IndexBegin, IndexCount: Integer;
   begin
@@ -2920,7 +2927,6 @@ begin
     3500: with Scene do ShadowMaps := not ShadowMaps;
     3510..3519: Scene.RenderOptions.ShadowSampling :=
       TShadowSampling(Ord(MenuItem.IntData) - 3510);
-    3520: with Scene.RenderOptions do VisualizeDepthMap := not VisualizeDepthMap;
     3530:
       begin
         C := Scene.ShadowMapsDefaultSize;
@@ -3351,8 +3357,6 @@ begin
       M2.AppendRadioGroup(ShadowSamplingNames, 3510,
         Ord(Scene.RenderOptions.ShadowSampling), true);
       M2.Append(TMenuSeparator.Create);
-      M2.Append(TMenuItemChecked.Create('Visualize Depths', 3520, Scene.RenderOptions.VisualizeDepthMap, true));
-      M2.Append(TMenuSeparator.Create);
       M2.Append(TMenuItem.Create('Set Default Shadow Map Size ...', 3530));
       M.Append(M2);
     M2 := TMenu.Create('Shadow Volumes');
@@ -3528,8 +3532,8 @@ begin
   M := TMenu.Create('_Clipboard');
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (X3D XML)', 108));
     M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 2.0, X3D classic)', 107));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0)',   106));
-    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal) (Deprecated)',   104));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (VRML 1.0, deprecated)',   106));
+    M.Append(TMenuItem.Create('Print Current Camera (Viewpoint) (Pascal)',   104));
     M.Append(TMenuItem.Create('Print _rayhunter Command-line to Render This View', 105));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('Print _Bounding Box (of whole animation)', 109));
@@ -3778,7 +3782,6 @@ var
   Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
-  Param_FixedFunction: boolean = false;
 
 const
   Options: array [0..24] of TOption =
@@ -3805,7 +3808,7 @@ const
     (Short:  #0; Long: 'hide-menu'; Argument: oaNone),
     (Short:  #0; Long: 'debug-texture-memory'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot-transparent'; Argument: oaNone),
-    (Short:  #0; Long: 'debug-fixed-function'; Argument: oaNone),
+    (Short:  #0; Long: 'capabilities'; Argument: oaRequired),
     (Short:  #0; Long: 'project'; Argument: oaRequired),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone)
   );
@@ -3871,8 +3874,8 @@ begin
             '(in this case the input must be in X3D format).' + NL +
             NL +
             'Available options are:' + NL +
-            HelpOptionHelp + NL +
-            VersionOptionHelp + NL +
+            OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
+            OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
             '  -H / --hide-extras    Do not show anything extra (like status text' + NL +
             '                        or toolbar or bounding box) when program starts.' + NL +
             '                        Show only the 3D world.' + NL +
@@ -3934,7 +3937,7 @@ begin
             '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' + NL +
             '  --debug-log-videos    Write log info, including videos loading and cache.' + NL +
             '  --debug-texture-memory Profile GPU texture memory usage.' + NL +
-            OptionDescription('--debug-fixed-function', 'Use OpenGL fixed-function pipeline for the rendering.') + NL +
+            OptionDescription('--capabilities automatic|force-fixed-function|force-modern', 'Force OpenGL context to have specific capabilities, to test rendering on modern or ancient GPUs.') + NL +
             NL +
             'Deprecated options:' + NL +
             '  --scene-change-no-normals' + NL +
@@ -4006,7 +4009,10 @@ begin
     19: Param_HideMenu := true;
     20: TextureMemoryProfiler.Enabled := true;
     21: Param_ScreenshotTransparent := true;
-    22: Param_FixedFunction := true;
+    { We can change TGLFeatures.RequestCapabilities immediately,
+      during parsing of command-line options. In fact it's good --
+      we should not change TGLFeatures.RequestCapabilities once the context is open. }
+    22: TGLFeatures.RequestCapabilities := StrToCapabilities(Argument);
     23: SetProject(Argument);
     24: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
@@ -4168,10 +4174,6 @@ begin
         Window.StencilBits := 8;
 
         Window.Open(@RetryOpen);
-
-        // TODO: Functioning of this fixed in shadow-volumes-new branch
-        // if Param_FixedFunction then
-        //   GLFeatures.ForceFixedFunction; // force fixed-function even before loading Param_SceneURL
 
         if WasParam_SceneURL then
           LoadScene(Param_SceneURL, Param_SceneChanges)
