@@ -27,29 +27,37 @@ unit V3DSceneBoxes;
 
 interface
 
-uses CastleBoxes;
+uses CastleBoxes, CastleVectors, CastleColors;
 
 { Draw corner markers (3 lines) at the 8 corners of the box.
   Proportion is the fraction of the box length, the marker extends too. }
-procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single = 0.1);
+procedure glDrawCornerMarkers(const Box: TBox3D;
+  const Color: TCastleColor; const ModelViewProjection: TMatrix4);
 
 implementation
 
-procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
+uses SysUtils,
+  CastleRenderPrimitives, CastleGLUtils;
+
+procedure glDrawCornerMarkers(const Box: TBox3D;
+  const Color: TCastleColor; const ModelViewProjection: TMatrix4);
+const
+  Proportion = 0.1;
+var
+  Vertexes: TVector4List;
 
   procedure glDrawCorners(const minx, miny, minz, maxx, maxy, maxz: Single);
 
     procedure glDrawCornerLines(const x, y, z, dx, dy, dz: Single);
     begin
-      // TODO TCastleRenderUnlitMesh
-      (*
-      glVertex3f(x, y, z);
-      glVertex3f(x+dx, y, z);
-      glVertex3f(x, y, z);
-      glVertex3f(x, y+dy, z);
-      glVertex3f(x, y, z);
-      glVertex3f(x, y, z+dz);
-      *)
+      Vertexes.AddRange([
+        Vector4(x     , y     , z     , 1),
+        Vector4(x + dx, y     , z     , 1),
+        Vector4(x     , y     , z     , 1),
+        Vector4(x     , y + dy, z     , 1),
+        Vector4(x     , y     , z     , 1),
+        Vector4(x     , y     , z + dz, 1)
+      ]);
     end;
 
   var
@@ -58,23 +66,35 @@ procedure glDrawCornerMarkers(const Box: TBox3D; const Proportion: Single);
     Xlength := (maxx - minx) * Proportion;
     Ylength := (maxy - miny) * Proportion;
     Zlength := (maxz - minz) * Proportion;
-    //glBegin(GL_LINES); // TODO TCastleRenderUnlitMesh
-      glDrawCornerLines(minx, miny, minz,  Xlength,  Ylength,  Zlength);
-      glDrawCornerLines(minx, miny, maxz,  Xlength,  Ylength, -Zlength);
-      glDrawCornerLines(minx, maxy, minz,  Xlength, -Ylength,  Zlength);
-      glDrawCornerLines(minx, maxy, maxz,  Xlength, -Ylength, -Zlength);
-      glDrawCornerLines(maxx, miny, minz, -Xlength,  Ylength,  Zlength);
-      glDrawCornerLines(maxx, miny, maxz, -Xlength,  Ylength, -Zlength);
-      glDrawCornerLines(maxx, maxy, minz, -Xlength, -Ylength,  Zlength);
-      glDrawCornerLines(maxx, maxy, maxz, -Xlength, -Ylength, -Zlength);
-    //glEnd; // TODO TCastleRenderUnlitMesh
+
+    glDrawCornerLines(minx, miny, minz,  Xlength,  Ylength,  Zlength);
+    glDrawCornerLines(minx, miny, maxz,  Xlength,  Ylength, -Zlength);
+    glDrawCornerLines(minx, maxy, minz,  Xlength, -Ylength,  Zlength);
+    glDrawCornerLines(minx, maxy, maxz,  Xlength, -Ylength, -Zlength);
+    glDrawCornerLines(maxx, miny, minz, -Xlength,  Ylength,  Zlength);
+    glDrawCornerLines(maxx, miny, maxz, -Xlength,  Ylength, -Zlength);
+    glDrawCornerLines(maxx, maxy, minz, -Xlength, -Ylength,  Zlength);
+    glDrawCornerLines(maxx, maxy, maxz, -Xlength, -Ylength, -Zlength);
   end;
 
+var
+  Mesh: TCastleRenderUnlitMesh;
 begin
-  glDrawCorners(
-    Box.Data[0].X, Box.Data[0].Y, Box.Data[0].Z,
-    Box.Data[1].X, Box.Data[1].Y, Box.Data[1].Z
-  );
+  Vertexes := TVector4List.Create;
+  try
+    glDrawCorners(
+      Box.Data[0].X, Box.Data[0].Y, Box.Data[0].Z,
+      Box.Data[1].X, Box.Data[1].Y, Box.Data[1].Z
+    );
+
+    Mesh := TCastleRenderUnlitMesh.Create(true);
+    try
+      Mesh.ModelViewProjection := ModelViewProjection;
+      Mesh.Color := Color;
+      Mesh.SetVertexes(Vertexes, false);
+      Mesh.Render(pmLines);
+    finally FreeAndNil(Mesh) end;
+  finally FreeAndNil(Vertexes) end;
 end;
 
 end.
