@@ -65,6 +65,11 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
+  TMyIntegerSlider = class(TCastleIntegerSlider)
+  public
+    constructor Create(AOwner: TComponent); override;
+  end;
+
   { Three float sliders to control TVector3 value. }
   TMenuVector3Sliders = class(TComponent)
   strict private
@@ -213,6 +218,7 @@ type
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
     procedure ClickRecalculateProjection(Sender: TObject);
+    procedure ClickProjectionX3dToClipboard(Sender: TObject);
     function RequiredDefaultShadowMap: TGeneratedShadowMapNode;
     procedure MapSizeExponentChanged(Sender: TObject);
     procedure MapBiasChanged(Sender: TObject);
@@ -439,6 +445,14 @@ const
 { TMyFloatSlider ------------------------------------------------------------- }
 
 constructor TMyFloatSlider.Create(AOwner: TComponent);
+begin
+  inherited;
+  FontSize := 10;
+end;
+
+{ TMyIntegerSlider ------------------------------------------------------------- }
+
+constructor TMyIntegerSlider.Create(AOwner: TComponent);
 begin
   inherited;
   FontSize := 10;
@@ -1085,6 +1099,7 @@ begin
   Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
   Add('        Recalculate Projection Parameters', @ClickRecalculateProjection);
   Add(CurrentProjectionLabel);
+  Add('        Copy "Current projection for shadow maps" as X3D to clipboard', @ClickProjectionX3dToClipboard);
 end;
 
 procedure TShadowsMenu.AfterCreate;
@@ -1132,6 +1147,11 @@ begin
     TDirectionalLightNode(Light).ProjectionRectangle := TVector4.Zero;
   end;
   Light.Shadows := WasShadows;
+end;
+
+procedure TShadowsMenu.ClickProjectionX3dToClipboard(Sender: TObject);
+begin
+  Clipboard.AsText := CurrentProjectionLabel.Caption;
 end;
 
 procedure TShadowsMenu.ClickShadowVolumes(Sender: TObject);
@@ -1257,9 +1277,9 @@ end;
 procedure TShadowsMenu.UpdateCurrentProjectionLabel(const ALabel: TCastleLabel);
 begin
   ALabel.Text.Clear;
-  ALabel.Text.Add('        Currently used projection for shadow maps:');
-  ALabel.Text.Add(Format('          Near: %f', [Light.ProjectionNear]));
-  ALabel.Text.Add(Format('          Far: %f', [Light.ProjectionFar]));
+  ALabel.Text.Add('        # Current projection for shadow maps');
+  ALabel.Text.Add(Format('          projectionNear %f', [Light.ProjectionNear]));
+  ALabel.Text.Add(Format('          projectionFar  %f', [Light.ProjectionFar]));
 end;
 
 { TSpotLightShadowsMenu ------------------------------------------------------- }
@@ -1275,7 +1295,7 @@ procedure TSpotLightShadowsMenu.UpdateCurrentProjectionLabel(
   const ALabel: TCastleLabel);
 begin
   inherited;
-  ALabel.Text.Add(Format('          Angle: %f', [Light.ProjectionAngle]));
+  ALabel.Text.Add(Format('          projectionAngle %f', [Light.EffectiveProjectionAngle]));
 end;
 
 { TDirectionalLightShadowsMenu ------------------------------------------------------- }
@@ -1293,14 +1313,15 @@ var
   ProjectionRectangle: TFloatRectangle;
 begin
   inherited;
-  ALabel.Text.Add(Format('          Location: %s',
-    [Light.ProjectionLocation.ToString]));
-  ProjectionRectangle := TFloatRectangle.FromX3DVector(Light.ProjectionRectangle);
-  ALabel.Text.Add(Format('          Rectangle: %fx%f %fx%f',
-    [ProjectionRectangle.Left,
-     ProjectionRectangle.Bottom,
-     ProjectionRectangle.Width,
-     ProjectionRectangle.Height]));
+  ALabel.Text.Add(Format('          projectionLocation %s', [
+    Light.ProjectionLocation.ToString
+  ]));
+  ALabel.Text.Add(Format('          projectionRectangle %f %f %f %f', [
+    Light.ProjectionRectangle.X,
+    Light.ProjectionRectangle.Y,
+    Light.ProjectionRectangle.Z,
+    Light.ProjectionRectangle.W
+  ]));
 end;
 
 finalization
