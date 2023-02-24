@@ -1309,8 +1309,6 @@ end;
 
 procedure TDirectionalLightShadowsMenu.UpdateCurrentProjectionLabel(
   const ALabel: TCastleLabel);
-var
-  ProjectionRectangle: TFloatRectangle;
 begin
   inherited;
   ALabel.Text.Add(Format('          projectionLocation %s', [
