@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2022 Michalis Kamburelis.
+  Copyright 2003-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -113,10 +113,8 @@ end;
 
 function NavigationType: TUserNavigationType;
 begin
-  if FViewport.Navigation is TCastle2DNavigation then
-    Result := unt2D
-  else
   case FViewport.NavigationType of
+    nt2D: Result := unt2D;
     ntExamine, ntTurntable: Result := untExamine;
     ntWalk: Result := untWalk;
     ntFly: Result := untFly;

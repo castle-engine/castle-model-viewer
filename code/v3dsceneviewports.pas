@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2022 Michalis Kamburelis.
+  Copyright 2010-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -232,16 +232,11 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
   procedure CoreSetNavigationType(const Viewport: TCastleAutoNavigationViewport;
     const Value: TUserNavigationType);
   begin
-    { We need to remove TCastle2DNavigation created here previously,
-      otherwise TCastleAutoNavigationViewport.SetNavigationType
-      would consider the state as "we already have good Examine component". }
-    if (Viewport.Navigation is TCastle2DNavigation) and (Value <> unt2D) then
-      Viewport.Navigation.Free; // will set Viewport.Navigation to nil
     case Value of
       untExamine: Viewport.NavigationType := ntExamine;
       untWalk: Viewport.NavigationType := ntWalk;
       untFly: Viewport.NavigationType := ntFly;
-      unt2D: Viewport.Navigation := TCastle2DNavigation.Create(Viewport);
+      unt2D: Viewport.NavigationType := nt2D;
       untNone: Viewport.NavigationType := ntNone;
       {$ifndef COMPILER_CASE_ANALYSIS}
       else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
