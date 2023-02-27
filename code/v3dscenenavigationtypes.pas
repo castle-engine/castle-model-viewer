@@ -28,8 +28,8 @@ unit V3DSceneNavigationTypes;
 interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
-  CastleGLUtils, CastleViewport, Classes, CastleUIControls,
-  CastleControls, CastleInternalControlsImages, CastleGLImages;
+  CastleGLUtils, CastleViewport, Classes, CastleUIControls, CastleTimeUtils,
+  CastleControls, CastleInternalControlsImages, CastleGLImages, CastleKeysMouse;
 
 { Compile also with CGE branches that don't yet have new-cameras work merged.
   Once new-cameras merged -> master, we can remove this. }
@@ -83,10 +83,28 @@ type
 { Same as Viewport.Navigation, where Viewport was given to InitNavigation. }
 function Navigation: TCastleNavigation;
 
+type
+  { Display navigation stuff, for now: Move speed when it changes. }
+  TNavigationUi = class(TCastleUserInterface)
+  strict private
+    MessageStart: TTimerResult;
+  public
+    LabelMoveSpeedContainer: TCastleRectangleControl;
+    LabelMoveSpeed: TCastleLabel;
+    constructor Create(AOwner: TComponent); override;
+    procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
+    function Press(const Event: TInputPressRelease): Boolean; override;
+  end;
+
+var
+  { Mouse look forced (independently of holding right mouse button) by menu item "Mouse Look". }
+  PersistentMouseLook: Boolean;
+
 implementation
 
 uses CastleParameters, CastleClassUtils, CastleImages,
-  V3DSceneImages, V3DSceneOpaqueImages, CastleRectangles;
+  CastleRectangles, CastleColors,
+  V3DSceneImages, V3DSceneOpaqueImages;
 
 var
   { Saved Viewport from InitNavigation. }
@@ -209,6 +227,112 @@ begin
   ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin, R.Bottom + ImgMargin);
   { we decrease R.Top to overdraw the tooltip image border }
   ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
+end;
+
+{ TNavigationUi -------------------------------------------------------------- }
+
+constructor TNavigationUi.Create(AOwner: TComponent);
+begin
+  inherited;
+  FullSize := true; { this is not visible, but wants to preview key presses for Press() }
+end;
+
+function TNavigationUi.Press(const Event: TInputPressRelease): Boolean;
+var
+  WalkNav: TCastleWalkNavigation;
+begin
+  Result := inherited;
+
+  if Navigation is TCastleWalkNavigation then
+  begin
+    WalkNav := TCastleWalkNavigation(Navigation);
+
+    { Display current speed if user presses key/mouse wheel to change speed
+      (even if speed doesn't actually change because of MoveSpeedMin/Max limit) }
+    if WalkNav.Input_MoveSpeedInc.IsEvent(Event) or
+       WalkNav.Input_MoveSpeedDec.IsEvent(Event) then
+    begin
+      MessageStart := Timer;
+    end;
+  end;
+end;
+
+procedure TNavigationUi.Update(const SecondsPassed: Single; var HandleInput: boolean);
+var
+  T: TFloatTime;
+const
+  TimeToExist = 1.0;
+  TimeToFade = 0.75;
+
+  function AlphaAnimate(const MaxAlpha: Single): Single;
+  begin
+    if T < TimeToExist - TimeToFade then
+      Result := MaxAlpha
+    else
+      Result := MapRange(T, TimeToExist - TimeToFade, TimeToExist, MaxAlpha, 0.0);
+  end;
+
+const
+  MessageAlpha = 1.0;
+  ContainerAlpha = 0.25;
+var
+  WalkNav: TCastleWalkNavigation;
+begin
+  inherited;
+
+  if Navigation is TCastleWalkNavigation then
+  begin
+    WalkNav := TCastleWalkNavigation(Navigation);
+
+    { Update WalkNav.MouseLook based on right mouse button pressed and PersistentMouseLook.
+      This is similar to CGE examples/fps_game/ . }
+    WalkNav.MouseLook := (
+      PersistentMouseLook or
+      (buttonRight in Container.MousePressed) );
+
+    { Update navigation parameters that change depending on mouse look. }
+    if WalkNav.MouseLook then
+    begin
+      WalkNav.ZoomEnabled := false;
+      // use mouse wheel, as alterntive to +/-, to increase/decrease movement speed
+      WalkNav.Input_MoveSpeedInc.Assign(keyNumpadPlus , keyNone, '+', false, buttonLeft, mwUp);
+      WalkNav.Input_MoveSpeedDec.Assign(keyNumpadMinus, keyNone, '-', false, buttonLeft, mwDown);
+    end else
+    begin
+      WalkNav.ZoomEnabled := true;
+      WalkNav.Input_MoveSpeedInc.MakeClear;
+      WalkNav.Input_MoveSpeedDec.MakeClear;
+    end;
+
+    { Management of LabelMoveSpeed is almost a copy-paste of TCastleWalkNavigationDesign
+      used by CGE editor.
+      For now, it's not worth to actually introduce code for sharing design-time
+      stuff between view3dscene and CGE editor -- but it may come one day. }
+
+    { Display current speed if user presses key/mouse wheel to change speed
+      (even if speed doesn't actually change because of MoveSpeedMin/Max limit) }
+    if WalkNav.Input_MoveSpeedInc.IsPressed(Container) or
+       WalkNav.Input_MoveSpeedDec.IsPressed(Container) then
+    begin
+      MessageStart := Timer;
+    end;
+
+    if MessageStart.Initialized then
+    begin
+      T := MessageStart.ElapsedTime;
+      LabelMoveSpeedContainer.Exists := T < TimeToExist;
+      if LabelMoveSpeedContainer.Exists then
+      begin
+        LabelMoveSpeed.Caption := FormatDot('Speed %f', [WalkNav.MoveSpeed]);
+        LabelMoveSpeedContainer.Color :=
+          ColorOpacity(LabelMoveSpeedContainer.Color, AlphaAnimate(ContainerAlpha));
+        LabelMoveSpeed.Color :=
+          ColorOpacity(LabelMoveSpeed.Color, AlphaAnimate(MessageAlpha));
+        // LabelMoveSpeed.OutlineColor :=
+        //   ColorOpacity(LabelMoveSpeed.OutlineColor, AlphaAnimate(MessageAlpha));
+      end;
+    end;
+  end;
 end;
 
 // initialization

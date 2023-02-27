@@ -313,6 +313,40 @@
 '          "Width" : 3.0000000000000000E+001' + LineEnding +
 '        }' + LineEnding +
 '      ]' + LineEnding +
+'    },' + LineEnding +
+'    {' + LineEnding +
+'      "$$ClassName" : "TCastleRectangleControl",' + LineEnding +
+'      "AutoSizeToChildren" : true,' + LineEnding +
+'      "ColorPersistent" : {' + LineEnding +
+'        "$$ClassName" : "TCastleColorPersistent",' + LineEnding +
+'        "Alpha" : 2.5000000000000000E-001,' + LineEnding +
+'        "Blue" : 0.0000000000000000E+000,' + LineEnding +
+'        "Green" : 0.0000000000000000E+000,' + LineEnding +
+'        "Red" : 0.0000000000000000E+000' + LineEnding +
+'      },' + LineEnding +
+'      "Exists" : false,' + LineEnding +
+'      "HorizontalAnchorParent" : "hpMiddle",' + LineEnding +
+'      "HorizontalAnchorSelf" : "hpMiddle",' + LineEnding +
+'      "Name" : "LabelMoveSpeedContainer",' + LineEnding +
+'      "VerticalAnchorParent" : "vpMiddle",' + LineEnding +
+'      "VerticalAnchorSelf" : "vpMiddle",' + LineEnding +
+'      "$Children" : [' + LineEnding +
+'        {' + LineEnding +
+'          "$$ClassName" : "TCastleLabel",' + LineEnding +
+'          "ColorPersistent" : {' + LineEnding +
+'            "$$ClassName" : "TCastleColorPersistent",' + LineEnding +
+'            "Blue" : 1.0000000000000000E+000,' + LineEnding +
+'            "Green" : 1.0000000000000000E+000,' + LineEnding +
+'            "Red" : 1.0000000000000000E+000' + LineEnding +
+'          },' + LineEnding +
+'          "FontSize" : 3.0000000000000000E+001,' + LineEnding +
+'          "Name" : "LabelMoveSpeed",' + LineEnding +
+'          "Padding" : 2.0000000000000000E+001,' + LineEnding +
+'          "Text" : [' + LineEnding +
+'            "LabelMoveSpeed"' + LineEnding +
+'          ]' + LineEnding +
+'        }' + LineEnding +
+'      ]' + LineEnding +
 '    }' + LineEnding +
 '  ]' + LineEnding +
 '}' + LineEnding +

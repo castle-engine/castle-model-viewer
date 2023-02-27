@@ -172,6 +172,8 @@ var
   ControlsOnScreenshot: boolean = false;
   HideExtraScenesForScreenshot: boolean = false;
 
+  NavigationUi: TNavigationUi;
+
 { Helper class ---------------------------------------------------------------
 
   Some callbacks here must be methods (procedure of class),
@@ -285,8 +287,7 @@ begin
   WalkNavigation := CurrentWalkNavigation;
 
   if MenuMouseLook <> nil then
-    MenuMouseLook.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.MouseLook;
+    MenuMouseLook.Checked := PersistentMouseLook;
   if MenuGravity <> nil then
     MenuGravity.Checked :=
       (WalkNavigation <> nil) and WalkNavigation.Gravity;
@@ -491,9 +492,8 @@ begin
   WalkNavigation := CurrentWalkNavigation;
   if WalkNavigation <> nil then
   begin
-    Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, WalkNavigation.MoveSpeed,
-        ValueColor, WalkNavigation.PreferredHeight,
+    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
+      [ ValueColor, WalkNavigation.PreferredHeight,
         ValueColor, CurrentAboveHeight(WalkNavigation) ]));
   end;
 
@@ -3057,9 +3057,8 @@ begin
     125: Raytrace;
     150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
     151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
-    128: if WalkNavigation <> nil then
-         begin
-           WalkNavigation.MouseLook := not WalkNavigation.MouseLook;
+    128: begin
+           PersistentMouseLook := not PersistentMouseLook;
            UpdateCameraUI;
          end;
     129: MessageReport(ManifoldEdgesInfo(Scene));
@@ -3446,7 +3445,7 @@ begin
     M2 := TMenu.Create('Walk and Fly Settings');
       MenuMouseLook := TMenuItemChecked.Create(
         '_Use Mouse Look',                       128, CtrlM,
-        (WalkNavigation <> nil) and WalkNavigation.MouseLook, false);
+        PersistentMouseLook, false);
       M2.Append(MenuMouseLook);
       MenuGravity := TMenuItemChecked.Create(
         '_Gravity',                              201, CtrlG,
@@ -3713,6 +3712,11 @@ begin
   NavigationButtons[untWalk].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
+
+  NavigationUi := TNavigationUi.Create(Application);
+  NavigationUi.LabelMoveSpeedContainer := UiOwner.FindRequiredComponent('LabelMoveSpeedContainer') as TCastleRectangleControl;
+  NavigationUi.LabelMoveSpeed := UiOwner.FindRequiredComponent('LabelMoveSpeed') as TCastleLabel;
+  Window.Controls.InsertFront(NavigationUi);
 end;
 
 procedure Resize(Container: TCastleContainer);
@@ -4088,10 +4092,10 @@ begin
     {$ifdef FPC}@{$endif} THelper(nil).BoundViewpointChanged;
   MainViewport.OnBoundNavigationInfoChanged :=
     {$ifdef FPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
-  MainViewport.InternalWalkNavigation.Input_IncreasePreferredHeight.Assign(keyInsert);
-  MainViewport.InternalWalkNavigation.Input_DecreasePreferredHeight.Assign(keyDelete);
+  { Note: MainViewport.InternalWalkNavigation
+    will be adjusted later, by InitializeViewportsAndDefaultNavigation }
 
-  InitializeViewports(TV3DViewport);
+  InitializeViewportsAndDefaultNavigation(TV3DViewport);
   BGColorChanged;
 
   CreateMainUserInterface;
