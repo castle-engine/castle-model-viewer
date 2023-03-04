@@ -80,8 +80,12 @@ type
     procedure TooltipRender(const TooltipPosition: TVector2); override;
   end;
 
-{ Same as Viewport.Navigation, where Viewport was given to InitNavigation. }
+{ Same as MainViewport.Navigation, where MainViewport was given to InitNavigation. }
 function Navigation: TCastleNavigation;
+
+{ Currently used navigation as TCastleWalkNavigation,
+  or @nil if we don't use TCastleWalkNavigation now. }
+function WalkNavigation: TCastleWalkNavigation;
 
 type
   { Display navigation stuff, for now: Move speed when it changes. }
@@ -146,6 +150,14 @@ end;
 function Navigation: TCastleNavigation;
 begin
   Result := FViewport.Navigation;
+end;
+
+function WalkNavigation: TCastleWalkNavigation;
+begin
+  if Navigation is TCastleWalkNavigation then // also checks Navigation <> nil
+    Result := TCastleWalkNavigation(Navigation)
+  else
+    Result := nil;
 end;
 
 { TNavigationTypeButton ------------------------------------------------------ }

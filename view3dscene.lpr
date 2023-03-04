@@ -266,37 +266,26 @@ begin
     MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
 end;
 
-{ Currently used TCastleWalkNavigation,
-  or @nil if we don't use TCastleWalkNavigation now. }
-function CurrentWalkNavigation: TCastleWalkNavigation;
-begin
-  if (MainViewport <> nil) and
-     (MainViewport.Navigation is TCastleWalkNavigation) then
-    Result := TCastleWalkNavigation(MainViewport.Navigation)
-  else
-    Result := nil;
-end;
-
 { Update menu items and buttons that reflect Camera properties }
 procedure UpdateCameraUI;
 var
-  WalkNavigation: TCastleWalkNavigation;
+  WalkNav: TCastleWalkNavigation;
 begin
   UpdateCameraNavigationTypeUI;
 
-  WalkNavigation := CurrentWalkNavigation;
+  WalkNav := WalkNavigation;
 
   if MenuMouseLook <> nil then
     MenuMouseLook.Checked := PersistentMouseLook;
   if MenuGravity <> nil then
     MenuGravity.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.Gravity;
+      (WalkNav <> nil) and WalkNav.Gravity;
   if MenuPreferGravityUpForRotations <> nil then
     MenuPreferGravityUpForRotations.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForRotations;
+      (WalkNav <> nil) and WalkNav.PreferGravityUpForRotations;
   if MenuPreferGravityUpForMoving <> nil then
     MenuPreferGravityUpForMoving.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForMoving;
+      (WalkNav <> nil) and WalkNav.PreferGravityUpForMoving;
 end;
 
 { Return currently used collisions octree.
@@ -470,7 +459,6 @@ var
   s: string;
   Statistics: TRenderStatistics;
   Pos, Dir, Up: TVector3;
-  WalkNavigation: TCastleWalkNavigation;
 begin
   inherited;
 
@@ -489,7 +477,6 @@ begin
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  WalkNavigation := CurrentWalkNavigation;
   if WalkNavigation <> nil then
   begin
     Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
@@ -659,7 +646,7 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
 begin
   { Save WalkFrustum for future RenderFrustum rendering. }
-  if (RenderingCamera.Target = rtScreen) and (CurrentWalkNavigation <> nil) then
+  if (RenderingCamera.Target = rtScreen) and (WalkNavigation <> nil) then
   begin
     HasWalkFrustum := true;
     WalkFrustum := MainViewport.Camera.Frustum;
@@ -675,9 +662,9 @@ begin
 
     OctreeDisplay(Scene, RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix);
 
-    { Note that there is no sense in showing WalkFrustum if CurrentWalkNavigation <> nil
+    { Note that there is no sense in showing WalkFrustum if WalkNavigation <> nil
       since then the WalkFrustum matches currently used frustum. }
-    if ShowFrustum and (CurrentWalkNavigation = nil) then
+    if ShowFrustum and (WalkNavigation = nil) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -1100,7 +1087,7 @@ begin
       before AssignCameraAndNavigation for other viewports (as they will copy us).
       CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
       automatically based on box. }
-    UpdateRadiusProjectionNear(MainViewport.Camera, MainViewport.Navigation, Scene.LocalBoundingBox);
+    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene.LocalBoundingBox);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
@@ -1667,8 +1654,6 @@ begin
 end;
 
 procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
-var
-  WalkNavigation: TCastleWalkNavigation;
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
@@ -2897,8 +2882,6 @@ var
 var
   C: Cardinal;
 begin
-  WalkNavigation := CurrentWalkNavigation;
-
   case MenuItem.IntData of
     10: THelper.ClickButtonOpen(nil);
     11: OpenSceneURL;
@@ -3281,10 +3264,7 @@ const
 var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
-  WalkNavigation: TCastleWalkNavigation;
 begin
-  WalkNavigation := CurrentWalkNavigation;
-
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
     M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
