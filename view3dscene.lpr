@@ -62,19 +62,15 @@ uses SysUtils, Math, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
-  CastleTriangles, CastleApplicationProperties,
-  CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
-  CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
-  CastleLog, DateUtils, CastleFrustum,
+  CastleTriangles, CastleApplicationProperties, CastleParameters, CastleCameras,
+  CastleOpenDocument, CastleConfig, CastleStringUtils, CastleFilesUtils,
+  CastleTimeUtils, CastleLog, DateUtils, CastleFrustum,
   CastleImages, CastleInternalCubeMaps, CastleInternalCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
-  CastleProjection, CastleVideos, CastleTextureImages,
-  CastleLoadGltf,
-  { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
+  CastleProjection, CastleVideos, CastleTextureImages, CastleLoadGltf,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
-  { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene,
   CastleInternalBaseTriangleOctree,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
@@ -914,30 +910,13 @@ begin
 end;
 
 procedure SceneOctreeCreate;
-var
-  OldRender, OldBeforeRender: TContainerEvent;
 begin
   { Do not create octrees when Scene.Collides = false. This makes
     setting Scene.Collides to false an optimization: octree doesn't have to
     be recomputed when animation frame changes, or new scene is loaded etc. }
 
   if Scene.Collides then
-  begin
-    { Beware: constructing octrees will cause progress drawing,
-      and progress drawing may cause SaveScreen,
-      and SaveScreen may cause OnRender and OnBeforeRender to be called.
-      That's why we simply turn normal Render/BeforeRender temporarily off. }
-    OldRender := Window.OnRender;
-    OldBeforeRender := Window.OnBeforeRender;
-    Window.OnRender := nil;
-    Window.OnBeforeRender := nil;
-    try
-      Scene.PreciseCollisions := true;
-    finally
-      Window.OnRender := OldRender;
-      Window.OnBeforeRender := OldBeforeRender;
-    end;
-  end;
+    Scene.PreciseCollisions := true;
 end;
 
 procedure SceneOctreeFree;
@@ -1443,22 +1422,15 @@ var
   procedure MakeAllScreenShots(const ImageClass: TCastleImageClass);
   var
     I, J: Integer;
-    OldProgressUserInterface: TProgressUserInterface;
     OldTime: TFloatTime;
     Image: TCastleImage;
   begin
     { Save global things that we change, to restore them later.
       This isn't needed for batch mode screenshots, but it doesn't hurt
       to be clean. }
-    OldProgressUserInterface := Progress.UserInterface;
     OldTime := Scene.Time;
     try
       MainViewport.BeforeRender;
-
-      { TRangeScreenShot cannot display progress on TCastleWindow,
-        since this would mess rendered image.
-        Besides, in the future GL window may be hidden during rendering. }
-      Progress.UserInterface := ProgressNullInterface;
 
       ScreenShotsList.BeginCapture;
 
@@ -1483,7 +1455,6 @@ var
       end;
 
     finally
-      Progress.UserInterface := OldProgressUserInterface;
       Scene.ResetTime(OldTime);
     end;
   end;
@@ -4025,7 +3996,6 @@ begin
   Window.Container.InputInspector.Key := keyF8;
 
   Application.MainWindow := Window;
-  Progress.UserInterface := WindowProgressInterface;
 
   Theme.ImagesPersistent[tiButtonNormal].Image := ButtonNormal;
   Theme.ImagesPersistent[tiButtonNormal].OwnsImage := false;
@@ -4097,12 +4067,6 @@ begin
         Param_WriteForceX3D);
       Exit;
     end;
-
-    { This is for loading default clean scene.
-      LoadClearScene should be lighting fast always,
-      so progress should not be needed in this case anyway
-      (and we don't want to clutter stdout). }
-    Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to initial empty values }
     Scene := TCastleScene.Create(nil);

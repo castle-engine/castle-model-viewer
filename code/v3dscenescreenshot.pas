@@ -1,5 +1,5 @@
 {
-  Copyright 2008-2018 Michalis Kamburelis.
+  Copyright 2008-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -107,7 +107,7 @@ function MakingScreenShot: boolean;
 
 implementation
 
-uses SysUtils, CastleStringUtils, CastleProgress, CastleFilesUtils,
+uses SysUtils, CastleStringUtils, CastleFilesUtils,
   CastleVideos, CastleURIUtils, CastleLog;
 
 function MakingScreenShot: boolean;
@@ -169,8 +169,6 @@ begin
   if SingleMovieFile then
     Result := MakeURL(TemporaryImagesPattern, TemporaryImagesCounter) else
     Result := MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter);
-
-  Progress.Step;
 end;
 
 procedure TRangeScreenShot.BeginCapture;
@@ -201,8 +199,9 @@ begin
       raise EInvalidScreenShotURL.CreateFmt('--screenshot-range invalid filename "%s": not recognized as movie filename (so assuming image filename), and no @counter(<padding>) or %%d pattern found', [URLPattern]);
   end;
 
-  Progress.Init(Count, Format('Screenshot range from time %f (%d frames)',
-    [TimeBegin, FramesCount]));
+  // TODO: show it somehow in non-deprecated way
+  // Progress.Init(Count, Format('Screenshot range from time %f (%d frames)',
+  //   [TimeBegin, FramesCount]));
 end;
 
 procedure TRangeScreenShot.EndCapture(Success: boolean);
@@ -210,8 +209,6 @@ var
   Executable, OutputMovieFileName, TempFile: string;
   I: Integer;
 begin
-  Progress.Fini;
-
   if SingleMovieFile and Success then
   begin
     Executable := FfmpegExecutable(false);
