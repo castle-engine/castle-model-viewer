@@ -62,19 +62,15 @@ uses SysUtils, Math, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
-  CastleTriangles, CastleApplicationProperties,
-  CastleParameters, CastleProgress, CastleCameras, CastleOpenDocument, CastleConfig,
-  CastleStringUtils, CastleFilesUtils, CastleTimeUtils,
-  CastleLog, DateUtils, CastleFrustum,
+  CastleTriangles, CastleApplicationProperties, CastleParameters, CastleCameras,
+  CastleOpenDocument, CastleConfig, CastleStringUtils, CastleFilesUtils,
+  CastleTimeUtils, CastleLog, DateUtils, CastleFrustum,
   CastleImages, CastleInternalCubeMaps, CastleInternalCompositeImage, CastleTransform, CastleSoundEngine,
   CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
-  CastleProjection, CastleVideos, CastleTextureImages,
-  CastleLoadGltf,
-  { OpenGL related units: }
-  CastleWindow, CastleGLUtils, CastleMessages, CastleWindowProgress, CastleRenderPrimitives,
+  CastleProjection, CastleVideos, CastleTextureImages, CastleLoadGltf,
+  CastleWindow, CastleGLUtils, CastleMessages, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
-  { VRML/X3D (and possibly OpenGL) related units: }
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene,
   CastleInternalBaseTriangleOctree,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
@@ -172,6 +168,8 @@ var
   ControlsOnScreenshot: boolean = false;
   HideExtraScenesForScreenshot: boolean = false;
 
+  NavigationUi: TNavigationUi;
+
 { Helper class ---------------------------------------------------------------
 
   Some callbacks here must be methods (procedure of class),
@@ -264,38 +262,26 @@ begin
     MenuMergeCloseVertexes.Enabled := SelectedItem <> nil;
 end;
 
-{ Currently used TCastleWalkNavigation,
-  or @nil if we don't use TCastleWalkNavigation now. }
-function CurrentWalkNavigation: TCastleWalkNavigation;
-begin
-  if (MainViewport <> nil) and
-     (MainViewport.Navigation is TCastleWalkNavigation) then
-    Result := TCastleWalkNavigation(MainViewport.Navigation)
-  else
-    Result := nil;
-end;
-
 { Update menu items and buttons that reflect Camera properties }
 procedure UpdateCameraUI;
 var
-  WalkNavigation: TCastleWalkNavigation;
+  WalkNav: TCastleWalkNavigation;
 begin
   UpdateCameraNavigationTypeUI;
 
-  WalkNavigation := CurrentWalkNavigation;
+  WalkNav := WalkNavigation;
 
   if MenuMouseLook <> nil then
-    MenuMouseLook.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.MouseLook;
+    MenuMouseLook.Checked := PersistentMouseLook;
   if MenuGravity <> nil then
     MenuGravity.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.Gravity;
+      (WalkNav <> nil) and WalkNav.Gravity;
   if MenuPreferGravityUpForRotations <> nil then
     MenuPreferGravityUpForRotations.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForRotations;
+      (WalkNav <> nil) and WalkNav.PreferGravityUpForRotations;
   if MenuPreferGravityUpForMoving <> nil then
     MenuPreferGravityUpForMoving.Checked :=
-      (WalkNavigation <> nil) and WalkNavigation.PreferGravityUpForMoving;
+      (WalkNav <> nil) and WalkNav.PreferGravityUpForMoving;
 end;
 
 { Return currently used collisions octree.
@@ -469,7 +455,6 @@ var
   s: string;
   Statistics: TRenderStatistics;
   Pos, Dir, Up: TVector3;
-  WalkNavigation: TCastleWalkNavigation;
 begin
   inherited;
 
@@ -488,12 +473,10 @@ begin
       ValueColor, Dir.ToString,
       ValueColor, Up.ToString ]));
 
-  WalkNavigation := CurrentWalkNavigation;
   if WalkNavigation <> nil then
   begin
-    Text.Append(Format('Move speed (per sec) : <font color="#%s">%f</font>, Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, WalkNavigation.MoveSpeed,
-        ValueColor, WalkNavigation.PreferredHeight,
+    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
+      [ ValueColor, WalkNavigation.PreferredHeight,
         ValueColor, CurrentAboveHeight(WalkNavigation) ]));
   end;
 
@@ -659,7 +642,7 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
 
 begin
   { Save WalkFrustum for future RenderFrustum rendering. }
-  if (RenderingCamera.Target = rtScreen) and (CurrentWalkNavigation <> nil) then
+  if (RenderingCamera.Target = rtScreen) and (WalkNavigation <> nil) then
   begin
     HasWalkFrustum := true;
     WalkFrustum := MainViewport.Camera.Frustum;
@@ -675,9 +658,9 @@ begin
 
     OctreeDisplay(Scene, RenderContext.ProjectionMatrix * RenderingCamera.CurrentMatrix);
 
-    { Note that there is no sense in showing WalkFrustum if CurrentWalkNavigation <> nil
+    { Note that there is no sense in showing WalkFrustum if WalkNavigation <> nil
       since then the WalkFrustum matches currently used frustum. }
-    if ShowFrustum and (CurrentWalkNavigation = nil) then
+    if ShowFrustum and (WalkNavigation = nil) then
       RenderFrustum(ShowFrustumAlwaysVisible);
 
     if SelectedItem <> nil then
@@ -927,30 +910,13 @@ begin
 end;
 
 procedure SceneOctreeCreate;
-var
-  OldRender, OldBeforeRender: TContainerEvent;
 begin
   { Do not create octrees when Scene.Collides = false. This makes
     setting Scene.Collides to false an optimization: octree doesn't have to
     be recomputed when animation frame changes, or new scene is loaded etc. }
 
   if Scene.Collides then
-  begin
-    { Beware: constructing octrees will cause progress drawing,
-      and progress drawing may cause SaveScreen,
-      and SaveScreen may cause OnRender and OnBeforeRender to be called.
-      That's why we simply turn normal Render/BeforeRender temporarily off. }
-    OldRender := Window.OnRender;
-    OldBeforeRender := Window.OnBeforeRender;
-    Window.OnRender := nil;
-    Window.OnBeforeRender := nil;
-    try
-      Scene.PreciseCollisions := true;
-    finally
-      Window.OnRender := OldRender;
-      Window.OnBeforeRender := OldBeforeRender;
-    end;
-  end;
+    Scene.PreciseCollisions := true;
 end;
 
 procedure SceneOctreeFree;
@@ -1100,7 +1066,7 @@ begin
       before AssignCameraAndNavigation for other viewports (as they will copy us).
       CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
       automatically based on box. }
-    UpdateRadiusProjectionNear(MainViewport.Camera, MainViewport.Navigation, Scene.LocalBoundingBox);
+    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene.LocalBoundingBox);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
@@ -1456,22 +1422,15 @@ var
   procedure MakeAllScreenShots(const ImageClass: TCastleImageClass);
   var
     I, J: Integer;
-    OldProgressUserInterface: TProgressUserInterface;
     OldTime: TFloatTime;
     Image: TCastleImage;
   begin
     { Save global things that we change, to restore them later.
       This isn't needed for batch mode screenshots, but it doesn't hurt
       to be clean. }
-    OldProgressUserInterface := Progress.UserInterface;
     OldTime := Scene.Time;
     try
       MainViewport.BeforeRender;
-
-      { TRangeScreenShot cannot display progress on TCastleWindow,
-        since this would mess rendered image.
-        Besides, in the future GL window may be hidden during rendering. }
-      Progress.UserInterface := ProgressNullInterface;
 
       ScreenShotsList.BeginCapture;
 
@@ -1496,7 +1455,6 @@ var
       end;
 
     finally
-      Progress.UserInterface := OldProgressUserInterface;
       Scene.ResetTime(OldTime);
     end;
   end;
@@ -1667,8 +1625,6 @@ begin
 end;
 
 procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
-var
-  WalkNavigation: TCastleWalkNavigation;
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
@@ -2897,8 +2853,6 @@ var
 var
   C: Cardinal;
 begin
-  WalkNavigation := CurrentWalkNavigation;
-
   case MenuItem.IntData of
     10: THelper.ClickButtonOpen(nil);
     11: OpenSceneURL;
@@ -3057,9 +3011,8 @@ begin
     125: Raytrace;
     150: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), false);
     151: ScreenShotImage(SRemoveMnemonics(MenuItem.Caption), true);
-    128: if WalkNavigation <> nil then
-         begin
-           WalkNavigation.MouseLook := not WalkNavigation.MouseLook;
+    128: begin
+           PersistentMouseLook := not PersistentMouseLook;
            UpdateCameraUI;
          end;
     129: MessageReport(ManifoldEdgesInfo(Scene));
@@ -3282,10 +3235,7 @@ const
 var
   M, M2, M3: TMenu;
   NextRecentMenuItem: TMenuEntry;
-  WalkNavigation: TCastleWalkNavigation;
 begin
-  WalkNavigation := CurrentWalkNavigation;
-
   Result := TMenu.Create('Main menu');
   M := TMenu.Create('_File');
     M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
@@ -3446,7 +3396,7 @@ begin
     M2 := TMenu.Create('Walk and Fly Settings');
       MenuMouseLook := TMenuItemChecked.Create(
         '_Use Mouse Look',                       128, CtrlM,
-        (WalkNavigation <> nil) and WalkNavigation.MouseLook, false);
+        PersistentMouseLook, false);
       M2.Append(MenuMouseLook);
       MenuGravity := TMenuItemChecked.Create(
         '_Gravity',                              201, CtrlG,
@@ -3713,6 +3663,11 @@ begin
   NavigationButtons[untWalk].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
+
+  NavigationUi := TNavigationUi.Create(Application);
+  NavigationUi.LabelMoveSpeedContainer := UiOwner.FindRequiredComponent('LabelMoveSpeedContainer') as TCastleRectangleControl;
+  NavigationUi.LabelMoveSpeed := UiOwner.FindRequiredComponent('LabelMoveSpeed') as TCastleLabel;
+  Window.Controls.InsertFront(NavigationUi);
 end;
 
 procedure Resize(Container: TCastleContainer);
@@ -4042,7 +3997,6 @@ begin
   Window.Container.InputInspector.Key := keyF8;
 
   Application.MainWindow := Window;
-  Progress.UserInterface := WindowProgressInterface;
 
   Theme.ImagesPersistent[tiButtonNormal].Image := ButtonNormal;
   Theme.ImagesPersistent[tiButtonNormal].OwnsImage := false;
@@ -4089,10 +4043,10 @@ begin
     {$ifdef FPC}@{$endif} THelper(nil).BoundViewpointChanged;
   MainViewport.OnBoundNavigationInfoChanged :=
     {$ifdef FPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
-  MainViewport.InternalWalkNavigation.Input_IncreasePreferredHeight.Assign(keyInsert);
-  MainViewport.InternalWalkNavigation.Input_DecreasePreferredHeight.Assign(keyDelete);
+  { Note: MainViewport.InternalWalkNavigation
+    will be adjusted later, by InitializeViewportsAndDefaultNavigation }
 
-  InitializeViewports(TV3DViewport);
+  InitializeViewportsAndDefaultNavigation(TV3DViewport);
   BGColorChanged;
 
   CreateMainUserInterface;
@@ -4114,12 +4068,6 @@ begin
         Param_WriteForceX3D);
       Exit;
     end;
-
-    { This is for loading default clean scene.
-      LoadClearScene should be lighting fast always,
-      so progress should not be needed in this case anyway
-      (and we don't want to clutter stdout). }
-    Progress.UserInterface := ProgressNullInterface;
 
     { init "scene global variables" to initial empty values }
     Scene := TCastleScene.Create(nil);

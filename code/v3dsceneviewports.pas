@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2022 Michalis Kamburelis.
+  Copyright 2010-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -68,7 +68,10 @@ procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 { Copy NewNavigationType to all (existing) viewports. }
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
-procedure InitializeViewports(ViewportClass: TViewportClass);
+{ Create ExtraViewports[...].
+  Set default values for all internal navigation components in all ExtraViewports[...].
+  and on MainViewport too. }
+procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass);
 
 { Redraw all viewports (and background underneath).
   This renders viewports for the off-screen rendering. }
@@ -79,7 +82,7 @@ procedure ViewportsSetTransparent(const Transparent: Boolean);
 implementation
 
 uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
-  CastleGLUtils, CastleColors, CastleLog, CastleRenderContext;
+  CastleGLUtils, CastleColors, CastleLog, CastleRenderContext, CastleKeysMouse;
 
 { global routines ------------------------------------------------------------ }
 
@@ -232,25 +235,16 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
   procedure CoreSetNavigationType(const Viewport: TCastleAutoNavigationViewport;
     const Value: TUserNavigationType);
   begin
-    { We need to remove TCastle2DNavigation created here previously,
-      otherwise TCastleAutoNavigationViewport.SetNavigationType
-      would consider the state as "we already have good Examine component". }
-    if (Viewport.Navigation is TCastle2DNavigation) and (Value <> unt2D) then
-      Viewport.Navigation.Free; // will set Viewport.Navigation to nil
     case Value of
       untExamine: Viewport.NavigationType := ntExamine;
       untWalk: Viewport.NavigationType := ntWalk;
       untFly: Viewport.NavigationType := ntFly;
-      unt2D: Viewport.Navigation := TCastle2DNavigation.Create(Viewport);
+      unt2D: Viewport.NavigationType := nt2D;
       untNone: Viewport.NavigationType := ntNone;
       {$ifndef COMPILER_CASE_ANALYSIS}
       else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
       {$endif}
     end;
-
-    { Always set ZoomEnabled=true, even on TCastleWalkNavigation }
-    if Viewport.Navigation <> nil then
-      Viewport.Navigation.ZoomEnabled := true;
   end;
 
 var
@@ -261,7 +255,27 @@ begin
     CoreSetNavigationType(ExtraViewports[I], NewNavigationType);
 end;
 
-procedure InitializeViewports(ViewportClass: TViewportClass);
+procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass);
+
+  procedure InitializeDefaultNavigation(const V: TCastleAutoNavigationViewport);
+  begin
+    { This configuration of navigations somewhat corresponds to CGE editor
+      navigations in castleviewport_design_navigation.inc .
+
+      However with some differences: in view3dscene, left mouse button is free to use,
+      so we let it
+      - do move by dragging in Walk
+      - operate in Examine and 2D easily (in CGE editor, one has to use right mouse button). }
+
+    V.InternalWalkNavigation.MoveSpeed := 10; // faster default
+    V.InternalWalkNavigation.MinAngleFromGravityUp := 0; // allow to rotate smoothly from Top (7) view
+    V.InternalWalkNavigation.ZoomEnabled := true; // start with zoom enabled, to support mouse wheel
+    V.InternalWalkNavigation.Input_Jump.Assign(keySpace, keyE);
+    V.InternalWalkNavigation.Input_Crouch.Assign(keyC, keyQ);
+    V.InternalWalkNavigation.Input_IncreasePreferredHeight.Assign(keyInsert);
+    V.InternalWalkNavigation.Input_DecreasePreferredHeight.Assign(keyDelete);
+end;
+
 var
   I: Integer;
 begin
@@ -277,7 +291,12 @@ begin
       our camera set by AssignCameraAndNavigation. }
     ExtraViewports[I].AutoCamera := false;
     ExtraViewports[I].AutoNavigation := false;
+
+    InitializeDefaultNavigation(ExtraViewports[I]);
   end;
+
+  InitializeDefaultNavigation(MainViewport);
+
   Background := TCastleRectangleControl.Create(nil);
   Background.FullSize := true;
   Background.Color := Gray;

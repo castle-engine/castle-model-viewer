@@ -246,7 +246,6 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     LabelAndSlider.InsertFront(Lab);
 
     Slider := TCastleFloatSlider.Create(Self);
-    Slider.FontSize := 10;
     Slider.Min := 0;
     Slider.Max := 5;
     Slider.Value := Transition;
@@ -271,7 +270,6 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     LabelAndSlider.InsertFront(Lab);
 
     Slider := TCastleFloatSlider.Create(Self);
-    Slider.FontSize := 10;
     Slider.Min := 0;
     Slider.Max := 10;
     { We use Scene.TimePlayingSpeed to preserve playing speed when scene changes.

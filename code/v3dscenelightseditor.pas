@@ -60,15 +60,10 @@ type
 
   TString3 = array [0..2] of string;
 
-  TMyFloatSlider = class(TCastleFloatSlider)
-  public
-    constructor Create(AOwner: TComponent); override;
-  end;
-
   { Three float sliders to control TVector3 value. }
   TMenuVector3Sliders = class(TComponent)
   strict private
-    Floats: array [0..2] of TMyFloatSlider;
+    Floats: array [0..2] of TCastleFloatSlider;
     FOnChange: TNotifyEvent;
     procedure ChildSliderChanged(Sender: TObject);
     function GetValue: TVector3;
@@ -111,8 +106,8 @@ type
   strict private
     Light: TAbstractLightNode;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TMyFloatSlider;
-    AmbientIntensitySlider: TMyFloatSlider;
+    IntensitySlider: TCastleFloatSlider;
+    AmbientIntensitySlider: TCastleFloatSlider;
     OnToggle: TCastleOnScreenMenuItemToggle;
     procedure ColorChanged(Sender: TObject);
     procedure IntensityChanged(Sender: TObject);
@@ -150,8 +145,8 @@ type
   TSpot1LightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode_1;
-    CutOffAngleSlider: TMyFloatSlider;
-    DropOffRateSlider: TMyFloatSlider;
+    CutOffAngleSlider: TCastleFloatSlider;
+    DropOffRateSlider: TCastleFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure DropOffRateChanged(Sender: TObject);
     procedure ClickDirection(Sender: TObject);
@@ -162,8 +157,8 @@ type
   TSpotLightMenu = class(TPositionalLightMenu)
   strict private
     Light: TSpotLightNode;
-    CutOffAngleSlider: TMyFloatSlider;
-    BeamWidthSlider: TMyFloatSlider;
+    CutOffAngleSlider: TCastleFloatSlider;
+    BeamWidthSlider: TCastleFloatSlider;
     procedure CutOffAngleChanged(Sender: TObject);
     procedure BeamWidthChanged(Sender: TObject);
     procedure ClickDirection(Sender: TObject);
@@ -182,9 +177,9 @@ type
   THeadLightMenu = class(TV3DOnScreenMenu)
   strict private
     Headlight: TAbstractLightNode;
-    AmbientIntensitySlider: TMyFloatSlider;
+    AmbientIntensitySlider: TCastleFloatSlider;
     ColorSlider: TMenuVector3Sliders;
-    IntensitySlider: TMyFloatSlider;
+    IntensitySlider: TCastleFloatSlider;
     AttenuationSlider: TMenuVector3Sliders;
     procedure ColorChanged(Sender: TObject);
     procedure AttenuationChanged(Sender: TObject);
@@ -206,13 +201,14 @@ type
     ShadowVolumesToggle: TCastleOnScreenMenuItemToggle;
     ShadowVolumesMainToggle: TCastleOnScreenMenuItemToggle;
     SliderMapSizeExponent: TCastle2ExponentSlider;
-    SliderMapBias: TMyFloatSlider;
-    SliderMapScale: TMyFloatSlider;
+    SliderMapBias: TCastleFloatSlider;
+    SliderMapScale: TCastleFloatSlider;
     CurrentProjectionLabel: TCastleLabel;
     procedure ClickShadows(Sender: TObject);
     procedure ClickShadowVolumes(Sender: TObject);
     procedure ClickShadowVolumesMain(Sender: TObject);
     procedure ClickRecalculateProjection(Sender: TObject);
+    procedure ClickProjectionX3dToClipboard(Sender: TObject);
     function RequiredDefaultShadowMap: TGeneratedShadowMapNode;
     procedure MapSizeExponentChanged(Sender: TObject);
     procedure MapBiasChanged(Sender: TObject);
@@ -436,14 +432,6 @@ end;
 const
   AttenuationRange: TBox3D = (Data: ((X:0; Y: 0; Z: 0), (X:2; Y: 2; Z: 2)));
 
-{ TMyFloatSlider ------------------------------------------------------------- }
-
-constructor TMyFloatSlider.Create(AOwner: TComponent);
-begin
-  inherited;
-  FontSize := 10;
-end;
-
 { TMenuVector3Sliders -------------------------------------------------------- }
 
 constructor TMenuVector3Sliders.Create(const AOwner: TComponent;
@@ -454,7 +442,7 @@ begin
   inherited Create(AOwner);
   for I := 0 to 2 do
   begin
-    Floats[I] := TMyFloatSlider.Create(Self);
+    Floats[I] := TCastleFloatSlider.Create(Self);
     Floats[I].Min := Range.Data[0][I];
     Floats[I].Max := Range.Data[1][I];
     Floats[I].Value := AValue[I];
@@ -701,13 +689,13 @@ begin
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.Color);
   ColorSlider.OnChange := @ColorChanged;
 
-  IntensitySlider := TMyFloatSlider.Create(Self);
+  IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 10;
   IntensitySlider.Value := Light.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
 
-  AmbientIntensitySlider := TMyFloatSlider.Create(Self);
+  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Light.AmbientIntensity;
@@ -853,13 +841,13 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TMyFloatSlider.Create(Self);
+  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
   CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  DropOffRateSlider := TMyFloatSlider.Create(Self);
+  DropOffRateSlider := TCastleFloatSlider.Create(Self);
   DropOffRateSlider.Min := 0;
   DropOffRateSlider.Max := 1;
   DropOffRateSlider.Value := Light.FdDropOffRate.Value;
@@ -898,13 +886,13 @@ begin
   inherited Create(AOwner, ALight);
   Light := ALight;
 
-  CutOffAngleSlider := TMyFloatSlider.Create(Self);
+  CutOffAngleSlider := TCastleFloatSlider.Create(Self);
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.CutOffAngle;
   CutOffAngleSlider.OnChange := @CutOffAngleChanged;
 
-  BeamWidthSlider := TMyFloatSlider.Create(Self);
+  BeamWidthSlider := TCastleFloatSlider.Create(Self);
   BeamWidthSlider.Min := 0.01;
   BeamWidthSlider.Max := Pi/2;
   BeamWidthSlider.Value := Light.BeamWidth;
@@ -965,7 +953,7 @@ begin
 
   AddTitle('Headlight:');
 
-  AmbientIntensitySlider := TMyFloatSlider.Create(Self);
+  AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Headlight.AmbientIntensity;
@@ -976,7 +964,7 @@ begin
   ColorSlider.OnChange := @ColorChanged;
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
 
-  IntensitySlider := TMyFloatSlider.Create(Self);
+  IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 1;
   IntensitySlider.Value := Headlight.Intensity;
@@ -1059,13 +1047,13 @@ begin
   SliderMapSizeExponent.Value := MapSizeExponent;
   SliderMapSizeExponent.OnChange := @MapSizeExponentChanged;
 
-  SliderMapBias := TMyFloatSlider.Create(Self);
+  SliderMapBias := TCastleFloatSlider.Create(Self);
   SliderMapBias.Min := 0.0;
   SliderMapBias.Max := 10.0;
   SliderMapBias.Value := MapBias;
   SliderMapBias.OnChange := @MapBiasChanged;
 
-  SliderMapScale := TMyFloatSlider.Create(Self);
+  SliderMapScale := TCastleFloatSlider.Create(Self);
   SliderMapScale.Min := 0.0;
   SliderMapScale.Max := 10.0;
   SliderMapScale.Value := MapScale;
@@ -1085,6 +1073,7 @@ begin
   Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
   Add('        Recalculate Projection Parameters', @ClickRecalculateProjection);
   Add(CurrentProjectionLabel);
+  Add('        Copy "Current projection for shadow maps" as X3D to clipboard', @ClickProjectionX3dToClipboard);
 end;
 
 procedure TShadowsMenu.AfterCreate;
@@ -1132,6 +1121,11 @@ begin
     TDirectionalLightNode(Light).ProjectionRectangle := TVector4.Zero;
   end;
   Light.Shadows := WasShadows;
+end;
+
+procedure TShadowsMenu.ClickProjectionX3dToClipboard(Sender: TObject);
+begin
+  Clipboard.AsText := CurrentProjectionLabel.Caption;
 end;
 
 procedure TShadowsMenu.ClickShadowVolumes(Sender: TObject);
@@ -1257,9 +1251,9 @@ end;
 procedure TShadowsMenu.UpdateCurrentProjectionLabel(const ALabel: TCastleLabel);
 begin
   ALabel.Text.Clear;
-  ALabel.Text.Add('        Currently used projection for shadow maps:');
-  ALabel.Text.Add(Format('          Near: %f', [Light.ProjectionNear]));
-  ALabel.Text.Add(Format('          Far: %f', [Light.ProjectionFar]));
+  ALabel.Text.Add('        # Current projection for shadow maps');
+  ALabel.Text.Add(Format('          projectionNear %f', [Light.ProjectionNear]));
+  ALabel.Text.Add(Format('          projectionFar  %f', [Light.ProjectionFar]));
 end;
 
 { TSpotLightShadowsMenu ------------------------------------------------------- }
@@ -1275,7 +1269,7 @@ procedure TSpotLightShadowsMenu.UpdateCurrentProjectionLabel(
   const ALabel: TCastleLabel);
 begin
   inherited;
-  ALabel.Text.Add(Format('          Angle: %f', [Light.ProjectionAngle]));
+  ALabel.Text.Add(Format('          projectionAngle %f', [Light.EffectiveProjectionAngle]));
 end;
 
 { TDirectionalLightShadowsMenu ------------------------------------------------------- }
@@ -1289,18 +1283,17 @@ end;
 
 procedure TDirectionalLightShadowsMenu.UpdateCurrentProjectionLabel(
   const ALabel: TCastleLabel);
-var
-  ProjectionRectangle: TFloatRectangle;
 begin
   inherited;
-  ALabel.Text.Add(Format('          Location: %s',
-    [Light.ProjectionLocation.ToString]));
-  ProjectionRectangle := TFloatRectangle.FromX3DVector(Light.ProjectionRectangle);
-  ALabel.Text.Add(Format('          Rectangle: %fx%f %fx%f',
-    [ProjectionRectangle.Left,
-     ProjectionRectangle.Bottom,
-     ProjectionRectangle.Width,
-     ProjectionRectangle.Height]));
+  ALabel.Text.Add(Format('          projectionLocation %s', [
+    Light.ProjectionLocation.ToString
+  ]));
+  ALabel.Text.Add(Format('          projectionRectangle %f %f %f %f', [
+    Light.ProjectionRectangle.X,
+    Light.ProjectionRectangle.Y,
+    Light.ProjectionRectangle.Z,
+    Light.ProjectionRectangle.W
+  ]));
 end;
 
 finalization

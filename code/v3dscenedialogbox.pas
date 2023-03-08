@@ -1,5 +1,5 @@
 {
-  Copyright 2019-2022 Michalis Kamburelis.
+  Copyright 2019-2023 Michalis Kamburelis.
 
   This file is part of "view3dscene".
 
@@ -68,13 +68,13 @@ begin
   if Event.IsKey(keyEnter) or Event.IsKey(keyEscape) then
   begin
     ButtonOK.DoClick;
-    Exit(ExclusiveEvents);
+    Exit(true);
   end;
 
   if Event.IsKey(CtrlC) then
   begin
     ButtonCopyClipboard.DoClick;
-    Exit(ExclusiveEvents);
+    Exit(true);
   end;
 end;
 
