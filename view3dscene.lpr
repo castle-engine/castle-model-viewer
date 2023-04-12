@@ -3546,15 +3546,13 @@ begin
   Vis := ShowStatus and not MakingScreenShot;
 
   if ToolbarPanel <> nil then // check was CreateMainUserInterface called already?
-  begin
     ToolbarPanel.Exists := Vis;
-
-    { Note that ButtonWarnings ignores the Vis.
-      This is by design --- always signal warnings. }
-  end;
 
   if StatusText <> nil then
     StatusText.Exists := Vis;
+
+  if ButtonPatreon <> nil then
+    ButtonPatreon.Exists := Vis;
 end;
 
 { Initialize StatusText and ToolbarPanel and various buttons instances }
