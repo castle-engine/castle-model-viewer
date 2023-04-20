@@ -274,6 +274,12 @@ procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass)
     V.InternalWalkNavigation.Input_Crouch.Assign(keyC, keyQ);
     V.InternalWalkNavigation.Input_IncreasePreferredHeight.Assign(keyInsert);
     V.InternalWalkNavigation.Input_DecreasePreferredHeight.Assign(keyDelete);
+
+    { These check collisions only at zoom by default, and it is more confusing
+      than useful it seems.
+      See https://github.com/castle-engine/view3dscene/issues/46 . }
+    V.InternalExamineNavigation.CheckCollisions := false;
+    V.Internal2DNavigation.CheckCollisions := false;
 end;
 
 var
