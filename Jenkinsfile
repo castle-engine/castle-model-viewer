@@ -22,6 +22,8 @@ pipeline {
   }
   agent none
   parameters {
+    /* Danger! Using this makes macOS and Raspbery Pi snapshot downloads
+       fail from https://castle-engine.io/view3dscene.php . */
     booleanParam(name: 'jenkins_fast', defaultValue: false, description: 'Use at emergencies, to make pipeline build faster')
   }
   stages {
