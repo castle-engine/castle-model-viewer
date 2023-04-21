@@ -21,6 +21,9 @@ pipeline {
     upstream(upstreamProjects: 'castle_game_engine_organization/castle-engine-cloud-builds-tools/master', threshold: hudson.model.Result.SUCCESS)
   }
   agent none
+  parameters {
+    booleanParam(name: 'jenkins_fast', defaultValue: false, description: 'Use at emergencies, to make pipeline build faster')
+  }
   stages {
     /* Build for each platform in parallel.
        See https://stackoverflow.com/questions/43913698/jenkinsfile-parallel-directive
@@ -45,6 +48,7 @@ pipeline {
         }
 
         stage('Raspberry Pi') {
+          when { not { expression { return params.jenkins_fast } } }
           agent {
             label 'raspberry-pi-cge-builder'
           }
@@ -74,6 +78,7 @@ pipeline {
         }
 
         stage('macOS') {
+          when { not { expression { return params.jenkins_fast } } }
           agent {
             label 'mac-cge-builder'
           }
