@@ -187,6 +187,26 @@
 '      ]' + LineEnding +
 '    },' + LineEnding +
 '    {' + LineEnding +
+'      "$$ClassName" : "TCastleUserInterface",' + LineEnding +
+'      "Height" : 5.2000000000000000E+001,' + LineEnding +
+'      "Name" : "ToolbarPanelShorter",' + LineEnding +
+'      "VerticalAnchorParent" : "vpTop",' + LineEnding +
+'      "VerticalAnchorSelf" : "vpTop",' + LineEnding +
+'      "WidthFraction" : 1.0000000000000000E+000,' + LineEnding +
+'      "$Children" : [' + LineEnding +
+'        {' + LineEnding +
+'          "$$ClassName" : "TCastleHorizontalGroup",' + LineEnding +
+'          "HorizontalAnchorParent" : "hpRight",' + LineEnding +
+'          "HorizontalAnchorSelf" : "hpRight",' + LineEnding +
+'          "Name" : "ToolbarHorizGroupShorter",' + LineEnding +
+'          "Padding" : 5.0000000000000000E+000,' + LineEnding +
+'          "Spacing" : 1.2000000000000000E+001,' + LineEnding +
+'          "VerticalAnchorParent" : "vpTop",' + LineEnding +
+'          "VerticalAnchorSelf" : "vpTop"' + LineEnding +
+'        }' + LineEnding +
+'      ]' + LineEnding +
+'    },' + LineEnding +
+'    {' + LineEnding +
 '      "$$ClassName" : "TCastleButton",' + LineEnding +
 '      "AutoSize" : false,' + LineEnding +
 '      "CustomBackground" : true,' + LineEnding +

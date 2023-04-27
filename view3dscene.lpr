@@ -157,7 +157,11 @@ var
   ButtonWarningsEnabled: boolean = true;
   ButtonWarnings: TCastleButton;
 
-  ToolbarPanel: TCastleUserInterface;
+  { ToolbarPanel is displayed if user wants to see the toolbar.
+    Otherwise we display ToolbarPanelShorter --- which only shows the warnings button,
+    see https://github.com/castle-engine/view3dscene/issues/53 . }
+  ToolbarPanel, ToolbarPanelShorter,
+    ToolbarHorizGroup, ToolbarHorizGroupShorter: TCastleUserInterface;
   ButtonCollisions: TCastleButton;
   ButtonAnimations: TCastleButton;
   ButtonPatreon: TCastleButton;
@@ -3540,19 +3544,46 @@ var
 
 { call when ShowStatus or MakingScreenShot changed }
 procedure UpdateStatusToolbarVisible;
+
+  procedure EnsureParent(const Child, WantedParent: TCastleUserInterface);
+  begin
+    if Child.Parent <> WantedParent then
+    begin
+      if Child.Parent <> nil then
+        Child.Parent.RemoveControl(Child);
+      WantedParent.InsertFront(Child);
+    end;
+    Assert(Child.Parent = WantedParent);
+  end;
+
 var
-  Vis: boolean;
+  Vis, VisShorter: boolean;
 begin
-  Vis := ShowStatus and not MakingScreenShot;
+  Vis := ShowStatus and (not MakingScreenShot);
+  VisShorter := (not ShowStatus) and (not MakingScreenShot);
 
   if ToolbarPanel <> nil then // check was CreateMainUserInterface called already?
     ToolbarPanel.Exists := Vis;
+
+  if ToolbarPanelShorter <> nil then
+    ToolbarPanelShorter.Exists := VisShorter;
 
   if StatusText <> nil then
     StatusText.Exists := Vis;
 
   if ButtonPatreon <> nil then
     ButtonPatreon.Exists := Vis;
+
+  { make sure ButtonWarnings.Parent is correct }
+  if (ButtonWarnings <> nil) and
+     (ToolbarHorizGroupShorter <> nil) and
+     (ToolbarHorizGroupShorter <> nil) then
+  begin
+    if ShowStatus then
+      EnsureParent(ButtonWarnings, ToolbarHorizGroup)
+    else
+      EnsureParent(ButtonWarnings, ToolbarHorizGroupShorter);
+  end;
 end;
 
 { Initialize StatusText and ToolbarPanel and various buttons instances }
@@ -3576,6 +3607,9 @@ begin
   Window.Controls.InsertFront(Ui);
 
   ToolbarPanel := UiOwner.FindRequiredComponent('ToolbarPanel') as TCastleUserInterface;
+  ToolbarPanelShorter := UiOwner.FindRequiredComponent('ToolbarPanelShorter') as TCastleUserInterface;
+  ToolbarHorizGroup := UiOwner.FindRequiredComponent('ToolbarHorizGroup') as TCastleUserInterface;
+  ToolbarHorizGroupShorter := UiOwner.FindRequiredComponent('ToolbarHorizGroupShorter') as TCastleUserInterface;
 
   { Note that we need to assign all images,
     because we embed all images in view3dscene binary. }

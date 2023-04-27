@@ -185,6 +185,26 @@
       ]
     },
     {
+      "$$ClassName" : "TCastleUserInterface",
+      "Height" : 5.2000000000000000E+001,
+      "Name" : "ToolbarPanelShorter",
+      "VerticalAnchorParent" : "vpTop",
+      "VerticalAnchorSelf" : "vpTop",
+      "WidthFraction" : 1.0000000000000000E+000,
+      "$Children" : [
+        {
+          "$$ClassName" : "TCastleHorizontalGroup",
+          "HorizontalAnchorParent" : "hpRight",
+          "HorizontalAnchorSelf" : "hpRight",
+          "Name" : "ToolbarHorizGroupShorter",
+          "Padding" : 5.0000000000000000E+000,
+          "Spacing" : 1.2000000000000000E+001,
+          "VerticalAnchorParent" : "vpTop",
+          "VerticalAnchorSelf" : "vpTop"
+        }
+      ]
+    },
+    {
       "$$ClassName" : "TCastleButton",
       "AutoSize" : false,
       "CustomBackground" : true,
