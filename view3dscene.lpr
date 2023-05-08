@@ -1824,10 +1824,10 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
         for i := 0 to Lights.Count - 1 do
         begin
          S := S + NL + NL + Format('Light %d: %s: ',
-           [ I, Lights.List^[i].Node.NiceName ]);
+           [ I, Lights.L[i].Node.NiceName ]);
 
          ShadowingItem := SceneOctreeCollisions.SegmentCollision(
-           SelectedPointWorld, Lights.List^[i].Location,
+           SelectedPointWorld, Lights.L[i].Location,
              false, SelectedItem, true, nil);
 
          if ShadowingItem <> nil then
