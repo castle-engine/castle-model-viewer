@@ -2180,10 +2180,39 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     const Xml: boolean);
   var
     Pos, Dir, Up, GravityUp: TVector3;
+    Make: TMakeX3DViewpoint;
   begin
     MainViewport.Camera.GetWorldView(Pos, Dir, Up);
     GravityUp := MainViewport.Camera.GravityUp;
-    MessageReport(MakeCameraStr(Version, Xml, Pos, Dir, Up, GravityUp));
+
+    Make := TMakeX3DViewpoint.Create;
+    try
+      Make.Version := Version;
+      Make.Xml := Xml;
+      Make.Position := Pos;
+      Make.Direction := Dir;
+      Make.Up := Up;
+      Make.GravityUp := GravityUp;
+      if (MainViewport.Navigation is TCastleExamineNavigation) and
+         (not TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation) then
+        Make.CenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).CenterOfRotation;
+      {$warnings off} // for now, this knowingly uses deprecated MainViewport.Projection
+      case MainViewport.Projection.ProjectionType of
+        ptPerspective:
+          begin
+            Make.PerspectiveFieldOfView := MainViewport.Projection.PerspectiveAnglesRad.Y;
+            Make.ProjectionType := ptPerspective;
+          end;
+        ptOrthographic:
+          begin
+            // TODO: TMakeX3DViewpoint actually doesn't support orthographic projection yet.
+            Make.OrthographicFieldOfView := MainViewport.Projection.Dimensions;
+            Make.ProjectionType := ptOrthographic;
+          end;
+      end;
+      {$warnings on}
+      MessageReport(Make.ToString);
+    finally FreeAndNil(Make) end;
   end;
 
   procedure WriteBoundingBox(const Box: TBox3D);
