@@ -1229,7 +1229,7 @@ begin
 
   TimePrepareResources := ProcessTimer;
 
-  WritelnLogMultiline('Loading', Format(
+  WritelnLogMultiline('Loading', FormatDot(
     'Loaded "%s" with dependencies in %f seconds:' + NL +
     '  %f to load from disk (create X3D graph)' + NL +
     '  %f to initialize scene (initialize shapes tree, collisions...)' + NL +
