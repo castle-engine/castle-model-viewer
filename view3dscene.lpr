@@ -2193,9 +2193,12 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       Make.Direction := Dir;
       Make.Up := Up;
       Make.GravityUp := GravityUp;
-      if (MainViewport.Navigation is TCastleExamineNavigation) and
-         (not TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation) then
-        Make.CenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).CenterOfRotation;
+      if MainViewport.Navigation is TCastleExamineNavigation then
+      begin
+        Make.AutoCenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation;
+        if not TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation then
+          Make.CenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).CenterOfRotation;
+      end;
       {$warnings off} // for now, this knowingly uses deprecated MainViewport.Projection
       case MainViewport.Projection.ProjectionType of
         ptPerspective:
