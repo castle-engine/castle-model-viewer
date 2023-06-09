@@ -4179,7 +4179,6 @@ begin
 
           { Don't make sound when rendering in batch mode. }
           SoundEngine.Enabled := false;
-          SoundEngine.EnableSaveToConfig := false;
         end;
 
         Window.FpsShowOnCaption := true;
