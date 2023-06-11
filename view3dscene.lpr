@@ -4054,6 +4054,7 @@ begin
   InitializeLog;
 
   Window := TCastleWindow.Create(Application);
+  Window.Container.UIScaling := usDpiScale;
 
   { Enable F8 even in -dRELEASE: this is view3dscene,
     let's make debug tools available always. }
