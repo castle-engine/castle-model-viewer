@@ -998,6 +998,26 @@ begin
   ]);
 end;
 
+function BestBlendingSort(const Scene: TCastleScene): TBlendingSort;
+begin
+  if Scene.NavigationInfoStack.Top <> nil then
+  begin
+    case Scene.NavigationInfoStack.Top.BlendingSort of
+      obsNone    : Result := bsNone;
+      obs2D      : Result := bs2D;
+      obs3D      : Result := bs3D;
+      obs3DOrigin: Result := bs3DOrigin;
+      obs3DGround: Result := bs3DGround;
+      obsDefault : Result := bs3D;
+      else
+        begin
+          Result := bs3D;
+          WritelnWarning('Unhandled NavigationInfo.blendingSort');
+        end;
+    end;
+  end;
+end;
+
 { Calls FreeScene and then inits "scene global variables".
 
   Camera settings for scene are inited from VRML/X3D defaults and
@@ -1108,6 +1128,10 @@ begin
 
     if MenuReopen <> nil then
       MenuReopen.Enabled := SceneURL <> '';
+
+    { Set blending sort following "NavigationInfo.blendingSort" info from scene.
+      This means we use 2D sorting e.g. for Spine models by default. }
+    MainViewport.Items.BlendingSort := BestBlendingSort(Scene);
   except
     FreeScene;
     raise;
