@@ -1977,6 +1977,8 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
   function ChangeMaterialInit(out MatInfo: TPhongMaterialInfo): boolean;
   var
     Shape: TAbstractShapeNode;
+    Appearance: TAppearanceNode;
+    Material: TMaterialNode;
     AnyMatInfo: TMaterialInfo;
   begin
     if (SelectedItem = nil) then
@@ -1999,14 +2001,15 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       begin
         if MessageYesNo(Window, 'No Material (or similar node indicating Phong material) present. Add material to this node and then edit it?') then
         begin
-          { Note that this may remove old Shape.FdAppearance.Value,
-            but only if Shape.Appearance = nil, indicating that
-            something wrong was specified for "appearance" field.
+          Appearance := Shape.Appearance;
+          if Appearance = nil then
+          begin
+            Appearance := TAppearanceNode.Create;
+            Shape.Appearance := Appearance;
+          end;
 
-            Similar, it may remove old Shape.Appearance.FdMaterial.Value,
-            but only if Shape.MaterialInfo was nil. }
-          Shape.Material := TMaterialNode.Create('', Shape.BaseUrl);
-          Scene.ChangedAll;
+          Material := TMaterialNode.Create;
+          Appearance.Material := Material;
         end else
           Exit(false);
       end else
