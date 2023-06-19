@@ -479,7 +479,7 @@ var
   I: Integer;
 begin
   for I := 0 to 2 do
-    Result.InternalData[I] := Floats[I].Value;
+    Result.Data[I] := Floats[I].Value;
 end;
 
 procedure TMenuVector3Sliders.SetValue(const AValue: TVector3);

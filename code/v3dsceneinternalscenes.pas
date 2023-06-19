@@ -129,6 +129,7 @@ constructor TDebugEdgesScene.Create(AOwner: TComponent);
 var
   Root: TX3DRootNode;
   Shape: TShapeNode;
+  BorderAppearance, SilhouetteAppearance: TAppearanceNode;
   BorderMaterial, SilhouetteMaterial: TMaterialNode;
 begin
   inherited;
@@ -140,9 +141,12 @@ begin
   BorderMaterial := TMaterialNode.Create;
   BorderMaterial.EmissiveColor := Vector3(0, 0, 1);
 
+  BorderAppearance := TAppearanceNode.Create;
+  BorderAppearance.Material := BorderMaterial;
+
   Shape := TShapeNode.Create;
   Shape.Geometry := BorderLines;
-  Shape.Material := BorderMaterial;
+  Shape.Appearance := BorderAppearance;
   Root.AddChildren(Shape);
 
   Shape.Appearance.LineProperties := TLinePropertiesNode.Create;
@@ -156,9 +160,12 @@ begin
   SilhouetteMaterial := TMaterialNode.Create;
   SilhouetteMaterial.EmissiveColor := Vector3(1, 1, 0);
 
+  SilhouetteAppearance := TAppearanceNode.Create;
+  SilhouetteAppearance.Material := SilhouetteMaterial;
+
   Shape := TShapeNode.Create;
   Shape.Geometry := SilhouetteLines;
-  Shape.Material := SilhouetteMaterial;
+  Shape.Appearance := SilhouetteAppearance;
   Root.AddChildren(Shape);
 
   SilhouetteCoord := TCoordinateNode.Create;
@@ -249,7 +256,7 @@ begin
   try
     { calculate TrianglesPlaneSide array }
     TrianglesPlaneSide.Count := Triangles.Count;
-    TrianglePtr := PTriangle3(Triangles.List);
+    TrianglePtr := PTriangle3(Triangles.L);
     for I := 0 to Triangles.Count - 1 do
     begin
       TrianglesPlaneSide.L[I] := PlaneSide(TrianglePtr^);
@@ -257,7 +264,7 @@ begin
     end;
 
     { for each edge, possibly render it's shadow quad }
-    EdgePtr := PManifoldEdge(Edges.List);
+    EdgePtr := PManifoldEdge(Edges.L);
     for I := 0 to Edges.Count - 1 do
     begin
       PlaneSide0 := TrianglesPlaneSide.L[EdgePtr^.Triangles[0]];
@@ -304,7 +311,7 @@ begin
   Edges := ShapeShadowVolumes.BorderEdges;
 
   { for each edge, render it }
-  EdgePtr := PBorderEdge(Edges.List);
+  EdgePtr := PBorderEdge(Edges.L);
   for I := 0 to Edges.Count - 1 do
   begin
     RenderEdge;
