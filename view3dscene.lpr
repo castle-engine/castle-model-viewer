@@ -2987,12 +2987,15 @@ begin
 
     82: ShowBBox := not ShowBBox;
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
-    83: DynamicBatching := not DynamicBatching;
+    83: MainViewport.DynamicBatching := not MainViewport.DynamicBatching;
     86: with Scene.RenderOptions do Blending := not Blending;
-    87: with Scene.RenderOptions do OcclusionSort := not OcclusionSort;
-    88: with Scene.RenderOptions do OcclusionQuery := not OcclusionQuery;
-    90: with Scene.RenderOptions do HierarchicalOcclusionQuery := not HierarchicalOcclusionQuery;
-    891: with Scene.RenderOptions do DebugHierOcclusionQueryResults := not DebugHierOcclusionQueryResults;
+    87: if MainViewport.OcclusionSort = bsNone then
+        begin
+          MainViewport.OcclusionSort := MainViewport.Items.BlendingSort;
+          Assert(MainViewport.OcclusionSort <> bsNone); // because BlendingSort is always set
+        end else
+          MainViewport.OcclusionSort := bsNone;
+    88: MainViewport.OcclusionCulling := not MainViewport.OcclusionCulling;
 
     91: with Scene.RenderOptions do Lighting := not Lighting;
     92: with Scene do HeadLightOn := not HeadLightOn;
@@ -3408,16 +3411,12 @@ begin
     M.Append(TMenuItemChecked.Create('Blending',                86,
       Scene.RenderOptions.Blending, true));
     M.Append(TMenuItemChecked.Create('Dynamic Batching',        83,
-      DynamicBatching, true));
+      MainViewport.DynamicBatching, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
-      Scene.RenderOptions.OcclusionSort, true));
-    M.Append(TMenuItemChecked.Create('_Use Occlusion Query', 88,
-      Scene.RenderOptions.OcclusionQuery, true));
-    M.Append(TMenuItemChecked.Create('Use Hierarchical Occlusion Query', 90,
-      Scene.RenderOptions.HierarchicalOcclusionQuery, true));
-    M.Append(TMenuItemChecked.Create('Debug Last Hierarchical Occlusion Query Results', 891,
-      Scene.RenderOptions.DebugHierOcclusionQueryResults, true));
+      MainViewport.OcclusionSort <> bsNone, true));
+    M.Append(TMenuItemChecked.Create('_Use Occlusion Culling', 88,
+      MainViewport.OcclusionCulling, true));
     M2 := TMenu.Create('Frustum visualization');
       M2.Append(TMenuItemChecked.Create('Show Walk frustum in Examine mode', 96,
         ShowFrustum, true));
