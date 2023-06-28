@@ -704,18 +704,10 @@ end;
 
 procedure TV3DViewport.RenderFromView3D(const Params: TRenderParams);
 begin
-  { Although TCastleViewport is ready for Items.MainScene = nil case,
-    this RenderFromView3D below is not. Doesn't seem needed,
-    but better to secure for this case, since any TCastleViewport
-    should always work with MainScene = nil. }
-  if Items.MainScene = nil then Exit;
-
-  { do not render Items.MainScene if SceneDebugEdges is to be visible }
-  Items.MainScene.Visible := FillMode <> fmSilhouetteBorderEdges;
+  Scene.Visible := FillMode <> fmSilhouetteBorderEdges;
   SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
   if SceneDebugEdges.Exists then
     SceneDebugEdges.UpdateEdges(Scene);
-
   inherited;
   { inherited will call RenderOnePass that will call RenderVisualizations }
 end;
@@ -2228,11 +2220,11 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       Make.Direction := Dir;
       Make.Up := Up;
       Make.GravityUp := GravityUp;
-      if MainViewport.Navigation is TCastleExamineNavigation then
+      if Navigation is TCastleExamineNavigation then
       begin
-        Make.AutoCenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation;
-        if not TCastleExamineNavigation(MainViewport.Navigation).AutoCenterOfRotation then
-          Make.CenterOfRotation := TCastleExamineNavigation(MainViewport.Navigation).CenterOfRotation;
+        Make.AutoCenterOfRotation := TCastleExamineNavigation(Navigation).AutoCenterOfRotation;
+        if not TCastleExamineNavigation(Navigation).AutoCenterOfRotation then
+          Make.CenterOfRotation := TCastleExamineNavigation(Navigation).CenterOfRotation;
       end;
       {$warnings off} // for now, this knowingly uses deprecated MainViewport.Projection
       case MainViewport.Projection.ProjectionType of
@@ -4134,7 +4126,11 @@ begin
 
   MainViewport := TV3DViewport.Create(nil);
   MainViewport.FullSize := true;
+  // Usign deprecated AutoCamera, view3dscene needs this now to have
+  // X3D Viewpoint animation affect camera.
+  {$warnings off}
   MainViewport.AutoCamera := true;
+  {$warnings on}
   MainViewport.AutoNavigation := true;
   Window.Controls.InsertBack(MainViewport);
   MainViewport.OnBoundViewpointChanged :=
@@ -4177,7 +4173,12 @@ begin
 
       AttributesLoadFromConfig(Scene.RenderOptions);
       MainViewport.Items.Add(Scene);
+      // Usign deprecated MainScene, view3dscene needs this now to have X3D
+      // Viewpoint animation affect camera, to have X3D Background node affect
+      // background and likely more.
+      {$warnings off}
       MainViewport.Items.MainScene := Scene;
+      {$warnings on}
 
       SceneBoundingBox := TBoundingBoxScene.Create(Scene);
       MainViewport.Items.Add(SceneBoundingBox);
@@ -4197,8 +4198,14 @@ begin
         Window.MainMenu := CreateMainMenu;
         Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
+        // view3dscene uses deprecated OnXxx events.
+        // We should migrate to TCastleView -- but for now there's no significant
+        // reason to migrate, we can upgrade view3dscene when necessary when
+        // CGE will remove it.
+        {$warnings off}
         Window.OnResize := @Resize;
         Window.OnPress := @Press;
+        {$warnings on}
         Window.OnDropFiles := @DropFiles;
         Window.AutoRedisplay := false;
 
