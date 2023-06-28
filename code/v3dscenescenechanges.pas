@@ -145,21 +145,29 @@ end;
 
 { SceneChange_Xxx functions ---------------------------------------- }
 
-procedure RemoveNodeClass(RootNode: TX3DNode;
-  NodeClass: TX3DNodeClass; onlyFromActivePart: boolean);
-var
-  Node: TX3DNode;
+type
+  TRemoveNodeClassHelper = class
+    NodeClassToRemove: TX3DNodeClass;
+    procedure DoIt(ParentNode: TX3DNode; var Node: TX3DNode);
+  end;
+
+procedure TRemoveNodeClassHelper.DoIt(
+  ParentNode: TX3DNode; var Node: TX3DNode);
 begin
-  { TODO: do this by EnumerateReplaceNodes.
-    Actually, most usage of FreeRemovingFromAllParents in engine should
-    be replaced by faster and cleaner EnumerateReplaceNodes?
-    usuwania node'ow ze sceny lepiej nie robic przez EnumNodes -
-    nie mozemy zaburzac hierarchii sceny w czasie jej przegladania.}
-  repeat
-    node := RootNode.TryFindNode(NodeClass, onlyFromActivePart);
-    if node = nil then break;
-    node.FreeRemovingFromAllParents;
-  until false;
+  if Node.InheritsFrom(NodeClassToRemove) then
+    Node := nil;
+end;
+
+procedure RemoveNodeClass(RootNode: TX3DNode;
+  NodeClass: TX3DNodeClass);
+var
+  Helper: TRemoveNodeClassHelper;
+begin
+  Helper := TRemoveNodeClassHelper.Create;
+  try
+    Helper.NodeClassToRemove := NodeClass;
+    RootNode.EnumerateReplaceChildren(@Helper.DoIt);
+  finally Helper.Free end;
 end;
 
 { TODO: maybe avoid calling costly ChangedAll after scene changes. }
@@ -176,8 +184,8 @@ begin
   { Do this at the end.
     Note that for VRML >= 2.0, most of the Normal nodes were already removed
     by NoNormal_ComposedGeometryNode and NoNormal_ElevationGrid anyway. }
-  RemoveNodeClass(Node, TNormalNode, false);
-  RemoveNodeClass(Node, TNormalBindingNode_1, false);
+  RemoveNodeClass(Node, TNormalNode);
+  RemoveNodeClass(Node, TNormalBindingNode_1);
 end;
 
 procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
@@ -197,7 +205,9 @@ begin
   Node.EnumerateNodes(TAbstractGeometryNode,
     @TSceneChangesDo(nil).NoConvex_AbstractGeometry, false);
 
-  if Node.TryFindNode(TAbstractGeometryNode_1, false) <> nil then
+  { To VRML 1, add ShapeHints node with FACETYPE_UNKNOWN. }
+  if Node.HasForceVersion and
+     (Node.ForceVersion.Major <= 1) then
   begin
     SH := TShapeHintsNode_1.Create('', Node.BaseUrl);
     {$warnings off} // using deprecated to support VRML 1
