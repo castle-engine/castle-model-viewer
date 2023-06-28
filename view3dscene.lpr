@@ -58,6 +58,12 @@ program view3dscene;
   Then our standard exception handler will show, with a useful backtrace. }
 {$define CATCH_EXCEPTIONS}
 
+// Do not warn about CastleMaterialProperties deprecated --
+// normal CGE applications shouldn't use it,
+// but for view3dscene it is justified (grants extra functionality useful to
+// debug CGE projects), we're prepared to fix view3dscene when it breaks.
+{$warnings off}
+
 uses SysUtils, Math, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
@@ -85,6 +91,8 @@ uses SysUtils, Math, Classes,
   V3DSceneScreenEffects, V3DSceneSkeletonVisualize, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
   V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox;
+
+{$warnings on}
 
 var
   ShowFrustum: boolean = false;
