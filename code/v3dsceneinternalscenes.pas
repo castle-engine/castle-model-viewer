@@ -74,7 +74,6 @@ begin
   Collides := false;
   Pickable := false;
   CastShadows := false;
-  ExcludeFromStatistics := true;
   { Otherwise bbox from previous scene would affect AssignDefaultCamera
     and AssignDefaultNavigation calls done right after new scene is loaded. }
   InternalExcludeFromParentBoundingVolume := true;
