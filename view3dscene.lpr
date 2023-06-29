@@ -998,26 +998,6 @@ begin
   ]);
 end;
 
-function BestBlendingSort(const Scene: TCastleScene): TBlendingSort;
-begin
-  if Scene.NavigationInfoStack.Top <> nil then
-  begin
-    case Scene.NavigationInfoStack.Top.BlendingSort of
-      obsNone    : Result := bsNone;
-      obs2D      : Result := bs2D;
-      obs3D      : Result := bs3D;
-      obs3DOrigin: Result := bs3DOrigin;
-      obs3DGround: Result := bs3DGround;
-      obsDefault : Result := bs3D;
-      else
-        begin
-          Result := bs3D;
-          WritelnWarning('Unhandled NavigationInfo.blendingSort');
-        end;
-    end;
-  end;
-end;
-
 { Calls FreeScene and then inits "scene global variables".
 
   Camera settings for scene are inited from VRML/X3D defaults and
@@ -1131,7 +1111,11 @@ begin
 
     { Set blending sort following "NavigationInfo.blendingSort" info from scene.
       This means we use 2D sorting e.g. for Spine models by default. }
-    MainViewport.Items.BlendingSort := BestBlendingSort(Scene);
+    if (Scene.NavigationInfoStack.Top <> nil) and
+       (Scene.NavigationInfoStack.Top.BlendingSort <> sortAuto) then
+      MainViewport.BlendingSort := Scene.NavigationInfoStack.Top.BlendingSort
+    else
+      MainViewport.BlendingSort := sortAuto;
   except
     FreeScene;
     raise;
@@ -2989,12 +2973,10 @@ begin
     84: if Window.ColorDialog(BGColor) then BGColorChanged;
     83: MainViewport.DynamicBatching := not MainViewport.DynamicBatching;
     86: with Scene.RenderOptions do Blending := not Blending;
-    87: if MainViewport.OcclusionSort = bsNone then
-        begin
-          MainViewport.OcclusionSort := MainViewport.Items.BlendingSort;
-          Assert(MainViewport.OcclusionSort <> bsNone); // because BlendingSort is always set
-        end else
-          MainViewport.OcclusionSort := bsNone;
+    87: if MainViewport.OcclusionSort = sortAuto then
+          MainViewport.OcclusionSort := sort3D
+        else
+          MainViewport.OcclusionSort := sortAuto;
     88: MainViewport.OcclusionCulling := not MainViewport.OcclusionCulling;
 
     91: with Scene.RenderOptions do Lighting := not Lighting;
@@ -3414,7 +3396,7 @@ begin
       MainViewport.DynamicBatching, true));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItemChecked.Create('Occlusion Sort', 87,
-      MainViewport.OcclusionSort <> bsNone, true));
+      MainViewport.OcclusionSort <> sortAuto, true));
     M.Append(TMenuItemChecked.Create('_Use Occlusion Culling', 88,
       MainViewport.OcclusionCulling, true));
     M2 := TMenu.Create('Frustum visualization');
