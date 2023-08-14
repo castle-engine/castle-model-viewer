@@ -30,7 +30,7 @@
 
 program tovrmlx3d;
 
-uses SysUtils,
+uses SysUtils, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters, CastleDownload,
   CastleFilesUtils, CastleURIUtils, CastleApplicationProperties, CastleLog,
@@ -39,10 +39,11 @@ uses SysUtils,
 
 var
   Encoding: TX3DEncoding = xeClassic;
-  ForceX3D: boolean = false;
+  ForceX3D: Boolean = false;
+  Validate: Boolean = false;
 
 const
-  Options: array [0..6] of TOption =
+  Options: array [0..7] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
@@ -50,64 +51,75 @@ const
     (Short:  #0; Long: 'force-x3d'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone),
-    (Short:  #0; Long: 'enable-downloads'; Argument: oaNone)
+    (Short:  #0; Long: 'enable-downloads'; Argument: oaNone),
+    (Short:  #0; Long: 'validate'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
   const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
 begin
   case OptionNum of
-    0: begin
-         InfoWrite(
-           'tovrmlx3d: converter from various 3D model formats into VRML/X3D.' +NL+
-           'Give input 3D model URL (usually just a filename) on the command-line,' +NL+
-           'and output model will be written to the standard output.' +NL+
-           NL+
-           'Available options are:' +NL+
-           HelpOptionHelp +NL+
-           VersionOptionHelp +NL+
-           '  --encoding classic|xml' +NL+
-           '                        Choose X3D encoding. Default is "classic".' +NL+
-           '  --force-x3d           Force conversion from VRML to X3D.' +NL+
-           '                        Note that if you choose XML encoding' +NL+
-           '                        (by --encoding=xml), this is automatic.' +NL+
-           '                        Note that this works sensibly only for VRML 2.0' +NL+
-           '                        (not for older Inventor/VRML 1.0,' +NL+
-           '                        we cannot convert them to valid X3D for now).' +NL+
-           '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' +NL+
-           '                        Particularly useful when combined with --write,' +NL+
-           '                        to have X3D valid in all browsers (but less functional).' +NL+
-           '  --enable-downloads    Enable (blocking) downloads from the net.' +NL+
-           '                        These happen if model references e.g. EXTERNPROTO using http(s).' +NL+
-           NL+
-           ApplicationProperties.Description);
-         Halt;
-       end;
-    1: begin
-         Writeln(Version);
-         Halt;
-       end;
-    2: if SameText(Argument, 'classic') then
-         Encoding := xeClassic else
-       if SameText(Argument, 'xml') then
-         Encoding := xeXML else
-         raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
-    3: ForceX3D := true;
-    4: begin
-         LogEnableStandardOutput := false;
-         InitializeLog;
-         Writeln(ErrOutput, ApplicationProperties.ApplicationName, ': Logging to ', LogOutput);
-       end;
-    5: CastleX3dExtensions := false;
-    6: EnableBlockingDownloads := true;
+    0:begin
+        InfoWrite(
+          'tovrmlx3d: converter from various 3D model formats into VRML/X3D.' +NL+
+          'Give input 3D model URL (usually just a filename) on the command-line,' +NL+
+          'and output model will be written to the standard output.' +NL+
+          NL+
+          'Available options are:' +NL+
+          OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
+          OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
+          OptionDescription('--encoding classic|xml', 'Choose X3D encoding. Default is "classic".') + NL +
+          OptionDescription('--force-x3d', 'Force conversion from VRML to X3D. Note that if you choose XML encoding (by --encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).') +NL+
+          OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
+          OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
+          OptionDescription('--validate', 'Only validate the input, without any output. Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
+          NL+
+          ApplicationProperties.Description);
+        Halt;
+      end;
+    1:begin
+        Writeln(Version);
+        Halt;
+      end;
+    2:begin
+        if SameText(Argument, 'classic') then
+          Encoding := xeClassic
+        else
+        if SameText(Argument, 'xml') then
+          Encoding := xeXML
+        else
+          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
+      end;
+    3:ForceX3D := true;
+    4:begin
+        LogEnableStandardOutput := false;
+        InitializeLog;
+        Writeln(ErrOutput, ApplicationProperties.ApplicationName, ': Logging to ', LogOutput);
+      end;
+    5:CastleX3dExtensions := false;
+    6:EnableBlockingDownloads := true;
+    7:Validate := true;
     else raise EInternalError.Create('OptionProc');
   end;
+end;
+
+type
+  TEventsHandler = class
+    WasWarning: Boolean;
+    procedure HandleWarning(const Category, Message: String);
+  end;
+
+procedure TEventsHandler.HandleWarning(const Category, Message: String);
+begin
+  ApplicationProperties.WriteWarningOnConsole(Category, Message);
+  WasWarning := true;
 end;
 
 procedure Run;
 var
   URL: string;
   Node: TX3DNode;
+  EventsHandler: TEventsHandler;
 begin
   ApplicationProperties.ApplicationName := 'tovrmlx3d';
   ApplicationProperties.Version := Version;
@@ -117,13 +129,24 @@ begin
   Parameters.CheckHigh(1);
   URL := Parameters[1];
 
-  ApplicationProperties.OnWarning.Add(@ApplicationProperties.WriteWarningOnConsole);
-
-  Node := LoadNode(URL);
+  EventsHandler := TEventsHandler.Create;
   try
-    Save3D(Node, StdOutStream, 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
-      ExtractURIName(URL), Encoding, ForceX3D);
-  finally FreeAndNil(Node) end;
+    ApplicationProperties.OnWarning.Add(@EventsHandler.HandleWarning);
+
+    Node := LoadNode(URL);
+    try
+      if not Validate then
+      begin
+        Save3D(Node, StdOutStream,
+          { generator (metadata) } 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
+          { source (metadata) } ExtractURIName(URL),
+          Encoding, ForceX3D);
+      end;
+    finally FreeAndNil(Node) end;
+
+    if Validate and EventsHandler.WasWarning then
+      raise Exception.Create('Validation failed (consult the warnings above), exiting with non-zero status');
+  finally FreeAndNil(EventsHandler) end;
 end;
 
 begin
