@@ -1,9 +1,12 @@
-#! /bin/sh
-set -eu
+#!/usr/bin/env bash
+set -euo pipefail
+# See http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
+# ----------------------------------------------------------------------------
 # Compile view3dscene and tovrmlx3d.
 # Compile using our build tool "castle-engine",
 # see https://castle-engine.io/build_tool.
+# ----------------------------------------------------------------------------
 
 # build tovrmlx3d
 castle-engine compile ${CASTLE_ENGINE_TOOL_OPTIONS:-} --manifest-name=CastleEngineManifest.tovrmlx3d.xml
