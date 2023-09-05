@@ -1041,7 +1041,6 @@ end;
 procedure LoadSceneCore(
   RootNode: TX3DRootNode;
   ASceneURL: string;
-  const SceneChanges: TSceneChanges;
   const Options: TLoadSceneOptions);
 var
   NewCaption: string;
@@ -1056,8 +1055,6 @@ begin
     SetInitialViewpoint(Scene, lsoCommandLineCustomization in Options);
 
     Scene.Load(RootNode, true);
-
-    ChangeScene(SceneChanges, Scene);
 
     { calculate Viewpoints, including MenuJumpToViewpoint. }
     Viewpoints.Recalculate(Scene);
@@ -1148,8 +1145,7 @@ end;
   SceneURL is changed then the parameter value implicitly
   changes, it may even cause suddenly invalid pointer --- yeah,
   I experienced it). }
-procedure LoadScene(ASceneURL: string;
-  const SceneChanges: TSceneChanges);
+procedure LoadScene(ASceneURL: String);
 var
   RootNode: TX3DRootNode;
   SavedSceneWarnings: TSceneWarnings;
@@ -1195,7 +1191,7 @@ begin
   {$ifdef CATCH_EXCEPTIONS}
   try
   {$endif CATCH_EXCEPTIONS}
-    LoadSceneCore(RootNode, ASceneURL, SceneChanges, [lsoCommandLineCustomization]);
+    LoadSceneCore(RootNode, ASceneURL, [lsoCommandLineCustomization]);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -1260,7 +1256,7 @@ begin
   // since we just modified SceneWarnings.Count, refresh ButtonWarnings visibility
   UpdateButtonWarnings;
 
-  LoadSceneCore(Node, '', [], Options);
+  LoadSceneCore(Node, '', Options);
 end;
 
 { This works like LoadScene, but loaded scene is an empty scene.
@@ -1301,14 +1297,12 @@ const
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
 procedure WriteModel(const ASceneURL: string;
-  const SceneChanges: TSceneChanges; const Encoding: TX3DEncoding;
-  const ForceConvertingToX3D: boolean);
+  const Encoding: TX3DEncoding; const ForceConvertingToX3D: boolean);
 var
   Node: TX3DRootNode;
 begin
   Node := LoadNode(ASceneURL);
   try
-    ChangeNode(SceneChanges, Node);
     if StdOutStream = nil then
       raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "view3dscene input.gltf --write > output.x3dv", see https://castle-engine.io/view3dscene.php#section_converting .');
     {$warnings off} // using internal CGE routine knowingly
@@ -1320,7 +1314,7 @@ end;
 
 class procedure THelper.OpenRecent(const URL: string);
 begin
-  LoadScene(URL, []);
+  LoadScene(URL);
 end;
 
 procedure DropFiles(Container: TCastleContainer; const FileNames: array of string);
@@ -1331,7 +1325,7 @@ begin
   begin
     URL := FilenameToURISafe(FileNames[0]);
     if URL <> '' then
-      LoadScene(URL, []);
+      LoadScene(URL);
   end;
 end;
 
@@ -2809,7 +2803,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       ') and paste (' + PasteStr +
       ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
       'URL:', URL) then
-      LoadScene(URL, []);
+      LoadScene(URL);
   end;
 
   procedure Reopen;
@@ -2822,7 +2816,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     SavedNavigationType := NavigationType;
     MainViewport.Camera.GetWorldView(Pos, Dir, Up{, GravityUp});
 
-    LoadScene(SceneURL, []);
+    LoadScene(SceneURL);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
@@ -3753,7 +3747,7 @@ var
 begin
   URL := SceneURL;
   if Window.FileDialog('Open file', URL, true, LoadScene_FileFilters) then
-    LoadScene(URL, []);
+    LoadScene(URL);
 end;
 
 class procedure THelper.ClickNavigationTypeButton(Sender: TObject);
@@ -3806,22 +3800,16 @@ var
   Param_WriteForceX3D: boolean = false;
   WasParam_SceneURL: boolean = false;
   Param_SceneURL: string;
-  Param_SceneChanges: TSceneChanges = [];
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
 
 const
-  Options: array [0..24] of TOption =
+  Options: array [0..19] of TOption =
   (
-    (Short:  #0; Long: 'scene-change-no-normals'; Argument: oaNone),
-    (Short:  #0; Long: 'scene-change-no-solid-objects'; Argument: oaNone),
-    (Short:  #0; Long: 'scene-change-no-convex-faces'; Argument: oaNone),
-    (Short:  #0; Long: 'write-to-vrml'; Argument: oaNone),
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'screenshot'; Argument: oaRequired2Separate),
     (Short:  #0; Long: 'screenshot-range'; Argument: oaRequired4Separate),
-    (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-changes'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-cache'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log-shaders'; Argument: oaNone),
@@ -3878,17 +3866,10 @@ var
   S: String;
 begin
   case OptionNum of
-    0 : Include(Param_SceneChanges, scNoNormals);
-    1 : Include(Param_SceneChanges, scNoSolidObjects);
-    2 : Include(Param_SceneChanges, scNoConvexFaces);
-    3 : begin
-          WasParam_Write := true;
-          Param_WriteEncoding := xeClassic;
-        end;
-    4 : begin
+    0 : begin
           S :=
-            'viewer for all 3D and 2D model formats supported by Castle Game Engine,' + NL +
-            'including glTF, X3D, Spine, sprite sheets etc.' + NL +
+            'Viewer for all 3D and 2D model formats supported by Castle Game Engine:' + NL +
+            'glTF, X3D, VRML, Spine, sprite sheets and more.' + NL +
             'You can navigate in the (animated and interactive) scene,' + NL +
             'with collision-checking, gravity, and a wealth of graphic effects.' + NL +
             'You can also convert models in other formats to X3D.' + NL +
@@ -3897,91 +3878,38 @@ begin
             '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' + NL +
             NL +
             'You can provide FILE-NAME-TO-OPEN on the command-line.' + NL +
-            'As usual, dash (-) means that standard input will be read' + NL +
-            '(in this case the input must be in X3D format).' + NL +
+            'Using dash ("-") as the file name will load an X3D model' + NL +
+            'from the standard input' + NL +
             NL +
-            'Available options are:' + NL +
+            'Available options:' + NL +
             OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
             OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
-            '  -H / --hide-extras    Do not show anything extra (like status text' + NL +
-            '                        or toolbar or bounding box) when program starts.' + NL +
-            '                        Show only the 3D world.' + NL +
-            '  --hide-menu           Hide menu bar.' + NL +
-            '  --write               Load the scene,'+ NL +
-            '                        optionally process by --scene-change-xxx,' + NL +
-            '                        save it as VRML/X3D to the standard output,' + NL +
-            '                        exit. Use --write-encoding to choose encoding.' + NL +
-            '  --write-encoding classic|xml' + NL +
-            '                        Choose X3D encoding to use with --write option.' + NL +
-            '                        Default is "classic".' + NL +
-            '  --write-force-x3d     Force conversion from VRML to X3D with --write option.' + NL +
-            '                        Note that if you choose XML encoding' + NL +
-            '                        (by --write-encoding=xml), this is automatic.' + NL +
-            '                        Note that this works sensibly only for VRML 2.0' + NL +
-            '                        (not for older Inventor/VRML 1.0,' + NL +
-            '                        we cannot convert them to valid X3D for now).' + NL +
-            '  --no-x3d-extensions   Do not use Castle Game Engine extensions to X3D.' + NL +
-            '                        Particularly useful when combined with --write,' + NL +
-            '                        to have X3D valid in all browsers (but less functional).' + NL +
-            '  --screenshot TIME IMAGE-FILE-NAME' + NL +
-            '                        Take a screenshot of the loaded scene' + NL +
-            '                        at given TIME, and save it to IMAGE-FILE-NAME.' + NL +
-            '                        You most definitely want to pass 3D model' + NL +
-            '                        file to load at command-line too, otherwise' + NL +
-            '                        we''ll just make a screenshot of the default' + NL +
-            '                        black scene.' + NL +
-            '  --screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME' + NL +
-            '                        Take a FRAMES-COUNT number of screenshots from' + NL +
-            '                        TIME-BEGIN by step TIME-STEP. Save them to' + NL +
-            '                        a single movie file (like .avi) (ffmpeg must' + NL +
-            '                        be installed and available on $PATH for this)' + NL +
-            '                        or to a sequence of image files (FILE-NAME' + NL +
-            '                        must then be specified like image@counter(4).png).' + NL +
-            '  --screenshot-transparent' + NL +
-            '                        Screenshots background is transparent.' + NL +
-            '                        Useful only together' + NL +
-            '                        with --screenshot-range or --screenshot options.' + NL +
-            '  --viewpoint NAME      Use the viewpoint with given name or index as initial.' + NL +
-            '                        Especially useful to make a screenshot from given viewpoint.' + NL +
-            '  --anti-alias AMOUNT   Use full-screen anti-aliasing.' + NL +
-            '                        Argument AMOUNT is an integer >= 0.' + NL +
-            '                        Exact 0 means "no anti-aliasing",' + NL +
-            '                        this is the default. Each successive integer' + NL +
-            '                        generally makes method one step better.' + NL +
-            '                        Especially useful to make a screenshot with' + NL +
-            '                        anti-aliasing quality.' + NL +
-            '  --project DIR         Point view3dscene to Castle Game Engine' + NL +
-            '                        project directory (or CastleEngineManifest.xml file)' + NL +
-            '                        to resolve the "castle-data:/" URLs in files.' + NL +
+            OptionDescription('-H / --hide-extras', 'Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.') + NL +
+            OptionDescription('--hide-menu', 'Hide menu bar.') + NL +
+            OptionDescription('--write', 'Load the scene, optionally process by --scene-change-xxx, save it as VRML/X3D to the standard output, exit. Use --write-encoding to choose encoding.') + NL +
+            OptionDescription('--write-encoding classic|xml', 'Choose X3D encoding to use with --write option. Default is "classic".') + NL +
+            OptionDescription('--write-force-x3d', 'Force conversion from VRML to X3D with --write option. Note that if you choose XML encoding (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).')  + NL +
+            OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions to X3D. Particularly useful when combined with --write, to have X3D valid in all browsers (but less functional).')  + NL +
+            OptionDescription('--screenshot TIME IMAGE-FILE-NAME', 'Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise we''ll just make a screenshot of the default black scene.')  + NL +
+            OptionDescription('--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME', 'Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).')  + NL +
+            OptionDescription('--screenshot-transparent', 'Screenshots background is transparent. Useful only together with --screenshot-range or --screenshot options.')  + NL +
+            OptionDescription('--viewpoint NAME', 'Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.')  + NL +
+            OptionDescription('--anti-alias AMOUNT', 'Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.')  + NL +
+            OptionDescription('--project DIR', 'Point view3dscene to Castle Game Engine project directory (or CastleEngineManifest.xml file) to resolve the "castle-data:/" URLs in files.')  + NL +
+            NL +
+            'Sound options:' + NL +
             SoundEngine.ParseParametersHelp + NL +
             NL +
+            'Window options:' + NL +
             TCastleWindow.ParseParametersHelp + NL +
             NL +
             'Debug options:' + NL +
-            '  --debug-log           Deprecated. We now log by default.' + NL +
-            '  --debug-log-cache     Write log info, including cache.' + NL +
-            '  --debug-log-shaders   Write log info, including shader source and log.' + NL +
-            '  --debug-log-changes   Write log info, including VRML/X3D graph changes.' + NL +
-            '  --debug-log-videos    Write log info, including videos loading and cache.' + NL +
-            '  --debug-texture-memory Profile GPU texture memory usage.' + NL +
+            OptionDescription('--debug-log-cache', 'Write log info, including cache.')  + NL +
+            OptionDescription('--debug-log-shaders', 'Write log info, including shader source and log.')  + NL +
+            OptionDescription('--debug-log-changes', 'Write log info, including VRML/X3D graph changes.')  + NL +
+            OptionDescription('--debug-log-videos', 'Write log info, including videos loading and cache.')  + NL +
+            OptionDescription('--debug-texture-memory', 'Profile GPU texture memory usage.')  + NL +
             OptionDescription('--capabilities automatic|force-fixed-function|force-modern', 'Force OpenGL context to have specific capabilities, to test rendering on modern or ancient GPUs.') + NL +
-            NL +
-            'Deprecated options:' + NL +
-            '  --scene-change-no-normals' + NL +
-            '                        Remove normals information from the loaded scene.' + NL +
-            '                        Forces automatic calculation of normal vectors.' + NL +
-            '                        Deprecated, doing this from command-line is not' + NL +
-            '                        usually useful.' + NL +
-            '  --scene-change-no-solid-objects' + NL +
-            '                        Make all shapes not solid in the loaded scene.' + NL +
-            '                        Disables backface culling.' + NL +
-            '                        Deprecated, doing this from command-line is not' + NL +
-            '                        usually useful.' + NL +
-            '  --scene-change-no-convex-faces' + NL +
-            '                        Treat all faces as potentially concave in the loaded scene.' + NL +
-            '                        Deprecated, doing this from command-line is not' + NL +
-            '                        usually useful.' + NL +
-            '  --write-to-vrml       Deprecated, shortcut for "--write --write-encoding=classic".' + NL +
             NL +
             ApplicationProperties.Description;
 
@@ -3991,17 +3919,17 @@ begin
             WindowMessageOK(S);
           Halt;
         end;
-    5 : begin
+    1 : begin
           InfoWrite(Version);
           Halt;
         end;
-    6 : begin
+    2 : begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
           SingleScreenShot.URLPattern := SeparateArgs[2];
           ScreenShotsList.Add(SingleScreenShot);
         end;
-    7 : begin
+    3 : begin
           RangeScreenShot := TRangeScreenShot.Create;
           RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
           RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
@@ -4009,39 +3937,38 @@ begin
           RangeScreenShot.URLPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
-    8 : ; // we now call InitializeLog always
-    9 : LogChanges := true;
-    10: LogRendererCache := true;
-    11: LogShaders := true;
-    12: LogVideosCache := true;
-    13: LogTextureCache := true;
-    14: begin
+    4 : LogChanges := true;
+    5 : LogRendererCache := true;
+    6 : LogShaders := true;
+    7 : LogVideosCache := true;
+    8 : LogTextureCache := true;
+    9 : begin
           Window.AntiAliasing := TAntiAliasing(Clamped(StrToInt(Argument),
             Ord(Low(TAntiAliasing)), Ord(High(TAntiAliasing))));
           if AntiAliasingMenu[Window.AntiAliasing] <> nil then
             AntiAliasingMenu[Window.AntiAliasing].Checked := true;
         end;
-    15: begin
+    10: begin
           ShowBBox := false;
           ShowStatus := false;
           UpdateStatusToolbarVisible;
         end;
-    16: WasParam_Write := true;
-    17: if SameText(Argument, 'classic') then
+    11: WasParam_Write := true;
+    12: if SameText(Argument, 'classic') then
           Param_WriteEncoding := xeClassic else
         if SameText(Argument, 'xml') then
           Param_WriteEncoding := xeXML else
           raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-    18: Param_WriteForceX3D := true;
-    19: Param_HideMenu := true;
-    20: TextureMemoryProfiler.Enabled := true;
-    21: Param_ScreenshotTransparent := true;
+    13: Param_WriteForceX3D := true;
+    14: Param_HideMenu := true;
+    15: TextureMemoryProfiler.Enabled := true;
+    16: Param_ScreenshotTransparent := true;
     { We can change TGLFeatures.RequestCapabilities immediately,
       during parsing of command-line options. In fact it's good --
       we should not change TGLFeatures.RequestCapabilities once the context is open. }
-    22: TGLFeatures.RequestCapabilities := StrToCapabilities(Argument);
-    23: SetProject(Argument);
-    24: CastleX3dExtensions := false;
+    17: TGLFeatures.RequestCapabilities := StrToCapabilities(Argument);
+    18: SetProject(Argument);
+    19: CastleX3dExtensions := false;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -4140,8 +4067,7 @@ begin
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any URL on command-line to load.');
-      WriteModel(Param_SceneURL, Param_SceneChanges, Param_WriteEncoding,
-        Param_WriteForceX3D);
+      WriteModel(Param_SceneURL, Param_WriteEncoding, Param_WriteForceX3D);
       Exit;
     end;
 
@@ -4211,7 +4137,7 @@ begin
         Window.Open(@RetryOpen);
 
         if WasParam_SceneURL then
-          LoadScene(Param_SceneURL, Param_SceneChanges)
+          LoadScene(Param_SceneURL)
         else
           LoadWelcomeScene;
 
