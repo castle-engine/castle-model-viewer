@@ -1602,7 +1602,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
   end;
 
 var
-  ScreenShotName: string;
+  ScreenShotNameUrlPrefix, ScreenShotName: string;
   Image: TCastleImage;
 begin
   { Note that we capture screen *first*, and ask about where to save it later.
@@ -1615,9 +1615,17 @@ begin
   Image := CaptureScreen;
   try
     if SceneURL <> '' then
-      ScreenShotName := ChangeURIExt(ExtractURIName(SceneURL), '_%d.png') else
-      ScreenShotName := 'view3dscene_screen_%d.png';
-    ScreenShotName := FileNameAutoInc(ScreenShotName);
+      { Without protocol, ScreenShotNameUrlPrefix is treated like relative
+        filename now. So make sure to convert %20 to spaces,
+        to later save screenshot with spaces when scene file had spaces. }
+      ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneURL)))
+    else
+      ScreenShotNameUrlPrefix := 'view3dscene_screen';
+    { We use FileNameAutoInc with 2 params,
+      UrlPrefix, UrlSuffixWithPattern,
+      since URL (and/or filename) may also contain % sign.
+      See https://github.com/castle-engine/view3dscene/issues/61 . }
+    ScreenShotName := FileNameAutoInc(ScreenShotNameUrlPrefix, '_%d.png');
     { Below is a little expanded version of TCastleWindow.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
       that in turn causes FBO rendering (as we need alpha channel in color buffer). }
