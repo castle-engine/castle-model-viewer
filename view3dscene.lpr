@@ -220,6 +220,7 @@ type
     procedure BeforeRender; override;
     procedure Render; override;
     function BaseLightsForRaytracer: TLightInstancesList;
+    procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
   end;
 
 procedure ViewportProperties(Viewport: TCastleViewport);
@@ -238,6 +239,22 @@ function TV3DViewport.BaseLightsForRaytracer: TLightInstancesList;
 begin
   Result := TLightInstancesList.Create;
   InitializeGlobalLights(Result);
+end;
+
+procedure TV3DViewport.Update(const SecondsPassed: Single; var HandleInput: boolean);
+begin
+  inherited;
+  { Set Cursor = mcHand when we're over or keeping active
+    some pointing-device sensors. }
+  if (Items.MainScene <> nil) and
+     ( ( (Items.MainScene.PointingDeviceSensors <> nil) and
+         (Items.MainScene.PointingDeviceSensors.EnabledCount <> 0)
+       ) or
+       (Items.MainScene.PointingDeviceActiveSensors.Count <> 0)
+     ) then
+    Cursor := mcHand
+  else
+    Cursor := mcDefault;
 end;
 
 { Helper functions ----------------------------------------------------------- }
