@@ -2893,7 +2893,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       MessageOk(Window, 'Cannot hide VRML 1.0 shape.');
       Exit;
     end;
-    SelectedItem^.Shape.Node.Render := false;
+    SelectedItem^.Shape.Node.Visible := false;
   end;
 
   procedure RevealAllHiddenShapes;
@@ -2904,7 +2904,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     ShapeList := Scene.Shapes.TraverseList({ OnlyActive } false);
     for Shape in ShapeList do
       if Shape.Node <> nil then
-        Shape.Node.Render := true;
+        Shape.Node.Visible := true;
   end;
 
   procedure ChangeMaxLights;
