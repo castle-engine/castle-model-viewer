@@ -57,7 +57,7 @@ var
 implementation
 
 uses SysUtils, Math,
-  CastleTextureFont_DejaVuSansMonoBold_15,
+  CastleTextureFont_Default3d_MonoB,
   CastleVectors, CastleUtils, CastleColors;
 
 { TStatusText ---------------------------------------------------------------- }
@@ -71,8 +71,9 @@ begin
   Color := Yellow;
   PaddingHorizontal := 5;
   PaddingVertical := 5;
+  FontSize := 15;
   CustomFont := TCastleFont.Create(Self);
-  TCastleFont(CustomFont).Load(TextureFont_DejaVuSansMonoBold_15);
+  TCastleFont(CustomFont).Load(Font_Default3d_MonoB);
   Frame := true;
 end;
 
