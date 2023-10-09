@@ -1,0 +1,220 @@
+#X3D V3.2 utf8
+PROFILE Interchange
+
+# Various useful prototypes used by demos here.
+
+# ----------------------------------------------------------------------------
+# Use this (without transforming) in your scene, and it will
+# show to user text "info" on the screen.
+# It can be turned off/on by "h" (help) key.
+PROTO ViewportInfo [
+  inputOutput MFString info "information"
+  inputOutput SFColor textColor 0 0 0
+] {
+  Group {
+    children [
+      DEF SwitchInfoText Switch {
+        children Collision {
+          enabled FALSE
+          children DEF InfoText Transform {
+            children Transform {
+              translation -0.1 0.07 -0.2
+              children Shape {
+                appearance KambiAppearance {
+                  material Material { diffuseColor IS textColor }
+                  shadowCaster FALSE
+                }
+                geometry Text {
+                  fontStyle FontStyle { size 0.006 style "BOLD" }
+                  string IS info
+                }
+              }
+            }
+          }
+        }
+        whichChoice 0
+      }
+
+      DEF Prox ProximitySensor {
+        size 10000 10000 10000
+      }
+
+      DEF KeyInfoText KeySensor { }
+      DEF ScrInfoText Script {
+        inputOnly SFString keyPress
+        outputOnly SFInt32 infoTextVisible
+        url "castlescript:
+
+      function keyPress(value, time)
+        when(value = 'h',
+          infoTextVisible := if (infoTextVisible = 0, -1, 0))
+      " }
+
+      ]
+  }
+
+  ROUTE Prox.position_changed TO InfoText.translation
+  ROUTE Prox.orientation_changed TO InfoText.rotation
+
+  ROUTE KeyInfoText.keyPress TO ScrInfoText.keyPress
+  ROUTE ScrInfoText.infoTextVisible TO SwitchInfoText.whichChoice
+}
+
+# ----------------------------------------------------------------------------
+# Content of "children" can be moved / scaled / rotated by the user
+# by clicking on an item and dragging:
+# - Click to move.
+# - Hold Shift when clicking to rotate.
+# - Hold Ctrl when clicking (and not shift) to scale.
+
+PROTO EditableTransform [
+  inputOutput MFNode children []
+  inputOutput SFVec3f translation 0 0 0
+  inputOutput SFVec3f scale 1 1 1
+  inputOutput SFVec3f center 0 0 0
+  inputOutput SFRotation rotation 0 1 0 0
+  inputOutput SFString description ""
+
+  # Set some meaningful min/maxPosition for move sensor, otherwise it's
+  # too easy to move away to some wildly distant position when viewing at
+  # some angles.
+  inputOutput SFVec2f minPosition -10 -10
+  inputOutput SFVec2f maxPosition  10  10
+
+  inputOutput SFVec2f minScale 0.1 0.1 # don't scale <= 0
+  inputOutput SFVec2f maxScale 10 10
+] {
+  Transform {
+    children [
+      DEF Trans Transform {
+        translation IS translation
+        scale IS scale
+        rotation IS rotation
+        children IS children
+        center IS center
+      }
+
+      DEF MoveSensor PlaneSensor {
+        offset IS translation
+        minPosition IS minPosition
+        maxPosition IS maxPosition
+      }
+      DEF RotateSensor SphereSensor { enabled FALSE offset IS rotation }
+      DEF ScaleSensor PlaneSensor { enabled FALSE offset IS scale
+        minPosition IS minScale
+        maxPosition IS maxScale
+      }
+
+      DEF Key KeySensor { }
+
+      DEF Scr Script {
+        inputOutput SFBool shiftKey FALSE
+        inputOutput SFBool controlKey FALSE
+
+        outputOnly SFBool moveSensorEnabled
+        outputOnly SFBool rotateSensorEnabled
+        outputOnly SFBool scaleSensorEnabled
+
+        url "castlescript:
+
+function shiftKey(value, time)
+  moveSensorEnabled   := and(not(value), not(controlKey));
+  rotateSensorEnabled := and(value     , not(controlKey));
+  scaleSensorEnabled  := and(not(value), controlKey)
+
+function controlKey(value, time)
+  moveSensorEnabled   := and(not(shiftKey), not(value));
+  rotateSensorEnabled := and(shiftKey     , not(value));
+  scaleSensorEnabled  := and(not(shiftKey), value)
+"
+      }
+    ]
+  }
+
+  ROUTE Key.shiftKey TO Scr.shiftKey
+  ROUTE Key.controlKey TO Scr.controlKey
+
+  ROUTE Scr.moveSensorEnabled TO MoveSensor.enabled
+  ROUTE Scr.rotateSensorEnabled TO RotateSensor.enabled
+  ROUTE Scr.scaleSensorEnabled TO ScaleSensor.enabled
+
+  ROUTE MoveSensor.translation_changed TO Trans.translation
+  ROUTE ScaleSensor.translation_changed TO Trans.scale
+  ROUTE RotateSensor.rotation_changed TO Trans.rotation
+}
+
+PROTO EditableTransformXZ [
+  inputOutput MFNode children []
+  inputOutput SFVec3f translation 0 0 0
+  inputOutput SFVec3f scale 1 1 1
+  inputOutput SFVec3f center 0 0 0
+  inputOutput SFRotation rotation 0 1 0 0
+  inputOutput SFString description ""
+
+  # Set some meaningful min/maxPosition for move sensor, otherwise it's
+  # too easy to move away to some wildly distant position when viewing at
+  # some angles.
+  inputOutput SFVec2f minPosition -10 -10
+  inputOutput SFVec2f maxPosition  10  10
+
+  inputOutput SFVec2f minScale 0.1 0.1 # don't scale <= 0
+  inputOutput SFVec2f maxScale 10 10
+] {
+  Transform {
+    translation IS translation
+    children Transform {
+      rotation 0 1 0 1.570796327
+      children EditableTransform {
+        scale       IS scale
+        center      IS center
+        rotation    IS rotation
+        children    IS children
+        description IS description
+        minPosition IS minPosition
+        maxPosition IS maxPosition
+        minScale    IS minScale
+        maxScale    IS maxScale
+      }
+    }
+  }
+}
+
+# ----------------------------------------------------------------------------
+# PROTO extending the normal Box with texCoord field.
+# Note that this is usually not needed:
+# for Kambi engine (view3dscene), the standard Box already has texCoord
+# implemented, e.g. for TextureCoordinateGenerator node.
+#
+# However this can still be useful for compatibility with other browsers
+# (that don't have Box.texCoord) or to specify explicit tex coords
+# on box for some tests.
+
+PROTO BoxWithTexCoord [
+  initializeOnly SFBool solid TRUE
+  initializeOnly SFNode texCoord NULL
+] {
+  IndexedFaceSet {
+    solid IS solid
+    texCoord IS texCoord
+    creaseAngle 0.000000
+    coord Coordinate {
+      point [
+         1 1 -1
+        1 -1 -1
+        -1 -1 -1
+        -1 1 -1
+        1 1 1
+        1 -1 1
+        -1 -1 1
+        -1 1 1
+      ] }
+    coordIndex [
+      0 1 2 3 -1,
+      4 7 6 5 -1,
+      0 4 5 1 -1,
+      1 5 6 2 -1,
+      2 6 7 3 -1,
+      4 0 3 7 -1,
+    ]
+  }
+}

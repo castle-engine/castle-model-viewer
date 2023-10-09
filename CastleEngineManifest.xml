@@ -24,6 +24,7 @@
     <include path="tovrmlx3d" executable_permission="True" />
     <include path="tovrmlx3d.exe" />
     <include path="freedesktop/*" recursive="True" />
+    <include path="example_models/*" recursive="True" />
   </package>
   <data exists="false" />
 

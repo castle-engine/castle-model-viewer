@@ -1,0 +1,148 @@
+#X3D V3.2 utf8
+PROFILE Interchange
+
+EXTERNPROTO KambiAppearance [
+  inputOutput SFNode material
+  inputOutput SFNode texture
+  inputOutput SFNode textureTransform
+  inputOutput SFNode fillProperties
+  inputOutput SFNode lineProperties
+  inputOutput SFNode metadata
+  inputOutput MFNode shaders
+  inputOutput SFNode normalMap
+  inputOutput SFNode heightMap
+  inputOutput SFFloat heightMapScale
+  inputOutput SFNode blendMode
+  inputOutput SFBool shadowCaster
+] [ "urn:castle-engine.sourceforge.net:node:KambiAppearance",
+    "http://castle-engine.sourceforge.net/fallback_prototypes.x3dv#KambiAppearance"
+]
+
+EXTERNPROTO EditableTransformXZ [
+  inputOutput MFNode children
+  inputOutput SFVec3f translation
+  inputOutput SFVec3f scale
+  inputOutput SFVec3f center
+  inputOutput SFRotation rotation
+  inputOutput SFString description
+  inputOutput SFVec2f minPosition
+  inputOutput SFVec2f maxPosition
+  inputOutput SFVec2f minScale
+  inputOutput SFVec2f maxScale
+] [ "../prototypes/useful_prototypes.x3dv#EditableTransformXZ" ]
+
+# ----------------------------------------------------------------------------
+# Teapot
+
+EXTERNPROTO Teapot [
+  inputOutput SFNode  metadata
+  initializeOnly SFVec3f size
+  initializeOnly SFBool solid
+  initializeOnly SFBool manifold
+  inputOutput SFNode texCoord
+] [ "urn:castle-engine.sourceforge.net:node:Teapot",
+    "http://castle-engine.sourceforge.net/fallback_prototypes.x3dv#Teapot"
+]
+
+EditableTransformXZ {
+  translation -1.5 1 2.5
+  children Shape {
+    appearance KambiAppearance {
+      material Material { }
+      texture DEF GenTex1 GeneratedCubeMapTexture {
+        update "ALWAYS"
+        #size 256
+      }
+      shadowCaster FALSE
+    }
+    geometry Teapot {
+      solid FALSE
+      texCoord TextureCoordinateGenerator {
+        mode "WORLDSPACEREFLECTIONVECTOR"
+      }
+    }
+  }
+}
+
+# ----------------------------------------------------------------------------
+# Box.
+# This tests mirror on more flat surface.
+# Also, it's used to test GeneratedCubeMapTexture inside MultiTexture.
+
+EditableTransformXZ {
+  translation -2 2 -2.5
+  scale 1 1 1
+  children Shape {
+    appearance KambiAppearance {
+      material Material { }
+      texture MultiTexture {
+        texture [
+          DEF GenTex2 GeneratedCubeMapTexture {
+            update "ALWAYS"
+            #size 512
+          }
+          ImageTexture { url "../textures/17_gris_vert.jpg" }
+        ]
+        mode [ "MODULATE" "ADD" ]
+      }
+      shadowCaster FALSE
+    }
+    geometry Box {
+      texCoord MultiGeneratedTextureCoordinate {
+        texCoord [
+          TextureCoordinateGenerator { mode "WORLDSPACEREFLECTIONVECTOR" }
+          TextureCoordinateGenerator { mode "COORD" }
+        ]
+      }
+    }
+  }
+}
+
+# ----------------------------------------------------------------------------
+# Copied from dynamic_world.x3dv, as initial bindable nodes cannot be
+# in Inlined file.
+
+NavigationInfo {
+  type [ "WALK", "ANY" ]
+  headlight TRUE
+  avatarSize [ 0.1 2 ]
+  speed 5
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.0596485435962677 -0.0162141267210245 0.0786075368523597
+# up -0.098011203110218 0.986767828464508 0.1291647404432296
+# gravityUp 0 1 0
+Viewpoint {
+  position 3.7595176696777344 1.8154925107955933 -4.429600715637207
+  orientation -0.0273569524288177 0.9963133931159973 0.0813096836209297 2.4947032928466797
+}
+
+Inline { url "../x3d/dynamic_world.x3dv" }
+
+# ----------------------------------------------------------------------------
+# Script to change gen cubemap update to NEXT_FRAME_ONLY on space press.
+# NEXT_FRAME_ONLY will automatically change to NONE after next frame,
+# so after this, you will need to keep pressing space again to force update
+# of the cubemap texture.
+
+DEF KeyS KeySensor { }
+
+DEF Scr Script {
+  inputOnly SFString key_press
+  outputOnly SFString tex1_update
+  outputOnly SFString tex2_update
+
+  url "castlescript:
+
+function key_press(value, timestamp)
+  when (value = 'g',
+    tex1_update := 'NEXT_FRAME_ONLY';
+    tex2_update := 'NEXT_FRAME_ONLY'
+  )
+"
+}
+
+ROUTE KeyS.keyPress TO Scr.key_press
+ROUTE Scr.tex1_update TO GenTex1.update
+ROUTE Scr.tex2_update TO GenTex2.update

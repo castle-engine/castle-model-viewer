@@ -1,0 +1,53 @@
+#X3D V3.2 utf8
+PROFILE Interchange
+
+# OrthoViewpoint makes orthographic (not perspective) projection,
+# only then our layer movement in Z is not a problem.
+#
+# Copied from cge_logo_fixed_z.x3d, because bindable nodes in Inline are not taken into account.
+# Also this way we can route MyViewpoint.cameraInverseMatrix to shader.
+#
+DEF MyViewpoint OrthoViewpoint {
+  position 0.03612445 -0.03612445 10
+  centerOfRotation 0.03612445 -0.03612445 0
+  fieldOfView [ -0.03612445, -0.03612445, 0.03612445, 0.03612445 ]
+}
+
+# NavigationInfo to make 2D navigation.
+# cge_logo_fixed_z.x3d also has this, but bindable nodes in Inline are not taken into account.
+NavigationInfo {
+  # "2D" type is equivalent to X_ITE "PLANE_create3000.github.io", "PLANE".
+  # type "2D"
+  type "EXAMINE"
+}
+
+# Shader effect that will affect rendering in cge_logo_fixed_z.x3d .
+# This allows to cut a circular view .
+# See https://castle-engine.io/compositing_shaders.php .
+DEF CutCircleEffect Effect {
+  language "GLSL"
+  inputOnly SFMatrix4f cameraInverseMatrix
+  parts [
+    EffectPart {
+      type "FRAGMENT"
+      url "data:text/plain,
+      uniform mat4 cameraInverseMatrix;
+      void PLUG_fragment_eye_space(
+        const vec4 vertex_eye,
+        inout vec3 normal_eye)
+      {
+        vec4 vertex_world = cameraInverseMatrix * vertex_eye;
+        const float circle_radius = 0.035;
+        const vec2 circle_middle = vec2(0.035, -0.037);
+        if (distance(vertex_world.xy, circle_middle) > circle_radius) {
+          discard;
+        }
+      }
+      "
+    }
+  ]
+}
+
+ROUTE MyViewpoint.cameraInverseMatrix TO CutCircleEffect.cameraInverseMatrix
+
+Inline { url "cge_logo_fixed_z.x3d" }

@@ -1,0 +1,129 @@
+#X3D V3.2 utf8
+PROFILE Interchange
+
+EXTERNPROTO KambiAppearance [
+  inputOutput SFNode material
+  inputOutput SFNode texture
+  inputOutput SFNode textureTransform
+  inputOutput SFNode fillProperties
+  inputOutput SFNode lineProperties
+  inputOutput SFNode metadata
+  inputOutput MFNode shaders
+  inputOutput SFNode normalMap
+  inputOutput SFNode heightMap
+  inputOutput SFFloat heightMapScale
+  inputOutput SFNode blendMode
+  inputOutput SFBool shadowCaster
+] [ "urn:castle-engine.sourceforge.net:node:KambiAppearance",
+    "http://castle-engine.sourceforge.net/fallback_prototypes.x3dv#KambiAppearance"
+]
+
+Inline { url "test_world.x3d" }
+
+NavigationInfo {
+  type [ "WALK", "ANY" ]
+  headlight TRUE
+  avatarSize [ 0.1 2 ]
+  speed 5
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.0596485435962677 -0.0162141267210245 0.0786075368523597
+# up -0.098011203110218 0.986767828464508 0.1291647404432296
+# gravityUp 0 1 0
+Viewpoint {
+  position 3.7595176696777344 1.8154925107955933 -4.429600715637207
+  orientation -0.0273569524288177 0.9963133931159973 0.0813096836209297 2.4947032928466797
+}
+
+DEF Light PointLight {
+  location 0 4 0
+  shadowVolumes TRUE
+  shadowVolumesMain TRUE
+}
+
+# info text ------------------------------------------------------------------
+
+EXTERNPROTO ViewportInfo [
+  inputOutput MFString info
+] [ "../prototypes/useful_prototypes.x3dv#ViewportInfo" ]
+
+ViewportInfo {
+  info [
+    "Usage:"
+    "- Click on any editable shape, and drag with mouse to move"
+    "- Hold down Shift when clicking (and dragging) to rotate"
+    "- Hold down Ctrl when clicking (and dragging) to scale"
+    ""
+    "Note that the collisions between avatar and objects,"
+    "checked when the avatar moves (but not when objects move)"
+    "work all the time for current geometry."
+    ""
+    "As a bonus, you can see dynamic shadows from everything."
+    ""
+    "Press key h (help) to hide/show this text at any time."
+  ]
+}
+
+# editable objects -----------------------------------------------------------
+
+EXTERNPROTO EditableTransformXZ [
+  inputOutput MFNode children
+  inputOutput SFVec3f translation
+  inputOutput SFVec3f scale
+  inputOutput SFVec3f center
+  inputOutput SFRotation rotation
+  inputOutput SFString description
+  inputOutput SFVec2f minPosition
+  inputOutput SFVec2f maxPosition
+  inputOutput SFVec2f minScale
+  inputOutput SFVec2f maxScale
+] [ "../prototypes/useful_prototypes.x3dv#EditableTransformXZ" ]
+
+EditableTransformXZ {
+  translation 0 0.5 0
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 1 1 0 } }
+    geometry DEF B Box { size 1 1.5 1 }
+  }
+}
+
+EditableTransformXZ {
+  translation -2 0.5 0
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0 1 0 } }
+    geometry USE B
+  }
+}
+
+EditableTransformXZ {
+  translation -4 0.5 0
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 1 1 1 } }
+    geometry USE B
+  }
+}
+
+EditableTransformXZ {
+  translation -1 0.5 1
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 1 1 0 } }
+    geometry DEF S Sphere { radius 0.5 }
+  }
+}
+
+EditableTransformXZ {
+  translation -2 0.5 1
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 0 1 0 } }
+    geometry USE S
+  }
+}
+
+EditableTransformXZ {
+  translation -3 0.5 1
+  children Shape {
+    appearance Appearance { material Material { diffuseColor 1 1 1 } }
+    geometry USE S
+  }
+}

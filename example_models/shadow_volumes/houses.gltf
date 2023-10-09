@@ -1,0 +1,503 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v3.4.50",
+        "version" : "2.0"
+    },
+    "extensionsUsed" : [
+        "KHR_lights_punctual"
+    ],
+    "extensionsRequired" : [
+        "KHR_lights_punctual"
+    ],
+    "extensions" : {
+        "KHR_lights_punctual" : {
+            "lights" : [
+                {
+                    "color" : [
+                        1,
+                        1,
+                        1
+                    ],
+                    "intensity" : 271.7570653294113,
+                    "type" : "point",
+                    "name" : "Lamp"
+                }
+            ]
+        }
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "light_ground",
+            "scale" : [
+                6.64547061920166,
+                6.64547061920166,
+                6.64547061920166
+            ]
+        },
+        {
+            "mesh" : 1,
+            "name" : "window",
+            "scale" : [
+                2.875027656555176,
+                1,
+                2.9125962257385254
+            ],
+            "translation" : [
+                0,
+                1,
+                0
+            ]
+        },
+        {
+            "mesh" : 2,
+            "name" : "roof",
+            "scale" : [
+                2.875027656555176,
+                1,
+                2.9125962257385254
+            ],
+            "translation" : [
+                0,
+                1,
+                0
+            ]
+        },
+        {
+            "mesh" : 3,
+            "name" : "wall",
+            "scale" : [
+                2.875027656555176,
+                1,
+                2.9125962257385254
+            ],
+            "translation" : [
+                0,
+                1,
+                0
+            ]
+        },
+        {
+            "mesh" : 4,
+            "name" : "dark_ground",
+            "scale" : [
+                6.64547061920166,
+                6.64547061920166,
+                6.64547061920166
+            ]
+        },
+        {
+            "extensions" : {
+                "KHR_lights_punctual" : {
+                    "light" : 0
+                }
+            },
+            "name" : "Lamp",
+            "rotation" : [
+                -0.28416627645492554,
+                0.7269423007965088,
+                0.34203392267227173,
+                0.5232754945755005
+            ],
+            "translation" : [
+                4.076245307922363,
+                13.800658226013184,
+                -1.0054539442062378
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "light_ground",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.12805087864398956,
+                    0.8000000715255737,
+                    0.257766455411911,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "alphaMode" : "BLEND",
+            "doubleSided" : true,
+            "name" : "window",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.3399999737739563
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "roof",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.2261989414691925,
+                    0.8000000715255737,
+                    0.24533502757549286,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "wall",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.07524769008159637,
+                    0.38098764419555664,
+                    0.8000000715255737,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        },
+        {
+            "doubleSided" : true,
+            "name" : "dark_ground",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.07804080843925476,
+                    0.07804080843925476,
+                    0.07804080843925476,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "light_ground.001",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1
+                    },
+                    "indices" : 2,
+                    "material" : 0
+                }
+            ]
+        },
+        {
+            "name" : "window",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 3,
+                        "NORMAL" : 4
+                    },
+                    "indices" : 5,
+                    "material" : 1
+                }
+            ]
+        },
+        {
+            "name" : "roof",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 6,
+                        "NORMAL" : 7
+                    },
+                    "indices" : 8,
+                    "material" : 2
+                }
+            ]
+        },
+        {
+            "name" : "wall",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 9,
+                        "NORMAL" : 10
+                    },
+                    "indices" : 11,
+                    "material" : 3
+                }
+            ]
+        },
+        {
+            "name" : "dark_ground.001",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 12,
+                        "NORMAL" : 13
+                    },
+                    "indices" : 14,
+                    "material" : 4
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 768,
+            "max" : [
+                5,
+                0,
+                1
+            ],
+            "min" : [
+                -1,
+                -0.15047843754291534,
+                -1
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 768,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5123,
+            "count" : 2340,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5126,
+            "count" : 114,
+            "max" : [
+                10.164339065551758,
+                5.099999904632568,
+                1.0300087928771973
+            ],
+            "min" : [
+                -0.9043391346931458,
+                -0.699999988079071,
+                1.0300087928771973
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 4,
+            "componentType" : 5126,
+            "count" : 114,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 5,
+            "componentType" : 5123,
+            "count" : 162,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 6,
+            "componentType" : 5126,
+            "count" : 120,
+            "max" : [
+                10.664497375488281,
+                6.670375347137451,
+                1.1651394367218018
+            ],
+            "min" : [
+                -1.4044976234436035,
+                2.4941763877868652,
+                -1.8518121242523193
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 7,
+            "componentType" : 5126,
+            "count" : 120,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 8,
+            "componentType" : 5123,
+            "count" : 180,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 9,
+            "componentType" : 5126,
+            "count" : 1320,
+            "max" : [
+                10.303468704223633,
+                6,
+                1.0300087928771973
+            ],
+            "min" : [
+                -1.0434682369232178,
+                -1,
+                -1.7166814804077148
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 10,
+            "componentType" : 5126,
+            "count" : 1320,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 11,
+            "componentType" : 5123,
+            "count" : 2376,
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 12,
+            "componentType" : 5126,
+            "count" : 396,
+            "max" : [
+                4.500000476837158,
+                0,
+                1
+            ],
+            "min" : [
+                -0.5,
+                -0.15047843754291534,
+                -0.75
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 13,
+            "componentType" : 5126,
+            "count" : 396,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 14,
+            "componentType" : 5123,
+            "count" : 1260,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 9216,
+            "byteOffset" : 0,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 9216,
+            "byteOffset" : 9216,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4680,
+            "byteOffset" : 18432,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1368,
+            "byteOffset" : 23112,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1368,
+            "byteOffset" : 24480,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 324,
+            "byteOffset" : 25848,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1440,
+            "byteOffset" : 26172,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 1440,
+            "byteOffset" : 27612,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 360,
+            "byteOffset" : 29052,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 15840,
+            "byteOffset" : 29412,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 15840,
+            "byteOffset" : 45252,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4752,
+            "byteOffset" : 61092,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4752,
+            "byteOffset" : 65844,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 4752,
+            "byteOffset" : 70596,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 2520,
+            "byteOffset" : 75348,
+            "target" : 34963
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 77868,
+            "uri" : "houses.bin"
+        }
+    ]
+}

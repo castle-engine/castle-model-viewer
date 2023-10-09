@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 4.0//EN" "http://www.web3d.org/specifications/x3d-4.0.dtd">
+<X3D profile='Interchange' version='4.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-4.0.xsd'>
+  <head>
+    <component name='Geometry2D' level='2'/>
+  </head>
+  <Scene>
+    <Background
+        skyColor='1 1 1'/>
+    <NavigationInfo
+        type='"PLANE_create3000.github.io", "PLANE", "EXAMINE", "ANY"'/>
+    <OrthoViewpoint
+        position='0.03612445 -0.03612445 10'
+        centerOfRotation='0.03612445 -0.03612445 0'
+        fieldOfView='-0.03612445, -0.03612445, 0.03612445, 0.03612445'/>
+    <Transform DEF='ViewBox'
+        scale='0.0002822222 -0.0002822222 1'>
+      <Transform DEF='circlebg'
+          translation='127.7104 128 0'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.8509804 0.9960784 0.9647059'
+                transparency='0.03'/>
+          </Appearance>
+          <Disk2D
+              outerRadius='220.97'/>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupdark1'
+          translation='-51.84414 -11.06395 0.017'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6705883 0.227451 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='3, 1, 0, 1, 3, 2'>
+            <TextureCoordinate
+                point='-1.887379e-15 -7.994971e-8, -1.887379e-15 1, 0.9999998 0.5583819, 0.9999998 0.1830896'/>
+            <Coordinate
+                point='164 122.934 0, 164 146.6 0, 180.2 136.1487 0, 180.2 127.267 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='moon'
+          translation='163.3525 102.8194 0.01'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial/>
+          </Appearance>
+          <Disk2D
+              outerRadius='106.587'/>
+        </Shape>
+      </Transform>
+      <Transform DEF='mountain2'
+          translation='-51.84414 -11.06395 0.012'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.7764706 0.9568627 0.9058824'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='1, 24, 2, 24, 1, 5, 5, 1, 6, 6, 1, 7, 7, 1, 8, 8, 1, 9, 9, 1, 10, 10, 1, 11, 11, 1, 12, 12, 1, 26, 12, 26, 25, 25, 26, 15, 15, 26, 16, 16, 26, 17, 17, 26, 18, 18, 26, 19, 19, 26, 20, 20, 26, 21, 21, 26, 22'>
+            <TextureCoordinate
+                point='1 0.2128087, 0.6367137 -2.513963e-8, -1.110223e-16 0.6681734, 0.2593068 0.9656478, 0.2593068 0.9656478, 0.2738395 0.9669755, 0.31281 0.9705067, 0.3692769 0.9755636, 0.4362985 0.9814679, 0.5069336 0.9875416, 0.5742405 0.993107, 0.6312779 0.9974858, 0.6711041 1, 0.6867779 0.9999718, 0.6867779 0.9999718, 0.6985337 0.9717718, 0.7278597 0.8987859, 0.7696952 0.7938584, 0.8189794 0.6698338, 0.8706512 0.5395566, 0.9196501 0.415871, 0.960915 0.3116215, 0.9893853 0.2396526, 1 0.2128087, 0.2593068 0.9656478, 0.6867779 0.9999718, 1 0.2128087'/>
+            <Coordinate
+                point='391.75 298.51 0, 250.25 252.01 0, 2.25 398.01 0, 103.25 463.01 0, 103.25 463.01 0, 108.9105 463.3001 0, 124.0895 464.0717 0, 146.0833 465.1767 0, 172.1883 466.4668 0, 199.7006 467.7939 0, 225.9167 469.01 0, 248.1327 469.9668 0, 263.6451 470.5162 0, 269.75 470.51 0, 269.75 470.51 0, 274.3289 464.3481 0, 285.7514 448.4003 0, 302.0463 425.473 0, 321.2425 398.3728 0, 341.3687 369.9064 0, 360.4537 342.8804 0, 376.5264 320.1012 0, 387.6156 304.3756 0, 391.75 298.51 0, 103.25 463.01 0, 269.75 470.51 0, 391.75 298.51 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='mountain3'
+          translation='-51.84414 -11.06395 0.013'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6784314 0.9058824 0.8588235'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='1, 24, 2, 24, 1, 5, 5, 1, 6, 6, 1, 7, 7, 1, 8, 8, 1, 9, 9, 1, 10, 10, 1, 11, 11, 1, 12, 12, 1, 26, 12, 26, 25, 25, 26, 15, 15, 26, 16, 16, 26, 17, 17, 26, 18, 18, 26, 19, 19, 26, 20, 20, 26, 21, 21, 26, 22'>
+            <TextureCoordinate
+                point='1 0.2128087, 0.6367137 2.793292e-8, 5.551115e-17 0.6681734, 0.2593068 0.9656478, 0.2593068 0.9656478, 0.2738395 0.9669756, 0.31281 0.9705068, 0.3692769 0.9755636, 0.4362985 0.9814679, 0.5069336 0.9875416, 0.5742404 0.993107, 0.6312779 0.9974858, 0.6711041 1, 0.6867779 0.9999718, 0.6867779 0.9999718, 0.6985337 0.9717718, 0.7278597 0.8987859, 0.7696952 0.7938584, 0.8189794 0.6698338, 0.8706512 0.5395565, 0.91965 0.4158709, 0.9609151 0.3116215, 0.9893852 0.2396526, 1 0.2128087, 0.2593068 0.9656478, 0.6867779 0.9999718, 1 0.2128087'/>
+            <Coordinate
+                point='544.5 301.1 0, 403 254.6 0, 155 400.6 0, 256 465.6 0, 256 465.6 0, 261.6605 465.8901 0, 276.8395 466.6617 0, 298.8333 467.7667 0, 324.9383 469.0568 0, 352.4506 470.3839 0, 378.6667 471.6 0, 400.8827 472.5568 0, 416.3951 473.1062 0, 422.5 473.1 0, 422.5 473.1 0, 427.0789 466.9381 0, 438.5014 450.9903 0, 454.7963 428.063 0, 473.9925 400.9628 0, 494.1187 372.4964 0, 513.2037 345.4704 0, 529.2764 322.6912 0, 540.3655 306.9656 0, 544.5 301.1 0, 256 465.6 0, 422.5 473.1 0, 544.5 301.1 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='mountain1'
+          translation='-51.84414 -11.06395 0.01'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6039216 0.7960784 0.7568628'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='3, 1, 2, 1, 3, 0, 0, 3, 4'>
+            <TextureCoordinate
+                point='0.9411765 1, 0.1777494 0.6708861, 0 0.2911393, 0.3273657 2.575323e-8, 1 0.4831224'/>
+            <Coordinate
+                point='402 492.1 0, 103.5 414.1 0, 34 324.1 0, 162 255.1 0, 425 369.6 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='mountain4'
+          translation='-51.84414 -11.06395 0.014'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.4823529 0.6627451 0.6235294'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='1, 3, 2, 3, 1, 0'>
+            <TextureCoordinate
+                point='1 0.3410597, 0.6528497 4.042063e-8, 1.110223e-16 0.7284769, 0.4300518 1'/>
+            <Coordinate
+                point='558.5 384.1 0, 424.5 332.6 0, 172.5 442.6 0, 338.5 483.6 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupdark3'
+          translation='-51.84414 -11.06395 0.017'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6705883 0.227451 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='0, 2, 3, 2, 0, 1'>
+            <TextureCoordinate
+                point='1 -8.174205e-8, 1 0.9999999, 0.0001729557 0.684541, -7.493155e-7 0.5357046'/>
+            <Coordinate
+                point='292 98.6 0, 292 117.267 0, 274.0831 111.3783 0, 274.08 108.6 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupdark4'
+          translation='-51.84414 -11.06395 0.017'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6705883 0.227451 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='0, 2, 1, 2, 0, 3'>
+            <TextureCoordinate
+                point='0.000361947 0.3765925, 5.933143e-7 0.7493784, 1 0.9999999, 1 -5.944905e-8'/>
+            <Coordinate
+                point='324 118.266 0, 323.993 127.8343 0, 343.3329 134.267 0, 343.3329 108.6 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupr'
+          translation='-51.84414 -11.06395 0.015'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.9764706 0.6509804 0.3529412'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='9, 11, 10, 5, 7, 6, 1, 3, 2, 3, 1, 0, 3, 0, 4, 4, 0, 11, 4, 11, 8, 8, 11, 9, 4, 8, 7, 4, 7, 5'>
+            <TextureCoordinate
+                point='0.1918163 0.3087866, 0.1918163 0.07648702, 5.71328e-8 -1.296777e-8, 5.71328e-8 0.6883834, 1 1, 0.9795371 0.3937722, 0.826084 0.3229452, 0.826084 0.5410778, 0.6035771 0.4589222, 0.6035771 0.3031181, 0.4322236 0.2379597, 0.4322236 0.3966023'/>
+            <Coordinate
+                point='260.667 106.934 0, 260.667 79.6 0, 235.667 70.6 0, 235.667 151.6 0, 366 188.267 0, 363.333 116.934 0, 343.333 108.6 0, 343.333 134.267 0, 314.333 124.6 0, 314.333 106.267 0, 292 98.6 0, 292 117.267 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupdark2'
+          translation='-51.84414 -11.06395 0.017'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.6705883 0.227451 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='3, 1, 0, 1, 3, 2'>
+            <TextureCoordinate
+                point='0 -9.859715e-8, 0 0.9999999, 1 0.3653987, 1 0.2691974'/>
+            <Coordinate
+                point='197 106.267 0, 197 123.6 0, 215.162 112.6005 0, 215.162 110.933 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupl'
+          translation='-51.84414 -11.06395 0.01'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.9529412 0.4941176 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='4, 6, 5, 13, 2, 1, 8, 10, 9, 10, 8, 7, 10, 7, 11, 11, 7, 6, 11, 6, 3, 3, 6, 4, 11, 3, 2, 11, 2, 13'>
+            <TextureCoordinate
+                point='1 -1.164793e-8, 0.7968687 0.09669464, 0.7968687 0.3053435, 0.5468746 0.4045801, 0.5468746 0.2722672, 0.3710948 0.3536946, 0.3710948 0.4910993, 0.1601589 0.5801527, 0.1601589 0.3994962, -8.726052e-8 0.4732825, -8.726052e-8 1, 1 0.6183206, 1 -1.164793e-8, 1 -1.164793e-8'/>
+            <Coordinate
+                point='235.667 70.6 0, 218.333 83.267 0, 218.333 110.6 0, 197 123.6 0, 197 106.267 0, 182 116.934 0, 182 134.934 0, 164 146.6 0, 164 122.934 0, 150.333 132.6 0, 150.333 201.6 0, 235.667 151.6 0, 235.667 70.6 0, 235.667 70.6 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerupmid'
+          translation='-51.84414 -11.06395 0.015'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.945098 0.3686275 0.3372549'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='1, 3, 0, 3, 1, 2'>
+            <TextureCoordinate
+                point='-3.452679e-8 0.6410339, 0.3956749 7.82512e-8, 1 0.4700958, 0.5208678 1'/>
+            <Coordinate
+                point='150.333 201.6 0, 235.667 151.6 0, 366 188.267 0, 262.667 229.599 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerbasel'
+          translation='-51.84414 -11.06395 0.02'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.7647059 0.2509804 0.3372549'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='1, 3, 2, 3, 1, 0'>
+            <TextureCoordinate
+                point='0.9938456 1.562835e-9, 0.06217957 0.1033342, -1.193623e-7 0.8897842, 1 1'/>
+            <Coordinate
+                point='240.333 169.263 0, 182.212 201.548 0, 178.333 447.261 0, 240.7169 481.696 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+      <Transform DEF='towerbaser'
+          translation='-51.84414 -11.06395 0.02'
+          scale='0.5792642 0.5792641 1'>
+        <Shape>
+          <Appearance>
+            <UnlitMaterial
+                emissiveColor='0.8980392 0.282353 0.345098'/>
+          </Appearance>
+          <IndexedTriangleSet
+              solid='false'
+              index='3, 1, 0, 1, 3, 2'>
+            <TextureCoordinate
+                point='-8.243064e-8 1, 0.9999999 0.9867255, 0.9194213 0.08196356, -8.243064e-8 1.620426e-9'/>
+            <Coordinate
+                point='240.333 470.592 0, 330.667 466.592 0, 323.388 193.961 0, 240.333 169.263 0'/>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+    </Transform>
+  </Scene>
+</X3D>

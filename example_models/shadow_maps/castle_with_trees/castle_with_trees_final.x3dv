@@ -1,0 +1,100 @@
+#X3D V3.2 utf8
+PROFILE Interchange
+
+NavigationInfo {
+	headlight FALSE # FALSE is better for testing, since we want to see how spotlights shine on the scene
+	type ["FLY", "ANY"]
+	avatarSize [0.25, 2, 0.75]
+        speed 10
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.154670625925064 0.1255475431680679 -0.0177416931837797
+# up -0.0688726752996444 0.055908229202032 0.9960576295852661
+# gravityUp 0 -4.3711388286737929E-008 1
+Transform {
+  translation 1.5082786083221436 10.719039916992188 1.4424706697463989
+  rotation 1 0 -0 1.5707963705062866
+  children Viewpoint {
+    position 0 0 0 # camera position is expressed by translation
+    orientation -0.0928203389048576 0.9947012662887573 0.0442038848996162 0.8930881023406982
+  }
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.1774463951587677 0.0714138150215148 -0.0584196522831916
+# up -0.2709755897521972 0.1090577319264411 0.9563884139060974
+# gravityUp 0 -4.3711388286737929E-008 1
+Transform {
+  translation -5.6273708343505859 18.222606658935547 6.1301312446594238
+  rotation 1 0 -0 1.5707963705062866
+  children Viewpoint {
+    position 0 0 0 # camera position is expressed by translation
+    orientation -0.2135653048753738 0.9662189483642578 0.144259437918663 1.2202566862106323
+    description "close-up on a tree shadow"
+  }
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.1484390199184417 0.1129666119813919 -0.0721413493156433
+# up -0.287038505077362 0.2184448540210723 0.9326794743537902
+# gravityUp 0 -4.3711388286737929E-008 1
+Transform {
+  translation 21.322572708129883 -21.329963684082031 29.790678024291992
+  rotation 1 0 -0 1.5707963705062866
+  children Viewpoint {
+    position 0 0 0 # camera position is expressed by translation
+    orientation -0.3471563756465911 0.9218887090682983 0.1720570772886276 0.9865655899047851
+    description "view from above"
+  }
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.1647693812847137 0.0728081464767456 -0.0868909955024719
+# up -0.3973862528800964 0.175599381327629 0.900693655014038
+# gravityUp 0 -4.3711388286737929E-008 1
+Transform {
+  translation 10.069112777709961 11.716770172119141 15.413061141967773
+  rotation 1 0 -0 1.5707963705062866
+  children Viewpoint {
+    position 0 0 0 # camera position is expressed by translation
+    orientation -0.3236667811870575 0.9223822951316833 0.2108335644006729 1.2297676801681519
+    description "view for depths_camera_mapped screen"
+  }
+}
+
+# Camera settings "encoded" in the VRML declaration below :
+# direction -0.1023036167025566 -0.1630889922380447 -0.0541871860623359
+# up -0.1439722329378128 -0.2295156419277191 0.9625959396362304
+# gravityUp 0 -4.3711388286737929E-008 1
+Transform {
+  translation -18.656404495239258 58.610980987548828 25.671722412109375
+  rotation 1 0 -0 1.5707963705062866
+  children Viewpoint {
+    position 0 0 0 # camera position is expressed by translation
+    orientation -0.0393113233149051 0.9898397326469421 0.1366464346647262 2.5867538452148438
+    description "right tower view (for scale_bias_xxx screenshots)"
+  }
+}
+
+Transform {
+  rotation 1 0 0 1.5707963705062866
+
+  children Background {
+    backUrl "lake_sky_back.png"
+    bottomUrl "lake_sky_bottom.png"
+    frontUrl "lake_sky_front.png"
+    leftUrl "lake_sky_left.png"
+    rightUrl "lake_sky_right.png"
+    topUrl "lake_sky_top.png"
+  }
+
+  # children Background {
+  #   groundColor [ 0.1 0.1 0.1, 0.0565629 0.2208154 0.4 ]
+  #   groundAngle [ 1.57 ]
+  #   skyColor [ 0.1 0.1 0.1, 0.0565629 0.2208154 0.4 ]
+  #   skyAngle [ 1.57 ]
+  # }
+}
+
+Inline { url "castle_with_trees_processed.x3dv" }
