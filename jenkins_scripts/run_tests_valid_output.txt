@@ -6353,10 +6353,38 @@ tovrmlx3d: Warning: Node name "Circle.002" used multiple times for different nod
 tovrmlx3d: Warning: Node name "single_rotor_top_wing" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 tovrmlx3d: Warning: Node name "top_rotor_parent" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 tovrmlx3d: Warning: Node name "Circle.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.004" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.003" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Cylinder.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "single_rotor_top_wing" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "top_rotor_parent" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: Node name "Circle.004" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.003" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Cylinder.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "single_rotor_top_wing" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "top_rotor_parent" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.004" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.003" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Cylinder.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "single_rotor_top_wing" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "top_rotor_parent" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: destination node name "fly" not bound
+tovrmlx3d: Warning: Node name "Circle.004" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.003" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Cylinder.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.002" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "single_rotor_top_wing" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "top_rotor_parent" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+tovrmlx3d: Warning: Node name "Circle.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightBottom" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchRightTop" not bound
 tovrmlx3d: Warning: X3D: Cannot save VRML route: source node name "TouchLeftBottom" not bound
