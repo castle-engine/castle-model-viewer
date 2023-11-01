@@ -40,17 +40,18 @@ OUTPUT_VERBOSE="$2"
 FILE="$3"
 shift 3
 
-TEMP_PARTIAL_OUTPUT=/tmp/view3dscene_run_tests_output_partial.txt
-
 test_log ()
 {
   echo "----" "$@" >> "${OUTPUT_VERBOSE}"
 }
 
-dump_partial ()
+# Append $@ to both short and verbose log outputs.
+# We just pass $@ to echo, which adds by default a newline at end.
+# Pass -n to avoid it.
+add_to_both_logs ()
 {
-  cat "${TEMP_PARTIAL_OUTPUT}" >> "${OUTPUT_SHORT}"
-  cat "${TEMP_PARTIAL_OUTPUT}" >> "${OUTPUT_VERBOSE}"
+  echo "$@" >> "${OUTPUT_SHORT}"
+  echo "$@" >> "${OUTPUT_VERBOSE}"
 }
 
 # Run $1 with "$3...", stdout redirected to $2.
@@ -61,13 +62,21 @@ run_command ()
   local COMMAND_OUTPUT="$2"
   shift 2
 
-  # Ignore exit status temporarily, to save output and make dump_partial.
+  # Ignore exit status temporarily,
+  # to add COMMAND_ERRORS to both logs using add_to_both_logs.
   # Only later do "exit" in case of failure.
   set +e
-  "$COMMAND" "$@" >  "$COMMAND_OUTPUT" 2> "${TEMP_PARTIAL_OUTPUT}"
+  COMMAND_ERRORS=$("$COMMAND" "$@" 2>&1 > "$COMMAND_OUTPUT")
   COMMAND_EXIT_STATUS=$?
   set -e
-  dump_partial
+
+  # Do not print anything if COMMAND_ERRORS is empty,
+  # but if it is not empty -> print COMMAND_ERRORS with following newline
+  # (since $(...) ate the trailing newlines, but we want to write them to log).
+  if [ -n "${COMMAND_ERRORS}" ]; then
+    add_to_both_logs "${COMMAND_ERRORS}"
+  fi
+
   if [ "$COMMAND_EXIT_STATUS" '!=' 0 ]; then
     exit 1
   fi
@@ -128,10 +137,9 @@ do_read_save ()
     local OUTPUT_HEADER="$(echo -e "${OUTPUT_HEADER}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 
     if [ "$INPUT_HEADER" != "$OUTPUT_HEADER" ]; then
-      echo 'WARNING: input/output headers differ:'  > "${TEMP_PARTIAL_OUTPUT}"
-      echo 'Header on input is' "$INPUT_HEADER"    >> "${TEMP_PARTIAL_OUTPUT}"
-      echo 'Header on output is' "$OUTPUT_HEADER"  >> "${TEMP_PARTIAL_OUTPUT}"
-      dump_partial
+      add_to_both_logs "WARNING: input/output headers differ:
+Header on input is ${INPUT_HEADER}
+Header on output is ${OUTPUT_HEADER}"
     fi
   fi
 
