@@ -7,6 +7,7 @@
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
         <CompatibilityMode Value="True"/>
       </Flags>
@@ -44,7 +45,7 @@
         <PackageName Value="castle_base"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="52">
       <Unit0>
         <Filename Value="view3dscene.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -104,6 +105,7 @@
       <Unit14>
         <Filename Value="code/v3dscenestatus.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="V3DSceneStatus"/>
       </Unit14>
       <Unit15>
         <Filename Value="code/v3dscenewindow.pas"/>
@@ -205,6 +207,54 @@
         <Filename Value="embedded_data/screen_effects/visualize_depth.x3dv.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit39>
+      <Unit40>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_mono.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_monob.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_monobi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_monoi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_sans.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_sansb.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_sansbi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_sansi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_serif.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_serifb.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_serifbi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="embedded_data/fonts/castletexturefont_default3d_serifi.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit51>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -214,7 +264,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="code"/>
-      <OtherUnitFiles Value="code"/>
+      <OtherUnitFiles Value="code;embedded_data/fonts"/>
       <UnitOutputDirectory Value="castle-engine-output/standalone/lazarus-lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
