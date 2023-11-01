@@ -90,7 +90,7 @@ uses SysUtils, Math, Classes,
   V3DSceneShadows, V3DSceneOctreeVisualize, V3DSceneMiscConfig, V3DSceneImages,
   V3DSceneScreenEffects, V3DSceneSkeletonVisualize, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
-  V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox;
+  V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox, V3DSceneFonts;
 
 {$warnings on}
 
@@ -4012,6 +4012,8 @@ begin
   // Initialize log as early as possible, but avoid messing --help/--version/--write output
   LogEnableStandardOutput := false;
   InitializeLog;
+
+  FontsInitialize;
 
   Window := TCastleWindow.Create(Application);
   Window.Container.UIScaling := usDpiScale;

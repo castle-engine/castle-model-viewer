@@ -30,7 +30,6 @@
 
   <compiler_options>
     <defines>
-      <define>CASTLE_EMBED_ALL_3D_FONT_VARIATIONS</define>
       <!-- Use this to test OpenGLES rendering. CGE honors it. -->
       <!-- <define>OpenGLES</define> -->
       <!-- Test "slim" mode (see castleconf.inc for explanation) -->
@@ -38,6 +37,7 @@
     </defines>
     <search_paths>
       <path value="code/" />
+      <path value="embedded_data/fonts/" />
     </search_paths>
     <custom_options>
       <!-- Do not warn about experimental symbols,
