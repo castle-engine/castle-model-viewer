@@ -30,7 +30,8 @@ procedure FontsInitialize;
 
 implementation
 
-uses
+uses X3DNodes,
+
   { Fonts for Text, FontStyle, AsciiText nodes }
   CastleTextureFont_Default3d_Sans,
   CastleTextureFont_Default3d_SansB,
