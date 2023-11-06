@@ -1,11 +1,17 @@
 #!/bin/bash
 set -eu
 
+# -------------------------------------------------------------------------
 # Run various tests of view3dscene / tovrmlx3d on a given model.
 # Model filename is provided as a parameter for this script.
 # This script is usually run by run_tests_on_dir.sh script, see there for some
 # comments.
-
+#
+# Tip: To test manually how it works on a single file, you can use this:
+#   $ cd view3dscene/
+#   $ rm -f output-short.txt output-verbose.txt
+#   $ ./jenkins_scripts/run_test_on_model.sh output-short.txt output-verbose.txt ../demo-models/texturing_advanced/warnings/tex3d_composed_warnings.x3dv
+#   ... and consult output-short.txt output-verbose.txt output
 # ----------------------------------------------------------------------------
 
 # Disable heaptrc, to get shorter output and avoid reports of harmless leaks
