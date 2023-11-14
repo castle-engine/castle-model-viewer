@@ -246,11 +246,11 @@ begin
   inherited;
   { Set Cursor = mcHand when we're over or keeping active
     some pointing-device sensors. }
-  if (Items.MainScene <> nil) and
-     ( ( (Items.MainScene.PointingDeviceSensors <> nil) and
-         (Items.MainScene.PointingDeviceSensors.EnabledCount <> 0)
+  if (Scene <> nil) and
+     ( ( (Scene.PointingDeviceSensors <> nil) and
+         (Scene.PointingDeviceSensors.EnabledCount <> 0)
        ) or
-       (Items.MainScene.PointingDeviceActiveSensors.Count <> 0)
+       (Scene.PointingDeviceActiveSensors.Count <> 0)
      ) then
     Cursor := mcHand
   else
