@@ -1,11 +1,5 @@
 { Define various useful symbols. }
 
-{$ifndef PASDOC} // Avoid Pasdoc warnings, as Pasdoc cannot calculate $if below
-  {$if defined(iPHONESIM) or (defined(DARWIN) and (defined(CPUARM) or defined(CPUARM64)))}
-    {$define iOS}
-  {$endif}
-{$endif}
-
 {$ifdef FPC}
   {$ifndef VER3_0}
     {$ifndef VER3_1}
