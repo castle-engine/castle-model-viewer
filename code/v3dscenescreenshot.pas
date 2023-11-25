@@ -108,7 +108,7 @@ function MakingScreenShot: boolean;
 implementation
 
 uses SysUtils, CastleStringUtils, CastleFilesUtils,
-  CastleVideos, CastleURIUtils, CastleLog;
+  CastleVideos, CastleUriUtils, CastleLog;
 
 function MakingScreenShot: boolean;
 begin
@@ -177,7 +177,7 @@ var
   TemporaryImagesPrefix: string;
 begin
   { calculate SingleMovieFile }
-  SingleMovieFile := FfmpegVideoMimeType(URIMimeType(URLPattern), true);
+  SingleMovieFile := FfmpegVideoMimeType(UriMimeType(URLPattern), true);
 
   if SingleMovieFile then
   begin
@@ -221,7 +221,7 @@ begin
         [TemporaryImagesPattern]));
     end else
     begin
-      OutputMovieFileName := URIToFilenameSafe(MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter));
+      OutputMovieFileName := UriToFilenameSafe(MakeURL(URLPattern, ScreenShotsList.ScreenShotCounter));
 
       FfmpegExecute(Executable,
         [ '-f', 'image2', '-i', TemporaryImagesPattern, '-y', '-qscale', '1', OutputMovieFileName ]);
@@ -230,7 +230,7 @@ begin
       TemporaryImagesCounter := 1;
       for I := 1 to FramesCount do
       begin
-        TempFile := URIToFilenameSafe(MakeURL(TemporaryImagesPattern, TemporaryImagesCounter));
+        TempFile := UriToFilenameSafe(MakeURL(TemporaryImagesPattern, TemporaryImagesCounter));
         CheckDeleteFile(TempFile, true);
       end;
       WritelnLog('Done removing temporary image files.');

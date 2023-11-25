@@ -72,7 +72,7 @@ uses SysUtils, Math, Classes,
   CastleOpenDocument, CastleConfig, CastleStringUtils, CastleFilesUtils,
   CastleTimeUtils, CastleLog, DateUtils, CastleFrustum,
   CastleImages, CastleInternalCubeMaps, CastleInternalCompositeImage, CastleTransform, CastleSoundEngine,
-  CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleURIUtils,
+  CastleUIControls, CastleColors, CastleKeysMouse, CastleDownload, CastleUriUtils,
   CastleProjection, CastleVideos, CastleTextureImages, CastleLoadGltf,
   CastleWindow, CastleGLUtils, CastleMessages, CastleRenderPrimitives,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
@@ -116,7 +116,7 @@ var
   Scene: TCastleScene;
   SceneBoundingBox: TBoundingBoxScene;
   SceneDebugEdges: TDebugEdgesScene;
-  SceneURL: string;
+  SceneUrl: String;
 
   SelectedItem: PTriangle;
   { SelectedPoint* always lies on SelectedItem item,
@@ -189,7 +189,7 @@ var
 
 type
   THelper = class
-    class procedure OpenRecent(const URL: string);
+    class procedure OpenRecent(const Url: String);
     class procedure GeometryChanged(Scene: TCastleSceneCore;
       const SomeLocalGeometryChanged: boolean;
       OnlyShapeChanged: TShape);
@@ -406,9 +406,9 @@ const
           Result := Description;
         if Anchor.FdUrl.Count <> 0 then
         begin
-          Result := Result + (' [' + URIDisplay(Anchor.FdUrl.Items[0]));
+          Result := Result + (' [' + UriDisplay(Anchor.FdUrl.Items[0]));
           for J := 1 to Anchor.FdUrl.Count - 1 do
-            Result := Result + (', ' + URIDisplay(Anchor.FdUrl.Items[J]));
+            Result := Result + (', ' + UriDisplay(Anchor.FdUrl.Items[J]));
           Result := Result + ']';
         end;
       end;
@@ -972,7 +972,7 @@ begin
   Viewpoints.Recalculate(nil);
   RefreshNamedAnimationsUi(Window, nil, ToolbarPanel.EffectiveHeight);
 
-  SceneURL := '';
+  SceneUrl := '';
 
   if MenuReopen <> nil then
     MenuReopen.Enabled := false;
@@ -1026,7 +1026,7 @@ end;
   like after FreeScene.
 
   This procedure does not really open any file
-  (so ASceneURL need not be a name of existing file/URL).
+  (so ASceneUrl need not be a name of existing file/URL).
   Instead it uses already created RootNode to init "scene global variables".
 
   Note that all RootNodes[] will be owned by Scene.
@@ -1042,14 +1042,14 @@ end;
   about the rest of issues with the SceneWarnings, like clearing
   them before calling LoadSceneCore.
 
-  ASceneURL is not const parameter, to allow you to pass
-  SceneURL as ASceneURL. If ASceneURL would be const
-  we would have problem, because FreeScene modifies SceneURL
-  global variable, and this would change ASceneURL value
+  ASceneUrl is not const parameter, to allow you to pass
+  SceneUrl as ASceneUrl. If ASceneUrl would be const
+  we would have problem, because FreeScene modifies SceneUrl
+  global variable, and this would change ASceneUrl value
   (actually, making it possibly totally invalid pointer,
   pointing at some other place of memory). That's always the
   problem with passing pointers to global variables
-  (ASceneURL is a pointer) as local vars.
+  (ASceneUrl is a pointer) as local vars.
 
   If lsoCommandLineCustomization in Options,
   then we will use (and clear) the command-line customizations
@@ -1057,7 +1057,7 @@ end;
   temporary scene, like LoadClearScene. }
 procedure LoadSceneCore(
   RootNode: TX3DRootNode;
-  ASceneURL: string;
+  ASceneUrl: String;
   const Options: TLoadSceneOptions);
 var
   NewCaption: string;
@@ -1066,7 +1066,7 @@ begin
   FreeScene;
 
   try
-    SceneURL := ASceneURL;
+    SceneUrl := ASceneUrl;
 
     { set InitialViewpoint* before Scene.Load }
     SetInitialViewpoint(Scene, lsoCommandLineCustomization in Options);
@@ -1099,7 +1099,7 @@ begin
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
-      NewCaption := URICaption(SceneURL);
+      NewCaption := UriCaption(SceneUrl);
     NewCaption := SForCaption(NewCaption) + ' - view3dscene';
     Window.Caption := NewCaption;
 
@@ -1121,7 +1121,7 @@ begin
       Window.Invalidate;
 
     if MenuReopen <> nil then
-      MenuReopen.Enabled := SceneURL <> '';
+      MenuReopen.Enabled := SceneUrl <> '';
 
     { Set blending sort following "NavigationInfo.blendingSort" info from scene.
       This means we use 2D sorting e.g. for Spine models by default. }
@@ -1155,14 +1155,14 @@ end;
   Also, it shows the error message using MessageOK
   (so Glw must be already open).
 
-  It may seem that ASceneURL could be constant parameter here.
+  It may seem that ASceneUrl could be constant parameter here.
   Yes, it could. However, you will sometimes want to pass here
-  SceneURL global value and this would cause memory havoc
+  SceneUrl global value and this would cause memory havoc
   (parameter is passed as const, however when global variable
-  SceneURL is changed then the parameter value implicitly
+  SceneUrl is changed then the parameter value implicitly
   changes, it may even cause suddenly invalid pointer --- yeah,
   I experienced it). }
-procedure LoadScene(ASceneURL: String);
+procedure LoadScene(ASceneUrl: String);
 var
   RootNode: TX3DRootNode;
   SavedSceneWarnings: TSceneWarnings;
@@ -1186,12 +1186,12 @@ begin
     {$ifdef CATCH_EXCEPTIONS}
     try
     {$endif CATCH_EXCEPTIONS}
-      RootNode := LoadNode(ASceneURL);
+      RootNode := LoadNode(ASceneUrl);
     {$ifdef CATCH_EXCEPTIONS}
     except
       on E: Exception do
       begin
-        LoadErrorMessage('Error while loading scene from "' +ASceneURL+ '": ' +
+        LoadErrorMessage('Error while loading scene from "' +ASceneUrl+ '": ' +
           E.Message);
         { In this case we can preserve current scene. }
         SceneWarnings.Assign(SavedSceneWarnings);
@@ -1208,7 +1208,7 @@ begin
   {$ifdef CATCH_EXCEPTIONS}
   try
   {$endif CATCH_EXCEPTIONS}
-    LoadSceneCore(RootNode, ASceneURL, [lsoCommandLineCustomization]);
+    LoadSceneCore(RootNode, ASceneUrl, [lsoCommandLineCustomization]);
   {$ifdef CATCH_EXCEPTIONS}
   except
     on E: Exception do
@@ -1226,7 +1226,7 @@ begin
         our Render routine works OK when it's called to draw background
         under MessageOK. }
       LoadClearScene;
-      LoadErrorMessage('Error while loading scene from "' + ASceneURL + '": ' +
+      LoadErrorMessage('Error while loading scene from "' + ASceneUrl + '": ' +
         E.Message);
       Exit;
     end;
@@ -1239,7 +1239,7 @@ begin
     on "recent files" menu. This also applies when using view3dscene
     as a thumbnailer. }
   if not MakingScreenShot then
-    RecentMenu.Add(ASceneURL);
+    RecentMenu.Add(ASceneUrl);
 
   { We call MainViewport.PrepareResources to make Scene.PrepareResources to gather
     warnings (because some warnings, e.g. invalid texture URL,
@@ -1255,7 +1255,7 @@ begin
     '  %f to load from disk (create X3D graph)' + NL +
     '  %f to initialize scene (initialize shapes tree, collisions...)' + NL +
     '  %f to prepare resources (load textures, prepare OpenGL resources...)',
-    [ URIDisplay(ASceneURL),
+    [ UriDisplay(ASceneUrl),
       ProcessTimerSeconds(TimePrepareResources, StartTime),
       ProcessTimerSeconds(TimeLoadX3D, StartTime),
       ProcessTimerSeconds(TimeLoadScene, TimeLoadX3D),
@@ -1291,7 +1291,7 @@ begin
 
     Also, non-empty clear scene allows me to put there WorldInfo with a title.
     This way clear scene has an effect on view3dscene window's title,
-    and at the same time I don't have to set SceneURL to something dummy.
+    and at the same time I don't have to set SceneUrl to something dummy.
 
     I'm not constructing here RootNode in code (i.e. Pascal).
     This would allow a fast implementation, but it's easier for me to
@@ -1310,39 +1310,39 @@ end;
 const
   SaveGenerator = 'view3dscene, https://castle-engine.io/view3dscene.php';
 
-{ Load model from ASceneURL ('-' means stdin),
+{ Load model from ASceneUrl ('-' means stdin),
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
-procedure WriteModel(const ASceneURL: string;
+procedure WriteModel(const ASceneUrl: String;
   const Encoding: TX3DEncoding; const ForceConvertingToX3D: boolean);
 var
   Node: TX3DRootNode;
 begin
-  Node := LoadNode(ASceneURL);
+  Node := LoadNode(ASceneUrl);
   try
     if StdOutStream = nil then
       raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "view3dscene input.gltf --write > output.x3dv", see https://castle-engine.io/view3dscene.php#section_converting .');
     {$warnings off} // using internal CGE routine knowingly
     Save3D(Node, StdOutStream, SaveGenerator,
-      ExtractURIName(ASceneURL), Encoding, ForceConvertingToX3D);
+      ExtractURIName(ASceneUrl), Encoding, ForceConvertingToX3D);
     {$warnings on}
   finally FreeAndNil(Node) end;
 end;
 
-class procedure THelper.OpenRecent(const URL: string);
+class procedure THelper.OpenRecent(const Url: String);
 begin
-  LoadScene(URL);
+  LoadScene(Url);
 end;
 
 procedure DropFiles(Container: TCastleContainer; const FileNames: array of string);
 var
-  URL: string;
+  Url: String;
 begin
   if High(FileNames) >= 0 then
   begin
-    URL := FilenameToURISafe(FileNames[0]);
-    if URL <> '' then
-      LoadScene(URL);
+    Url := FilenameToUriSafe(FileNames[0]);
+    if Url <> '' then
+      LoadScene(Url);
   end;
 end;
 
@@ -1385,7 +1385,7 @@ begin
     NL +
     TrimRight(SceneWarnings.Items.Text) + NL +
     NL +
-    'Scene URL: "' + URIDisplay(SceneURL) + '".' + NL +
+    'Scene URL: "' + UriDisplay(SceneUrl) + '".' + NL +
     'Use "File->View Warnings" menu to view these warnings again.'
   );
   ButtonWarningsEnabled := false;
@@ -1394,8 +1394,8 @@ end;
 
 class procedure THelper.ClickButtonPatreon(Sender: TObject);
 begin
-  if not OpenURL(SupportURL) then
-    Window.MessageOk(SCannotOpenURL, mtError);
+  if not OpenUrl(SupportUrl) then
+    Window.MessageOk(SCannotOpenUrl, mtError);
 end;
 
 procedure AttributesLoadFromConfig(RenderOptions: TCastleRenderOptions);
@@ -1467,7 +1467,7 @@ var
             SaveScreenRender;
             Image := ScreenshotRender.SaveScreen(ImageClass, Window.Rect);
             try
-              SaveImage(Image, ScreenShotsList[I].UseURL(J));
+              SaveImage(Image, ScreenShotsList[I].UseUrl(J));
             finally FreeAndNil(Image) end;
           end;
           ScreenShotsList[I].EndCapture(true);
@@ -1631,11 +1631,11 @@ begin
 
   Image := CaptureScreen;
   try
-    if SceneURL <> '' then
+    if SceneUrl <> '' then
       { Without protocol, ScreenShotNameUrlPrefix is treated like relative
         filename now. So make sure to convert %20 to spaces,
         to later save screenshot with spaces when scene file had spaces. }
-      ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneURL)))
+      ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneUrl)))
     else
       ScreenShotNameUrlPrefix := 'view3dscene_screen';
     { We use FileNameAutoInc with 2 params,
@@ -2075,13 +2075,13 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
   procedure LoadMaterialProperties;
   var
-    URL: string;
+    Url: String;
   begin
-    URL := ExtractURIPath(SceneURL);
-    if Window.FileDialog('Open material_properties.xml file', URL, true,
+    Url := ExtractURIPath(SceneUrl);
+    if Window.FileDialog('Open material_properties.xml file', Url, true,
       'All Files|*|*XML files|*.xml') then
     try
-      MaterialProperties.URL := URL;
+      MaterialProperties.Url := Url;
     except
       on E: Exception do MessageOK(Window,
         'Error while loading material properties: ' + E.Message);
@@ -2090,7 +2090,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
   procedure CleanMaterialProperties;
   begin
-    MaterialProperties.URL := '';
+    MaterialProperties.Url := '';
   end;
 
   procedure ChangeLightModelAmbient;
@@ -2155,8 +2155,8 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
        '    --scene-bg-color %f %f %f \' +nl,
        [ DefaultRaytracerDepth,
          Window.Width, Window.Height,
-         SceneURL,
-         ChangeURIExt(ExtractURIName(SceneURL), '-rt.png'),
+         SceneUrl,
+         ChangeURIExt(ExtractURIName(SceneUrl), '-rt.png'),
          Pos.ToRawString,
          Dir.ToRawString,
          Up.ToRawString,
@@ -2331,13 +2331,13 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
   var
     TimeBegin, TimeStep: TFloatTime;
     FramesCount: Cardinal;
-    URLPattern: string;
+    UrlPattern: string;
     Range: TRangeScreenShot;
   begin
     TimeBegin := Scene.Time;
     TimeStep := 0.04;
     FramesCount := 25;
-    URLPattern := 'image@counter(4).png';
+    UrlPattern := 'image@counter(4).png';
 
     if MessageInputQuery(Window, 'Input start time for recording movie:', TimeBegin) then
       if MessageInputQuery(Window, 'Time step between capturing movie frames:' + NL +
@@ -2347,7 +2347,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
         NL +
         'Input time step between capturing movie frames:', TimeStep) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount) then
-          if Window.FileDialog('Images pattern or movie file to save', URLPattern, false) then
+          if Window.FileDialog('Images pattern or movie file to save', UrlPattern, false) then
           begin
             { ScreenShotsList should always be empty in interactive mode
               (otherwise some rendering behaves differently when
@@ -2358,13 +2358,13 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
             Range.TimeBegin := TimeBegin;
             Range.TimeStep := TimeStep;
             Range.FramesCount := FramesCount;
-            Range.URLPattern := URLPattern;
+            Range.UrlPattern := UrlPattern;
             ScreenShotsList.Add(Range);
 
             try
               MakeAllScreenShotsFBO(Transparency);
             except
-              on E: EInvalidScreenShotURL do
+              on E: EInvalidScreenShotUrl do
                 MessageOk(Window, 'Making screenshot failed: ' + NL + NL + E.Message);
             end;
 
@@ -2485,13 +2485,13 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
   var
     Side: TCubeMapSide;
     CubeMapImg: TCubeMapImages;
-    URLPattern: string;
+    UrlPattern: string;
     Orientation: char;
     Size: Cardinal;
 
     procedure SaveSide(const Image: TCastleImage; const SideName: string);
     begin
-      SaveImage(Image, StringReplace(URLPattern, '@side', SideName, [rfReplaceAll]));
+      SaveImage(Image, StringReplace(UrlPattern, '@side', SideName, [rfReplaceAll]));
     end;
 
   begin
@@ -2508,11 +2508,12 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
     if Orientation <> CharEscape then
     begin
-      if SceneURL <> '' then
-        URLPattern := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap_@side.png') else
-        URLPattern := 'view3dscene_cubemap_@side.png';
+      if SceneUrl <> '' then
+        UrlPattern := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap_@side.png') 
+      else
+        UrlPattern := 'view3dscene_cubemap_@side.png';
 
-      if Window.FileDialog('Image name template to save', URLPattern, false) then
+      if Window.FileDialog('Image name template to save', UrlPattern, false) then
       begin
         Size := DefaultCubeMapSize;
 
@@ -2575,14 +2576,15 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
   procedure ScreenShotToCubeMapComposite;
   var
     Composite: TCompositeImage;
-    URL: string;
+    Url: String;
     Size: Cardinal;
   begin
-    if SceneURL <> '' then
-      URL := ChangeURIExt(ExtractURIName(SceneURL), '_cubemap.dds') else
-      URL := 'view3dscene_cubemap.dds';
+    if SceneUrl <> '' then
+      Url := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap.dds')
+    else
+      Url := 'view3dscene_cubemap.dds';
 
-    if Window.FileDialog('Save image to file', URL, false) then
+    if Window.FileDialog('Save image to file', Url, false) then
     begin
       Size := DefaultCubeMapSize;
 
@@ -2594,7 +2596,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
           MainViewport.Camera.EffectiveProjectionFar);
         try
           RenderContext.Viewport := Window.Rect;
-          Composite.SaveToFile(URL);
+          Composite.SaveToFile(Url);
         finally FreeAndNil(Composite) end;
       end;
     end;
@@ -2602,7 +2604,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
   procedure ScreenShotDepthToImage;
 
-    procedure DoSave(const URL: string);
+    procedure DoSave(const Url: String);
     var
       Image: TGrayscaleImage;
     begin
@@ -2614,20 +2616,21 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       Window.Container.EventRender;
       Image := SaveScreenDepth_NoFlush(Window.Rect);
       try
-        SaveImage(Image, URL);
+        SaveImage(Image, Url);
       finally FreeAndNil(Image) end;
     end;
 
   var
-    URL: string;
+    Url: String;
   begin
-    if SceneURL <> '' then
-      URL := ChangeURIExt(ExtractURIName(SceneURL), '_depth_%d.png') else
-      URL := 'view3dscene_depth_%d.png';
-    URL := FileNameAutoInc(URL);
+    if SceneUrl <> '' then
+      Url := ChangeURIExt(ExtractURIName(SceneUrl), '_depth_%d.png') 
+    else
+      Url := 'view3dscene_depth_%d.png';
+    Url := FileNameAutoInc(Url);
 
-    if Window.FileDialog('Save depth to a file', URL, false, SaveImage_FileFilters) then
-      DoSave(URL);
+    if Window.FileDialog('Save depth to a file', Url, false, SaveImage_FileFilters) then
+      DoSave(Url);
   end;
 
   procedure Raytrace;
@@ -2744,7 +2747,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
     Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
     FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
-    ProposedSaveName := ChangeURIExt(SceneURL, Extension);
+    ProposedSaveName := ChangeURIExt(SceneUrl, Extension);
 
     if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
     {$ifdef CATCH_EXCEPTIONS}
@@ -2756,7 +2759,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
       {$warnings off} // using internal CGE routine knowingly
       Save3D(Scene.RootNode, ProposedSaveName, SaveGenerator,
-        ExtractURIName(SceneURL), SaveVersion, Encoding, ForceConvertingToX3D);
+        ExtractURIName(SceneUrl), SaveVersion, Encoding, ForceConvertingToX3D);
       {$warnings on}
 
       if Conversion then
@@ -2812,11 +2815,11 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
         ScreenSpaceReflections := not ScreenSpaceReflections;
   end;
 
-  procedure OpenSceneURL;
+  procedure OpenSceneUrl;
   var
-    URL, CopyStr, CutStr, PasteStr: string;
+    Url, CopyStr, CutStr, PasteStr: string;
   begin
-    URL := SceneURL;
+    Url := SceneUrl;
     Check(KeyToString(CtrlC, keyNone, [], CopyStr));
     Check(KeyToString(CtrlX, keyNone, [], CutStr));
     Check(KeyToString(CtrlV, keyNone, [], PasteStr));
@@ -2827,8 +2830,8 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       '), cut (' + CutStr +
       ') and paste (' + PasteStr +
       ') here, for example to easily paste URL from/to your web browser.' + NL + NL +
-      'URL:', URL) then
-      LoadScene(URL);
+      'URL:', Url) then
+      LoadScene(Url);
   end;
 
   procedure Reopen;
@@ -2841,7 +2844,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     SavedNavigationType := NavigationType;
     MainViewport.Camera.GetWorldView(Pos, Dir, Up{, GravityUp});
 
-    LoadScene(SceneURL);
+    LoadScene(SceneUrl);
 
     { restore view, without GravityUp (trying to preserve it goes wrong
       in case we're in Examine mode, then "reopen", then switch to "Walk"
@@ -2921,7 +2924,7 @@ var
 begin
   case MenuItem.IntData of
     10: THelper.ClickButtonOpen(nil);
-    11: OpenSceneURL;
+    11: OpenSceneUrl;
 
     12: Window.Close;
 
@@ -3067,7 +3070,7 @@ begin
 
     120: MessageReport(TextureMemoryProfiler.Summary);
 
-    121: MessageReport('Scene "' + SceneURL + '" information:' + NL + NL +
+    121: MessageReport('Scene "' + SceneUrl + '" information:' + NL + NL +
            SceneVertexTriangleInfo(Scene) + NL +
            SceneBoundingBoxInfo(Scene));
     122: begin
@@ -3105,13 +3108,13 @@ begin
              'Version ' + Version + '.' + NL +
              'By Michalis Kamburelis.' + NL +
              NL +
-             'See ' + View3dsceneURL + ' .' + NL +
+             'See ' + View3dsceneUrl + ' .' + NL +
              NL +
              'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
              'Compiled with ' + SCompilerDescription + '.');
          end;
-    132: if not OpenURL(View3dsceneURL) then
-           Window.MessageOk(SCannotOpenURL, mtError);
+    132: if not OpenUrl(View3dsceneUrl) then
+           Window.MessageOk(SCannotOpenUrl, mtError);
     134: THelper.ClickButtonPatreon(nil);
 
     171: SelectedShowInformation;
@@ -3768,11 +3771,11 @@ end;
 
 class procedure THelper.ClickButtonOpen(Sender: TObject);
 var
-  URL: string;
+  Url: String;
 begin
-  URL := SceneURL;
-  if Window.FileDialog('Open file', URL, true, LoadScene_FileFilters) then
-    LoadScene(URL);
+  Url := SceneUrl;
+  if Window.FileDialog('Open file', Url, true, LoadScene_FileFilters) then
+    LoadScene(Url);
 end;
 
 class procedure THelper.ClickNavigationTypeButton(Sender: TObject);
@@ -3823,8 +3826,8 @@ var
   WasParam_Write: boolean = false;
   Param_WriteEncoding: TX3DEncoding = xeClassic;
   Param_WriteForceX3D: boolean = false;
-  WasParam_SceneURL: boolean = false;
-  Param_SceneURL: string;
+  WasParam_SceneUrl: boolean = false;
+  Param_SceneUrl: String;
   Param_HideMenu: boolean = false;
   Param_ScreenshotTransparent: boolean = false;
 
@@ -3951,7 +3954,7 @@ begin
     2 : begin
           SingleScreenShot := TSingleScreenShot.Create;
           SingleScreenShot.Time := StrToFloat(SeparateArgs[1]);
-          SingleScreenShot.URLPattern := SeparateArgs[2];
+          SingleScreenShot.UrlPattern := SeparateArgs[2];
           ScreenShotsList.Add(SingleScreenShot);
         end;
     3 : begin
@@ -3959,7 +3962,7 @@ begin
           RangeScreenShot.TimeBegin := StrToFloat(SeparateArgs[1]);
           RangeScreenShot.TimeStep := StrToFloat(SeparateArgs[2]);
           RangeScreenShot.FramesCount := StrToInt(SeparateArgs[3]);
-          RangeScreenShot.URLPattern := SeparateArgs[4];
+          RangeScreenShot.UrlPattern := SeparateArgs[4];
           ScreenShotsList.Add(RangeScreenShot);
         end;
     4 : LogChanges := true;
@@ -4005,7 +4008,7 @@ begin
     but that is sometimes not optimal:
     - Under Windows ParamStr(0) is ugly uppercased.
     - ParamStr(0) is unceratain for Unixes -- it contains whatever caller set.
-    - ApplicationName is used for Config.URL by ApplicationConfig, so it better be reliable. }
+    - ApplicationName is used for Config.Url by ApplicationConfig, so it better be reliable. }
   ApplicationProperties.ApplicationName := 'view3dscene';
   ApplicationProperties.Version := Version;
 
@@ -4056,8 +4059,8 @@ begin
     raise EInvalidParams.Create('Excessive command-line parameters. Expected at most one URL to load') else
   if Parameters.High = 1 then
   begin
-    WasParam_SceneURL := true;
-    Param_SceneURL := Parameters[1];
+    WasParam_SceneUrl := true;
+    Param_SceneUrl := Parameters[1];
   end;
 
   MainViewport := TV3DViewport.Create(nil);
@@ -4090,11 +4093,11 @@ begin
 
     if WasParam_Write then
     begin
-      if not WasParam_SceneURL then
+      if not WasParam_SceneUrl then
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any URL on command-line to load.');
-      WriteModel(Param_SceneURL, Param_WriteEncoding, Param_WriteForceX3D);
+      WriteModel(Param_SceneUrl, Param_WriteEncoding, Param_WriteForceX3D);
       Exit;
     end;
 
@@ -4163,8 +4166,8 @@ begin
 
         Window.Open(@RetryOpen);
 
-        if WasParam_SceneURL then
-          LoadScene(Param_SceneURL)
+        if WasParam_SceneUrl then
+          LoadScene(Param_SceneUrl)
         else
           LoadWelcomeScene;
 

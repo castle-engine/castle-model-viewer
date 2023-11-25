@@ -44,7 +44,7 @@ implementation
 
 uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
   CastleGLUtils, CastleImages, CastleUtils, CastleMessages, CastleGLImages,
-  CastleURIUtils, CastleKeysMouse, CastleRenderContext,
+  CastleUriUtils, CastleKeysMouse, CastleRenderContext,
   V3DSceneStatus, V3DSceneWindow;
 
 const
@@ -145,12 +145,12 @@ end;
 procedure EventSave;
 var
   D: PCallData;
-  SaveURL: string;
+  SaveUrl: String;
 begin
   D := PCallData(Window.UserData);
-  SaveURL := ApplicationName + '_rt.png';
-  if Window.FileDialog('Save image', SaveURL, false, SaveImage_FileFilters) then
-    SaveImage(D^.Image, SaveURL);
+  SaveUrl := ApplicationName + '_rt.png';
+  if Window.FileDialog('Save image', SaveUrl, false, SaveImage_FileFilters) then
+    SaveImage(D^.Image, SaveUrl);
 end;
 
 procedure EventEscape;

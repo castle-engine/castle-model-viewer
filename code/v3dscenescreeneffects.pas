@@ -69,7 +69,7 @@ var
   ScreenEffects: TScreenEffects;
 
 function LoadX3DClassicFromString(const FileContents: string;
-  const BaseUrl: string): TX3DRootNode;
+  const BaseUrl: String): TX3DRootNode;
 
 implementation
 
@@ -77,7 +77,7 @@ uses SysUtils,
   CastleGLUtils, CastleLog, CastleRenderOptions, X3DLoad, X3DFields;
 
 function LoadX3DClassicFromString(const FileContents: string;
-  const BaseUrl: string): TX3DRootNode;
+  const BaseUrl: String): TX3DRootNode;
 var
   Stream: TStringStream;
 begin

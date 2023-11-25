@@ -33,7 +33,7 @@ program tovrmlx3d;
 uses SysUtils, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters, CastleDownload,
-  CastleFilesUtils, CastleURIUtils, CastleApplicationProperties, CastleLog,
+  CastleFilesUtils, CastleUriUtils, CastleApplicationProperties, CastleLog,
   X3DLoadInternalUtils,
   V3DSceneVersion;
 
@@ -117,7 +117,7 @@ end;
 
 procedure Run;
 var
-  URL: string;
+  Url: String;
   Node: TX3DNode;
   EventsHandler: TEventsHandler;
 begin
@@ -127,19 +127,19 @@ begin
   { parse command-line }
   Parameters.Parse(Options, @OptionProc, nil);
   Parameters.CheckHigh(1);
-  URL := Parameters[1];
+  Url := Parameters[1];
 
   EventsHandler := TEventsHandler.Create;
   try
     ApplicationProperties.OnWarning.Add(@EventsHandler.HandleWarning);
 
-    Node := LoadNode(URL);
+    Node := LoadNode(Url);
     try
       if not Validate then
       begin
         Save3D(Node, StdOutStream,
           { generator (metadata) } 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
-          { source (metadata) } ExtractURIName(URL),
+          { source (metadata) } ExtractURIName(Url),
           Encoding, ForceX3D);
       end;
     finally FreeAndNil(Node) end;
