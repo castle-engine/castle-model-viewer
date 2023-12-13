@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2022 Michalis Kamburelis.
+  Copyright 2003-2023 Michalis Kamburelis.
 
   This file is part of "Castle Game Engine".
 
@@ -13,19 +13,31 @@
   ----------------------------------------------------------------------------
 }
 
-{ Simple converter to VRML/X3D from various other 3D formats.
-  See [https://castle-engine.io/view3dscene.php#section_converting].
+{ Converter of 3D and 2D model formats supported by Castle Game Engine.
 
-  Reads a 3D model from the URL (in sample case, just a filename)
-  given as command-line parameter ('-' means stdin),
-  and outputs model as VRML/X3D to stdout.
+  See https://castle-engine.io/view3dscene.php#section_converting
+  for usage docs.
+  See https://castle-engine.io/creating_data_model_formats.php
+  for the supported 3D model formats. For now, we can read all formats
+  documented there, and we can output only VRML or X3D.
 
-  Can be used instead of "view3dscene --write ...".
+  Usage:
+  Reads a 3D model from the URL (can be just a filename)
+  given as a command-line parameter.
+  Outputs model to the stdout.
+  Use '-' on the command-line to read from the standard input
+  (consider using then also --stdin-url=xxx option, to determine the file type
+  and base to resolve relative URLs).
+
+  This tool can be used instead of "view3dscene --write ...".
   This way you don't need e.g. OpenGL libraries (that are required
   to run view3dscene) installed on your system.
 
-  For your own uses, you can easily extend this to process VRML/X3D graph.
-  For example, add or remove some nodes. See TX3DNode methods.
+  For Castle Game Engine developers:
+  For your own uses, you can fork and easily extend this tool
+  to process the nodes graph.
+  For example, add or remove some nodes.
+  See https://castle-engine.io/vrml_x3d.php for docs.
 }
 
 program tovrmlx3d;
@@ -41,9 +53,10 @@ var
   Encoding: TX3DEncoding = xeClassic;
   ForceX3D: Boolean = false;
   Validate: Boolean = false;
+  StdInUrl: String = 'stdin.x3dv';
 
 const
-  Options: array [0..7] of TOption =
+  Options: array [0..8] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
@@ -52,7 +65,8 @@ const
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone),
     (Short:  #0; Long: 'enable-downloads'; Argument: oaNone),
-    (Short:  #0; Long: 'validate'; Argument: oaNone)
+    (Short:  #0; Long: 'validate'; Argument: oaNone),
+    (Short:  #0; Long: 'stdin-url'; Argument: oaRequired)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -73,6 +87,7 @@ begin
           OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
           OptionDescription('--validate', 'Only validate the input, without any output. Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
+          OptionDescription('--stdin-url', 'If input URL is "-", then we read file contents from the standard input. In this case, you can use this option to provide a "pretend" URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs) and to guess the input file type. Default is "stdin.x3dv" in current directory, so we assume it is X3D (classic encoded), and resolve with respect to the current directory.') +NL+
           NL+
           ApplicationProperties.Description);
         Halt;
@@ -99,6 +114,7 @@ begin
     5:CastleX3dExtensions := false;
     6:EnableBlockingDownloads := true;
     7:Validate := true;
+    8:StdInUrl := Argument;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -113,6 +129,21 @@ procedure TEventsHandler.HandleWarning(const Category, Message: String);
 begin
   ApplicationProperties.WriteWarningOnConsole(Category, Message);
   WasWarning := true;
+end;
+
+function LoadNodeStandardInput: TX3DRootNode;
+var
+  Stream: TMemoryStream;
+begin
+  Stream := TMemoryStream.Create;
+  try
+    ReadGrowingStream(StdInStream, Stream, true);
+    Result := LoadNode(Stream,
+      { BaseUrl. When this is only a filename, like default "stdin.x3dv",
+        then LoadNode will interpret it as file in current directory already,
+        because LoadNode does AbsoluteUri at start. } StdInUrl,
+      { MimeType } UriMimeType(StdInUrl));
+  finally FreeAndNil(Stream) end;
 end;
 
 procedure Run;
@@ -133,7 +164,11 @@ begin
   try
     ApplicationProperties.OnWarning.Add(@EventsHandler.HandleWarning);
 
-    Node := LoadNode(Url);
+    if Url = '-' then
+      Node := LoadNodeStandardInput
+    else
+      Node := LoadNode(Url);
+
     try
       if not Validate then
       begin
