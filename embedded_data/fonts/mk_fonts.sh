@@ -23,16 +23,16 @@ TEXTUREFONT2PASCAL="${TEXTUREFONT2PASCAL} --sample-text-file=common_unicode_char
 # so that changing sizes used by default by CGE can be easily done by changing +
 # running this shell script.
 TEXT_NODE_FONT_SIZE=25
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSans-BoldOblique.ttf      --unit-name CastleTextureFont_Default3D_SansBI  --function-name Font_Default3D_SansBI
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSans-Bold.ttf             --unit-name CastleTextureFont_Default3D_SansB   --function-name Font_Default3D_SansB
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSans-Oblique.ttf          --unit-name CastleTextureFont_Default3D_SansI   --function-name Font_Default3D_SansI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSans-BoldOblique.ttf      --unit-name CastleTextureFont_Default3D_SansBI  --function-name Font_Default3D_SansBI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSans-Bold.ttf             --unit-name CastleTextureFont_Default3D_SansB   --function-name Font_Default3D_SansB
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSans-Oblique.ttf          --unit-name CastleTextureFont_Default3D_SansI   --function-name Font_Default3D_SansI
 # This is embedded in CGE:
-# $TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSans.ttf                  --unit-name CastleTextureFont_Default3D_Sans    --function-name Font_Default3D_Sans
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSansMono-BoldOblique.ttf  --unit-name CastleTextureFont_Default3D_MonoBI  --function-name Font_Default3D_MonoBI
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSansMono-Bold.ttf         --unit-name CastleTextureFont_Default3D_MonoB   --function-name Font_Default3D_MonoB
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSansMono-Oblique.ttf      --unit-name CastleTextureFont_Default3D_MonoI   --function-name Font_Default3D_MonoI
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSansMono.ttf              --unit-name CastleTextureFont_Default3D_Mono    --function-name Font_Default3D_Mono
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSerif-BoldItalic.ttf      --unit-name CastleTextureFont_Default3D_SerifBI --function-name Font_Default3D_SerifBI
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSerif-Bold.ttf            --unit-name CastleTextureFont_Default3D_SerifB  --function-name Font_Default3D_SerifB
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSerif-Italic.ttf          --unit-name CastleTextureFont_Default3D_SerifI  --function-name Font_Default3D_SerifI
-$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" data/DejaVuSerif.ttf                 --unit-name CastleTextureFont_Default3D_Serif   --function-name Font_Default3D_Serif
+# $TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSans.ttf                  --unit-name CastleTextureFont_Default3D_Sans    --function-name Font_Default3D_Sans
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSansMono-BoldOblique.ttf  --unit-name CastleTextureFont_Default3D_MonoBI  --function-name Font_Default3D_MonoBI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSansMono-Bold.ttf         --unit-name CastleTextureFont_Default3D_MonoB   --function-name Font_Default3D_MonoB
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSansMono-Oblique.ttf      --unit-name CastleTextureFont_Default3D_MonoI   --function-name Font_Default3D_MonoI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSansMono.ttf              --unit-name CastleTextureFont_Default3D_Mono    --function-name Font_Default3D_Mono
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSerif-BoldItalic.ttf      --unit-name CastleTextureFont_Default3D_SerifBI --function-name Font_Default3D_SerifBI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSerif-Bold.ttf            --unit-name CastleTextureFont_Default3D_SerifB  --function-name Font_Default3D_SerifB
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSerif-Italic.ttf          --unit-name CastleTextureFont_Default3D_SerifI  --function-name Font_Default3D_SerifI
+$TEXTUREFONT2PASCAL --size "${TEXT_NODE_FONT_SIZE}" ttf/DejaVuSerif.ttf                 --unit-name CastleTextureFont_Default3D_Serif   --function-name Font_Default3D_Serif
