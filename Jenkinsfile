@@ -52,7 +52,7 @@ pipeline {
           }
         }
 
-        stage('Raspberry Pi') {
+        stage('Raspberry Pi (32-bit)') {
           when { not { expression { return params.jenkins_fast } } }
           agent {
             label 'raspberry-pi-cge-builder'
@@ -62,20 +62,50 @@ pipeline {
             PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
           }
           stages {
-            stage('Cleanup (Raspberry Pi)') {
+            stage('Cleanup (Raspberry Pi 32)') {
               steps {
                 sh "repository_cleanup . --remove-unversioned"
               }
             }
-            stage('Setup CGE (Raspberry Pi)') {
+            stage('Setup CGE (Raspberry Pi 32)') {
               steps {
                 copyArtifacts(projectName: 'castle_game_engine_organization/castle-engine/master', filter: 'castle-engine*-linux-arm.zip')
                 sh 'unzip castle-engine*-linux-arm.zip'
               }
             }
-            stage('Build (Raspberry Pi)') {
+            stage('Build (Raspberry Pi 32)') {
               steps {
                 sh 'jenkins_scripts/build.sh linux arm'
+                archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+              }
+            }
+          }
+        }
+
+        stage('Raspberry Pi (64-bit)') {
+          when { not { expression { return params.jenkins_fast } } }
+          agent {
+            label 'raspberry-pi-64-cge-builder'
+          }
+          environment {
+            CASTLE_ENGINE_PATH = "${WORKSPACE}/castle_game_engine"
+            PATH = "${PATH}:${CASTLE_ENGINE_PATH}/bin"
+          }
+          stages {
+            stage('Cleanup (Raspberry Pi 64)') {
+              steps {
+                sh "repository_cleanup . --remove-unversioned"
+              }
+            }
+            stage('Setup CGE (Raspberry Pi 64)') {
+              steps {
+                copyArtifacts(projectName: 'castle_game_engine_organization/castle-engine/master', filter: 'castle-engine*-linux-aarch64.zip')
+                sh 'unzip castle-engine*-linux-aarch64.zip'
+              }
+            }
+            stage('Build (Raspberry Pi 64)') {
+              steps {
+                sh 'jenkins_scripts/build.sh linux aarch64'
                 archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
               }
             }
