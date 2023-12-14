@@ -25,13 +25,13 @@ uses SysUtils, CastleImages, CastleInternalDataCompression;
   Embedded font image (TCastleImage instance). }
 
 var
-  FImage: TGrayscaleImage;
+  FFontImage: TGrayscaleImage;
 const
-  ImageWidth = 2048;
-  ImageHeight = 2048;
-  ImageDepth = 1;
+  FontImageWidth = 2048;
+  FontImageHeight = 2048;
+  FontImageDepth = 1;
 
-  ChannelData0: array[0 .. 502225 - 1] of Byte = (
+  FontImageChannelData0: array[0 .. 502225 - 1] of Byte = (
      131,  199,  255,  176,   17,    0,  133,    0,   64,  255,  248,    4,
       18,    0,  136,    0,   85,  195,  243,  246,  220,  153,   47,   11,
        0,  143,    0,   19,  255,  245,    3,    0,    0,  219,  255,   53,
@@ -41891,21 +41891,21 @@ function FontImage: TGrayscaleImage;
 var
   Split: TChannelsSplit;
 begin
-  if FImage = nil then
+  if FFontImage = nil then
   begin
-    FImage := TGrayscaleImage.Create(ImageWidth, ImageHeight, ImageDepth);
+    FFontImage := TGrayscaleImage.Create(FontImageWidth, FontImageHeight, FontImageDepth);
     Split := TChannelsSplit.Create;
     try
-      SetLength(Split.Data, FImage.PixelSize);
-      Split.DataSize := FImage.Size div FImage.PixelSize;
+      SetLength(Split.Data, FFontImage.PixelSize);
+      Split.DataSize := FFontImage.Size div FFontImage.PixelSize;
       Split.DataAllocate;
-      RleDecompress(@ChannelData0, SizeOf(ChannelData0), Split.Data[0], Split.DataSize);
-      DataChannelsCombine(FImage.RawPixels, FImage.Size,
-        FImage.PixelSize, Split);
+      RleDecompress(@FontImageChannelData0, SizeOf(FontImageChannelData0), Split.Data[0], Split.DataSize);
+      DataChannelsCombine(FFontImage.RawPixels, FFontImage.Size,
+        FFontImage.PixelSize, Split);
     finally FreeAndNil(Split) end;
-    FImage.Url := 'embedded-image:/FontImage';
+    FFontImage.Url := 'embedded-image:/FontImage';
   end;
-  Result := FImage;
+  Result := FFontImage;
 end;
 
 
