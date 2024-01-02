@@ -1310,7 +1310,7 @@ end;
 const
   SaveGenerator = 'view3dscene, https://castle-engine.io/view3dscene.php';
 
-{ Load model from ASceneUrl ('-' means stdin),
+{ Load model from ASceneUrl,
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
 procedure WriteModel(const ASceneUrl: String;
@@ -2509,7 +2509,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     if Orientation <> CharEscape then
     begin
       if SceneUrl <> '' then
-        UrlPattern := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap_@side.png') 
+        UrlPattern := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap_@side.png')
       else
         UrlPattern := 'view3dscene_cubemap_@side.png';
 
@@ -2624,7 +2624,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     Url: String;
   begin
     if SceneUrl <> '' then
-      Url := ChangeURIExt(ExtractURIName(SceneUrl), '_depth_%d.png') 
+      Url := ChangeURIExt(ExtractURIName(SceneUrl), '_depth_%d.png')
     else
       Url := 'view3dscene_depth_%d.png';
     Url := FileNameAutoInc(Url);
