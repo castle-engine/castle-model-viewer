@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2023 Michalis Kamburelis.
+  Copyright 2003-2024 Michalis Kamburelis.
 
   This file is part of "Castle Game Engine".
 
@@ -46,7 +46,7 @@ uses SysUtils, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters, CastleDownload,
   CastleFilesUtils, CastleUriUtils, CastleApplicationProperties, CastleLog,
-  X3DLoadInternalUtils,
+  X3DLoadInternalUtils, X3DFields,
   V3DSceneVersion;
 
 var
@@ -56,7 +56,7 @@ var
   StdInUrl: String = 'stdin.x3dv';
 
 const
-  Options: array [0..8] of TOption =
+  Options: array [0..9] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
@@ -66,11 +66,14 @@ const
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone),
     (Short:  #0; Long: 'enable-downloads'; Argument: oaNone),
     (Short:  #0; Long: 'validate'; Argument: oaNone),
-    (Short:  #0; Long: 'stdin-url'; Argument: oaRequired)
+    (Short:  #0; Long: 'stdin-url'; Argument: oaRequired),
+    (Short:  #0; Long: 'float-precision'; Argument: oaRequired)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
   const Argument: string; const SeparateArgs: TSeparateArgs; Data: Pointer);
+var
+  FloatPrecision: Integer;
 begin
   case OptionNum of
     0:begin
@@ -88,6 +91,7 @@ begin
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
           OptionDescription('--validate', 'Only validate the input, without any output. Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
           OptionDescription('--stdin-url', 'If input URL is "-", then we read file contents from the standard input. In this case, you can use this option to provide a "pretend" URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs) and to guess the input file type. Default is "stdin.x3dv" in current directory, so we assume it is X3D (classic encoded), and resolve with respect to the current directory.') +NL+
+          OptionDescription('--float-precision DIGITS', 'Number of digits after the decimal point when writing floating-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.') +NL+
           NL+
           ApplicationProperties.Description);
         Halt;
@@ -115,6 +119,14 @@ begin
     6:EnableBlockingDownloads := true;
     7:Validate := true;
     8:StdInUrl := Argument;
+    9:begin
+        if not TryStrToInt(Argument, FloatPrecision) then
+          raise EInvalidParams.CreateFmt('Invalid --float-precision argument "%s"', [Argument]);
+        if FloatPrecision < 0 then
+          FloatOutputFormat := '%g'
+        else
+          FloatOutputFormat := '%.' + IntToStr(FloatPrecision) + 'f';
+      end;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
