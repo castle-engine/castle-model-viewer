@@ -6431,21 +6431,21 @@ tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "t
 tovrmlx3d: Warning: X3D: Node "ComposedTexture3D" is not allowed in the field "texture" of the node "ComposedTexture3D"
 tovrmlx3d: Warning: VRML/X3D: Converting VRML 1.0 or Inventor to X3D is not implemented. You will get VRML 1.0/Inventor nodes encoded like for X3D, which probably is not much useful.
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Translation"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Translation:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Separator"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Separator:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: X3D: Unknown X3D node type "Info"
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Info" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "" by node "Info:TX3DUnknownNode" inside node "Group"
 tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
 tovrmlx3d: Warning: VRML/X3D: Unknown node of type "ExtendedMaterial" (named "")
 WARNING: input/output headers differ:
@@ -6574,10 +6574,10 @@ tovrmlx3d: Warning: VRML/X3D: Inline node name "I" not found (or nothing was EXP
 tovrmlx3d: Warning: VRML/X3D: Inline node name "I2" not found (or nothing was EXPORTed from it), cannot IMPORT
 tovrmlx3d: Warning: VRML/X3D: Imported node name "Foo" not found in inline "I"
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate(SKINCOORD)" inside node "Group"
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
-tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate" inside node "Group"
+tovrmlx3d: Warning: X3D: Unknown X3D field name (indicated by containerField value) "coord" by node "Coordinate(SKINCOORD)" inside node "Group"
 tovrmlx3d: Warning: VRML/X3D: Node "Coordinate" is not allowed at the top level of the X3D file
 tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
 tovrmlx3d: Warning: VRML/X3D: Error when reading, will skip the rest of X3D file: Error at line 15 column 2: Expected node type or DEF or USE, got "}"
