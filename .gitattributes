@@ -16,6 +16,7 @@
 *.dpr linguist-language=Pascal text eol=auto
 *.pas linguist-language=Pascal text eol=auto
 
+*.lpi text eol=auto
 *.lpk text eol=auto
 *.xml text eol=auto
 *.dpk text eol=auto
@@ -24,6 +25,18 @@ Makefile text eol=auto
 *.castle-user-interface text eol=auto
 *.castle-transform text eol=auto
 *.castle-component text eol=auto
+*.castle-sprite-sheet text eol=auto
+*.x3d text eol=auto
+*.x3dv text eol=auto
+*.fs text eol=auto
+*.vs text eol=auto
+*.glsl text eol=auto
+*.md text eol=auto
+.gitignore text eol=auto
+.gitattributes text eol=auto
+*.yaml text eol=auto
+*.desktop text eol=auto
+*.svg text eol=auto
 
 # Even on Windows, shell scripts line endings must be Unix, to work with Cygwin's bash.
 *.sh text eol=lf
