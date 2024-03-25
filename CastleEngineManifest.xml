@@ -99,7 +99,7 @@
       <mime>application/x-geo</mime>
       <extension>geo</extension>
     </document_type>
-    <document_type caption="Castle Animation Frames" name="castleanimframes">
+    <document_type caption="Castle Animation Frames (Deprecated)" name="castleanimframes">
       <mime>application/x-castle-anim-frames</mime>
       <extension>kanim</extension>
       <extension>castle-anim-frames</extension>
@@ -111,6 +111,23 @@
     <document_type caption="glTF Binary" name="glb">
       <mime>model/gltf-binary</mime>
       <extension>glb</extension>
+    </document_type>
+    <document_type caption="Spine JSON" name="spine">
+      <mime>application/json</mime>
+      <extension>json</extension>
+    </document_type>
+    <document_type caption="Castle Game Engine Sprite Sheet" name="castleSpriteSheet">
+      <mime>application/x-castle-sprite-sheet</mime>
+      <extension>castle-sprite-sheet</extension>
+    </document_type>
+    <document_type caption="Cocos2d Sprite Sheet" name="cocos2dSheet">
+      <mime>application/x-cocos2d-sprite-sheet</mime>
+      <extension>cocos2d-plist</extension>
+      <extension>plist</extension>
+    </document_type>
+    <document_type caption="Starling Sprite Sheet" name="starlingSpriteSheet">
+      <mime>application/x-starling-sprite-sheet</mime>
+      <extension>starling-xml</extension>
     </document_type>
   </associate_document_types>
 </project>
