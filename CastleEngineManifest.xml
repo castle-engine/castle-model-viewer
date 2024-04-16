@@ -5,10 +5,10 @@
   qualified_name="io.castleengine.castle.model.viewer"
   >
   <icons>
-    <icon path="windows/castle_model_viewer.ico" />
-    <icon path="freedesktop/castle_model_viewer.svg" />
-    <icon path="freedesktop/castle_model_viewer.icns" />
-    <icon path="freedesktop/castle_model_viewer.png" />
+    <icon path="windows/castle-model-viewer.ico" />
+    <icon path="freedesktop/castle-model-viewer.svg" />
+    <icon path="freedesktop/castle-model-viewer.icns" />
+    <icon path="freedesktop/castle-model-viewer.png" />
   </icons>
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->
