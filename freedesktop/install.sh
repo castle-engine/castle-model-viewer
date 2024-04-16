@@ -1,13 +1,13 @@
 #!/bin/bash
 set -eu
 
-# Install view3dscene menu entries, icons, mime types (to open view3dscene
-# automatically when clicking on 3D models).
+# Install castle-model-viewer menu entries, icons, mime types (to open castle-model-viewer
+# automatically when clicking on models).
 
-APP_NAME='view3dscene'
+APP_NAME='castle-model-viewer'
 
 # Use share directory from parameter. By default use user-local directory
-# (this makes this script useful for normal users, documented on view3dscene website).
+# (this makes this script useful for normal users, documented on castle-model-viewer website).
 SHARE_PREFIX="${1:-${HOME}/.local/share}"
 
 echo -n "Installing $APP_NAME desktop stuff (MIME types, icons, desktop file) to ${SHARE_PREFIX}... "

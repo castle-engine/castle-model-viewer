@@ -5,7 +5,6 @@
 'Group {' + LineEnding +
 '  children [' + LineEnding +
 '    # TODO: In the future I plan to add here some nice "welcome scene"' + LineEnding +
-'    # Text { string [ "Welcome to", "view3dscene" ] }' + LineEnding +
 '    WorldInfo { title "Welcome scene" }' + LineEnding +
 '  ]' + LineEnding +
 '}' + LineEnding +

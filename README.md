@@ -31,6 +31,16 @@ Note that in simple cases, `castle-model-viewer` can also be used to convert mod
 
 The documentation of command-line options to perform convertion is on https://castle-engine.io/castle-model-converter .
 
+## Building
+
+Compile by:
+
+- [CGE editor](https://castle-engine.io/editor). Just use menu items _"Compile"_ or _"Compile And Run"_.
+
+- Or use [CGE command-line build tool](https://castle-engine.io/build_tool). Run `castle-engine compile` in this directory.
+
+- Or use [Lazarus](https://www.lazarus-ide.org/). Open in Lazarus `castle_model_viewer.lpi` file and compile / run from Lazarus. Make sure to first register [CGE Lazarus packages](https://castle-engine.io/lazarus).
+
 ## License
 
 GNU GPL >= 2.

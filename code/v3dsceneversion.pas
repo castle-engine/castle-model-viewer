@@ -1,9 +1,9 @@
-{ view3dscene and tovrmlx3d version and URL constants. }
+{ castle-model-viewer and castle-model-converter version and URL constants. }
 unit V3DSceneVersion;
 interface
 const
   Version = '4.3.0';
-  View3dsceneURL = 'https://castle-engine.io/view3dscene.php';
+  ViewerUrl = 'https://castle-engine.io/castle-model-viewer';
   SupportURL = 'https://www.patreon.com/castleengine';
 implementation
 end.

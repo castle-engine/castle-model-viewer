@@ -1,12 +1,13 @@
 This is a scene for showing off shadow maps.
 
-You can open with view3dscene
-(http://castle-engine.sourceforge.net/view3dscene.php) every VRML file here.
+You can open with castle-model-viewer
+(https://castle-engine.io/castle-model-viewer) every X3D and VRML file here.
 To see the final scene open castle_with_trees_final.x3dv.
 
 You can edit with Blender castle_with_trees.blend scene,
-then export it to castle_with_trees.wrl (preferably with our exporter from
-http://castle-engine.sourceforge.net/blender.php ),
+then export it to castle_with_trees.wrl
+(note: we used to have our exporter from
+https://castle-engine.io/blender , TODO: we should update workflow to glTF),
 then run "make" (this makes castle_with_trees_processed.x3dv from
 castle_with_trees.wrl). This way you can design most important stuff
 (including lights positions) in Blender.
@@ -28,7 +29,7 @@ I preserved the geometry and texture mapping (actually, Blender Wavefront OBJ im
 
 Note: if you want to render from Blender, you'll probably want to set Alpha=0 on leaves material to make them honor texture transparent regions for leaves. Currently it is set to =1, to make VRML exporter behave Ok.
 
-oaktree.wrl is the above Blender model exported to VRML 97 by my script (very slightly modified version of Blender's "VRML 97 Export" script) from http://castle-engine.sourceforge.net/blender.php
+oaktree.wrl is the above Blender model exported to VRML 97 by my script (very slightly modified version of Blender's "VRML 97 Export" script). See https://castle-engine.io/blender .
 
 Texture dryleaves.jpg from
 http://opengameart.org/content/ground-textures-dryleavesjpg

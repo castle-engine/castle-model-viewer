@@ -2,13 +2,13 @@
 set -eu
 
 # -------------------------------------------------------------------------
-# Run various tests of view3dscene / tovrmlx3d on a given model.
+# Run various tests of castle-model-viewer / castle-model-converter on a given model.
 # Model filename is provided as a parameter for this script.
 # This script is usually run by run_tests_on_dir.sh script, see there for some
 # comments.
 #
 # Tip: To test manually how it works on a single file, you can use this:
-#   $ cd view3dscene/
+#   $ cd castle-model-viewer/
 #   $ rm -f output-short.txt output-verbose.txt
 #   $ ./jenkins_scripts/run_test_on_model.sh output-short.txt output-verbose.txt ../demo-models/texturing_advanced/warnings/tex3d_composed_warnings.x3dv
 #   ... and consult output-short.txt output-verbose.txt output
@@ -16,30 +16,30 @@ set -eu
 
 # Disable heaptrc, to get shorter output and avoid reports of harmless leaks
 # occuring when ending program with Halt.
-# Useful in case you test debug builds of view3dscene/tovrmlx3d
+# Useful in case you test debug builds of castle-model-viewer/castle-model-converter
 # (that have heaptrc compiled in).
 export HEAPTRC=disabled
 
-if [ -f view3dscene ]; then
-  VIEW3DSCENE=./view3dscene
+if [ -f castle-model-viewer ]; then
+  VIEWER=./castle-model-viewer
 else
-  # expect view3dscene on $PATH
-  VIEW3DSCENE=view3dscene
+  # expect castle-model-viewer on $PATH
+  VIEWER=castle-model-viewer
 fi
 
-if [ -f tovrmlx3d ]; then
-  TOVRMLX3D=./tovrmlx3d
+if [ -f castle-model-converter ]; then
+  CONVERTER=./castle-model-converter
 else
-  # expect tovrmlx3d on $PATH
-  TOVRMLX3D=tovrmlx3d
+  # expect castle-model-converter on $PATH
+  CONVERTER=castle-model-converter
 fi
 
 # For some tests (by default commented out, see lower in this script)
-# you need a 2nd view3dscene binary. Usually you want to use
-# some older, stable view3dscene release as "other" below,
-# and as $VIEW3DSCENE use newer view3dscene from SVN or nightly snapshots.
-#VIEW3DSCENE_OTHER="$VIEW3DSCENE"
-VIEW3DSCENE_OTHER=view3dscene-3.10.0-release
+# you need a 2nd castle-model-viewer binary. Usually you want to use
+# some older, stable castle-model-viewer release as "other" below,
+# and as $VIEWER use newer castle-model-viewer from SVN or nightly snapshots.
+#VIEWER_OTHER="$VIEWER"
+VIEWER_OTHER=castle-model-viewer-3.10.0-release
 
 OUTPUT_SHORT="$1"
 OUTPUT_VERBOSE="$2"
@@ -88,19 +88,19 @@ run_command ()
   fi
 }
 
-run_tovrmlx3d ()
+run_converter ()
 {
-  run_command "$TOVRMLX3D" "$@"
+  run_command "$CONVERTER" "$@"
 }
 
-run_view3dscene ()
+run_viewer ()
 {
-  run_command "$VIEW3DSCENE" "$@"
+  run_command "$VIEWER" "$@"
 }
 
-run_view3dscene_other ()
+run_viewer_other ()
 {
-  run_command "$VIEW3DSCENE_OTHER" "$@"
+  run_command "$VIEWER_OTHER" "$@"
 }
 
 # Reading and saving ---------------------------------------------------------
@@ -113,7 +113,7 @@ do_read_save ()
   local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
 
   test_log 'Reading' "$FILE"
-  run_tovrmlx3d "$TEMP_FILE" "$FILE" --encoding=classic
+  run_converter "$TEMP_FILE" "$FILE" --encoding=classic
 
   # Check input file and output file headers.
   # They indicate VRML version used to write the file.
@@ -150,7 +150,7 @@ Header on output is ${OUTPUT_HEADER}"
   fi
 
   test_log 'Reading again' "$FILE"
-  run_tovrmlx3d /dev/null "$TEMP_FILE" --encoding=classic
+  run_converter /dev/null "$TEMP_FILE" --encoding=classic
 
   rm -f "$TEMP_FILE"
 }
@@ -167,9 +167,9 @@ do_compare_classic_save ()
   local SAVE_CLASSIC_OLD="${FILE%.*}_test_temporary_classic_save_old.x3dv"
   local SAVE_CLASSIC_NEW="${FILE%.*}_test_temporary_classic_save_new.x3dv"
 
-  test_log 'Comparing classic save with' "$VIEW3DSCENE_OTHER"
-  run_view3dscene_other "$SAVE_CLASSIC_OLD" "$FILE" --write-to-vrml
-  run_view3dscene       "$SAVE_CLASSIC_NEW" "$FILE" --write-to-vrml
+  test_log 'Comparing classic save with' "$VIEWER_OTHER"
+  run_viewer_other "$SAVE_CLASSIC_OLD" "$FILE" --write-to-vrml
+  run_viewer       "$SAVE_CLASSIC_NEW" "$FILE" --write-to-vrml
 
   set +e
   diff -w --ignore-blank-lines --unified=0 "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
@@ -178,8 +178,8 @@ do_compare_classic_save ()
   rm -f "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
 }
 
-# Uncomment this to compare classic save with other (e.g. older) view3dscene version.
-# Uses --write (--write-to-vrml for older view3dscene versions) to save,
+# Uncomment this to compare classic save with other (e.g. older) castle-model-viewer version.
+# Uses --write (--write-to-vrml for older castle-model-viewer versions) to save,
 # and standard Unix "diff" to compare.
 # do_compare_classic_save
 
@@ -194,9 +194,9 @@ do_save_xml_valid ()
     local     SAVE_XML="${FILE%.*}_test_temporary_save_xml_valid.x3d"
     local SAVE_CLASSIC="${FILE%.*}_test_temporary_save_xml_valid.x3dv"
 
-    test_log 'Testing is xml valid (can be read back, by tovrmlx3d and xmllint)'
-    run_tovrmlx3d "$SAVE_XML"     "$FILE"     --encoding=xml
-    run_tovrmlx3d "$SAVE_CLASSIC" "$SAVE_XML" --encoding=classic
+    test_log 'Testing is xml valid (can be read back, by castle-model-converter and xmllint)'
+    run_converter "$SAVE_XML"     "$FILE"     --encoding=xml
+    run_converter "$SAVE_CLASSIC" "$SAVE_XML" --encoding=classic
 
     if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' -o \
          "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt_rays1000.wrl_test_temporary_save_xml_valid.x3d' -o \
@@ -233,9 +233,9 @@ do_compare_classic_xml_save ()
   local SAVE_2_CLASSIC="${FILE%.*}_test_temporary_classic_xml_2.x3dv"
 
   test_log 'Comparing saving to classic vs saving to xml and then classic'
-  run_tovrmlx3d "$SAVE_1_CLASSIC" "$FILE"  --force-x3d --encoding=classic
-  run_tovrmlx3d "$SAVE_2_XML"     "$FILE"              --encoding=xml
-  run_tovrmlx3d "$SAVE_2_CLASSIC" "$SAVE_2_XML"        --encoding=classic
+  run_converter "$SAVE_1_CLASSIC" "$FILE"  --force-x3d --encoding=classic
+  run_converter "$SAVE_2_XML"     "$FILE"              --encoding=xml
+  run_converter "$SAVE_2_CLASSIC" "$SAVE_2_XML"        --encoding=classic
 
   set +e
   diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
@@ -264,7 +264,8 @@ do_compare_classic_xml_save ()
 #
 # do_compare_classic_xml_save
 
-# Saving to file: view3dscene and tovrmlx3d equal ----------------------------
+# -----------------------------------------------------------------------------
+# Saving to file: castle-model-viewer and castle-model-converter equal
 
 # Remove META lines from $1
 filter_out_generator_meta ()
@@ -281,36 +282,36 @@ filter_out_generator_meta ()
   mv -f "$TEMP_FILE" "$1"
 }
 
-do_view3dscene_and_tovrmlx3d_equal ()
+do_viewer_and_converter_equal ()
 {
-  test_log "Comparing $VIEW3DSCENE and $TOVRMLX3D output"
+  test_log "Comparing $VIEWER and $CONVERTER output"
   # Like ChangeFileExt $FILE ..., must preserve directory
-  local VIEW3DSCENE_OUT="${FILE%.*}_test_temporary_view3dscene_and_tovrmlx3d_equal_1"
-  local   TOVRMLX3D_OUT="${FILE%.*}_test_temporary_view3dscene_and_tovrmlx3d_equal_2"
+  local VIEWER_OUT="${FILE%.*}_test_temporary_viewer_and_converter_equal_1"
+  local CONVERTER_OUT="${FILE%.*}_test_temporary_viewer_and_converter_equal_2"
 
-  run_view3dscene "$VIEW3DSCENE_OUT" "$FILE" --write
-  run_tovrmlx3d   "$TOVRMLX3D_OUT" "$FILE"
-  filter_out_generator_meta "$VIEW3DSCENE_OUT"
-  filter_out_generator_meta "$TOVRMLX3D_OUT"
-  diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
+  run_viewer "$VIEWER_OUT" "$FILE" --write
+  run_converter   "$CONVERTER_OUT" "$FILE"
+  filter_out_generator_meta "$VIEWER_OUT"
+  filter_out_generator_meta "$CONVERTER_OUT"
+  diff "$VIEWER_OUT" "$CONVERTER_OUT"
 
-  run_view3dscene "$VIEW3DSCENE_OUT" "$FILE" --write --write-encoding=xml
-  run_tovrmlx3d   "$TOVRMLX3D_OUT"   "$FILE"               --encoding=xml
-  filter_out_generator_meta "$VIEW3DSCENE_OUT"
-  filter_out_generator_meta "$TOVRMLX3D_OUT"
-  diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
+  run_viewer "$VIEWER_OUT" "$FILE" --write --write-encoding=xml
+  run_converter   "$CONVERTER_OUT"   "$FILE"               --encoding=xml
+  filter_out_generator_meta "$VIEWER_OUT"
+  filter_out_generator_meta "$CONVERTER_OUT"
+  diff "$VIEWER_OUT" "$CONVERTER_OUT"
 
-  run_view3dscene "$VIEW3DSCENE_OUT" "$FILE" --write --write-force-x3d
-  run_tovrmlx3d   "$TOVRMLX3D_OUT"   "$FILE"               --force-x3d
-  filter_out_generator_meta "$VIEW3DSCENE_OUT"
-  filter_out_generator_meta "$TOVRMLX3D_OUT"
-  diff "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
+  run_viewer "$VIEWER_OUT" "$FILE" --write --write-force-x3d
+  run_converter   "$CONVERTER_OUT"   "$FILE"               --force-x3d
+  filter_out_generator_meta "$VIEWER_OUT"
+  filter_out_generator_meta "$CONVERTER_OUT"
+  diff "$VIEWER_OUT" "$CONVERTER_OUT"
 
-  rm -f "$VIEW3DSCENE_OUT" "$TOVRMLX3D_OUT"
+  rm -f "$VIEWER_OUT" "$CONVERTER_OUT"
 }
 
-# Test that view3dscene and tovrmlx3d generate the same output
-# do_view3dscene_and_tovrmlx3d_equal
+# Test that castle-model-viewer and castle-model-converter generate the same output
+# do_viewer_and_converter_equal
 
 # Screenshots comparison -----------------------------------------------------
 
@@ -321,11 +322,11 @@ do_compare_screenshot ()
 
   local DELETE_SCREENSHOTS='t'
 
-  test_log 'Rendering and making screenshot' "$VIEW3DSCENE_OTHER"
-  "$VIEW3DSCENE_OTHER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
+  test_log 'Rendering and making screenshot' "$VIEWER_OTHER"
+  "$VIEWER_OTHER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
 
-  test_log 'Comparing screenshot' "$VIEW3DSCENE"
-  "$VIEW3DSCENE" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
+  test_log 'Comparing screenshot' "$VIEWER"
+  "$VIEWER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
 
   # Don't exit on screenshot comparison fail. That's because
   # taking screenshots takes a long time, so just continue checking.
@@ -345,10 +346,10 @@ do_compare_screenshot ()
 }
 
 # Uncomment this to generate screenshots,
-# and compare them with other (e.g. older) view3dscene version.
+# and compare them with other (e.g. older) castle-model-viewer version.
 # Uses --screenshot to capture, and image_compare to compare
 # (compile and put on $PATH this:
-# ../castle_game_engine/examples/images_videos/image_compare.lpr).
+# ../castle_game_engine/examples/images_videos/image_compare.dpr).
 #
 # This tests screenshot generation goes Ok,
 # and checks for any regressions in the renderer.

@@ -14,8 +14,8 @@ EXTERNPROTO KambiAppearance [
   inputOutput SFFloat heightMapScale
   inputOutput SFNode blendMode
   inputOutput SFBool shadowCaster
-] [ "urn:castle-engine.sourceforge.net:node:KambiAppearance",
-    "http://castle-engine.sourceforge.net/fallback_prototypes.x3dv#KambiAppearance"
+] [ "urn:castle-engine.io:node:KambiAppearance",
+    "https://castle-engine.io/fallback_prototypes.x3dv#KambiAppearance"
 ]
 
 Inline { url "test_world.x3d" }

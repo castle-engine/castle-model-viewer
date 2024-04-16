@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# Build view3dscene and tovrmlx3d,
+# Build castle-model-viewer and castle-model-converter,
 # run various tests on models in directories given as arguments ($@),
 # compare with output stored in repo.
 

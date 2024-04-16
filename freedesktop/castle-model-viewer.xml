@@ -186,7 +186,7 @@
     <glob pattern="*.castle-anim-frames"/>
   </mime-type>
 
-  <!-- view3dscene also handles Spine animations in *.json,
+  <!-- castle-model-viewer also handles Spine animations in *.json,
        although we cannot create MIME type that captures Spine animations
        and not other json content... -->
   <mime-type type="application/json">

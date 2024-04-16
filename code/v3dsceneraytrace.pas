@@ -1,20 +1,20 @@
 {
   Copyright 2003-2022 Michalis Kamburelis.
 
-  This file is part of "view3dscene".
+  This file is part of "castle-model-viewer".
 
-  "view3dscene" is free software; you can redistribute it and/or modify
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
-  "view3dscene" is distributed in the hope that it will be useful,
+  "castle-model-viewer" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "view3dscene"; if not, write to the Free Software
+  along with "castle-model-viewer"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ begin
   RowsMadeCount := PixelsMadeCount div D^.Image.Width;
   D^.RowsMadeCount := RowsMadeCount;
 
-  Window.Caption := Format('view3dscene - Ray Tracing - %d%%',
+  Window.Caption := Format('castle-model-viewer - Ray Tracing - %d%%',
     [Round(100 * RowsMadeCount / D^.Image.Height)]);
 
   { To be fast (and this has to be fast to not slow down the ray-tracing)
@@ -356,7 +356,7 @@ begin
         (otherwise the image may not be fully displayed yet,
         because of RowsShowCount mechanism). }
       Window.Invalidate;
-      Window.Caption := 'view3dscene - Ray Tracing - done';
+      Window.Caption := 'castle-model-viewer - Ray Tracing - done';
       {$ifdef LCLCarbon}
       Window.OnPress := @PressDone;
       {$else}

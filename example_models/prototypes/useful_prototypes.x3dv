@@ -182,7 +182,7 @@ PROTO EditableTransformXZ [
 # ----------------------------------------------------------------------------
 # PROTO extending the normal Box with texCoord field.
 # Note that this is usually not needed:
-# for Kambi engine (view3dscene), the standard Box already has texCoord
+# for Castle Game Engine, the standard Box already has texCoord
 # implemented, e.g. for TextureCoordinateGenerator node.
 #
 # However this can still be useful for compatibility with other browsers

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="view3dscene"
-  standalone_source="view3dscene.lpr"
+<project name="castle-model-viewer"
+  standalone_source="castle_model_viewer.dpr"
   author="Michalis Kamburelis"
-  qualified_name="io.castleengine.view3dscene"
+  qualified_name="io.castleengine.castle.model.viewer"
   >
   <icons>
-    <icon path="windows/view3dscene.ico" />
-    <icon path="freedesktop/view3dscene.svg" />
-    <icon path="freedesktop/view3dscene.icns" />
-    <icon path="freedesktop/view3dscene.png" />
+    <icon path="windows/castle_model_viewer.ico" />
+    <icon path="freedesktop/castle_model_viewer.svg" />
+    <icon path="freedesktop/castle_model_viewer.icns" />
+    <icon path="freedesktop/castle_model_viewer.png" />
   </icons>
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->
@@ -21,8 +21,8 @@
   <package>
     <include path="README.md" />
     <include path="COPYING.GPL2.txt" />
-    <include path="tovrmlx3d" executable_permission="True" />
-    <include path="tovrmlx3d.exe" />
+    <include path="castle-model-converter" executable_permission="True" />
+    <include path="castle-model-converter.exe" />
     <include path="freedesktop/*" recursive="True" />
     <include path="example_models/*" recursive="True" />
   </package>

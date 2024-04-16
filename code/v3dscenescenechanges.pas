@@ -1,20 +1,20 @@
 {
   Copyright 2003-2023 Michalis Kamburelis.
 
-  This file is part of "view3dscene".
+  This file is part of "castle-model-viewer".
 
-  "view3dscene" is free software; you can redistribute it and/or modify
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
-  "view3dscene" is distributed in the hope that it will be useful,
+  "castle-model-viewer" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "view3dscene"; if not, write to the Free Software
+  along with "castle-model-viewer"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
@@ -29,11 +29,11 @@ uses X3DNodes, CastleUtils, CastleScene;
 
 type
   { When adding new item to TSceneChange you can also consider adding
-    new option to view3dscene (--scene-change-).
+    new option to castle-model-viewer (--scene-change-).
     All other necessary changes after extending TSceneChange will be enforced
     by the compiler.
 
-    See [https://castle-engine.io/view3dscene.php#section_command_line_options]
+    See https://castle-engine.io/castle-model-viewer#section_command_line_options
     for detailed spec what these scene changes do. }
   TSceneChange = (
     scNoNormals,

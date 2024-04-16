@@ -1,20 +1,20 @@
 # See INSTALL file for some comments about installing desktop data.
 
-APP_NAME := view3dscene
+APP_NAME := castle-model-viewer
 
-VIEW3DSCENE_ICON := ../../www/logo/6_thicker.svg
+APP_ICON := ../../www/logo/6_thicker.svg
 
 ALL_IMAGES := $(APP_NAME).png $(APP_NAME).svg $(APP_NAME).icns
 
 .PHONY: all_images
 all_images: $(ALL_IMAGES)
 
-# Copy/convert $(VIEW3DSCENE_ICON) to nice names, in svg and (48x48) png.
-$(APP_NAME).svg: $(VIEW3DSCENE_ICON)
+# Copy/convert $(APP_ICON) to nice names, in svg and (48x48) png.
+$(APP_NAME).svg: $(APP_ICON)
 	cp -f $< $@
 
-$(APP_NAME).png: $(VIEW3DSCENE_ICON)
+$(APP_NAME).png: $(APP_ICON)
 	inkscape --export-width=48 --export-height=48 $< --export-png=$@
 
-$(APP_NAME).icns: $(VIEW3DSCENE_ICON)
+$(APP_NAME).icns: $(APP_ICON)
 	../../scripts/svg_to_icns.sh $< $@

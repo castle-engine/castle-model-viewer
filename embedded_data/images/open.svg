@@ -4,7 +4,7 @@
    version="1.1"
    id="svg827"
    sodipodi:docname="open.svg"
-   inkscape:export-filename="/home/michalis/sources/castle-engine/view3dscene/embedded_data/images/open.png"
+   inkscape:export-filename="/home/michalis/open.png"
    inkscape:export-xdpi="4.7142859"
    inkscape:export-ydpi="4.7142859"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
@@ -36,7 +36,7 @@
   <path
      d="M572.6 270.3l-96 192C471.2 473.2 460.1 480 447.1 480H64c-35.35 0-64-28.66-64-64V96c0-35.34 28.65-64 64-64h117.5c16.97 0 33.25 6.742 45.26 18.75L275.9 96H416c35.35 0 64 28.66 64 64v32h-48V160c0-8.824-7.178-16-16-16H256L192.8 84.69C189.8 81.66 185.8 80 181.5 80H64C55.18 80 48 87.18 48 96v288l71.16-142.3C124.6 230.8 135.7 224 147.8 224h396.2C567.7 224 583.2 249 572.6 270.3z"
      id="path825"
-     inkscape:export-filename="/home/michalis/sources/castle-engine/view3dscene/embedded_data/images/open.png"
+     inkscape:export-filename="/home/michalis/open.png"
      inkscape:export-xdpi="4.7142859"
      inkscape:export-ydpi="4.7142859" />
 </svg>

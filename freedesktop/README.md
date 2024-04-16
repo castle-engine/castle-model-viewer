@@ -4,14 +4,14 @@ This directory contains files for desktop integration (icons, associations, menu
 
 # How to install
 
-It is advised to build and install by executing this in the top-level view3dscene directory:
+It is advised to build and install by executing this in the top-level castle-model-viewer directory:
 
 ```
 make
 sudo make install
 ```
 
-The latter command makes a system-wide installation, copying the view3dscene and tovrmlx3d binaries to `/usr/local/bin` , to make them available on `$PATH`. It also installs some desktop files under `/usr/local/share`. You can undo it by
+The latter command makes a system-wide installation, copying the `castle-model-viewer` and `castle-model-converter` binaries to `/usr/local/bin` , to make them available on `$PATH`. It also installs some desktop files under `/usr/local/share`. You can undo it by
 
 ```
 sudo make uninstall
@@ -44,7 +44,7 @@ Desktop file
 - "StartupNotify=true" can be useful for me to add to *.desktop files,
   as GTK 2 backend should automatically support this
   (http://library.gnome.org/devel/gdk/stable/gdk-General.html#gdk-notify-startup-complete).
-  For now, view3dscene opens instantly fast, so it's not needed.
+  For now, castle-model-viewer opens instantly fast, so it's not needed.
 
 - update-desktop-database call is needed to actually associate my program
   with MimeType specified in desktop file. (Found by looking at some Debian

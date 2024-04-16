@@ -7,7 +7,7 @@ pipeline {
   options {
     /* We do not really have a problem with concurrent builds (jenkins_scripts/build.sh
        could execute in parallel in multiple checkouts),
-       but it seems that view3dscene job can be created many many times in Jenkins
+       but it seems that castle-model-viewer job can be created many many times in Jenkins
        and get stuck.
        Using disableConcurrentBuilds as a workaround. */
     disableConcurrentBuilds()
@@ -26,7 +26,7 @@ pipeline {
   agent none
   parameters {
     /* Danger! Using this makes macOS and Raspbery Pi snapshot downloads
-       fail from https://castle-engine.io/view3dscene.php . */
+       fail from https://castle-engine.io/castle-model-viewer . */
     booleanParam(name: 'jenkins_fast', defaultValue: false, description: 'Use at emergencies, to make pipeline build faster')
   }
   stages {
@@ -48,7 +48,7 @@ pipeline {
             /* Do not defer "archiveArtifacts" to later (like post section),
                as this command must run in the same agent and Docker container
                as build.sh. */
-            archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+            archiveArtifacts artifacts: '*.tar.gz,*zip,*.apk'
           }
         }
 
@@ -76,7 +76,7 @@ pipeline {
             stage('Build (Raspberry Pi 32)') {
               steps {
                 sh 'jenkins_scripts/build.sh linux arm'
-                archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+                archiveArtifacts artifacts: '*.tar.gz,*zip,*.apk'
               }
             }
           }
@@ -106,7 +106,7 @@ pipeline {
             stage('Build (Raspberry Pi 64)') {
               steps {
                 sh 'jenkins_scripts/build.sh linux aarch64'
-                archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+                archiveArtifacts artifacts: '*.tar.gz,*zip,*.apk'
               }
             }
           }
@@ -136,7 +136,7 @@ pipeline {
             stage('Build (macOS)') {
               steps {
                 sh 'jenkins_scripts/build.sh darwin x86_64'
-                archiveArtifacts artifacts: 'view3dscene-*.tar.gz,view3dscene-*zip,view3dscene-*.apk'
+                archiveArtifacts artifacts: '*.tar.gz,*zip,*.apk'
               }
             }
           }

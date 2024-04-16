@@ -1,7 +1,7 @@
-# TODO: this downloads master of cge,view3dscene.
+# TODO: this downloads master of cge,castle-model-viewer.
 # Use tags instead to build precise version.
 
-name: view3dscene
+name: castle-model-viewer
 
 # The base snap is the execution environment for this snap.
 base: core20
@@ -32,8 +32,8 @@ confinement: devmode # use 'strict' once you have the right plugs and slots
 # test on clean system.
 
 apps:
-  view3dscene:
-    command: usr/bin/view3dscene
+  castle-model-viewer:
+    command: usr/bin/castle-model-viewer
     plugs:
       - x11
       - opengl
@@ -44,14 +44,14 @@ apps:
       - desktop
       - desktop-legacy
       - unity7
-  tovrmlx3d:
-    command: usr/bin/tovrmlx3d
+  castle-model-converter:
+    command: usr/bin/castle-model-converter
     plugs:
       - home
       - removable-media
 
 parts:
-  # FPC part. We need FPC to compile CGE build tool and view3dscene.
+  # FPC part. We need FPC to compile CGE build tool and castle-model-viewer.
   #
   # It would be easier to get FPC from Ubuntu packages, by dependency in CGE:
   # build-packages:
@@ -72,7 +72,7 @@ parts:
     build-packages:
       - wget
 
-  # CGE part. We need CGE build tool and sources to later build view3dscene.
+  # CGE part. We need CGE build tool and sources to later build castle-model-viewer.
   castle-engine:
     # Specify after, otherwise parts execute in any order. See https://snapcraft.io/docs/parts-lifecycle#heading--step-dependencies
     after:
@@ -99,14 +99,14 @@ parts:
       - bin/castle-engine
       - cge-source/*
     # No point in priming (copying to final snap) CGE sources or build tool, would only take up disk space
-    # TODO: looks like it didn't help, they are still in installed snap in /snap/view3dscene/current/ .
+    # TODO: looks like it didn't help, they are still in installed snap in /snap/castle-model-viewer/current/ .
     prime: []
 
-  # Actual view3dscene application part.
-  view3dscene:
+  # Actual castle-model-viewer application part.
+  castle-model-viewer:
     after:
       - castle-engine
-    source: https://github.com/castle-engine/view3dscene/
+    source: https://github.com/castle-engine/castle-model-viewer/
     source-type: git
     build-packages:
       - libgl-dev

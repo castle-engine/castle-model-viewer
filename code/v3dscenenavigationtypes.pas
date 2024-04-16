@@ -1,20 +1,20 @@
 {
   Copyright 2003-2023 Michalis Kamburelis.
 
-  This file is part of "view3dscene".
+  This file is part of "castle-model-viewer".
 
-  "view3dscene" is free software; you can redistribute it and/or modify
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
-  "view3dscene" is distributed in the hope that it will be useful,
+  "castle-model-viewer" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "view3dscene"; if not, write to the Free Software
+  along with "castle-model-viewer"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
 procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
 
 type
-  { Navigation types useful in view3dscene, in order suitable for view3dscene
+  { Navigation types useful in castle-model-viewer, in order suitable for castle-model-viewer
     menu and toolbar.
     Note that "Walk" is after "Fly", which is safer because "Walk" automatically
     activates gravity. }
@@ -212,7 +212,7 @@ end;
   Of course, it also causes some problems. Things are no longer configurable
   at runtime:
   - fonts
-  - text contents (e.g. we cannot allow view3dscene keys config,
+  - text contents (e.g. we cannot allow castle-model-viewer keys config,
     although this wasn't planned anyway, as it would make problems
     with KeySensor, StringSensor)
   - we cannot wrap text to window width. We just have to assume
@@ -319,7 +319,7 @@ begin
     { Management of LabelMoveSpeed is almost a copy-paste of TCastleWalkNavigationDesign
       used by CGE editor.
       For now, it's not worth to actually introduce code for sharing design-time
-      stuff between view3dscene and CGE editor -- but it may come one day. }
+      stuff between castle-model-viewer and CGE editor -- but it may come one day. }
 
     { Display current speed if user presses key/mouse wheel to change speed
       (even if speed doesn't actually change because of MoveSpeedMin/Max limit) }

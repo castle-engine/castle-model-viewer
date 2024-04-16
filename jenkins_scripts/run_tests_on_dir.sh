@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# Run view3dscene / tovrmlx3d tests on models inside the given directories.
+# Run castle-model-viewer / castle-model-converter tests on models inside the given directories.
 # Use with any directory of test models,
 # like CGE demo-models, castle-engine/tests/, cge-www/htdocs/ .
 #
@@ -11,23 +11,23 @@ set -eu
 # $3 and more - directories with models to test
 #
 # Running this requires:
-# - view3dscene and tovrmlx3d binaries compiled (either in current dir,
+# - castle-model-viewer and castle-model-converter binaries compiled (either in current dir,
 #   or on the $PATH, see run_test_on_model.sh)
 #
 # Some optional tests (done by run_test_on_model.sh) require also:
 #
 # - image_compare binary compiled and available on $PATH,
 #   only if you uncomment the "screenshot comparison" test in run_test_on_model.sh
-#   (image_compare comes from ../castle_game_engine/examples/images_videos/image_compare.lpr)
+#   (image_compare comes from ../castle_game_engine/examples/images_videos/image_compare.dpr)
 #
 # - xmllint for basic XML validation (should be included in any
 #   popular Linux distribution; on Debian (and maybe derivatives),
 #   xmllint may be found in package libxml2-utils, see "dpkg -S xmllint").
 #
 # - for some optional comparisons (regression checking), it's useful
-#   to have alternative view3dscene / tovrmlx3d binaries installed.
-#   For example, if you test unstable view3dscene, you may also install last
-#   stable view3dscene release. Just rename the binary (like view3dscene-stable-release),
+#   to have alternative castle-model-viewer / castle-model-converter binaries installed.
+#   For example, if you test unstable castle-model-viewer, you may also install last
+#   stable castle-model-viewer release. Just rename the binary (like castle-model-viewer-stable-release),
 #   and uncomment appropriate parts of run_test_on_model.sh.
 #
 # Every suitable model format is tested by the run_test_on_model.sh script:
@@ -37,8 +37,8 @@ set -eu
 # - Various other reading and writing validation is done by comparing
 #   outputs going through various (classic and XML) encodings.
 # - Check rendering, by making screenshots
-#   and comparing (against the same view3dscene
-#   or against some previous stable view3dscene version).
+#   and comparing (against the same castle-model-viewer
+#   or against some previous stable castle-model-viewer version).
 #
 # Some of the tests are commented out by default in run_test_on_model.sh,
 # as they require more time or have to be interpreted manually (to filter

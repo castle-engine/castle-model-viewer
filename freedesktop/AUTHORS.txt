@@ -1,8 +1,8 @@
-The view3dscene icon (created together with old Castle Game Engine icon) are
+The castle-model-viewer icon (created together with old Castle Game Engine icon) are
 Copyright 2008-2018 Katarzyna Obrycka, Michalis Kamburelis.
 
 Distributed on GNU GPL >= 2 license,
-just like the view3dscene code itself.
+just like the castle-model-viewer code itself.
 
 Kasia Obrycka did the most important work of making the icon actually "work",
 by providing moon, tentacles and idea to shade the tower. Thanks!

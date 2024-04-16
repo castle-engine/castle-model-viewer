@@ -1,13 +1,13 @@
 #!/bin/bash
 set -eu
 
-# Install view3dscene GNOME thumbnailer stuff
+# Install castle-model-viewer GNOME thumbnailer stuff
 
 install_single_thumbnailer ()
 {
   THUMBNAILER_MIME="$1"
 
-  # view3dscene command notes:
+  # castle-model-viewer command notes:
   # - TODO: spec says that we should make PNG file on the output.
   #   But currently we recognize output file type by extension,
   #   and nautilus calls us with something like "/tmp/.gnome_thumbnail.0WOIDU",
@@ -22,7 +22,7 @@ install_single_thumbnailer ()
 #  echo -n '(internal name: '"$THUMBNAILER_MIME"'): '
 
   gconftool --type bool   --set /desktop/gnome/thumbnailers/"$THUMBNAILER_MIME"/enable true
-  gconftool --type string --set /desktop/gnome/thumbnailers/"$THUMBNAILER_MIME"/command "view3dscene %i --screenshot 0 %o --geometry %sx%s"
+  gconftool --type string --set /desktop/gnome/thumbnailers/"$THUMBNAILER_MIME"/command "castle-model-viewer %i --screenshot 0 %o --geometry %sx%s"
 
   echo 'done.'
 }
@@ -42,7 +42,7 @@ install_single_thumbnailer 'model/gltf+json'
 install_single_thumbnailer 'model/gltf-binary'
 
 echo '----------'
-echo 'Installing view3dscene as GNOME thumbnailer: all OK.'
+echo 'Installing castle-model-viewer as GNOME thumbnailer: all OK.'
 echo ''
 echo 'Remember to call also ./install.sh (before or after ./install_thumbnailer.sh),'
 echo 'to make the thumbnailer actually be used for appropriate MIME types.'
@@ -50,11 +50,11 @@ echo '----------'
 
 # Alternative installation method, following
 # http://web.archive.org/web/20111228010551/http://thunar.xfce.org/documentation/C/customizing-thunar.html
-# and using view3dscene-thumbnailer.desktop
+# and using unused-thumbnailer.desktop
 
 # Use share directory from parameter. By default use user-local directory
-# (this makes this script useful for normal users, documented on view3dscene website).
+# (this makes this script useful for normal users, documented on castle-model-viewer website).
 #
 # SHARE_PREFIX="${1:-${HOME}/.local/share}"
 # install -d "$SHARE_PREFIX"/thumbnailers/
-# install view3dscene-thumbnailer.desktop "$SHARE_PREFIX"/thumbnailers/
+# install unused-thumbnailer.desktop "$SHARE_PREFIX"/thumbnailers/

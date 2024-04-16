@@ -9,7 +9,7 @@ remove_files ()
   rm -Rf "$@"
 }
 
-APP_NAME='view3dscene'
+APP_NAME='castle-model-viewer'
 SHARE_PREFIX="${1:-${HOME}/.local/share}"
 remove_files \
   "$SHARE_PREFIX"/mime/packages/"$APP_NAME".xml \

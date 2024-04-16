@@ -1,27 +1,27 @@
 {
   Copyright 2010-2022 Michalis Kamburelis.
 
-  This file is part of "view3dscene".
+  This file is part of "castle-model-viewer".
 
-  "view3dscene" is free software; you can redistribute it and/or modify
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
-  "view3dscene" is distributed in the hope that it will be useful,
+  "castle-model-viewer" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "view3dscene"; if not, write to the Free Software
+  along with "castle-model-viewer"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
 
 { Screen effects (for TKamAbstractViewport.ScreenEffects) available
-  in view3dscene menu. }
+  in castle-model-viewer menu. }
 unit V3DSceneScreenEffects;
 
 interface
@@ -30,7 +30,7 @@ uses Classes, CastleUtils, CastleUIControls, CastleWindow, CastleGLShaders,
   CastleViewport, CastleScreenEffects, X3DNodes;
 
 type
-  { Screen effects predefined in view3dscene.
+  { Screen effects predefined in castle-model-viewer.
     The order below matters: that's the order in which they will be applied.
     Some findings:
     - seNegative looks best after at least sePower*
@@ -145,7 +145,7 @@ begin
       SQuoteMenuEntryCaption(ScreenEffectsInfo[SE].Name), 350, false, true);
     Menu.Append(MenuItems[SE]);
 
-    { We create the same node 4 times, for each possible view3dscene viewport,
+    { We create the same node 4 times, for each possible castle-model-viewer viewport,
       as one X3D node cannot be added to multiple TCastleScene instances. }
     for I := Low(TScreenEffectsControlIndex) to High(TScreenEffectsControlIndex) do
     begin

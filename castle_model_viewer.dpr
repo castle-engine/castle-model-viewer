@@ -1,43 +1,38 @@
 {
-  Copyright 2002-2023 Michalis Kamburelis.
+  Copyright 2002-2024 Michalis Kamburelis.
 
-  This file is part of "view3dscene".
+  This file is part of "castle-model-viewer".
 
-  "view3dscene" is free software; you can redistribute it and/or modify
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
-  "view3dscene" is distributed in the hope that it will be useful,
+  "castle-model-viewer" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "view3dscene"; if not, write to the Free Software
+  along with "castle-model-viewer"; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
   ----------------------------------------------------------------------------
 }
 
-{ View3dscene is a 3D / 2D model viewer for all scene formats supported by Castle Game Engine
+{ Model viewer for all scene formats supported by Castle Game Engine
   (glTF, X3D, Spine JSON, sprite sheets... ).
   See https://castle-engine.io/creating_data_model_formats.php for a list of supported formats.
-  See https://castle-engine.io/view3dscene.php for user documentation.
+  See https://castle-engine.io/castle-model-viewer for user documentation.
 
   Note: If you want to learn how to use "Castle Game Engine",
-  the view3dscene source code isn't the best place to study.
+  the castle-model-viewer source code isn't the best place to study.
   It's long and uses some obscure CGE features sometimes.
-  Look instead:
-
-  - at simple examples in engine sources, like
-    ../castle_game_engine/examples/3d_rendering_processing/view_3d_model_basic.lpr
-
-  - at our manual:
-    https://castle-engine.io/manual_intro.php
+  Look instead at Castle Game Engine examples and manual:
+  https://castle-engine.io/manual_intro.php .
 }
 
-program view3dscene;
+program castle_model_viewer;
 
 {$I v3dsceneconf.inc}
 
@@ -60,8 +55,8 @@ program view3dscene;
 
 // Do not warn about CastleMaterialProperties deprecated --
 // normal CGE applications shouldn't use it,
-// but for view3dscene it is justified (grants extra functionality useful to
-// debug CGE projects), we're prepared to fix view3dscene when it breaks.
+// but for castle-model-viewer it is justified (grants extra functionality useful to
+// debug CGE projects), we're prepared to fix castle-model-viewer when it breaks.
 {$warnings off}
 
 uses SysUtils, Math, Classes,
@@ -82,7 +77,7 @@ uses SysUtils, Math, Classes,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
   CastleRenderOptions, CastleShapes, CastleViewport,
   CastleMaterialProperties, CastleInternalRenderer,
-  { view3dscene-specific units: }
+  { castle-model-viewer-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
   V3DSceneWarnings, V3DSceneFillMode,
@@ -167,7 +162,7 @@ var
 
   { ToolbarPanel is displayed if user wants to see the toolbar.
     Otherwise we display ToolbarPanelShorter --- which only shows the warnings button,
-    see https://github.com/castle-engine/view3dscene/issues/53 . }
+    see https://github.com/castle-engine/castle-model-viewer/issues/53 . }
   ToolbarPanel, ToolbarPanelShorter,
     ToolbarHorizGroup, ToolbarHorizGroupShorter: TCastleUserInterface;
   ButtonCollisions: TCastleButton;
@@ -913,7 +908,7 @@ class procedure THelper.OnWarningHandle(const Category, S: string);
 begin
   { It is possible that SceneWarnings = nil now,
     in case on macOS we use
-    ".../view3dscene .../dynamic_world.x3dv --screenshot 0 output_2d_screenshot.png"
+    ".../castle-model-viewer .../dynamic_world.x3dv --screenshot 0 output_2d_screenshot.png"
     and get warning
     "Freeing form failed with EAccessViolation, this is unfortunately possible on macOS with Carbon widgetset".
     The ButtonWarnings is invalid (already freed) at this point too. }
@@ -1100,7 +1095,7 @@ begin
     NewCaption := Scene.Caption;
     if NewCaption = '' then
       NewCaption := UriCaption(SceneUrl);
-    NewCaption := SForCaption(NewCaption) + ' - view3dscene';
+    NewCaption := SForCaption(NewCaption) + ' - castle-model-viewer';
     Window.Caption := NewCaption;
 
     UpdateCameraUI;
@@ -1236,7 +1231,7 @@ begin
   TimeLoadScene := ProcessTimer;
 
   { For batch operation (making screenshots), do not save the scene
-    on "recent files" menu. This also applies when using view3dscene
+    on "recent files" menu. This also applies when using castle-model-viewer
     as a thumbnailer. }
   if not MakingScreenShot then
     RecentMenu.Add(ASceneUrl);
@@ -1290,7 +1285,7 @@ begin
     with checks for "if Loaded" everywhere.
 
     Also, non-empty clear scene allows me to put there WorldInfo with a title.
-    This way clear scene has an effect on view3dscene window's title,
+    This way clear scene has an effect on castle-model-viewer window's title,
     and at the same time I don't have to set SceneUrl to something dummy.
 
     I'm not constructing here RootNode in code (i.e. Pascal).
@@ -1301,14 +1296,14 @@ begin
 end;
 
 { like LoadClearScene, but this loads a little more complicated scene.
-  It's a "welcome scene" of view3dscene. }
+  It's a "welcome scene" of castle-model-viewer. }
 procedure LoadWelcomeScene;
 begin
   LoadSimpleScene(LoadX3DClassicFromString({$I embedded_data/scenes/welcome_scene.inc}, ''), []);
 end;
 
 const
-  SaveGenerator = 'view3dscene, https://castle-engine.io/view3dscene.php';
+  SaveGenerator = 'castle-model-viewer, https://castle-engine.io/castle-model-viewer';
 
 { Load model from ASceneUrl,
   do SceneChanges, and write it as VRML/X3D to stdout.
@@ -1321,7 +1316,7 @@ begin
   Node := LoadNode(ASceneUrl);
   try
     if StdOutStream = nil then
-      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "view3dscene input.gltf --write > output.x3dv", see https://castle-engine.io/view3dscene.php#section_converting .');
+      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "castle-model-viewer input.gltf --write > output.x3dv", see https://castle-engine.io/castle-model-viewer#section_converting .');
     {$warnings off} // using internal CGE routine knowingly
     Save3D(Node, StdOutStream, SaveGenerator,
       ExtractURIName(ASceneUrl), Encoding, ForceConvertingToX3D);
@@ -1562,7 +1557,7 @@ end;
 { menu things ------------------------------------------------------------ }
 
 const
-  DisplayApplicationName = 'view3dscene';
+  DisplayApplicationName = 'castle-model-viewer';
 
 procedure UpdateStatusToolbarVisible; forward;
 
@@ -1573,7 +1568,7 @@ procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
     Fbo: TGLRenderToTexture;
     ImageClass: TCastleImageClass;
   begin
-    Assert(Window.DoubleBuffer); { view3dscene always has double buffer }
+    Assert(Window.DoubleBuffer); { castle-model-viewer always has double buffer }
 
     if Transparency then
     begin
@@ -1637,11 +1632,11 @@ begin
         to later save screenshot with spaces when scene file had spaces. }
       ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneUrl)))
     else
-      ScreenShotNameUrlPrefix := 'view3dscene_screen';
+      ScreenShotNameUrlPrefix := 'castle-model-viewer_screenshot';
     { We use FileNameAutoInc with 2 params,
       UrlPrefix, UrlSuffixWithPattern,
       since URL (and/or filename) may also contain % sign.
-      See https://github.com/castle-engine/view3dscene/issues/61 . }
+      See https://github.com/castle-engine/castle-model-viewer/issues/61 . }
     ScreenShotName := FileNameAutoInc(ScreenShotNameUrlPrefix, '_%d.png');
     { Below is a little expanded version of TCastleWindow.SaveScreenDialog.
       Expanded, to allow Transparency: boolean parameter,
@@ -2123,7 +2118,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
   { Remove special "stub" nodes, for castle creatures, items etc.
     This is purely for testing purposes (to view castle levels
-    in view3dscene), in actual game you want to remove them more intelligently
+    in castle-model-viewer), in actual game you want to remove them more intelligently
     (actually adding creatures, items, etc. at designated places). }
   procedure RemoveGamePlaceholders;
   var
@@ -2255,7 +2250,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     if Box.IsEmpty then
       MessageOK(Window, 'The bounding box is empty.') else
     begin
-      { Workarounding FPC 3.1.1 internal error 200211262 in view3dscene.lpr }
+      { Workarounding FPC 3.1.1 internal error 200211262 }
       (*
       MessageReport(Format(
         '# ----------------------------------------' + NL +
@@ -2343,7 +2338,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       if MessageInputQuery(Window, 'Time step between capturing movie frames:' + NL +
         NL +
         'Note that if you later choose to record to a single movie file, like "output.avi", then we''ll generate a movie with 25 frames per second. ' +
-        'So if you want your movie to play with the same speed as animation in view3dscene then the default value, 1/25, is good.' + NL +
+        'So if you want your movie to play with the same speed as animation in castle-model-viewer then the default value, 1/25, is good.' + NL +
         NL +
         'Input time step between capturing movie frames:', TimeStep) then
         if MessageInputQueryCardinal(Window, 'Input frames count to capture:', FramesCount) then
@@ -2418,7 +2413,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
         to just reload RootNode from file, since we cannot keep RootNode
         copy just for this purpose.
 
-        So I just treat it silently as non-fixable in view3dscene,
+        So I just treat it silently as non-fixable in castle-model-viewer,
         you have to load model with ProcessEvents = initially false
         to safely do LoadFromEvents. }
 
@@ -2511,7 +2506,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
       if SceneUrl <> '' then
         UrlPattern := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap_@side.png')
       else
-        UrlPattern := 'view3dscene_cubemap_@side.png';
+        UrlPattern := 'castle-model-viewer_cubemap_@side.png';
 
       if Window.FileDialog('Image name template to save', UrlPattern, false) then
       begin
@@ -2582,7 +2577,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     if SceneUrl <> '' then
       Url := ChangeURIExt(ExtractURIName(SceneUrl), '_cubemap.dds')
     else
-      Url := 'view3dscene_cubemap.dds';
+      Url := 'castle-model-viewer_cubemap.dds';
 
     if Window.FileDialog('Save image to file', Url, false) then
     begin
@@ -2626,7 +2621,7 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     if SceneUrl <> '' then
       Url := ChangeURIExt(ExtractURIName(SceneUrl), '_depth_%d.png')
     else
-      Url := 'view3dscene_depth_%d.png';
+      Url := 'castle-model-viewer_depth_%d.png';
     Url := FileNameAutoInc(Url);
 
     if Window.FileDialog('Save depth to a file', Url, false, SaveImage_FileFilters) then
@@ -3108,12 +3103,12 @@ begin
              'Version ' + Version + '.' + NL +
              'By Michalis Kamburelis.' + NL +
              NL +
-             'See ' + View3dsceneUrl + ' .' + NL +
+             'See ' + ViewerUrl + ' .' + NL +
              NL +
              'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
              'Compiled with ' + SCompilerDescription + '.');
          end;
-    132: if not OpenUrl(View3dsceneUrl) then
+    132: if not OpenUrl(ViewerUrl) then
            Window.MessageOk(SCannotOpenUrl, mtError);
     134: THelper.ClickButtonPatreon(nil);
 
@@ -3320,7 +3315,7 @@ begin
     M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
     M.Append(TMenuSeparator.Create);
     M2 := TMenu.Create('_Preferences');
-      M3 := TMenu.Create('_Anti Aliasing (Restart view3dscene to Apply)');
+      M3 := TMenu.Create('_Anti Aliasing (Restart Application to Apply)');
         MenuAppendAntiAliasing(M3, 600);
         M2.Append(M3);
       M2.Append(TMenuSeparator.Create);
@@ -3592,10 +3587,10 @@ begin
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('OpenGL Information',                 173));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('Visit view3dscene website',          132));
+    M.Append(TMenuItem.Create('Castle Model Viewer Website',        132));
     M.Append(TMenuItem.Create('Support us', 134));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('About view3dscene',                  131));
+    M.Append(TMenuItem.Create('About Castle Model Viewer',                  131));
     Result.Append(M);
 end;
 
@@ -3674,7 +3669,7 @@ begin
   ToolbarHorizGroupShorter := UiOwner.FindRequiredComponent('ToolbarHorizGroupShorter') as TCastleUserInterface;
 
   { Note that we need to assign all images,
-    because we embed all images in view3dscene binary. }
+    because we embed all images in castle-model-viewer binary. }
 
   ButtonOpen := UiOwner.FindRequiredComponent('ButtonOpen') as TCastleButton;
   ButtonOpen.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonOpen;
@@ -3903,7 +3898,7 @@ begin
             'You can also convert models in other formats to X3D.' + NL +
             NL +
             'Call as' + NL +
-            '  view3dscene [OPTIONS]... [FILE-NAME-TO-OPEN]' + NL +
+            '  castle-model-viewer [OPTIONS]... [FILE-NAME-TO-OPEN]' + NL +
             NL +
             'You can provide FILE-NAME-TO-OPEN on the command-line.' + NL +
             'Using dash ("-") as the file name will load an X3D model' + NL +
@@ -3923,7 +3918,7 @@ begin
             OptionDescription('--screenshot-transparent', 'Screenshots background is transparent. Useful only together with --screenshot-range or --screenshot options.')  + NL +
             OptionDescription('--viewpoint NAME', 'Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.')  + NL +
             OptionDescription('--anti-alias AMOUNT', 'Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.')  + NL +
-            OptionDescription('--project DIR', 'Point view3dscene to Castle Game Engine project directory (or CastleEngineManifest.xml file) to resolve the "castle-data:/" URLs in files.')  + NL +
+            OptionDescription('--project DIR', 'Point to Castle Game Engine project directory (or CastleEngineManifest.xml file) to resolve the "castle-data:/" URLs in files.')  + NL +
             NL +
             'Sound options:' + NL +
             SoundEngine.ParseParametersHelp + NL +
@@ -4009,7 +4004,7 @@ begin
     - Under Windows ParamStr(0) is ugly uppercased.
     - ParamStr(0) is unceratain for Unixes -- it contains whatever caller set.
     - ApplicationName is used for Config.Url by ApplicationConfig, so it better be reliable. }
-  ApplicationProperties.ApplicationName := 'view3dscene';
+  ApplicationProperties.ApplicationName := 'castle-model-viewer';
   ApplicationProperties.Version := Version;
 
   // Initialize log as early as possible, but avoid messing --help/--version/--write output
@@ -4021,7 +4016,7 @@ begin
   Window := TCastleWindow.Create(Application);
   Window.Container.UIScaling := usDpiScale;
 
-  { Enable F8 even in -dRELEASE: this is view3dscene,
+  { Enable F8 even in -dRELEASE: this is castle-model-viewer,
     let's make debug tools available always. }
   Window.Container.InputInspector.Key := keyF8;
 
@@ -4065,7 +4060,7 @@ begin
 
   MainViewport := TV3DViewport.Create(nil);
   MainViewport.FullSize := true;
-  // Usign deprecated AutoCamera, view3dscene needs this now to have
+  // Usign deprecated AutoCamera, castle-model-viewer needs this now to have
   // X3D Viewpoint animation affect camera.
   {$warnings off}
   MainViewport.AutoCamera := true;
@@ -4111,7 +4106,7 @@ begin
 
       AttributesLoadFromConfig(Scene.RenderOptions);
       MainViewport.Items.Add(Scene);
-      // Usign deprecated MainScene, view3dscene needs this now to have X3D
+      // Usign deprecated MainScene, castle-model-viewer needs this now to have X3D
       // Viewpoint animation affect camera, to have X3D Background node affect
       // background and likely more.
       {$warnings off}
@@ -4132,13 +4127,13 @@ begin
       try
         Theme.DialogsLight;
 
-        Window.GtkIconName := 'view3dscene';
+        Window.GtkIconName := 'castle-model-viewer';
         Window.MainMenu := CreateMainMenu;
         Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
-        // view3dscene uses deprecated OnXxx events.
+        // castle-model-viewer uses deprecated OnXxx events.
         // We should migrate to TCastleView -- but for now there's no significant
-        // reason to migrate, we can upgrade view3dscene when necessary when
+        // reason to migrate, we can upgrade castle-model-viewer when necessary when
         // CGE will remove it.
         {$warnings off}
         Window.OnResize := @Resize;

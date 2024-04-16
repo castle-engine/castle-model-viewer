@@ -14,7 +14,7 @@ This yields 12 total fonts.
 
 ## Why are these 12 fonts not embedded in Castle Game Engine?
 
-_Castle Game Engine_ contains only a default sans-serif font (not italic, not bold) now. The rest of fonts, 11 of them, are only present in the view3dscene now.
+_Castle Game Engine_ contains only a default sans-serif font (not italic, not bold) now. The rest of fonts, 11 of them, are only present in the castle-model-viewer now.
 
 We do not embed these 11 fonts in _Castle Game Engine_, since most CGE users don't need them:
 
@@ -30,13 +30,13 @@ And having these 12 fonts was problematic in CGE, esp. since we made our default
 
 - Increased exe size:
 
-    view3dscene build ("make"):
+    castle-model-viewer build ("make"):
     Without this defined: 24 MB.
     With this defined: 66 MB
 
 - Increased build time:
 
-    view3dscene + tovrmlx3d build time:
+    castle-model-viewer + castle-model-converter build time:
     Without this defined: 1m8s
     With this defined: 2m18s
 

@@ -38,7 +38,7 @@
     </RequiredPackages>
     <Units Count="1">
       <Unit0>
-        <Filename Value="tovrmlx3d.lpr"/>
+        <Filename Value="castle_model_converter.dpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
     </Units>
@@ -46,7 +46,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="tovrmlx3d"/>
+      <Filename Value="castle_model_converter"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="code/"/>

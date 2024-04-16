@@ -12,17 +12,17 @@ compile:
 .PHONY: clean
 clean:
 	castle-engine clean
-	castle-engine clean --manifest-name=CastleEngineManifest.tovrmlx3d.xml
+	castle-engine clean --manifest-name=CastleEngineManifest.converter.xml
 # remove also macOS stuff
-	rm -Rf view3dscene.app \
-	       tovrmlx3d.app \
-	       macosx/view3dscene.app \
-	       macosx/tovrmlx3d.app \
+	rm -Rf castle-model-viewer.app \
+	       castle-model-converter.app \
+	       macosx/castle-model-viewer.app \
+	       macosx/castle-model-converter.app \
 	       macosx/*.dmg
 
 # install / uninstall --------------------------------------------------------
 #
-# By default view3dscene is installed system-wide to /usr/local .
+# By default castle-model-viewer is installed system-wide to /usr/local .
 # You can run "make" followed by "sudo make install" to have it
 # ready on a typical Unix system.
 
@@ -37,15 +37,15 @@ DATADIR=$(DATAROOTDIR)
 .PHONY: install
 install:
 	install -d $(BINDIR)
-	install view3dscene $(BINDIR)
-	install tovrmlx3d $(BINDIR)
+	install castle-model-viewer $(BINDIR)
+	install castle-model-converter $(BINDIR)
 	install -d  $(DATADIR)
 	cd freedesktop/ && ./install.sh "$(DATADIR)"
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(BINDIR)/view3dscene \
-	      $(BINDIR)/tovrmlx3d
+	rm -f $(BINDIR)/castle-model-viewer \
+	      $(BINDIR)/castle-model-converter
 	cd freedesktop/ && ./uninstall.sh "$(DATADIR)"
 
 # code generation ------------------------------------------------------------

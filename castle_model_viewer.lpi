@@ -47,7 +47,7 @@
     </RequiredPackages>
     <Units Count="51">
       <Unit0>
-        <Filename Value="view3dscene.lpr"/>
+        <Filename Value="castle_model_viewer.dpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
@@ -256,7 +256,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="view3dscene"/>
+      <Filename Value="castle-model-viewer"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="code"/>

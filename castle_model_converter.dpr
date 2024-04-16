@@ -15,23 +15,23 @@
 
 { Converter of 3D and 2D model formats supported by Castle Game Engine.
 
-  See https://castle-engine.io/view3dscene.php#section_converting
+  See https://castle-engine.io/castle-model-converter
   for usage docs.
   See https://castle-engine.io/creating_data_model_formats.php
-  for the supported 3D model formats. For now, we can read all formats
-  documented there, and we can output only VRML or X3D.
+  for the supported model formats. We can read all formats
+  documented there, and we can output X3D or VRML.
 
   Usage:
-  Reads a 3D model from the URL (can be just a filename)
+  Reads a model from the URL (can be just a filename)
   given as a command-line parameter.
   Outputs model to the stdout.
   Use '-' on the command-line to read from the standard input
   (consider using then also --stdin-url=xxx option, to determine the file type
   and base to resolve relative URLs).
 
-  This tool can be used instead of "view3dscene --write ...".
+  This tool can be used instead of "castle-model-viewer --write ...".
   This way you don't need e.g. OpenGL libraries (that are required
-  to run view3dscene) installed on your system.
+  to run castle-model-viewer) installed on your system.
 
   For Castle Game Engine developers:
   For your own uses, you can fork and easily extend this tool
@@ -40,7 +40,7 @@
   See https://castle-engine.io/vrml_x3d.php for docs.
 }
 
-program tovrmlx3d;
+program castle_model_converter;
 
 uses SysUtils, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
@@ -78,7 +78,7 @@ begin
   case OptionNum of
     0:begin
         InfoWrite(
-          'tovrmlx3d: converter from various 3D model formats into VRML/X3D.' +NL+
+          'castle-model-converter: converter from various 3D model formats into VRML/X3D.' +NL+
           'Give input 3D model URL (usually just a filename) on the command-line,' +NL+
           'and output model will be written to the standard output.' +NL+
           NL+
@@ -164,7 +164,7 @@ var
   Node: TX3DNode;
   EventsHandler: TEventsHandler;
 begin
-  ApplicationProperties.ApplicationName := 'tovrmlx3d';
+  ApplicationProperties.ApplicationName := 'castle-model-converter';
   ApplicationProperties.Version := Version;
 
   { parse command-line }
@@ -185,7 +185,7 @@ begin
       if not Validate then
       begin
         Save3D(Node, StdOutStream,
-          { generator (metadata) } 'tovrmlx3d, https://castle-engine.io/view3dscene.php#section_converting',
+          { generator (metadata) } 'castle-model-converter, https://castle-engine.io/castle-model-converter',
           { source (metadata) } ExtractURIName(Url),
           Encoding, ForceX3D);
       end;

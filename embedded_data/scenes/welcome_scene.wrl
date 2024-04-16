@@ -3,7 +3,6 @@
 Group {
   children [
     # TODO: In the future I plan to add here some nice "welcome scene"
-    # Text { string [ "Welcome to", "view3dscene" ] }
     WorldInfo { title "Welcome scene" }
   ]
 }

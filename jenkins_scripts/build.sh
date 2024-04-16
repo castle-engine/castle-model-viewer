@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ----------------------------------------------------------------------------
-# Build view3dscene for various platforms.
+# Build castle-model-viewer for various platforms.
 #
 # Just like CGE pack_release, you can call this with:
 #
@@ -18,8 +18,7 @@ IFS=$'\n\t'
 # ----------------------------------------------------------------------------
 
 # remove previous artifacts
-rm -f view3dscene-*.tar.gz view3dscene-*.zip view3dscene*.apk
-rm -f tovrmlx3d-*.tar.gz tovrmlx3d-*.zip tovrmlx3d*.apk # just in case, remove
+rm -f *.tar.gz *.zip *.apk
 
 package_platform ()
 {
@@ -27,24 +26,24 @@ package_platform ()
   CPU="$2"
   shift 2
 
-  # not only "castle-engine clean", to clean also tovrmlx3d binaries
+  # not only "castle-engine clean", to clean also castle-model-converter binaries
   make clean
 
-  # build tovrmlx3d first, it will be packaged in view3dscene CastleEngineManifest.xml
-  castle-engine compile --os="${OS}" --cpu="${CPU}" --manifest-name=CastleEngineManifest.tovrmlx3d.xml
+  # build castle-model-converter first, it will be packaged in castle-model-viewer CastleEngineManifest.xml
+  castle-engine compile --os="${OS}" --cpu="${CPU}" --manifest-name=CastleEngineManifest.converter.xml
 
-  # build and package view3dscene
+  # build and package castle-model-viewer
 
   if [ "${OS}" = 'darwin' ]; then
     castle-engine package --os="${OS}" --cpu="${CPU}" --package-format=mac-app-bundle
 
-    # Add 2nd exe "tovrmlx3d" to the bundle.
+    # Add 2nd exe "castle-model-converter" to the bundle.
     # This also means we zip it later manually (TODO: we could add file to zip).
-    cp tovrmlx3d view3dscene.app/Contents/MacOS/
+    cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
 
     VERSION=`castle-engine output version`
-    ZIPNAME=view3dscene-"${VERSION}"-darwin-x86_64.zip
-    zip -r "${ZIPNAME}" view3dscene.app/
+    ZIPNAME=castle-model-viewer-"${VERSION}"-darwin-x86_64.zip
+    zip -r "${ZIPNAME}" castle-model-viewer.app/
     echo "Packed to ${ZIPNAME}"
   else
     castle-engine package --os="${OS}" --cpu="${CPU}"

@@ -1,15 +1,11 @@
 [Desktop Entry]
-Name=view3dscene
-GenericName=3D Viewer
-GenericName[it]=Visualizzatore 3D
-GenericName[pl]=Przeglądarka modeli 3D
-Exec=view3dscene %u
-Icon=view3dscene
+Name=castle-model-viewer
+GenericName=3D and 2D Model Viewer
+Exec=castle-model-viewer %u
+Icon=castle-model-viewer
 Type=Application
 Categories=Graphics;3DGraphics;
-Comment=View 3D models in various formats, play with VRML / X3D worlds
-Comment[it]=Visualizzatore di modelli 3D in vari formati e visore di mondi VRML / X3D
-Comment[pl]=Przeglądanie modeli 3D w różnych formatach, operowanie na światach VRML / X3D
+Comment=View 3D and 2D models in various formats, including glTF, X3D, VRML and other formats supported by the Castle Game Engine
 MimeType=model/vrml;image/x-3ds;model/x3d+vrml;model/x3d+xml;application/x-collada;application/x-inventor;application/x-md3;application/x-wavefront-obj;application/x-geo;application/x-castle-anim-frames;application/json;model/gltf+json;model/gltf-binary
 # See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=693918
 # https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s05.html

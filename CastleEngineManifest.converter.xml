@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="tovrmlx3d"
-  standalone_source="tovrmlx3d.lpr"
+<project name="castle-model-converter"
+  standalone_source="castle_model_converter.dpr"
   author="Michalis Kamburelis"
-  qualified_name="io.castleengine.tovrmlx3d"
+  qualified_name="io.castleengine.castle.model.converter"
   >
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->

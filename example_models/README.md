@@ -1,6 +1,6 @@
-# Collection of example models to test view3dscene and Castle Game Engine
+# Collection of example models to test Castle Model Viewer and Castle Game Engine
 
-Examples in this directory demonstrate some capabitilies of [view3dscene](https://castle-engine.io/view3dscene.php) and [Castle Game Engine](https://castle-engine.io/).
+Examples in this directory demonstrate some capabitilies of [Castle Model Viewer](https://castle-engine.io/castle-model-viewer) and [Castle Game Engine](https://castle-engine.io/).
 
 They show [various supported 3D and 2D data formats](https://castle-engine.io/creating_data_model_formats.php):
 

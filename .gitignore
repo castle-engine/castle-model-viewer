@@ -7,8 +7,8 @@
 *.res
 *.app
 .DS_Store
-view3dscene
-tovrmlx3d
+castle-model-viewer
+castle-model-converter
 automatic-windows-resources.res
 code/*.or
 code/*.compiled

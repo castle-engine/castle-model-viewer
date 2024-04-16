@@ -8,8 +8,8 @@ set -eu
 cd ../
 castle-engine package ${CASTLE_ENGINE_TOOL_OPTIONS:-}
 
-# add tovrmlx3d binary
-castle-engine compile ${CASTLE_ENGINE_TOOL_OPTIONS:-} --manifest-name=CastleEngineManifest.tovrmlx3d.xml
-cp tovrmlx3d view3dscene.app/Contents/MacOS/tovrmlx3d
+# add castle-model-converter binary
+castle-engine compile ${CASTLE_ENGINE_TOOL_OPTIONS:-} --manifest-name=CastleEngineManifest.converter.xml
+cp castle-model-converter castle-model-viewer.app/Contents/MacOS/castle-model-converter
 
 # TODO: Add OggVorbis library to bundle, for now loading OggVorbis will not work.

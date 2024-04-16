@@ -15,7 +15,7 @@ uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleViewport,
 
 type
   { Takes care of setting shadow volume properties, and modifies a little
-    shadow volume rendering to work nicely with all view3dscene
+    shadow volume rendering to work nicely with all castle-model-viewer
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsViewport = class(TCastleAutoNavigationViewport)
   protected
