@@ -806,6 +806,24 @@ castle-model-converter: Warning: Node name "Camera" used multiple times for diff
 castle-model-converter: Warning: Node name "Camera" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "Cube.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "Cube.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Animating "weights" not supported
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
+castle-model-converter: Warning: Node name "Suzanne" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "Cube.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "Cube.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "Cube.001" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
@@ -6479,6 +6497,10 @@ castle-model-converter: Warning: X3D: Cannot save VRML route: destination node n
 castle-model-converter: Warning: X3D: Cannot save VRML route: destination node name "KingsNose" not bound
 castle-model-converter: Warning: X3D: Cannot save VRML route: destination node name "KingsEye" not bound
 castle-model-converter: Warning: X3D: Cannot save VRML route: destination node name "KingsNose" not bound
+castle-model-converter: Warning: X3D: Error EDownloadError when loading inline file from URL "https://raw.githubusercontent.com/castle-engine/demo-models/master/castle/castle.gltf": Downloading network resources (from "http" or "https"  protocols) is not enabled. Set global EnableBlockingDownloads:=true to enable.
+castle-model-converter: Warning: X3D: Error EDownloadError when loading inline file from URL "https://raw.githubusercontent.com/castle-engine/demo-models/master/castle/castle.gltf": Downloading network resources (from "http" or "https"  protocols) is not enabled. Set global EnableBlockingDownloads:=true to enable.
+castle-model-converter: Warning: X3D: Error EDownloadError when loading inline file from URL "https://raw.githubusercontent.com/castle-engine/demo-models/master/castle/castle.gltf": Downloading network resources (from "http" or "https"  protocols) is not enabled. Set global EnableBlockingDownloads:=true to enable.
+castle-model-converter: Warning: X3D: Error EDownloadError when loading inline file from URL "https://raw.githubusercontent.com/castle-engine/demo-models/master/castle/castle.gltf": Downloading network resources (from "http" or "https"  protocols) is not enabled. Set global EnableBlockingDownloads:=true to enable.
 castle-model-converter: Warning: Node name "XXXTransform" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "XXXTouch" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
 castle-model-converter: Warning: Node name "XXX" used multiple times for different nodes. This is not allowed in X3D. (It is allowed in VRML, but we advise to upgrade all VRML models to X3D.)
