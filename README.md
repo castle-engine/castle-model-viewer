@@ -19,7 +19,7 @@ Supported formats:
 
 See also [Castle Game Engine model formats](https://castle-engine.io/creating_data_model_formats.php).
 
-Complete documentation on https://castle-engine.io/castle-model-viewer .
+Complete documentation on https://castle-engine.io/model-viewer .
 
 Using Castle Game Engine, see https://castle-engine.io/ .
 
@@ -29,7 +29,7 @@ Using Castle Game Engine, see https://castle-engine.io/ .
 
 Note that in simple cases, `castle-model-viewer` can also be used to convert models. Interactively (just open a model, and then use menu items _"File -> Save As..."_) or from command-line (use `--write` and related options). But `castle-model-converter` has a bit more options and at the same time lighter requirements (it does not depend on any GUI libraries).
 
-The documentation of command-line options to perform convertion is on https://castle-engine.io/castle-model-converter .
+The documentation of command-line options to perform convertion is on https://castle-engine.io/model-converter .
 
 ## Building
 

@@ -33,7 +33,7 @@ type
     All other necessary changes after extending TSceneChange will be enforced
     by the compiler.
 
-    See https://castle-engine.io/castle-model-viewer#section_command_line_options
+    See https://castle-engine.io/model-viewer#section_command_line_options
     for detailed spec what these scene changes do. }
   TSceneChange = (
     scNoNormals,

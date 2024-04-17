@@ -15,7 +15,7 @@
 
 { Converter of 3D and 2D model formats supported by Castle Game Engine.
 
-  See https://castle-engine.io/castle-model-converter
+  See https://castle-engine.io/model-converter
   for usage docs.
   See https://castle-engine.io/creating_data_model_formats.php
   for the supported model formats. We can read all formats
@@ -185,7 +185,7 @@ begin
       if not Validate then
       begin
         Save3D(Node, StdOutStream,
-          { generator (metadata) } 'castle-model-converter, https://castle-engine.io/castle-model-converter',
+          { generator (metadata) } 'castle-model-converter, https://castle-engine.io/model-converter',
           { source (metadata) } ExtractURIName(Url),
           Encoding, ForceX3D);
       end;
