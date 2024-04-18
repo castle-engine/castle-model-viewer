@@ -78,8 +78,9 @@ begin
   case OptionNum of
     0:begin
         InfoWrite(
-          'castle-model-converter: converter from various 3D model formats into VRML/X3D.' +NL+
-          'Give input 3D model URL (usually just a filename) on the command-line,' +NL+
+          'castle-model-converter: converter for all 3D and 2D model formats' +NL+
+          'supported by Castle Game Engine (like glTF, X3D, Collada, MD3...).' +NL+
+          'Give input model URL (usually just a filename) on the command-line,' +NL+
           'and output model will be written to the standard output.' +NL+
           NL+
           'Available options are:' +NL+
