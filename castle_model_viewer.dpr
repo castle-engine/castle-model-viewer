@@ -23,7 +23,7 @@
 { Model viewer for all scene formats supported by Castle Game Engine
   (glTF, X3D, Spine JSON, sprite sheets... ).
   See https://castle-engine.io/creating_data_model_formats.php for a list of supported formats.
-  See https://castle-engine.io/model-viewer for user documentation.
+  See https://castle-engine.io/castle-model-viewer for user documentation.
 
   Note: If you want to learn how to use "Castle Game Engine",
   the castle-model-viewer source code isn't the best place to study.
@@ -1303,7 +1303,7 @@ begin
 end;
 
 const
-  SaveGenerator = 'castle-model-viewer, https://castle-engine.io/model-viewer';
+  SaveGenerator = 'castle-model-viewer, https://castle-engine.io/castle-model-viewer';
 
 { Load model from ASceneUrl,
   do SceneChanges, and write it as VRML/X3D to stdout.
@@ -1316,7 +1316,7 @@ begin
   Node := LoadNode(ASceneUrl);
   try
     if StdOutStream = nil then
-      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "castle-model-viewer input.gltf --write > output.x3dv", see https://castle-engine.io/model-viewer#section_converting .');
+      raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "castle-model-viewer input.gltf --write > output.x3dv", see https://castle-engine.io/castle-model-viewer#section_converting .');
     {$warnings off} // using internal CGE routine knowingly
     Save3D(Node, StdOutStream, SaveGenerator,
       ExtractURIName(ASceneUrl), Encoding, ForceConvertingToX3D);

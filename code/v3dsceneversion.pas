@@ -3,7 +3,7 @@ unit V3DSceneVersion;
 interface
 const
   Version = '4.3.0';
-  ViewerUrl = 'https://castle-engine.io/model-viewer';
+  ViewerUrl = 'https://castle-engine.io/castle-model-viewer';
   SupportURL = 'https://www.patreon.com/castleengine';
 implementation
 end.

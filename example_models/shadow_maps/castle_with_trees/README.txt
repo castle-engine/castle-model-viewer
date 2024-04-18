@@ -1,7 +1,7 @@
 This is a scene for showing off shadow maps.
 
 You can open with castle-model-viewer
-(https://castle-engine.io/model-viewer) every X3D and VRML file here.
+(https://castle-engine.io/castle-model-viewer) every X3D and VRML file here.
 To see the final scene open castle_with_trees_final.x3dv.
 
 You can edit with Blender castle_with_trees.blend scene,
