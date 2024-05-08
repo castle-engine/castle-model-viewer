@@ -1,5 +1,12 @@
 # ----------------------------------------------------------------------------
 # GitHub Actions workflow to build and package the project using Castle Game Engine.
+# Details:
+# - Builds and packages: creates release packages (zip,tar.gz)
+#   for all interesting platforms.
+#   Some of them use our self-hosted runners, some use Docker on GH-hosted runners.
+# - Uploads the release packages as GitHub release of "snapshot" tag,
+#   https://github.com/castle-engine/castle-model-viewer/releases/tag/snapshot
+# - Updates the "snapshot" tag to point to the build commit.
 # ----------------------------------------------------------------------------
 
 name: Build
@@ -64,8 +71,7 @@ jobs:
     name: Build on Native Runner (target OS/CPU = source OS/CPU)
     strategy:
       matrix:
-        runner: [macos_x64]
-        # TODO: for speed: , raspberry_pi_64, raspberry_pi_32
+        runner: [macos_x64, raspberry_pi_64, raspberry_pi_32]
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
