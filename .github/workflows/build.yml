@@ -1,0 +1,116 @@
+# ----------------------------------------------------------------------------
+# GitHub Actions workflow to build and package the project using Castle Game Engine.
+# ----------------------------------------------------------------------------
+
+name: Build
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_docker:
+    name: Build From Docker
+    runs-on: ubuntu-latest
+    container: kambi/castle-engine-cloud-builds-tools:cge-none
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Castle Game Engine
+      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
+        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Env BUILD_TOOL
+        run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Clone snapshot
+        run: git clone --depth 1 --single-branch --branch snapshot https://github.com/castle-engine/castle-engine/
+      - name: Castle Game Engine - Build
+        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+
+      # Package application:
+      # - castle-model-converter first, it will be packaged in castle-model-viewer CastleEngineManifest.xml
+      # - then build and package castle-model-viewer
+      - name: Package Windows / x86_64
+        run: |
+          ${BUILD_TOOL} compile --os=win64 --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
+          ${BUILD_TOOL} package --os=win64 --cpu=x86_64
+      - name: Package Windows / i386
+        run: |
+          ${BUILD_TOOL} compile --os=win32 --cpu=i386 --manifest-name=CastleEngineManifest.converter.xml
+          ${BUILD_TOOL} package --os=win32 --cpu=i386
+      - name: Package Linux / x86_64
+        run: |
+          ${BUILD_TOOL} compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
+          ${BUILD_TOOL} package --os=linux --cpu=x86_64
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-linux-builds
+          path: |
+            *.zip
+            *.tar.gz
+          #if-no-files-found: error
+      # Releases files in the "snapshot" release.
+      - name: Release Artifacts
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build_runner_native:
+    name: Build on Native Runner (target OS/CPU = source OS/CPU)
+    strategy:
+      matrix:
+        runner: [macos_x64, raspberry_pi_64, raspberry_pi_32]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Castle Game Engine
+      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
+        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Env BUILD_TOOL
+        run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Clone snapshot
+        run: git clone --depth 1 --single-branch --branch snapshot https://github.com/castle-engine/castle-engine/
+      - name: Castle Game Engine - Build
+        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+
+      # Package application
+      - name: Package (non macOS)
+        if: ${{ matrix.runner != 'macos_x64' }}
+        run: |
+          ${BUILD_TOOL} compile --manifest-name=CastleEngineManifest.converter.xml
+          ${BUILD_TOOL} package
+      - name: Package (macOS)
+        if: ${{ matrix.runner == 'macos_x64' }}
+        # Special order for macOS:
+        # - First compile and package castle-model-viewer, it will be a bundle.
+        # - Add 2nd exe "castle-model-converter" to the bundle.
+        # - zip it manually
+        # (TODO: we could add file to zip created by initial "package" instead?)
+        run: |
+          ${BUILD_TOOL} compile --manifest-name=CastleEngineManifest.converter.xml
+          ${BUILD_TOOL} package --package-format=mac-app-bundle
+
+          cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
+          VERSION=`castle-engine output version`
+          ZIPNAME=castle-model-viewer-"${VERSION}"-darwin-x86_64.zip
+          zip -r "${ZIPNAME}" castle-model-viewer.app/
+          echo "Packed to ${ZIPNAME}"
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runner }}-build
+          path: |
+            *.zip
+            *.tar.gz
+          #if-no-files-found: error
+      # Releases files in the "snapshot" release.
+      - name: Release Artifacts
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
