@@ -37,10 +37,14 @@ jobs:
           ${BUILD_TOOL} package --os=win64 --cpu=x86_64
       - name: Package Windows / i386
         run: |
+          # We need "make clean" to be sure to remove previous build artifacts, e.g. castle-model-converter.exe
+          make clean
           ${BUILD_TOOL} compile --os=win32 --cpu=i386 --manifest-name=CastleEngineManifest.converter.xml
           ${BUILD_TOOL} package --os=win32 --cpu=i386
       - name: Package Linux / x86_64
         run: |
+          # We need "make clean" to be sure to remove previous build artifacts, e.g. castle-model-converter.exe
+          make clean
           ${BUILD_TOOL} compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
           ${BUILD_TOOL} package --os=linux --cpu=x86_64
       - name: Archive Artifacts
@@ -56,7 +60,8 @@ jobs:
     name: Build on Native Runner (target OS/CPU = source OS/CPU)
     strategy:
       matrix:
-        runner: [macos_x64, raspberry_pi_64, raspberry_pi_32]
+        runner: [macos_x64]
+        # TODO: for speed: , raspberry_pi_64, raspberry_pi_32
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -119,13 +124,23 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: gh auth status
-    - name: GH CLI test
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gh release list --repo castle-engine/castle-engine
     # Releases files in the "snapshot" release.
     - name: Release Artifacts
       if: ${{ github.ref == 'refs/heads/master' }}
       run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
       env:
         GH_TOKEN: ${{ github.token }}
+
+  update-release-tag:
+    name: Update Release Tag (make snapshot tag point to the build commit on master branch)
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update Release Tag
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: |
+        # --force allows to overwrite previous tag
+        git tag --force snapshot
+        # --force allows to push with overwritten tag
+        git push --force origin snapshot
