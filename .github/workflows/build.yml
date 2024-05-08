@@ -14,39 +14,43 @@ jobs:
   build_docker:
     name: Build From Docker
     runs-on: ubuntu-latest
-    container: kambi/castle-engine-cloud-builds-tools:cge-none
+    # We use a Docker container with cge-unstable, so it already contains
+    # CGE (with build tool) set up. This way we know we only use CGE that
+    # passed automatic tests, we have castle-engine on the PATH, and things are easy.
+    container: kambi/castle-engine-cloud-builds-tools:cge-unstable
     steps:
       - uses: actions/checkout@v4
 
-      # Setup Castle Game Engine
-      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
-        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Env BUILD_TOOL
-        run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone snapshot
-        run: git clone --depth 1 --single-branch --branch snapshot https://github.com/castle-engine/castle-engine/
-      - name: Castle Game Engine - Build
-        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+      # Older version of this workflow used to clone CGE and build it.
+      # # Setup Castle Game Engine
+      # - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
+      #   run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
+      # - name: Castle Game Engine - Env BUILD_TOOL
+      #   run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
+      # - name: Castle Game Engine - Clone snapshot
+      #   run: git clone --depth 1 --single-branch --branch snapshot https://github.com/castle-engine/castle-engine/
+      # - name: Castle Game Engine - Build
+      #   run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
 
       # Package application:
       # - castle-model-converter first, it will be packaged in castle-model-viewer CastleEngineManifest.xml
       # - then build and package castle-model-viewer
       - name: Package Windows / x86_64
         run: |
-          ${BUILD_TOOL} compile --os=win64 --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
-          ${BUILD_TOOL} package --os=win64 --cpu=x86_64
+          castle-engine compile --os=win64 --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
+          castle-engine package --os=win64 --cpu=x86_64
       - name: Package Windows / i386
         run: |
           # We need "make clean" to be sure to remove previous build artifacts, e.g. castle-model-converter.exe
           make clean
-          ${BUILD_TOOL} compile --os=win32 --cpu=i386 --manifest-name=CastleEngineManifest.converter.xml
-          ${BUILD_TOOL} package --os=win32 --cpu=i386
+          castle-engine compile --os=win32 --cpu=i386 --manifest-name=CastleEngineManifest.converter.xml
+          castle-engine package --os=win32 --cpu=i386
       - name: Package Linux / x86_64
         run: |
           # We need "make clean" to be sure to remove previous build artifacts, e.g. castle-model-converter.exe
           make clean
-          ${BUILD_TOOL} compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
-          ${BUILD_TOOL} package --os=linux --cpu=x86_64
+          castle-engine compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
+          castle-engine package --os=linux --cpu=x86_64
       - name: Archive Artifacts
         uses: actions/upload-artifact@v4
         with:
