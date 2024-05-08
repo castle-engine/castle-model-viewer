@@ -51,12 +51,6 @@ jobs:
             *.zip
             *.tar.gz
           #if-no-files-found: error
-      # Releases files in the "snapshot" release.
-      - name: Release Artifacts
-        if: ${{ github.ref == 'refs/heads/master' }}
-        run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
-        env:
-          GH_TOKEN: ${{ github.token }}
 
   build_runner_native:
     name: Build on Native Runner (target OS/CPU = source OS/CPU)
@@ -108,9 +102,30 @@ jobs:
             *.zip
             *.tar.gz
           #if-no-files-found: error
-      # Releases files in the "snapshot" release.
-      - name: Release Artifacts
-        if: ${{ github.ref == 'refs/heads/master' }}
-        run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
-        env:
-          GH_TOKEN: ${{ github.token }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Only upload release if all builds, on all runners, succeeded.
+    needs: [build_docker, build_runner_native]
+    steps:
+    - name: Download packaged releases
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+    - name: List downloaded files
+      run: ls -R
+    - name: GH CLI status
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh auth status
+    - name: GH CLI test
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh release list --repo castle-engine/castle-engine
+    # Releases files in the "snapshot" release.
+    - name: Release Artifacts
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
+      env:
+        GH_TOKEN: ${{ github.token }}
