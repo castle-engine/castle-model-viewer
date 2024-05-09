@@ -1989,86 +1989,72 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     finally Dec(DisableAutoDynamicGeometry) end;
   end;
 
-  { Returns @true and sets MatInfo on success.
-    Produces message to user and returns @false on failure.
-
-    Note that SelectedItem is not necessarily correct anymore.
-    Use only MatInfo pointers after this.
-
-    TODO: This only works with Phong materials. }
-  function ChangeMaterialInit(out MatInfo: TPhongMaterialInfo): boolean;
+  procedure ChangeMaterialEmissiveColor;
   var
-    Shape: TAbstractShapeNode;
-    Appearance: TAppearanceNode;
-    Material: TMaterialNode;
-    AnyMatInfo: TMaterialInfo;
+    MatInfo: TMaterialInfo;
+    Color: TVector3;
   begin
-    Result := false;
-
-    if (SelectedItem = nil) then
+    if SelectedItem = nil then
     begin
       Window.MessageOK('Nothing selected.', mtError);
       Exit;
     end;
 
-    AnyMatInfo := SelectedItem^.State.MaterialInfo;
-    if AnyMatInfo is TPhongMaterialInfo then
-    begin
-      MatInfo := TPhongMaterialInfo(AnyMatInfo);
-      Result := true;
-    end else
-      MatInfo := nil;
-
-    Shape := SelectedItem^.State.ShapeNode;
-
+    MatInfo := SelectedItem^.State.MaterialInfo;
     if MatInfo = nil then
     begin
-      if Shape <> nil then
-      begin
-        if MessageYesNo(Window, 'No Material (or similar node indicating Phong material) present. Add material to this node and then edit it?') then
-        begin
-          Appearance := Shape.Appearance;
-          if Appearance = nil then
-          begin
-            Appearance := TAppearanceNode.Create;
-            Shape.Appearance := Appearance;
-          end;
-
-          Material := TMaterialNode.Create;
-          Appearance.Material := Material;
-
-          MatInfo := Material.MaterialInfo as TPhongMaterialInfo;
-          Result := true;
-        end;
-      end else
-      begin
-        MessageOK(Window, 'Cannot add Material to VRML 1.0.');
-      end;
+      Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
+      Exit;
     end;
+
+    Color := MatInfo.EmissiveColor;
+    if Window.ColorDialog(Color) then
+      MatInfo.EmissiveColor := Color;
   end;
 
-  procedure ChangeMaterialDiffuse;
+  procedure ChangeMaterialMainColor;
   var
-    MatInfo: TPhongMaterialInfo;
+    MatInfo: TMaterialInfo;
     Color: TVector3;
   begin
-    if not ChangeMaterialInit(MatInfo) then Exit;
+    if SelectedItem = nil then
+    begin
+      Window.MessageOK('Nothing selected.', mtError);
+      Exit;
+    end;
 
-    Color := MatInfo.DiffuseColor;
+    MatInfo := SelectedItem^.State.MaterialInfo;
+    if MatInfo = nil then
+    begin
+      Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
+      Exit;
+    end;
+
+    Color := MatInfo.MainColor;
     if Window.ColorDialog(Color) then
-      MatInfo.DiffuseColor := Color;
+      MatInfo.MainColor := Color;
   end;
 
-  procedure ChangeMaterialSpecular;
+  procedure ResetMaterial(const NewMaterialNode: TAbstractMaterialNode);
   var
-    MatInfo: TPhongMaterialInfo;
-    Color: TVector3;
+    Shape: TAbstractShapeNode;
   begin
-    if not ChangeMaterialInit(MatInfo) then Exit;
+    if SelectedItem = nil then
+    begin
+      Window.MessageOK('Nothing selected.', mtError);
+      Exit;
+    end;
 
-    Color := MatInfo.SpecularColor;
-    if Window.ColorDialog(Color) then
-      MatInfo.SpecularColor := Color;
+    Shape := SelectedItem^.State.ShapeNode;
+    if Shape = nil then // this can happen if you selected VRML 1 / Inventor node
+    begin
+      Window.MessageOK('No Shape node selected.', mtError);
+      Exit;
+    end;
+
+    if Shape.Appearance = nil then
+      Shape.Appearance := TAppearanceNode.Create;
+    Shape.Appearance.Material := NewMaterialNode;
   end;
 
   procedure LoadMaterialProperties;
@@ -3195,8 +3181,12 @@ begin
 
     600..649: Window.AntiAliasing := TAntiAliasing(MenuItem.IntData - 600);
 
-    710: ChangeMaterialDiffuse;
-    720: ChangeMaterialSpecular;
+    710: ChangeMaterialMainColor;
+    711: ChangeMaterialEmissiveColor;
+    715: ResetMaterial(TPhysicalMaterialNode.Create);
+    716: ResetMaterial(TUnlitMaterialNode.Create);
+    717: ResetMaterial(TMaterialNode.Create);
+
     722: LoadMaterialProperties;
     723: CleanMaterialProperties;
     725: if LightsEditorIsOpen then
@@ -3521,8 +3511,12 @@ begin
     M.Append(MenuMergeCloseVertexes);
     M.Append(TMenuSeparator.Create);
     MenuEditMaterial := TMenu.Create('_Edit Material (of node with selected triangle)');
-      MenuEditMaterial.Append(TMenuItem.Create('Diffuse Color ...' , 710));
-      MenuEditMaterial.Append(TMenuItem.Create('Specular Color ...', 720));
+      MenuEditMaterial.Append(TMenuItem.Create('Change Main (Emissive / Diffuse / Base) Color ...' , 710));
+      MenuEditMaterial.Append(TMenuItem.Create('Change Emissive Color ...' , 711));
+      MenuEditMaterial.Append(TMenuSeparator.Create);
+      MenuEditMaterial.Append(TMenuItem.Create('Reset to Default Physical Material', 715));
+      MenuEditMaterial.Append(TMenuItem.Create('Reset to Default Unlit Material', 716));
+      MenuEditMaterial.Append(TMenuItem.Create('Reset to Default Phong Material', 717));
     M.Append(MenuEditMaterial);
     M.Append(TMenuItem.Create('Load material properties from external file ...', 722));
     M.Append(TMenuItem.Create('Clear loaded material properties', 723));
