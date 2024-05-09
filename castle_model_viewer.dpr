@@ -2003,16 +2003,20 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     Material: TMaterialNode;
     AnyMatInfo: TMaterialInfo;
   begin
+    Result := false;
+
     if (SelectedItem = nil) then
     begin
       Window.MessageOK('Nothing selected.', mtError);
-      Exit(false);
+      Exit;
     end;
 
     AnyMatInfo := SelectedItem^.State.MaterialInfo;
     if AnyMatInfo is TPhongMaterialInfo then
-      MatInfo := TPhongMaterialInfo(AnyMatInfo)
-    else
+    begin
+      MatInfo := TPhongMaterialInfo(AnyMatInfo);
+      Result := true;
+    end else
       MatInfo := nil;
 
     Shape := SelectedItem^.State.ShapeNode;
@@ -2032,16 +2036,15 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
 
           Material := TMaterialNode.Create;
           Appearance.Material := Material;
-        end else
-          Exit(false);
+
+          MatInfo := Material.MaterialInfo as TPhongMaterialInfo;
+          Result := true;
+        end;
       end else
       begin
         MessageOK(Window, 'Cannot add Material to VRML 1.0.');
-        Exit(false);
       end;
     end;
-
-    Result := true;
   end;
 
   procedure ChangeMaterialDiffuse;
