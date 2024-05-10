@@ -53,12 +53,6 @@ program castle_model_viewer;
   Then our standard exception handler will show, with a useful backtrace. }
 {$define CATCH_EXCEPTIONS}
 
-// Do not warn about CastleMaterialProperties deprecated --
-// normal CGE applications shouldn't use it,
-// but for castle-model-viewer it is justified (grants extra functionality useful to
-// debug CGE projects), we're prepared to fix castle-model-viewer when it breaks.
-{$warnings off}
-
 uses SysUtils, Math, Classes,
   {$ifndef VER3_0} OpenSSLSockets, {$endif}
   { CGE units }
@@ -76,7 +70,7 @@ uses SysUtils, Math, Classes,
   CastleInternalBaseTriangleOctree,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
   CastleRenderOptions, CastleShapes, CastleViewport,
-  CastleMaterialProperties, CastleInternalRenderer,
+  CastleInternalRenderer,
   { castle-model-viewer-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,
@@ -86,8 +80,6 @@ uses SysUtils, Math, Classes,
   V3DSceneScreenEffects, V3DSceneSkeletonVisualize, V3DSceneViewports, V3DSceneVersion,
   V3DSceneLightsEditor, V3DSceneWindow, V3DSceneStatus, V3DSceneNamedAnimations,
   V3DSceneBoxes, V3DSceneInternalScenes, V3DSceneDialogBox, V3DSceneFonts;
-
-{$warnings on}
 
 var
   ShowFrustum: boolean = false;
@@ -2057,26 +2049,6 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     Shape.Appearance.Material := NewMaterialNode;
   end;
 
-  procedure LoadMaterialProperties;
-  var
-    Url: String;
-  begin
-    Url := ExtractURIPath(SceneUrl);
-    if Window.FileDialog('Open material_properties.xml file', Url, true,
-      'All Files|*|*XML files|*.xml') then
-    try
-      MaterialProperties.Url := Url;
-    except
-      on E: Exception do MessageOK(Window,
-        'Error while loading material properties: ' + E.Message);
-    end;
-  end;
-
-  procedure CleanMaterialProperties;
-  begin
-    MaterialProperties.Url := '';
-  end;
-
   procedure ChangeLightModelAmbient;
   var
     C: TVector3;
@@ -3187,8 +3159,6 @@ begin
     716: ResetMaterial(TUnlitMaterialNode.Create);
     717: ResetMaterial(TMaterialNode.Create);
 
-    722: LoadMaterialProperties;
-    723: CleanMaterialProperties;
     725: if LightsEditorIsOpen then
            LightsEditorClose
          else
@@ -3518,8 +3488,6 @@ begin
       MenuEditMaterial.Append(TMenuItem.Create('Reset to Default Unlit Material', 716));
       MenuEditMaterial.Append(TMenuItem.Create('Reset to Default Phong Material', 717));
     M.Append(MenuEditMaterial);
-    M.Append(TMenuItem.Create('Load material properties from external file ...', 722));
-    M.Append(TMenuItem.Create('Clear loaded material properties', 723));
     M.Append(TMenuSeparator.Create);
     MenuLightsEditor := TMenuItemChecked.Create('Lights Editor', 725,
       LightsEditorIsOpen, false);
