@@ -3866,15 +3866,13 @@ begin
             '  castle-model-viewer [OPTIONS]... [FILE-NAME-TO-OPEN]' + NL +
             NL +
             'You can provide FILE-NAME-TO-OPEN on the command-line.' + NL +
-            'Using dash ("-") as the file name will load an X3D model' + NL +
-            'from the standard input' + NL +
             NL +
             'Available options:' + NL +
             OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
             OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
             OptionDescription('-H / --hide-extras', 'Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.') + NL +
             OptionDescription('--hide-menu', 'Hide menu bar.') + NL +
-            OptionDescription('--write', 'Load the scene, optionally process by --scene-change-xxx, save it as VRML/X3D to the standard output, exit. Use --write-encoding to choose encoding.') + NL +
+            OptionDescription('--write', 'Load the model and save it as X3D or VRML to the standard output, exit. Use --write-encoding to choose encoding.') + NL +
             OptionDescription('--write-encoding classic|xml', 'Choose X3D encoding to use with --write option. Default is "classic".') + NL +
             OptionDescription('--write-force-x3d', 'Force conversion from VRML to X3D with --write option. Note that if you choose XML encoding (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).')  + NL +
             OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions to X3D. Particularly useful when combined with --write, to have X3D valid in all browsers (but less functional).')  + NL +
