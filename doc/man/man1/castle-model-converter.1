@@ -1,41 +1,168 @@
-.TH castle-model-converter 1 "12 May 2013" "Castle Game Engine" "Convert 3D models to VRML / X3D"
-.SH NAME
-castle-model-converter \- Convert 3D models to X3D, format VRML / X3D to have nice indentation.
+'\" t
+.\"     Title: castle-model-converter
+.\"    Author: Michalis Kamburelis
+.\" Generator: Asciidoctor 2.0.22
+.\"      Date: 2024-05-11
+.\"    Manual: castle-model-converter
+.\"    Source: castle-model-converter
+.\"  Language: English
+.\"
+.TH "CASTLE\-MODEL\-CONVERTER" "1" "2024-05-11" "castle\-model\-converter" "castle\-model\-converter"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+castle-model-converter \- converter for various 3D and 2D model formats
+.SH "SYNOPSIS"
+.sp
+\fBcastle\-model\-converter\fP [\fIOPTION\fP]... \fIINPUT\-FILE\fP
+.SH "FEATURES"
+.sp
+As \fBinput\fP, we support all 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, Spine JSON, sprite sheets (in Castle Game Engine, Cocos2D and Starling XML formats), MD3, Wavefront OBJ, 3DS, STL, Collada, and more.
+.sp
+As \fBoutput\fP, we support X3D or VRML. You can basically convert any input format to X3D. You can also convert between X3D classic and X3D XML encodings (in both directions) and you can convert (upgrade) from VRML 2.0 to X3D.
+.sp
+We can also validate the input model, without doing any conversion.
+.SH "DESCRIPTION"
+.sp
+The only necessary parameter is the the input filename. It can be any filename, URL or \f(CR\-\fP (to mean \fIstandard input\fP).
+.sp
+The output is written to the \fIstandard output\fP. You can redirect it to a file, see examples below.
+.SH "EXAMPLES"
+.sp
+.if n .RS 4
+.nf
+.fam C
+# Convert glTF to X3D
+castle\-model\-converter input.gltf > output.x3dv
 
-.SH SYNOPSIS
+# Validate some glTF and X3D files
+castle\-model\-converter \-\-validate input.gltf
+castle\-model\-converter \-\-validate input.x3d
 
-.B castle-model-converter
-[\fIfile\fR] [\fIoptions...\fR]
+# Convert standard input to X3D
+castle\-model\-converter \- < input.x3dv > output.x3dv
+castle\-model\-converter \- \-\-stdin\-url=fakeurl.gltf < input.gltf > output.x3dv
 
-.SH DESCRIPTION
+# Convert file from X3D classic encoding to X3D XML encoding
+castle\-model\-converter input.x3dv \-\-encoding=xml > output.x3d
 
-.B castle-model-converter
-Convert models to X3D, format VRML / X3D to have nice indentation. The output model will be written on standard output.
+# Convert file from X3D XML encoding to X3D classic encoding
+castle\-model\-converter input.x3d \-\-encoding=classic > output.x3dv
 
-.SH USAGE
-
-.B castle-model-converter
-takes the following arguments:
-.TP
-.B file
-The 3D model file to open.
-
-.TP
-.B \-h / \-\-help
+# Convert VRML 2.0 to X3D in classic encoding.
+# You could add \-\-encoding=classic, but it\*(Aqs not needed
+# (it is the default anyway).
+castle\-model\-converter input.wrl \-\-force\-x3d > output.x3dv
+.fam
+.fi
+.if n .RE
+.SH "COMMAND\-LINE OPTIONS"
+.sp
+\fB\-\-validate\fP
+.RS 4
+Only validate the input model, don\(cqt do any conversion. Will exit with non\-zero status if the input is not 100% valid. Even warnings (that are ignorable during normal conversion) cause non\-zero exit status when validating.
+.if n .sp
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+.B Note
+.ps -1
+.br
+.sp
+Our \fI"validation"\fP isn\(cqt 100% complete, that is: passing the validation doesn\(cqt guarantee that your model satisfies every detail of the specification of given format. We check for a lot of model issues (including, but not limited to, issues that would make it impossible to render this model using \fICastle Game Engine\fP). But it\(cqs not a complete validation of the model per every detail of the specification.
+.sp .5v
+.RE
+.RE
+.sp
+\fB\-\-encoding=classic|xml\fP
+.RS 4
+Use given X3D encoding on output. By default, we use \fIclassic\fP encoding (suitable for X3D files with \f(CR.x3dv\fP extensions).
+.RE
+.sp
+\fB\-\-force\-x3d\fP
+.RS 4
+Force output to be X3D, even if input is VRML.
+.sp
+This option is only useful to convert (upgrade) VRML 2.0 to X3D right now.
+.sp
+Conversion to X3D is also automatically forced (no need to specify it explicitly by this option) if the chosen encoding is XML (that is, you used \f(CR\-\-write\-encoding=xml\fP). That\(cqs because only X3D supports XML encoding.
+.if n .sp
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+.B Note
+.ps -1
+.br
+.sp
+When this is used with VRML 1.0 or Inventor models as input, we\(cqll also convert parts of them to X3D. But the result is not really useful: you will get a file encoded using X3D keywords, but using VRML 1.0 or Inventor node names. Proper conversion from VRML 1.0 or Inventor to X3D is not implemented (yet).
+.sp .5v
+.RE
+.sp
+This option has no effect when used on models that are already X3D, or that can be only output as X3D (glTF, Collada, 3DS, etc.).
+.RE
+.sp
+\fB\-\-no\-x3d\-extensions\fP
+.RS 4
+Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some \fICastle Game Engine\fP\-specific features missing).
+.RE
+.sp
+\fB\-\-enable\-downloads\fP
+.RS 4
+Enable (blocking) downloads from the net, e.g. to download a texture or inlined (using X3D \f(CRInline\fP node) models referenced by htt(s) protocol.
+.RE
+.sp
+\fB\-\-stdin\-url\fP
+.RS 4
+If input URL is \f(CR\-\fP, then we read file contents from the standard input. In this case, you can use this option to provide a \fIfake\fP URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs, textures or X3D inlines) and to guess the input file type. Default is \f(CRstdin.x3dv\fP in current directory, so we assume input is X3D (classic encoded), and resolve URLs with respect to the current directory.
+.RE
+.sp
+\fB\-\-float\-precision=DIGITS\fP
+.RS 4
+Number of digits after the decimal point when writing floating\-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.
+.RE
+.sp
+\fB\-h / \-\-help\fP
+.RS 4
 Print the help message and exit.
-
-.TP
-.B \-v / \-\-version
+.RE
+.sp
+\fB\-v / \-\-version\fP
+.RS 4
 Print the version number and exit.
-
-.TP
-.B \-\-encoding classic|xml
-Choose X3D encoding. Default is "classic".
-
-.TP
-.B \-\-force\-x3d
-Force conversion from VRML to X3D. Note that if you choose XML encoding (by \-\-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
-
-.SH SEE ALSO
-.IP
-.BR  castle-model-viewer (1)
+.RE
+.SH "RESOURCES"
+.sp
+\fBProject web site:\fP \c
+.URL "https://castle\-engine.io/castle\-model\-converter" "" ""
+.sp
+\fBUsing Castle Game Engine:\fP \c
+.URL "https://castle\-engine.io/" "" ""
+.SH "SEE ALSO"
+.sp
+\fBcastle\-model\-viewer(1)\fP
+.SH "AUTHOR"
+.sp
+Michalis Kamburelis
