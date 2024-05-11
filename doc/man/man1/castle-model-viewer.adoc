@@ -1,0 +1,83 @@
+= castle-model-viewer(1)
+Michalis Kamburelis
+:doctype: manpage
+:manmanual: castle-model-viewer
+:mansource: castle-model-viewer
+:man-linkstyle: pass:[blue R < >]
+
+== Name
+
+castle-model-viewer - Viewer for 3D and 2D models, like glTF, X3D, VRML and more
+
+== Synopsis
+
+*castle-model-viewer* [_OPTION_]... [_FILE_]
+
+== Description
+
+*castle-model-viewer* is a viewer for 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, MD3, OBJ, STL, Collada, Spine JSON, sprite sheets and more.
+
+Supports viewing the scene in the "Examine" mode and walking in the virtual world with collision detection and gravity. Many 3D graphic effects are available like mirrors, shadows, shaders. We can also convert between some model formats.
+
+Full documentation is available online at https://castle-engine.io/castle-model-viewer[].
+
+== Options
+
+*-h, --help*::
+Print the help message and exit.
+
+*-v, --version*::
+Print the version number and exit.
+
+*-H / --hide-extras*::
+Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.
+
+*--write*::
+Load the model and save it as X3D to the standard output, exit. Use --write-encoding to choose encoding.
+
+*--write-encoding classic|xml*::
+Choose X3D encoding to use with --write option. Default is "classic".
+
+*--write-force-x3d*::
+Force conversion from VRML to X3D with --write option. Note that if you choose XML encoding  (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
+
+*--screenshot TIME IMAGE-FILE-NAME*::
+Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise  we'll just make a screenshot of the default black scene.
+
+*--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME*::
+Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).
+
+*--viewpoint NAME*::
+Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.
+
+Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.
+
+*--audio-device DEVICE-NAME*::
+Choose specific OpenAL audio device. See the available device names in the --help output, or in the "Preferences -> Sound Device" menu.
+
+*--no-sound*::
+Turn off sound.
+
+.B Window options:
+
+*--geometry WIDTHxHEIGHT<sign>XOFF<sign>YOFF*::
+Set initial window size and/or position.
+
+*--fullscreen*::
+Set initial window size to cover whole screen.
+
+*--fullscreen-custom WIDTHxHEIGHT*::
+Try to resize the screen to WIDTHxHEIGHT and then set initial window size to cover whole screen.
+
+*--display DISPLAY-NAME*::
+Use given X display name.
+
+== Resources
+
+*Project web site:* https://castle-engine.io/castle-model-viewer
+
+*Using Castle Game Engine:* https://castle-engine.io/
+
+== See Also
+
+*castle-model-converter(1)*

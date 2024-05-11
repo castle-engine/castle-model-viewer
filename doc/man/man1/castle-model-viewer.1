@@ -1,141 +1,136 @@
-.TH castle-model-viewer 1 "12 May 2013" "Castle Game Engine" "Viewer for 3D and 3D models, like glTF, X3D, VRML"
-.SH NAME
-castle-model-viewer \- Viewer for 3D and 3D models, like glTF, X3D, VRML.
-
-.SH SYNOPSIS
-
-.B castle-model-viewer
-[\fIfile\fR] [\fIoptions...\fR]
-
-.SH DESCRIPTION
-
-.B castle-model-viewer
-is a viewer for 3D and 3D models, like glTF, X3D, VRML.
-
-.SH USAGE
-
-.B castle-model-viewer
-takes the following arguments:
-.TP
-.B file
-The 3D model file to open.
-
-.TP
-.B All command-line options are optional.
-
-.TP
-.B \-h / \-\-help
+'\" t
+.\"     Title: castle-model-viewer
+.\"    Author: Michalis Kamburelis
+.\" Generator: Asciidoctor 2.0.22
+.\"      Date: 2024-05-11
+.\"    Manual: castle-model-viewer
+.\"    Source: castle-model-viewer
+.\"  Language: English
+.\"
+.TH "CASTLE\-MODEL\-VIEWER" "1" "2024-05-11" "castle\-model\-viewer" "castle\-model\-viewer"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+castle-model-viewer \- Viewer for 3D and 2D models, like glTF, X3D, VRML and more
+.SH "SYNOPSIS"
+.sp
+\fBcastle\-model\-viewer\fP [\fIOPTION\fP]... [\fIFILE\fP]
+.SH "DESCRIPTION"
+.sp
+\fBcastle\-model\-viewer\fP is a viewer for 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, MD3, OBJ, STL, Collada, Spine JSON, sprite sheets and more.
+.sp
+Supports viewing the scene in the "Examine" mode and walking in the virtual world with collision detection and gravity. Many 3D graphic effects are available like mirrors, shadows, shaders. We can also convert between some model formats.
+.sp
+Full documentation is available online at \c
+.URL "https://castle\-engine.io/castle\-model\-viewer" "" "."
+.SH "OPTIONS"
+.sp
+\fB\-h, \-\-help\fP
+.RS 4
 Print the help message and exit.
-
-.TP
-.B \-v / \-\-version
+.RE
+.sp
+\fB\-v, \-\-version\fP
+.RS 4
 Print the version number and exit.
-
-.TP
-.B \-H / \-\-hide\-extras
-Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the 3D world.
-
-.TP
-.B \-\-write
-Load the scene, optionally process by \-\-scene\-change\-xxx,  save it as X3D to the standard output, exit. Use \-\-write\-encoding to choose encoding.
-
-.TP
-.B \-\-write\-encoding classic|xml
+.RE
+.sp
+\fB\-H / \-\-hide\-extras\fP
+.RS 4
+Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.
+.RE
+.sp
+\fB\-\-write\fP
+.RS 4
+Load the model and save it as X3D to the standard output, exit. Use \-\-write\-encoding to choose encoding.
+.RE
+.sp
+\fB\-\-write\-encoding classic|xml\fP
+.RS 4
 Choose X3D encoding to use with \-\-write option. Default is "classic".
-
-.TP
-.B \-\-write\-force\-x3d
+.RE
+.sp
+\fB\-\-write\-force\-x3d\fP
+.RS 4
 Force conversion from VRML to X3D with \-\-write option. Note that if you choose XML encoding  (by \-\-write\-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
-
-.TP
-.B \-\-screenshot TIME IMAGE\-FILE\-NAME
-Take a screenshot of the loaded scene at given TIME, and save it to IMAGE\-FILE\-NAME. You most definitely want to pass 3D model file to load at command\-line too, otherwise  we'll just make a screenshot of the default black scene.
-
-.TP
-.B \-\-screenshot\-range TIME\-BEGIN TIME\-STEP FRAMES\-COUNT FILE\-NAME
+.RE
+.sp
+\fB\-\-screenshot TIME IMAGE\-FILE\-NAME\fP
+.RS 4
+Take a screenshot of the loaded scene at given TIME, and save it to IMAGE\-FILE\-NAME. You most definitely want to pass 3D model file to load at command\-line too, otherwise  we\(cqll just make a screenshot of the default black scene.
+.RE
+.sp
+\fB\-\-screenshot\-range TIME\-BEGIN TIME\-STEP FRAMES\-COUNT FILE\-NAME\fP
+.RS 4
 Take a FRAMES\-COUNT number of screenshots from TIME\-BEGIN by step TIME\-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE\-NAME must then be specified like image@counter(4).png).
-
-.TP
-.B \-\-viewpoint NAME
+.RE
+.sp
+\fB\-\-viewpoint NAME\fP
+.RS 4
 Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.
-
-.TP
-.B \-\-anti\-alias AMOUNT
+.RE
+.sp
 Use full\-screen anti\-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti\-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti\-aliasing quality.
-
-.TP
-.B \-\-audio\-device DEVICE\-NAME
-Choose specific OpenAL audio device. See the available device names in the \-\-help output, or in the "Preferences \-> Sound Device" menu.
-
-.TP
-.B \-\-no\-sound
+.sp
+\fB\-\-audio\-device DEVICE\-NAME\fP
+.RS 4
+Choose specific OpenAL audio device. See the available device names in the \-\-help output, or in the "Preferences \(-> Sound Device" menu.
+.RE
+.sp
+\fB\-\-no\-sound\fP
+.RS 4
 Turn off sound.
-
-.TP
-.B Window options (backend GTK+):
-
-.TP
-.B \-\-geometry WIDTHxHEIGHT<sign>XOFF<sign>YOFF
+.RE
+.sp
+.B B Window options:
+.br
+.sp
+\fB\-\-geometry WIDTHxHEIGHT<sign>XOFF<sign>YOFF\fP
+.RS 4
 Set initial window size and/or position.
-
-.TP
-.B \-\-fullscreen
+.RE
+.sp
+\fB\-\-fullscreen\fP
+.RS 4
 Set initial window size to cover whole screen.
-
-.TP
-.B \-\-fullscreen\-custom WIDTHxHEIGHT
+.RE
+.sp
+\fB\-\-fullscreen\-custom WIDTHxHEIGHT\fP
+.RS 4
 Try to resize the screen to WIDTHxHEIGHT and then set initial window size to cover whole screen.
-
-.TP
-.B \-\-display DISPLAY\-NAME
+.RE
+.sp
+\fB\-\-display DISPLAY\-NAME\fP
+.RS 4
 Use given X display name.
-
-.TP
-.B Debug options:
-
-.TP
-.B \-\-debug\-log
-Write log info to stdout.
-
-.TP
-.B \-\-debug\-log\-cache
-Write log info, including cache.
-
-.TP
-.B \-\-debug\-log\-shaders
-Write log info, including shader source and log.
-
-.TP
-.B \-\-debug\-log\-changes
-Write log info, including VRML/X3D graph changes.
-
-.TP
-.B Deprecated options:
-
-.TP
-.B \-\-scene\-change\-no\-normals
-Remove normals information from the loaded scene. Forces automatic calculation of normal vectors. Deprecated, doing this from command\-line is not usually useful.
-
-.TP
-.B \-\-scene\-change\-no\-solid\-objects
-Make all shapes not solid in the loaded scene. Disables backface culling. Deprecated, doing this from command\-line is not usually useful.
-
-.TP
-.B \-\-scene\-change\-no\-convex\-faces
-Treat all faces as potentially concave in the loaded scene. Deprecated, doing this from command\-line is not usually useful.
-
-.TP
-.B \-\-write\-to\-vrml
-Deprecated, shortcut for "\-\-write \-\-write\-encoding=classic".
-
-.TP
-.B \-\-camera\-radius RADIUS
-Set camera sphere radius used for collisions and determinig moving speed. Deprecated, consider using NavigationInfo node inside your scene instead.
-
-.TP
-.B \-\-navigation EXAMINE|WALK|FLY...
-Set initial navigation style. Deprecated, consider using NavigationInfo node inside your scene instead.
-
-.SH SEE ALSO
-.IP
-.BR  castle-model-converter (1)
+.RE
+.SH "RESOURCES"
+.sp
+\fBProject web site:\fP \c
+.URL "https://castle\-engine.io/castle\-model\-viewer" "" ""
+.sp
+\fBUsing Castle Game Engine:\fP \c
+.URL "https://castle\-engine.io/" "" ""
+.SH "SEE ALSO"
+.sp
+\fBcastle\-model\-converter(1)\fP
+.SH "AUTHOR"
+.sp
+Michalis Kamburelis
