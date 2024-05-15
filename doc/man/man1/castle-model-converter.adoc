@@ -17,7 +17,7 @@ castle-model-converter - converter for various 3D and 2D model formats
 
 As *input*, we support all 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, Spine JSON, sprite sheets (in Castle Game Engine, Cocos2D and Starling XML formats), MD3, Wavefront OBJ, 3DS, STL, Collada, and more.
 
-As *output*, we support X3D or VRML. You can basically convert any input format to X3D. You can also convert between X3D classic and X3D XML encodings (in both directions) and you can convert (upgrade) from VRML 2.0 to X3D.
+As *output*, we support X3D, VRML and STL. You can convert any input format to X3D or STL. You can also convert between X3D classic and X3D XML encodings (in both directions) and you can convert (upgrade) from VRML 2.0 to X3D.
 
 We can also validate the input model, without doing any conversion.
 
