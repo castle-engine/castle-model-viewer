@@ -81,14 +81,18 @@ begin
           'castle-model-converter: converter for all 3D and 2D model formats' +NL+
           'supported by Castle Game Engine (like glTF, X3D, Collada, MD3...).' +NL+
           NL+
-          'Give 2 parameters on the command-line:' +NL+
-          '1. input model (URL, usually just a filename) ,' +NL+
-          '2. output model (URL, usually just a filename). ' +NL+
+          'Call with these parameters on the command-line:' +NL+
+          NL+
+          '1. The input filename. It can be any filename, URL or - (stdin).' +NL+
+          '   Required.' +NL+
+          NL+
+          '2. The output filename. It can be any filename, URL or - (stdout).' +NL+
+          '   This parameter is optional. If not provided, the output is stdout,' +NL+
+          '   unless --validate is also used (then the output is not written anywhere).' +NL+
           NL+
           'Available options are:' +NL+
           OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
           OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
-          OptionDescription('--encoding classic|xml', 'DEPRECATED. Choose X3D encoding. Do not use -- the 2nd parameter should determine the output type, ".x3d" extension says to make X3D XML, ".x3dv" says to make X3D classic. Or use --stdout-url to provide fake URL in case output is to stdout.') + NL +
           OptionDescription('--force-x3d', 'Force conversion from VRML to X3D. Note that if you choose XML encoding (by --encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).') +NL+
           OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
@@ -96,6 +100,7 @@ begin
           OptionDescription('--stdin-url', 'If input URL is "-", then we read file contents from the standard input. In this case, you can use this option to provide a "pretend" URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs) and to guess the input file type. Default is "stdin.x3dv" in current directory, so we assume it is X3D (classic encoded), and resolve with respect to the current directory.') +NL+
           OptionDescription('--stdout-url', 'If output URL is "-", then we write file contents to the standard output. In this case, you can use this option to provide a "pretend" URL for the output. We will use it to determine the output file type, e.g. "out.x3d" to output X3D XML encoding or "out.x3dv" to output X3D classic encoding.') +NL+
           OptionDescription('--float-precision DIGITS', 'Number of digits after the decimal point when writing floating-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.') +NL+
+          OptionDescription('--encoding classic|xml', 'DEPRECATED. Choose X3D encoding. Do not use -- the 2nd parameter should determine the output type, ".x3d" extension says to make X3D XML, ".x3dv" says to make X3D classic. Or use --stdout-url to provide fake URL in case output is to stdout.') + NL +
           NL+
           ApplicationProperties.Description);
         Halt;
