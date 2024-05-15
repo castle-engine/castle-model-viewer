@@ -18,26 +18,26 @@
   See https://castle-engine.io/castle-model-converter
   for usage docs.
   See https://castle-engine.io/creating_data_model_formats.php
-  for the supported model formats. We can read all formats
-  documented there, and we can output X3D or VRML.
+  for the supported model formats.
 
   Usage:
-  Reads a model from the URL (can be just a filename)
-  given as a command-line parameter.
-  Outputs model to the stdout.
-  Use '-' on the command-line to read from the standard input
+  Provide 2 parameters on the command-line:
+  1. input URL (can be just a filename) to read,
+  2. output URL (to save to, can be just a filename).
+
+  The output URL (2nd) is optional.
+  If not provided, the stdout is assumed, which is equivalent to providing '-'
+  as the output URL.
+  Also, the output URL is not allowed when the --validate is used.
+
+  Use '-' as input URL on the command-line to read from the standard input
   (consider using then also --stdin-url=xxx option, to determine the file type
   and base to resolve relative URLs).
 
-  This tool can be used instead of "castle-model-viewer --write ...".
-  This way you don't need e.g. OpenGL libraries (that are required
-  to run castle-model-viewer) installed on your system.
+  Analogously, use '-' as output URL on the command-line to write to the standard output.
+  Consider using --stdout-url=xxx option to determine the file type.
 
-  For Castle Game Engine developers:
-  For your own uses, you can fork and easily extend this tool
-  to process the nodes graph.
-  For example, add or remove some nodes.
-  See https://castle-engine.io/vrml_x3d.php for docs.
+  This tool can be used instead of "castle-model-viewer" conversions done from GUI.
 }
 
 program castle_model_converter;
@@ -50,10 +50,10 @@ uses SysUtils, Classes,
   V3DSceneVersion;
 
 var
-  Encoding: TX3DEncoding = xeClassic;
-  ForceX3D: Boolean = false;
   Validate: Boolean = false;
   StdInUrl: String = 'stdin.x3dv';
+  StdOutUrl: String = 'stdout.x3dv';
+  OutputX3dEncoding: String = '';
 
 const
   Options: array [0..9] of TOption =
@@ -61,12 +61,12 @@ const
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
     (Short:  #0; Long: 'encoding'; Argument: oaRequired),
-    (Short:  #0; Long: 'force-x3d'; Argument: oaNone),
     (Short:  #0; Long: 'debug-log'; Argument: oaNone),
     (Short:  #0; Long: 'no-x3d-extensions'; Argument: oaNone),
     (Short:  #0; Long: 'enable-downloads'; Argument: oaNone),
     (Short:  #0; Long: 'validate'; Argument: oaNone),
     (Short:  #0; Long: 'stdin-url'; Argument: oaRequired),
+    (Short:  #0; Long: 'stdout-url'; Argument: oaRequired),
     (Short:  #0; Long: 'float-precision'; Argument: oaRequired)
   );
 
@@ -80,18 +80,21 @@ begin
         InfoWrite(
           'castle-model-converter: converter for all 3D and 2D model formats' +NL+
           'supported by Castle Game Engine (like glTF, X3D, Collada, MD3...).' +NL+
-          'Give input model URL (usually just a filename) on the command-line,' +NL+
-          'and output model will be written to the standard output.' +NL+
+          NL+
+          'Give 2 parameters on the command-line:' +NL+
+          '1. input model (URL, usually just a filename) ,' +NL+
+          '2. output model (URL, usually just a filename). ' +NL+
           NL+
           'Available options are:' +NL+
           OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
           OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
-          OptionDescription('--encoding classic|xml', 'Choose X3D encoding. Default is "classic".') + NL +
+          OptionDescription('--encoding classic|xml', 'DEPRECATED. Choose X3D encoding. Do not use -- the 2nd parameter should determine the output type, ".x3d" extension says to make X3D XML, ".x3dv" says to make X3D classic. Or use --stdout-url to provide fake URL in case output is to stdout.') + NL +
           OptionDescription('--force-x3d', 'Force conversion from VRML to X3D. Note that if you choose XML encoding (by --encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).') +NL+
           OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
-          OptionDescription('--validate', 'Only validate the input, without any output. Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
+          OptionDescription('--validate', 'Only validate the input, without any output (the output URL is not allowed in this case). Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
           OptionDescription('--stdin-url', 'If input URL is "-", then we read file contents from the standard input. In this case, you can use this option to provide a "pretend" URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs) and to guess the input file type. Default is "stdin.x3dv" in current directory, so we assume it is X3D (classic encoded), and resolve with respect to the current directory.') +NL+
+          OptionDescription('--stdout-url', 'If output URL is "-", then we write file contents to the standard output. In this case, you can use this option to provide a "pretend" URL for the output. We will use it to determine the output file type, e.g. "out.x3d" to output X3D XML encoding or "out.x3dv" to output X3D classic encoding.') +NL+
           OptionDescription('--float-precision DIGITS', 'Number of digits after the decimal point when writing floating-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.') +NL+
           NL+
           ApplicationProperties.Description);
@@ -101,25 +104,17 @@ begin
         Writeln(Version);
         Halt;
       end;
-    2:begin
-        if SameText(Argument, 'classic') then
-          Encoding := xeClassic
-        else
-        if SameText(Argument, 'xml') then
-          Encoding := xeXML
-        else
-          raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [Argument]);
-      end;
-    3:ForceX3D := true;
-    4:begin
+    2:OutputX3dEncoding := Argument;
+    3:begin
         LogEnableStandardOutput := false;
         InitializeLog;
         Writeln(ErrOutput, ApplicationProperties.ApplicationName, ': Logging to ', LogOutput);
       end;
-    5:CastleX3dExtensions := false;
-    6:EnableBlockingDownloads := true;
-    7:Validate := true;
-    8:StdInUrl := Argument;
+    4:CastleX3dExtensions := false;
+    5:EnableBlockingDownloads := true;
+    6:Validate := true;
+    7:StdInUrl := Argument;
+    8:StdOutUrl := Argument;
     9:begin
         if not TryStrToInt(Argument, FloatPrecision) then
           raise EInvalidParams.CreateFmt('Invalid --float-precision argument "%s"', [Argument]);
@@ -161,34 +156,78 @@ end;
 
 procedure Run;
 var
-  Url: String;
-  Node: TX3DNode;
+  InputUrl, OutputUrl, OutputMimeType: String;
+  Node: TX3DRootNode;
   EventsHandler: TEventsHandler;
+  OutputStream: TStream;
 begin
   ApplicationProperties.ApplicationName := 'castle-model-converter';
   ApplicationProperties.Version := Version;
 
-  { parse command-line }
+  { parse command-line, calculating InputUrl and OutputUrl }
   Parameters.Parse(Options, @OptionProc, nil);
-  Parameters.CheckHigh(1);
-  Url := Parameters[1];
+  Parameters.CheckHighAtLeast(1);
+  Parameters.CheckHighAtMost(2);
+  InputUrl := Parameters[1];
+  if Parameters.High = 2 then
+    OutputUrl := Parameters[2]
+  else
+    OutputUrl := '-';
+
+  { Make basic check that output URL was not specified when --validate is used.
+    This over-uses the fact that "not providing output URL" is equivalent to
+    providing "-" as output URL. }
+  if Validate and (OutputUrl <> '-') then
+    raise EInvalidParams.Create('When --validate is used, the output URL is not allowed');
 
   EventsHandler := TEventsHandler.Create;
   try
     ApplicationProperties.OnWarning.Add(@EventsHandler.HandleWarning);
 
-    if Url = '-' then
+    // load the model, thus calculating Node
+    if InputUrl = '-' then
       Node := LoadNodeStandardInput
     else
-      Node := LoadNode(Url);
+      Node := LoadNode(InputUrl);
+
+    // calculate OutputMimeType
+    if OutputUrl = '-' then
+      OutputMimeType := UriMimeType(StdOutUrl)
+    else
+      OutputMimeType := UriMimeType(OutputUrl);
+
+    // override OutputMimeType if we need to support deprecated --encoding
+    if OutputX3dEncoding <> '' then
+    begin
+      WritelnWarning('DEPRECATED: --encoding argument is deprecated. Use instead the 2nd parameter (output URL) to determine the output type, from extension. Or use --stdout-url to provide fake URL in case output is to stdout.');
+      if SameText(OutputX3dEncoding, 'classic') then
+      begin
+        if Node.HasForceVersion and (Node.ForceVersion.Major <= 2) then
+          OutputMimeType := 'model/vrml' // VRML <= 2.0
+        else
+          OutputMimeType := 'model/x3d+vrml'; // X3D in classic encoding
+      end else
+      if SameText(OutputX3dEncoding, 'xml') then
+      begin
+        OutputMimeType := 'model/x3d+xml'; // X3D in XML encoding
+      end else
+        raise EInvalidParams.CreateFmt('Invalid --encoding argument "%s"', [OutputX3dEncoding]);
+    end;
 
     try
       if not Validate then
       begin
-        Save3D(Node, StdOutStream,
+        if OutputUrl <> '-' then
+          OutputStream := UrlSaveStream(OutputUrl)
+        else
+          OutputStream := StdOutStream;
+
+        SaveNode(Node, OutputStream, OutputMimeType,
           { generator (metadata) } 'castle-model-converter, https://castle-engine.io/castle-model-converter',
-          { source (metadata) } ExtractURIName(Url),
-          Encoding, ForceX3D);
+          { source (metadata) } ExtractURIName(InputUrl));
+
+        if OutputStream <> StdOutStream then
+          FreeAndNil(OutputStream);
       end;
     finally FreeAndNil(Node) end;
 

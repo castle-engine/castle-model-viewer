@@ -67,7 +67,7 @@ uses SysUtils, Math, Classes,
   CastleWindowRecentFiles, CastleGLImages, CastleInternalGLCubeMaps, CastleComponentSerialize,
   CastleControls, CastleGLShaders, CastleInternalControlsImages, CastleRenderContext,
   X3DFields, CastleInternalShapeOctree, X3DNodes, X3DLoad, CastleScene,
-  CastleInternalBaseTriangleOctree,
+  CastleInternalBaseTriangleOctree, CastleFileFilters,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
   CastleRenderOptions, CastleShapes, CastleViewport,
   CastleInternalRenderer,
@@ -1301,18 +1301,23 @@ const
   do SceneChanges, and write it as VRML/X3D to stdout.
   This is used to handle --write command-line option. }
 procedure WriteModel(const ASceneUrl: String;
-  const Encoding: TX3DEncoding; const ForceConvertingToX3D: boolean);
+  const Encoding: TX3DEncoding);
 var
   Node: TX3DRootNode;
+  OutputMime: String;
 begin
   Node := LoadNode(ASceneUrl);
   try
     if StdOutStream = nil then
       raise EInvalidParams.Create('Standard output is not available. This most likely means you used --write option on Windows and you didn''t redirect the output.' + NL + NL + 'The proper usage from the command-line looks like "castle-model-viewer input.gltf --write > output.x3dv", see https://castle-engine.io/castle-model-viewer#section_converting .');
-    {$warnings off} // using internal CGE routine knowingly
-    Save3D(Node, StdOutStream, SaveGenerator,
-      ExtractURIName(ASceneUrl), Encoding, ForceConvertingToX3D);
-    {$warnings on}
+    case Encoding of
+      xeXML    : OutputMime := 'model/x3d+xml';
+      xeClassic: OutputMime := 'model/x3d+vrml';
+      {$ifndef COMPILER_CASE_ANALYSIS}
+      else raise EInternalError.Create('Saving Encoding?');
+      {$endif}
+    end;
+    SaveNode(Node, StdOutStream, OutputMime, SaveGenerator, ExtractURIName(ASceneUrl));
   finally FreeAndNil(Node) end;
 end;
 
@@ -2691,45 +2696,35 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
     finally FreeAndNil(Vis) end;
   end;
 
-  procedure SaveAs(const Encoding: TX3DEncoding; const MessageTitle: string;
-    const ForceConvertingToX3D: boolean);
+  procedure SaveAs;
   var
-    ProposedSaveName, Extension, FileFilters: string;
-    SaveVersion: TX3DVersion;
-    Conversion: boolean;
+    ProposedSaveName: string;
   begin
-    SaveVersion := Save3DVersion(Scene.RootNode);
-    Conversion := Save3DWillConvertToX3D(SaveVersion, Encoding, ForceConvertingToX3D);
+    ProposedSaveName := SceneUrl;
 
-    Extension := SaveVersion.FileExtension(Encoding, ForceConvertingToX3D);
-    FileFilters := SaveVersion.FileFilters(Encoding, ForceConvertingToX3D);
-    ProposedSaveName := ChangeURIExt(SceneUrl, Extension);
+    // if we cannot save to SceneUrl format, propose to save as X3D
+    if not TFileFilterList.Matches(SaveNode_FileFilters, ProposedSaveName) then
+      ProposedSaveName := ChangeURIExt(ProposedSaveName, '.x3d');
 
-    if Window.FileDialog(MessageTitle, ProposedSaveName, false, FileFilters) then
-    {$ifdef CATCH_EXCEPTIONS}
-    try
-    {$endif}
+    if Window.FileDialog('Save As...', ProposedSaveName, false, SaveNode_FileFilters) then
+    begin
+      {$ifdef CATCH_EXCEPTIONS}
+      try
+      {$endif}
 
-      if Conversion then
-        Scene.BeforeNodesFree;
+        SaveNode(Scene.RootNode, ProposedSaveName, SaveGenerator,
+          ExtractURIName(SceneUrl));
 
-      {$warnings off} // using internal CGE routine knowingly
-      Save3D(Scene.RootNode, ProposedSaveName, SaveGenerator,
-        ExtractURIName(SceneUrl), SaveVersion, Encoding, ForceConvertingToX3D);
-      {$warnings on}
-
-      if Conversion then
-        Scene.ChangedAll;
-
-    {$ifdef CATCH_EXCEPTIONS}
-    except
-      on E: Exception do
-      begin
-        MessageOK(Window, 'Error while saving scene to "' +ProposedSaveName+
-          '": ' + E.Message);
+      {$ifdef CATCH_EXCEPTIONS}
+      except
+        on E: Exception do
+        begin
+          MessageOK(Window, 'Error while saving scene to "' +ProposedSaveName+
+            '": ' + E.Message);
+        end;
       end;
+      {$endif}
     end;
-    {$endif}
   end;
 
   procedure SetLimitFPS;
@@ -2881,15 +2876,9 @@ begin
   case MenuItem.IntData of
     10: THelper.ClickButtonOpen(nil);
     11: OpenSceneUrl;
-
     12: Window.Close;
-
     15: Reopen;
-
-    900: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), false);
-    905: SaveAs(xeClassic, SRemoveMnemonics(MenuItem.Caption), true);
-    910: SaveAs(xeXML    , SRemoveMnemonics(MenuItem.Caption), true { doesn't matter });
-
+    900: SaveAs;
     21: ButtonWarnings.DoClick;
 
     31: ChangeScene([scNoNormals], Scene);
@@ -3271,9 +3260,7 @@ begin
     MenuReopen := TMenuItem.Create('_Reopen',      15);
     MenuReopen.Enabled := false;
     M.Append(MenuReopen);
-    M.Append(TMenuItem.Create('_Save As VRML/X3D (classic encoding) ...', 900, CtrlS));
-    M.Append(TMenuItem.Create('Save As X3D (_classic encoding; converts VRML to X3D) ...', 905));
-    M.Append(TMenuItem.Create('Save As X3D (_XML encoding; converts VRML to X3D) ...', 910));
+    M.Append(TMenuItem.Create('_Save As...', 900, CtrlS));
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
     M.Append(TMenuSeparator.Create);
@@ -3785,7 +3772,6 @@ end;
 var
   WasParam_Write: boolean = false;
   Param_WriteEncoding: TX3DEncoding = xeClassic;
-  Param_WriteForceX3D: boolean = false;
   WasParam_SceneUrl: boolean = false;
   Param_SceneUrl: String;
   Param_HideMenu: boolean = false;
@@ -3872,9 +3858,9 @@ begin
             OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
             OptionDescription('-H / --hide-extras', 'Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.') + NL +
             OptionDescription('--hide-menu', 'Hide menu bar.') + NL +
-            OptionDescription('--write', 'Load the model and save it as X3D or VRML to the standard output, exit. Use --write-encoding to choose encoding.') + NL +
-            OptionDescription('--write-encoding classic|xml', 'Choose X3D encoding to use with --write option. Default is "classic".') + NL +
-            OptionDescription('--write-force-x3d', 'Force conversion from VRML to X3D with --write option. Note that if you choose XML encoding (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).')  + NL +
+            OptionDescription('--write', 'DEPRECATED. Load the model and save it as X3D or VRML to the standard output, exit. Use --write-encoding to choose encoding. Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
+            OptionDescription('--write-encoding classic|xml', 'DEPRECATED. Choose X3D encoding to use with --write option. Default is "classic". Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
+            OptionDescription('--write-force-x3d', 'DEPRECATED. Ignored now.')  + NL +
             OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions to X3D. Particularly useful when combined with --write, to have X3D valid in all browsers (but less functional).')  + NL +
             OptionDescription('--screenshot TIME IMAGE-FILE-NAME', 'Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise we''ll just make a screenshot of the default black scene.')  + NL +
             OptionDescription('--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME', 'Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).')  + NL +
@@ -3939,13 +3925,21 @@ begin
           ShowStatus := false;
           UpdateStatusToolbarVisible;
         end;
-    11: WasParam_Write := true;
-    12: if SameText(Argument, 'classic') then
-          Param_WriteEncoding := xeClassic else
-        if SameText(Argument, 'xml') then
-          Param_WriteEncoding := xeXML else
-          raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
-    13: Param_WriteForceX3D := true;
+    11: begin
+          WritelnWarning('Option --write is deprecated. Use castle-model-converter for command-line model conversion, it has more features and simpler command-line options.');
+          WasParam_Write := true;
+        end;
+    12: begin
+          WritelnWarning('Option --write-encoding is deprecated. Use castle-model-converter for command-line model conversion, it has more features and simpler command-line options.');
+          if SameText(Argument, 'classic') then
+            Param_WriteEncoding := xeClassic
+          else
+          if SameText(Argument, 'xml') then
+            Param_WriteEncoding := xeXML
+          else
+            raise EInvalidParams.CreateFmt('Invalid --write-encoding argument "%s"', [Argument]);
+        end;
+    13: WritelnWarning('Option --write-force-x3d is deprecated and ignored now. Use castle-model-converter for command-line model conversion, it has more features and simpler command-line options.');
     14: Param_HideMenu := true;
     15: TextureMemoryProfiler.Enabled := true;
     16: Param_ScreenshotTransparent := true;
@@ -4055,7 +4049,7 @@ begin
         raise EInvalidParams.Create('You used --write option, '+
           'this means that you want to convert some 3D model file to VRML/X3D. ' +
           'But you didn''t provide any URL on command-line to load.');
-      WriteModel(Param_SceneUrl, Param_WriteEncoding, Param_WriteForceX3D);
+      WriteModel(Param_SceneUrl, Param_WriteEncoding);
       Exit;
     end;
 
