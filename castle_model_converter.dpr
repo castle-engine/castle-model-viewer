@@ -93,7 +93,6 @@ begin
           'Available options are:' +NL+
           OptionDescription('-h / --help', 'Print this help message and exit.') + NL +
           OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
-          OptionDescription('--force-x3d', 'Force conversion from VRML to X3D. Note that if you choose XML encoding (by --encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).') +NL+
           OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
           OptionDescription('--validate', 'Only validate the input, without any output (the output URL is not allowed in this case). Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
