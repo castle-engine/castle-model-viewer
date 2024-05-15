@@ -114,8 +114,8 @@ end;
 
 procedure TBoundingBoxScene.UpdateBox(const ABox: TBox3D);
 begin
-  Shape.Render := not ABox.IsEmpty;
-  if Shape.Render then
+  Shape.Visible := not ABox.IsEmpty;
+  if Shape.Visible then
   begin
     TransformNode.Translation := ABox.Center;
     Box.Size := ABox.Size;

@@ -311,8 +311,8 @@ begin
             RayTracer := TClassicRayTracer.Create;
             TClassicRayTracer(RayTracer).InitialDepth := RaytraceDepth;
             TClassicRayTracer(RayTracer).FogNode := Scene.FogStack.Top;
-            TClassicRayTracer(RayTracer).BaseLights := BaseLights;
-            TClassicRayTracer(RayTracer).OwnsBaseLights := false;
+            TClassicRayTracer(RayTracer).GlobalLights := BaseLights;
+            TClassicRayTracer(RayTracer).OwnsGlobalLights := false;
           end;
         rtkPathTracer:
           begin
