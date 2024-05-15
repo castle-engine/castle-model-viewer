@@ -11,7 +11,7 @@ castle-model-converter - converter for various 3D and 2D model formats
 
 == Synopsis
 
-*castle-model-converter* [_OPTION_]... _INPUT-FILE_
+*castle-model-converter* [_OPTION_]... _INPUT-FILE_ [_OUTPUT-FILE_]
 
 == Features
 
@@ -21,58 +21,48 @@ As *output*, we support X3D or VRML. You can basically convert any input format 
 
 We can also validate the input model, without doing any conversion.
 
-== Description
+== Usage
 
-The only necessary parameter is the the input filename. It can be any filename, URL or `-` (to mean _standard input_).
+Call with these parameters:
 
-The output is written to the _standard output_. You can redirect it to a file, see examples below.
+1. The input filename. It can be any filename, URL or `-` (to mean _standard input_).
++
+Required.
+
+2. The output filename. It can be any filename, URL or `-` (to mean _standard output_).
++
+This parameter is optional. If not provided, the output is written to the _standard output_ (so it is equivalent to using `-` as the output filename), unless `--validate` is used (then the output is not written anywhere).
 
 == Examples
 
 ```bash
 # Convert glTF to X3D
-castle-model-converter input.gltf > output.x3dv
+castle-model-converter input.gltf output.x3d
 
 # Validate some glTF and X3D files
 castle-model-converter --validate input.gltf
 castle-model-converter --validate input.x3d
 
-# Convert standard input to X3D
-castle-model-converter - < input.x3dv > output.x3dv
-castle-model-converter - --stdin-url=fakeurl.gltf < input.gltf > output.x3dv
-
 # Convert file from X3D classic encoding to X3D XML encoding
-castle-model-converter input.x3dv --encoding=xml > output.x3d
+castle-model-converter input.x3dv output.x3d
 
 # Convert file from X3D XML encoding to X3D classic encoding
-castle-model-converter input.x3d --encoding=classic > output.x3dv
+castle-model-converter input.x3d output.x3dv
 
 # Convert VRML 2.0 to X3D in classic encoding.
-# You could add --encoding=classic, but it's not needed
-# (it is the default anyway).
-castle-model-converter input.wrl --force-x3d > output.x3dv
+castle-model-converter input.wrl output.x3dv
+
+# Convert standard input to standard output
+castle-model-converter - - < input.x3dv > output.x3dv
+castle-model-converter - --stdin-url=fakeurl.gltf - < input.gltf > output.x3dv
 ```
 
-== Command-line Options
+== All Command-line Options
 
 *--validate*::
 Only validate the input model, don't do any conversion. Will exit with non-zero status if the input is not 100% valid. Even warnings (that are ignorable during normal conversion) cause non-zero exit status when validating.
 +
 NOTE: Our _"validation"_ isn't 100% complete, that is: passing the validation doesn't guarantee that your model satisfies every detail of the specification of given format. We check for a lot of model issues (including, but not limited to, issues that would make it impossible to render this model using _Castle Game Engine_). But it's not a complete validation of the model per every detail of the specification.
-
-*--encoding=classic|xml*::
-Use given X3D encoding on output. By default, we use _classic_ encoding (suitable for X3D files with `.x3dv` extensions).
-
-*--force-x3d*::
-Force output to be X3D, even if input is VRML.
-+
-This option is only useful to convert (upgrade) VRML 2.0 to X3D right now.
-+
-Conversion to X3D is also automatically forced (no need to specify it explicitly by this option) if the chosen encoding is XML (that is, you used `--write-encoding=xml`). That's because only X3D supports XML encoding.
-+
-NOTE: When this is used with VRML 1.0 or Inventor models as input, we'll also convert parts of them to X3D. But the result is not really useful: you will get a file encoded using X3D keywords, but using VRML 1.0 or Inventor node names. Proper conversion from VRML 1.0 or Inventor to X3D is not implemented (yet).
-+
-This option has no effect when used on models that are already X3D, or that can be only output as X3D (glTF, Collada, 3DS, etc.).
 
 *--no-x3d-extensions*::
 Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some _Castle Game Engine_-specific features missing).
@@ -80,8 +70,11 @@ Do not use Castle Game Engine extensions. This will output file valid in all X3D
 *--enable-downloads*::
 Enable (blocking) downloads from the net, e.g. to download a texture or inlined (using X3D `Inline` node) models referenced by htt(s) protocol.
 
-*--stdin-url*::
-If input URL is `-`, then we read file contents from the standard input. In this case, you can use this option to provide a _fake_ URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs, textures or X3D inlines) and to guess the input file type. Default is `stdin.x3dv` in current directory, so we assume input is X3D (classic encoded), and resolve URLs with respect to the current directory.
+*--stdin-url=URL*::
+If input URL is `-`, then we read file contents from the standard input. In this case, you can use this option to provide a _fake_ URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs, textures or X3D inlines) and to determine the input file type. Default is `stdin.x3dv` in current directory, so we assume input is X3D (classic encoding), and resolve URLs with respect to the current directory.
+
+*--stdout-url=URL*::
+If output URL is `-`, then we write file contents to the standard output. In this case, you can use this option to provide a _fake_ URL for the output. We will use it to determine the output file type. Default is `stdout.x3dv` in current directory, so we make output in X3D (classic encoding).
 
 *--float-precision=DIGITS*::
 Number of digits after the decimal point when writing floating-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.
@@ -91,6 +84,13 @@ Print the help message and exit.
 
 *-v / --version*::
 Print the version number and exit.
+
+=== Deprecated
+
+*--encoding=classic|xml*::
+*Deprecated*. Use given X3D encoding on output. By default, we use _classic_ encoding (suitable for X3D files with `.x3dv` extensions).
++
+Deprecated, do not use this. The 2nd parameter should determine the output type, ".x3d" extension says to make X3D XML, ".x3dv" says to make X3D classic. Or use `--stdout-url` to provide fake URL in case output is to stdout.
 
 == Resources
 

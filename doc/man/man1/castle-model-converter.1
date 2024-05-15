@@ -2,12 +2,12 @@
 .\"     Title: castle-model-converter
 .\"    Author: Michalis Kamburelis
 .\" Generator: Asciidoctor 2.0.22
-.\"      Date: 2024-05-11
+.\"      Date: 2024-05-15
 .\"    Manual: castle-model-converter
 .\"    Source: castle-model-converter
 .\"  Language: English
 .\"
-.TH "CASTLE\-MODEL\-CONVERTER" "1" "2024-05-11" "castle\-model\-converter" "castle\-model\-converter"
+.TH "CASTLE\-MODEL\-CONVERTER" "1" "2024-05-15" "castle\-model\-converter" "castle\-model\-converter"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -31,7 +31,7 @@
 castle-model-converter \- converter for various 3D and 2D model formats
 .SH "SYNOPSIS"
 .sp
-\fBcastle\-model\-converter\fP [\fIOPTION\fP]... \fIINPUT\-FILE\fP
+\fBcastle\-model\-converter\fP [\fIOPTION\fP]... \fIINPUT\-FILE\fP [\fIOUTPUT\-FILE\fP]
 .SH "FEATURES"
 .sp
 As \fBinput\fP, we support all 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, Spine JSON, sprite sheets (in Castle Game Engine, Cocos2D and Starling XML formats), MD3, Wavefront OBJ, 3DS, STL, Collada, and more.
@@ -39,41 +39,63 @@ As \fBinput\fP, we support all 3D and 2D model formats supported by Castle Game 
 As \fBoutput\fP, we support X3D or VRML. You can basically convert any input format to X3D. You can also convert between X3D classic and X3D XML encodings (in both directions) and you can convert (upgrade) from VRML 2.0 to X3D.
 .sp
 We can also validate the input model, without doing any conversion.
-.SH "DESCRIPTION"
+.SH "USAGE"
 .sp
-The only necessary parameter is the the input filename. It can be any filename, URL or \f(CR\-\fP (to mean \fIstandard input\fP).
+Call with these parameters:
 .sp
-The output is written to the \fIstandard output\fP. You can redirect it to a file, see examples below.
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.  sp -1
+.  IP " 1." 4.2
+.\}
+The input filename. It can be any filename, URL or \f(CR\-\fP (to mean \fIstandard input\fP).
+.sp
+Required.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.  sp -1
+.  IP " 2." 4.2
+.\}
+The output filename. It can be any filename, URL or \f(CR\-\fP (to mean \fIstandard output\fP).
+.sp
+This parameter is optional. If not provided, the output is written to the \fIstandard output\fP (so it is equivalent to using \f(CR\-\fP as the output filename), unless \f(CR\-\-validate\fP is used (then the output is not written anywhere).
+.RE
 .SH "EXAMPLES"
 .sp
 .if n .RS 4
 .nf
 .fam C
 # Convert glTF to X3D
-castle\-model\-converter input.gltf > output.x3dv
+castle\-model\-converter input.gltf output.x3d
 
 # Validate some glTF and X3D files
 castle\-model\-converter \-\-validate input.gltf
 castle\-model\-converter \-\-validate input.x3d
 
-# Convert standard input to X3D
-castle\-model\-converter \- < input.x3dv > output.x3dv
-castle\-model\-converter \- \-\-stdin\-url=fakeurl.gltf < input.gltf > output.x3dv
-
 # Convert file from X3D classic encoding to X3D XML encoding
-castle\-model\-converter input.x3dv \-\-encoding=xml > output.x3d
+castle\-model\-converter input.x3dv output.x3d
 
 # Convert file from X3D XML encoding to X3D classic encoding
-castle\-model\-converter input.x3d \-\-encoding=classic > output.x3dv
+castle\-model\-converter input.x3d output.x3dv
 
 # Convert VRML 2.0 to X3D in classic encoding.
-# You could add \-\-encoding=classic, but it\*(Aqs not needed
-# (it is the default anyway).
-castle\-model\-converter input.wrl \-\-force\-x3d > output.x3dv
+castle\-model\-converter input.wrl output.x3dv
+
+# Convert standard input to standard output
+castle\-model\-converter \- \- < input.x3dv > output.x3dv
+castle\-model\-converter \- \-\-stdin\-url=fakeurl.gltf \- < input.gltf > output.x3dv
 .fam
 .fi
 .if n .RE
-.SH "COMMAND\-LINE OPTIONS"
+.SH "ALL COMMAND\-LINE OPTIONS"
 .sp
 \fB\-\-validate\fP
 .RS 4
@@ -94,36 +116,6 @@ Our \fI"validation"\fP isn\(cqt 100% complete, that is: passing the validation d
 .RE
 .RE
 .sp
-\fB\-\-encoding=classic|xml\fP
-.RS 4
-Use given X3D encoding on output. By default, we use \fIclassic\fP encoding (suitable for X3D files with \f(CR.x3dv\fP extensions).
-.RE
-.sp
-\fB\-\-force\-x3d\fP
-.RS 4
-Force output to be X3D, even if input is VRML.
-.sp
-This option is only useful to convert (upgrade) VRML 2.0 to X3D right now.
-.sp
-Conversion to X3D is also automatically forced (no need to specify it explicitly by this option) if the chosen encoding is XML (that is, you used \f(CR\-\-write\-encoding=xml\fP). That\(cqs because only X3D supports XML encoding.
-.if n .sp
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-.B Note
-.ps -1
-.br
-.sp
-When this is used with VRML 1.0 or Inventor models as input, we\(cqll also convert parts of them to X3D. But the result is not really useful: you will get a file encoded using X3D keywords, but using VRML 1.0 or Inventor node names. Proper conversion from VRML 1.0 or Inventor to X3D is not implemented (yet).
-.sp .5v
-.RE
-.sp
-This option has no effect when used on models that are already X3D, or that can be only output as X3D (glTF, Collada, 3DS, etc.).
-.RE
-.sp
 \fB\-\-no\-x3d\-extensions\fP
 .RS 4
 Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some \fICastle Game Engine\fP\-specific features missing).
@@ -134,9 +126,14 @@ Do not use Castle Game Engine extensions. This will output file valid in all X3D
 Enable (blocking) downloads from the net, e.g. to download a texture or inlined (using X3D \f(CRInline\fP node) models referenced by htt(s) protocol.
 .RE
 .sp
-\fB\-\-stdin\-url\fP
+\fB\-\-stdin\-url=URL\fP
 .RS 4
-If input URL is \f(CR\-\fP, then we read file contents from the standard input. In this case, you can use this option to provide a \fIfake\fP URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs, textures or X3D inlines) and to guess the input file type. Default is \f(CRstdin.x3dv\fP in current directory, so we assume input is X3D (classic encoded), and resolve URLs with respect to the current directory.
+If input URL is \f(CR\-\fP, then we read file contents from the standard input. In this case, you can use this option to provide a \fIfake\fP URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs, textures or X3D inlines) and to determine the input file type. Default is \f(CRstdin.x3dv\fP in current directory, so we assume input is X3D (classic encoding), and resolve URLs with respect to the current directory.
+.RE
+.sp
+\fB\-\-stdout\-url=URL\fP
+.RS 4
+If output URL is \f(CR\-\fP, then we write file contents to the standard output. In this case, you can use this option to provide a \fIfake\fP URL for the output. We will use it to determine the output file type. Default is \f(CRstdout.x3dv\fP in current directory, so we make output in X3D (classic encoding).
 .RE
 .sp
 \fB\-\-float\-precision=DIGITS\fP
@@ -152,6 +149,14 @@ Print the help message and exit.
 \fB\-v / \-\-version\fP
 .RS 4
 Print the version number and exit.
+.RE
+.SS "Deprecated"
+.sp
+\fB\-\-encoding=classic|xml\fP
+.RS 4
+\fBDeprecated\fP. Use given X3D encoding on output. By default, we use \fIclassic\fP encoding (suitable for X3D files with \f(CR.x3dv\fP extensions).
+.sp
+Deprecated, do not use this. The 2nd parameter should determine the output type, ".x3d" extension says to make X3D XML, ".x3dv" says to make X3D classic. Or use \f(CR\-\-stdout\-url\fP to provide fake URL in case output is to stdout.
 .RE
 .SH "RESOURCES"
 .sp

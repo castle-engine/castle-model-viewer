@@ -32,15 +32,6 @@ Print the version number and exit.
 *-H / --hide-extras*::
 Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.
 
-*--write*::
-Load the model and save it as X3D to the standard output, exit. Use --write-encoding to choose encoding.
-
-*--write-encoding classic|xml*::
-Choose X3D encoding to use with --write option. Default is "classic".
-
-*--write-force-x3d*::
-Force conversion from VRML to X3D with --write option. Note that if you choose XML encoding  (by --write-encoding=xml), this is automatic. Note that this works sensibly only for VRML 2.0 (not for older Inventor/VRML 1.0, we cannot convert them to valid X3D for now).
-
 *--screenshot TIME IMAGE-FILE-NAME*::
 Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise  we'll just make a screenshot of the default black scene.
 
@@ -58,7 +49,7 @@ Choose specific OpenAL audio device. See the available device names in the --hel
 *--no-sound*::
 Turn off sound.
 
-.B Window options:
+== Window options
 
 *--geometry WIDTHxHEIGHT<sign>XOFF<sign>YOFF*::
 Set initial window size and/or position.
