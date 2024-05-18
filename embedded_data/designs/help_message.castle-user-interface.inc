@@ -1,22 +1,23 @@
 { -*- buffer-read-only: t -*- }
 { DON'T EDIT -- this file was automatically generated from "help_message.castle-user-interface" }
 '{' + LineEnding +
+'  "$$ClassName" : "TCastleUserInterface",' + LineEnding +
 '  "FullSize" : true,' + LineEnding +
 '  "Name" : "Group1",' + LineEnding +
 '  "$Children" : [' + LineEnding +
 '    {' + LineEnding +
+'      "$$ClassName" : "TCastleRectangleControl",' + LineEnding +
 '      "FullSize" : true,' + LineEnding +
-'      "Name" : "RectangleControl2",' + LineEnding +
-'      "$Children" : [' + LineEnding +
-'      ],' + LineEnding +
-'      "$ClassName" : "TCastleRectangleControl"' + LineEnding +
+'      "Name" : "RectangleControl2"' + LineEnding +
 '    },' + LineEnding +
 '    {' + LineEnding +
+'      "$$ClassName" : "TCastleUserInterface",' + LineEnding +
 '      "Height" : 6.0000000000000000E+001,' + LineEnding +
 '      "Name" : "Group2",' + LineEnding +
 '      "WidthFraction" : 1.0000000000000000E+000,' + LineEnding +
 '      "$Children" : [' + LineEnding +
 '        {' + LineEnding +
+'          "$$ClassName" : "TCastleHorizontalGroup",' + LineEnding +
 '          "HorizontalAnchorParent" : "hpRight",' + LineEnding +
 '          "HorizontalAnchorSelf" : "hpRight",' + LineEnding +
 '          "Name" : "HorizontalGroup1",' + LineEnding +
@@ -26,101 +27,100 @@
 '          "VerticalAnchorSelf" : "vpMiddle",' + LineEnding +
 '          "$Children" : [' + LineEnding +
 '            {' + LineEnding +
+'              "$$ClassName" : "TCastleButton",' + LineEnding +
 '              "Caption" : "Copy To Clipboard (Ctrl + C)",' + LineEnding +
 '              "CustomBackgroundDisabled" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundFocused" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundNormal" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundPressed" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
-'              "CustomTextColorUse" : false,' + LineEnding +
-'              "HorizontalAnchorDelta" : 1.0000000000000000E+001,' + LineEnding +
 '              "Image" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "Name" : "ButtonCopyClipboard",' + LineEnding +
 '              "PaddingHorizontal" : 2.0000000000000000E+001,' + LineEnding +
+'              "TranslationPersistent" : {' + LineEnding +
+'                "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'                "X" : 1.0000000000000000E+001' + LineEnding +
+'              },' + LineEnding +
 '              "VerticalAnchorParent" : "vpMiddle",' + LineEnding +
-'              "VerticalAnchorSelf" : "vpMiddle",' + LineEnding +
-'              "$Children" : [' + LineEnding +
-'              ],' + LineEnding +
-'              "$ClassName" : "TCastleButton"' + LineEnding +
+'              "VerticalAnchorSelf" : "vpMiddle"' + LineEnding +
 '            },' + LineEnding +
 '            {' + LineEnding +
+'              "$$ClassName" : "TCastleButton",' + LineEnding +
 '              "Caption" : "Close",' + LineEnding +
 '              "CustomBackgroundDisabled" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundFocused" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundNormal" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "CustomBackgroundPressed" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
-'              "CustomTextColorUse" : false,' + LineEnding +
-'              "HorizontalAnchorDelta" : 3.4500000000000000E+002,' + LineEnding +
 '              "Image" : {' + LineEnding +
-'                "$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'                "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
 '              },' + LineEnding +
 '              "Name" : "ButtonOK",' + LineEnding +
 '              "PaddingHorizontal" : 2.0000000000000000E+001,' + LineEnding +
+'              "TranslationPersistent" : {' + LineEnding +
+'                "$$ClassName" : "TCastleVector2Persistent",' + LineEnding +
+'                "X" : 3.4500000000000000E+002' + LineEnding +
+'              },' + LineEnding +
 '              "VerticalAnchorParent" : "vpMiddle",' + LineEnding +
-'              "VerticalAnchorSelf" : "vpMiddle",' + LineEnding +
-'              "$Children" : [' + LineEnding +
-'              ],' + LineEnding +
-'              "$ClassName" : "TCastleButton"' + LineEnding +
+'              "VerticalAnchorSelf" : "vpMiddle"' + LineEnding +
 '            }' + LineEnding +
-'          ],' + LineEnding +
-'          "$ClassName" : "TCastleHorizontalGroup"' + LineEnding +
+'          ]' + LineEnding +
 '        }' + LineEnding +
-'      ],' + LineEnding +
-'      "$ClassName" : "TCastleUserInterface"' + LineEnding +
+'      ]' + LineEnding +
 '    },' + LineEnding +
 '    {' + LineEnding +
+'      "$$ClassName" : "TCastleScrollView",' + LineEnding +
 '      "Border" : {' + LineEnding +
-'        "Bottom" : 6.0000000000000000E+001,' + LineEnding +
-'        "$ClassName" : "TBorder"' + LineEnding +
+'        "$$ClassName" : "TBorder",' + LineEnding +
+'        "Bottom" : 6.0000000000000000E+001' + LineEnding +
 '      },' + LineEnding +
 '      "FullSize" : true,' + LineEnding +
 '      "Name" : "ScrollView1",' + LineEnding +
 '      "ScrollArea" : {' + LineEnding +
-'        "AutoSizeToChildren" : true,' + LineEnding +
-'        "Name" : "ScrollArea",' + LineEnding +
+'        "$$ClassName" : "TCastleScrollArea",' + LineEnding +
 '        "$Children" : [' + LineEnding +
 '          {' + LineEnding +
+'            "$$ClassName" : "TCastleLabel",' + LineEnding +
 '            "Border" : {' + LineEnding +
-'              "AllSides" : 1.0000000000000000E+001,' + LineEnding +
-'              "$ClassName" : "TBorder"' + LineEnding +
+'              "$$ClassName" : "TBorder",' + LineEnding +
+'              "AllSides" : 1.0000000000000000E+001' + LineEnding +
 '            },' + LineEnding +
 '            "Name" : "LabelMessage",' + LineEnding +
-'            "Text" : "Debug options:\r\n  --debug-log           Deprecated. We now log by default.\r\n  --debug-log-cache     Write log info, including cache.\r\n  --debug-log-shaders   Write log info, including shader source and log.\r\n  --debug-log-cha' + 
-'nges   Write log info, including VRML/X3D graph changes.\r\n  --debug-log-videos    Write log info, including videos loading and cache.\r\n  --debug-texture-memory Profile GPU texture memory usage.\r\n  \r\nDeprecated options:\r\n  --scene-change-no-norma' + 
-'ls\r\n                        Remove normals information from the loaded scene.\r\n                        Forces automatic calculation of normal vectors.\r\n                        Deprecated, doing this from command-line is not\r\n                      ' + 
-'  usually useful.\r\n  --scene-change-no-solid-objects\r\n                        Make all shapes not solid in the loaded scene.\r\n                        Disables backface culling.\r\n                        Deprecated, doing this from command-line is n' + 
-'ot\r\n                        usually useful.\r\n  --scene-change-no-convex-faces\r\n                        Treat all faces as potentially concave in the loaded scene.\r\n                        Deprecated, doing this from command-line is not\r\n        ' + 
-'                usually useful.\r\n  --write-to-vrml       Deprecated, shortcut for \"--write --write-encoding=classic\".\r\n",' + 
-LineEnding +
-'            "$Children" : [' + LineEnding +
-'            ],' + LineEnding +
-'            "$ClassName" : "TCastleLabel"' + LineEnding +
+'            "Text" : [' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message.",' + LineEnding +
+'              "Contents of this will be replaced at run-time with proper help message."' + LineEnding +
+'            ]' + LineEnding +
 '          }' + LineEnding +
-'        ],' + LineEnding +
-'        "$ClassName" : "TInternalCastleScrollArea"' + LineEnding +
+'        ]' + LineEnding +
 '      },' + LineEnding +
-'      "$Children" : [' + LineEnding +
-'      ],' + LineEnding +
-'      "$ClassName" : "TCastleScrollView"' + LineEnding +
+'      "ScrollbarFrame" : {' + LineEnding +
+'        "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'      },' + LineEnding +
+'      "ScrollbarSlider" : {' + LineEnding +
+'        "$$ClassName" : "TCastleImagePersistent"' + LineEnding +
+'      }' + LineEnding +
 '    }' + LineEnding +
-'  ],' + LineEnding +
-'  "$ClassName" : "TCastleUserInterface"' + LineEnding +
+'  ]' + LineEnding +
 '}' + LineEnding +
 ''
