@@ -65,19 +65,18 @@ add_to_both_logs ()
   echo "$@" >> "${OUTPUT_VERBOSE}"
 }
 
-# Run $1 with "$3...", stdout redirected to $2.
+# Run $1 with the rest of command-line args.
 # stderr is captured to correct log file, and we exit in case of failure.
 run_command ()
 {
   local COMMAND="$1"
-  local COMMAND_OUTPUT="$2"
-  shift 2
+  shift 1
 
   # Ignore exit status temporarily,
   # to add COMMAND_ERRORS to both logs using add_to_both_logs.
   # Only later do "exit" in case of failure.
   set +e
-  COMMAND_ERRORS=$("$COMMAND" "$@" 2>&1 > "$COMMAND_OUTPUT")
+  COMMAND_ERRORS=$("$COMMAND" "$@" 2>&1)
   COMMAND_EXIT_STATUS=$?
   set -e
 
@@ -117,26 +116,31 @@ run_viewer_other ()
 
 do_read_save ()
 {
-  # It's important that temp_file is inside the same directory,
-  # otherwise re-reading it would not work because relative URLs
-  # are broken.
-  local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
+  # calculate FILE_EXTENSION: last extension, including the dot
+  local FILE_EXTENSION=".${FILE##*.}"
 
-  test_log 'Reading' "$FILE"
-  run_converter "$TEMP_FILE" "$FILE" --stdout-url=out.x3dv
+  # calculate OUTPUT_EXTENSION: desired output extension, including the dot
+  case "$FILE_EXTENSION" in
+    '.wrl') local OUTPUT_EXTENSION='.wrl' ;;
+    *)      local OUTPUT_EXTENSION='.x3dv' ;;
+  esac
+
+  # calculate TEMP_FILE where to save output.
+  # It's important that it is inside the same directory as FILE,
+  # otherwise re-reading it would not work because relative URLs would be broken.
+  local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary"${OUTPUT_EXTENSION}"
+
+  test_log '(do_read_save) Converting' "$FILE"
+  run_converter "$FILE" "$TEMP_FILE"
 
   # Check input file and output file headers.
-  # They indicate VRML version used to write the file.
-  # They should match, otherwise SuggestVRMLVersion of some nodes
-  # possibly doesn't work and the resulting file has different VRML version.
+  # They indicate X3D / VRML version used to write the file.
+  # They should match, since we preserve X3D / VRML version when converting
+  # VRML -> VRML or X3D -> X3D.
   #
-  # Note that this test works only with classic VRML files (XML X3D versions,
-  # or gzip compressed, have version elsewhere, other 3D formats are converted
-  # to any version we like, and output is always classic VRML --- so comparison
-  # has no sense).
-
-  # Like ExtractFileExt from $FILE --- get (last) extension, including the dot
-  local FILE_EXTENSION=".${FILE##*.}"
+  # Note that this test works only with classic X3D / VRML files.
+  # X3D XML versions, or gzip compressed, have version elsewhere,
+  # and other 3D formats are converted to an arbitrary X3D version.
 
   if [ '(' '(' "$FILE_EXTENSION" = '.wrl' ')' -o \
            '(' "$FILE_EXTENSION" = '.x3dv' ')' ')' -a \
@@ -159,15 +163,15 @@ Header on output is ${OUTPUT_HEADER}"
     fi
   fi
 
-  test_log 'Reading again' "$FILE"
-  run_converter /dev/null "$TEMP_FILE" --stdout-url=out.x3dv
+  test_log '(do_read_save) Validating' "$TEMP_FILE"
+  run_converter "$TEMP_FILE" --validate
 
   rm -f "$TEMP_FILE"
 }
 
-# Test reading and writing back 3D file.
-# For 3D models in VRML/X3D classic encoding, also check that
-# saving back produces the same header (indicating the same VRML/X3D version).
+# Test converting model file.
+# For models in X3D / VRML classic encoding, also check that
+# saving back produces the same header (indicating the same X3D / VRML version).
 do_read_save
 
 # Saving to file: regressions ------------------------------------------------
@@ -177,9 +181,9 @@ do_compare_classic_save ()
   local SAVE_CLASSIC_OLD="${FILE%.*}_test_temporary_classic_save_old.x3dv"
   local SAVE_CLASSIC_NEW="${FILE%.*}_test_temporary_classic_save_new.x3dv"
 
-  test_log 'Comparing classic save with' "$VIEWER_OTHER"
-  run_converter_other "$SAVE_CLASSIC_OLD" "$FILE" --stdout-url=out.x3dv
-  run_converter       "$SAVE_CLASSIC_NEW" "$FILE" --stdout-url=out.x3dv
+  test_log '(do_compare_classic_save) Comparing classic save with' "$CONVERTER_OTHER"
+  run_converter_other "$FILE" "$SAVE_CLASSIC_OLD"
+  run_converter       "$FILE" "$SAVE_CLASSIC_NEW"
 
   set +e
   diff -w --ignore-blank-lines --unified=0 "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
@@ -197,19 +201,25 @@ do_compare_classic_save ()
 do_save_xml_valid ()
 {
   if grep --silent '#VRML V1.0 ascii' < "$FILE"; then
-    test_log 'Testing is xml valid aborted (VRML 1.0 -> xml not supported)'
+    test_log '(do_save_xml_valid) Testing is xml valid aborted (VRML 1.0 -> X3D XML not supported)'
   else
     # Like ChangeFileExt $FILE ..., must preserve directory
     local     SAVE_XML="${FILE%.*}_test_temporary_save_xml_valid.x3d"
     local SAVE_CLASSIC="${FILE%.*}_test_temporary_save_xml_valid.x3dv"
 
-    test_log 'Testing is xml valid (can be read back, by castle-model-converter and xmllint)'
-    run_converter "$SAVE_XML"     "$FILE"     --stdout-url=out.x3d
-    run_converter "$SAVE_CLASSIC" "$SAVE_XML" --stdout-url=out.x3dv
+    test_log '(do_save_xml_valid) Testing is xml valid (can be read back, by castle-model-converter and xmllint)'
+    run_converter "$FILE" "$SAVE_XML"
+    run_converter "$SAVE_XML" "$SAVE_CLASSIC"
 
     if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' -o \
          "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt_rays1000.wrl_test_temporary_save_xml_valid.x3d' -o \
-         "`basename \"$SAVE_XML\"`" '=' 'water_no_shaders.x3dv_test_temporary_save_xml_valid.x3d' ]; then
+         "`basename \"$SAVE_XML\"`" '=' 'water_no_shaders.x3dv_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'skinned_anim_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'lizardman_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'normal_maps_scaled_object_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'WaterBottle_to_copy_occlusion_node_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'occlusion_texture_test_temporary_save_xml_valid.x3d' -o \
+         "`basename \"$SAVE_XML\"`" '=' 'only_vertex_animation_test_temporary_save_xml_valid.x3d' ]; then
 
       # Not running xmllint, as it fails with
       # parser error : internal error: Huge input lookup
@@ -241,10 +251,10 @@ do_compare_classic_xml_save ()
   local     SAVE_2_XML="${FILE%.*}_test_temporary_classic_xml_2.x3d"
   local SAVE_2_CLASSIC="${FILE%.*}_test_temporary_classic_xml_2.x3dv"
 
-  test_log 'Comparing saving to classic vs saving to xml and then classic'
-  run_converter "$SAVE_1_CLASSIC" "$FILE"       --stdout-url=out.x3dv
-  run_converter "$SAVE_2_XML"     "$FILE"       --stdout-url=out.x3d
-  run_converter "$SAVE_2_CLASSIC" "$SAVE_2_XML" --stdout-url=out.x3dv
+  test_log '(do_compare_classic_xml_save) Comparing saving to classic vs saving to xml and then classic'
+  run_converter "$FILE"       "$SAVE_1_CLASSIC"
+  run_converter "$FILE"       "$SAVE_2_XML"
+  run_converter "$SAVE_2_XML" "$SAVE_2_CLASSIC"
 
   set +e
   diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
@@ -282,11 +292,11 @@ do_compare_screenshot ()
 
   local DELETE_SCREENSHOTS='t'
 
-  test_log 'Rendering and making screenshot' "$VIEWER_OTHER"
-  "$VIEWER_OTHER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
+  test_log '(do_compare_screenshot) Rendering and making screenshot' "$VIEWER_OTHER"
+  run_viewer_other "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_OLD"
 
-  test_log 'Comparing screenshot' "$VIEWER"
-  "$VIEWER" "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
+  test_log '(do_compare_screenshot) Comparing screenshot' "$VIEWER"
+  run_viewer "$FILE" --screenshot 0 --geometry 300x200 "$SCREENSHOT_NEW"
 
   # Don't exit on screenshot comparison fail. That's because
   # taking screenshots takes a long time, so just continue checking.
