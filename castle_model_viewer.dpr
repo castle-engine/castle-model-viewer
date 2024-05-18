@@ -3858,9 +3858,6 @@ begin
             OptionDescription('-v / --version', 'Print the version number and exit.') + NL +
             OptionDescription('-H / --hide-extras', 'Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.') + NL +
             OptionDescription('--hide-menu', 'Hide menu bar.') + NL +
-            OptionDescription('--write', 'DEPRECATED. Load the model and save it as X3D or VRML to the standard output, exit. Use --write-encoding to choose encoding. Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
-            OptionDescription('--write-encoding classic|xml', 'DEPRECATED. Choose X3D encoding to use with --write option. Default is "classic". Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
-            OptionDescription('--write-force-x3d', 'DEPRECATED. Ignored now.')  + NL +
             OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions to X3D. Particularly useful when combined with --write, to have X3D valid in all browsers (but less functional).')  + NL +
             OptionDescription('--screenshot TIME IMAGE-FILE-NAME', 'Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise we''ll just make a screenshot of the default black scene.')  + NL +
             OptionDescription('--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME', 'Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).')  + NL +
@@ -3882,6 +3879,11 @@ begin
             OptionDescription('--debug-log-videos', 'Write log info, including videos loading and cache.')  + NL +
             OptionDescription('--debug-texture-memory', 'Profile GPU texture memory usage.')  + NL +
             OptionDescription('--capabilities automatic|force-fixed-function|force-modern', 'Force OpenGL context to have specific capabilities, to test rendering on modern or ancient GPUs.') + NL +
+            NL +
+            'Deprecated options:' + NL +
+            OptionDescription('--write', 'DEPRECATED. Load the model and save it as X3D or VRML to the standard output, exit. Use --write-encoding to choose encoding. Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
+            OptionDescription('--write-encoding classic|xml', 'DEPRECATED. Choose X3D encoding to use with --write option. Default is "classic". Use instead castle-model-converter for command-line conversions, it has more functionality with simpler options.') + NL +
+            OptionDescription('--write-force-x3d', 'DEPRECATED. Ignored now.')  + NL +
             NL +
             ApplicationProperties.Description;
 
