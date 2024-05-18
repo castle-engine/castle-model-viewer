@@ -34,12 +34,14 @@ else
   CONVERTER=castle-model-converter
 fi
 
-# For some tests (by default commented out, see lower in this script)
-# you need a 2nd castle-model-viewer binary. Usually you want to use
-# some older, stable castle-model-viewer release as "other" below,
-# and as $VIEWER use newer castle-model-viewer from SVN or nightly snapshots.
-#VIEWER_OTHER="$VIEWER"
-VIEWER_OTHER=castle-model-viewer-3.10.0-release
+# For some tests you need a 2nd castle-model-viewer/castle-model-converter binary.
+# Usually you want to use some older, stable release as "other" below,
+# and as $VIEWER use newer release.
+# Undefined by default, all tests using it are commented out by default,
+# since this needs special preparations on the user side to make sense.
+#
+#VIEWER_OTHER=castle-model-viewer-3.10.0-release
+#CONVERTER_OTHER=castle-model-converter-3.10.0-release
 
 OUTPUT_SHORT="$1"
 OUTPUT_VERBOSE="$2"
@@ -93,6 +95,11 @@ run_converter ()
   run_command "$CONVERTER" "$@"
 }
 
+run_converter_other ()
+{
+  run_command "$CONVERTER_OTHER" "$@"
+}
+
 run_viewer ()
 {
   run_command "$VIEWER" "$@"
@@ -113,7 +120,7 @@ do_read_save ()
   local TEMP_FILE="`dirname \"$FILE\"`"/test_temporary.wrl
 
   test_log 'Reading' "$FILE"
-  run_converter "$TEMP_FILE" "$FILE" --encoding=classic
+  run_converter "$TEMP_FILE" "$FILE" --stdout-url=out.x3dv
 
   # Check input file and output file headers.
   # They indicate VRML version used to write the file.
@@ -150,7 +157,7 @@ Header on output is ${OUTPUT_HEADER}"
   fi
 
   test_log 'Reading again' "$FILE"
-  run_converter /dev/null "$TEMP_FILE" --encoding=classic
+  run_converter /dev/null "$TEMP_FILE" --stdout-url=out.x3dv
 
   rm -f "$TEMP_FILE"
 }
@@ -168,8 +175,8 @@ do_compare_classic_save ()
   local SAVE_CLASSIC_NEW="${FILE%.*}_test_temporary_classic_save_new.x3dv"
 
   test_log 'Comparing classic save with' "$VIEWER_OTHER"
-  run_viewer_other "$SAVE_CLASSIC_OLD" "$FILE" --write-to-vrml
-  run_viewer       "$SAVE_CLASSIC_NEW" "$FILE" --write-to-vrml
+  run_converter_other "$SAVE_CLASSIC_OLD" "$FILE" --stdout-url=out.x3dv
+  run_converter       "$SAVE_CLASSIC_NEW" "$FILE" --stdout-url=out.x3dv
 
   set +e
   diff -w --ignore-blank-lines --unified=0 "$SAVE_CLASSIC_OLD" "$SAVE_CLASSIC_NEW"
@@ -179,8 +186,7 @@ do_compare_classic_save ()
 }
 
 # Uncomment this to compare classic save with other (e.g. older) castle-model-viewer version.
-# Uses --write (--write-to-vrml for older castle-model-viewer versions) to save,
-# and standard Unix "diff" to compare.
+# Uses standard Unix "diff" to compare.
 # do_compare_classic_save
 
 # Saving to file: XML validity -------------------------------------------------
@@ -195,8 +201,8 @@ do_save_xml_valid ()
     local SAVE_CLASSIC="${FILE%.*}_test_temporary_save_xml_valid.x3dv"
 
     test_log 'Testing is xml valid (can be read back, by castle-model-converter and xmllint)'
-    run_converter "$SAVE_XML"     "$FILE"     --encoding=xml
-    run_converter "$SAVE_CLASSIC" "$SAVE_XML" --encoding=classic
+    run_converter "$SAVE_XML"     "$FILE"     --stdout-url=out.x3d
+    run_converter "$SAVE_CLASSIC" "$SAVE_XML" --stdout-url=out.x3dv
 
     if [ "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt.wrl_test_temporary_save_xml_valid.x3d' -o \
          "`basename \"$SAVE_XML\"`" '=' 'chinchilla_with_prt_rays1000.wrl_test_temporary_save_xml_valid.x3d' -o \
@@ -233,9 +239,9 @@ do_compare_classic_xml_save ()
   local SAVE_2_CLASSIC="${FILE%.*}_test_temporary_classic_xml_2.x3dv"
 
   test_log 'Comparing saving to classic vs saving to xml and then classic'
-  run_converter "$SAVE_1_CLASSIC" "$FILE"  --force-x3d --encoding=classic
-  run_converter "$SAVE_2_XML"     "$FILE"              --encoding=xml
-  run_converter "$SAVE_2_CLASSIC" "$SAVE_2_XML"        --encoding=classic
+  run_converter "$SAVE_1_CLASSIC" "$FILE"       --stdout-url=out.x3dv
+  run_converter "$SAVE_2_XML"     "$FILE"       --stdout-url=out.x3d
+  run_converter "$SAVE_2_CLASSIC" "$SAVE_2_XML" --stdout-url=out.x3dv
 
   set +e
   diff --unified=0 "$SAVE_1_CLASSIC" "$SAVE_2_CLASSIC"
@@ -296,13 +302,7 @@ do_viewer_and_converter_equal ()
   diff "$VIEWER_OUT" "$CONVERTER_OUT"
 
   run_viewer "$VIEWER_OUT" "$FILE" --write --write-encoding=xml
-  run_converter   "$CONVERTER_OUT"   "$FILE"               --encoding=xml
-  filter_out_generator_meta "$VIEWER_OUT"
-  filter_out_generator_meta "$CONVERTER_OUT"
-  diff "$VIEWER_OUT" "$CONVERTER_OUT"
-
-  run_viewer "$VIEWER_OUT" "$FILE" --write --write-force-x3d
-  run_converter   "$CONVERTER_OUT"   "$FILE"               --force-x3d
+  run_converter   "$CONVERTER_OUT"   "$FILE"   --stdout-url=out.x3d
   filter_out_generator_meta "$VIEWER_OUT"
   filter_out_generator_meta "$CONVERTER_OUT"
   diff "$VIEWER_OUT" "$CONVERTER_OUT"
