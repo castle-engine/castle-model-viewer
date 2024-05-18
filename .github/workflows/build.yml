@@ -118,39 +118,39 @@ jobs:
             *.tar.gz
           #if-no-files-found: error
 
-  # release:
-  #   name: Release
-  #   runs-on: ubuntu-latest
-  #   # Only upload release if all builds, on all runners, succeeded.
-  #   needs: [build_docker, build_runner_native]
-  #   steps:
-  #   - name: Download packaged releases
-  #     uses: actions/download-artifact@v4
-  #     with:
-  #       merge-multiple: true
-  #   - name: List downloaded files
-  #     run: ls -R
-  #   - name: GH CLI status
-  #     env:
-  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     run: gh auth status
-  #   # Releases files in the "snapshot" release.
-  #   - name: Release Artifacts
-  #     if: ${{ github.ref == 'refs/heads/master' }}
-  #     run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
-  #     env:
-  #       GH_TOKEN: ${{ github.token }}
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Only upload release if all builds, on all runners, succeeded.
+    needs: [build_docker, build_runner_native]
+    steps:
+    - name: Download packaged releases
+      uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+    - name: List downloaded files
+      run: ls -R
+    - name: GH CLI status
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh auth status
+    # Releases files in the "snapshot" release.
+    - name: Release Artifacts
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: gh release --repo castle-engine/castle-model-viewer upload snapshot --clobber *.zip *.tar.gz
+      env:
+        GH_TOKEN: ${{ github.token }}
 
-  # update-release-tag:
-  #   name: Update Release Tag (make snapshot tag point to the build commit on master branch)
-  #   runs-on: ubuntu-latest
-  #   needs: [release]
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Update Release Tag
-  #     if: ${{ github.ref == 'refs/heads/master' }}
-  #     run: |
-  #       # --force allows to overwrite previous tag
-  #       git tag --force snapshot
-  #       # --force allows to push with overwritten tag
-  #       git push --force origin snapshot
+  update-release-tag:
+    name: Update Release Tag (make snapshot tag point to the build commit on master branch)
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update Release Tag
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: |
+        # --force allows to overwrite previous tag
+        git tag --force snapshot
+        # --force allows to push with overwritten tag
+        git push --force origin snapshot
