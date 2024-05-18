@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu
 
+# ----------------------------------------------------------------------------
 # Run castle-model-viewer / castle-model-converter tests on models inside the given directories.
 # Use with any directory of test models,
 # like CGE demo-models, castle-engine/tests/, cge-www/htdocs/ .
@@ -43,12 +44,15 @@ set -eu
 # Some of the tests are commented out by default in run_test_on_model.sh,
 # as they require more time or have to be interpreted manually (to filter
 # out some harmless warnings). Default tests are quick and fully automatic.
-
+#
+# This bash script uses settings similar to bash strict mode, for similar reasons,
+# see http://redsymbol.net/articles/unofficial-bash-strict-mode/
 # ----------------------------------------------------------------------------
 
-# `sort' results are affected by the current locale (see man sort).
-# We want them to be predictable, the same on every system,
-# to make comparing two outputs (like compile_and_run_tests.sh does) reliable.
+# Change LANG to something hardcoded,
+# because `sort' results are affected by the current locale (see man sort).
+# And we want them to be predictable, the same on every system,
+# to make comparing two outputs (like run_tests_on_dir_and_compare.sh does) reliable.
 export LANG=C
 export LC_COLLATE=C
 
@@ -68,9 +72,9 @@ set +e
 
 # The "find" output is run through sort and then xargs.
 # Otherwise, find prints files in an unpredictable order (from readdir),
-# which makes comparing two outputs from two different systems (like
-# compile_and_run_tests.sh does) is impossible.
-# Fortunately, find and sort goes very fast (compared to actual
+# which would make comparing two outputs from two different systems (like
+# run_tests_on_dir_and_compare.sh does) impossible.
+# Fortunately, find + sort go very fast (compared to actual
 # run_test_on_model.sh time).
 
 find "$@" \

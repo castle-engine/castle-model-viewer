@@ -12,9 +12,12 @@ set -eu
 #   $ rm -f output-short.txt output-verbose.txt
 #   $ ./jenkins_scripts/run_test_on_model.sh output-short.txt output-verbose.txt ../demo-models/texturing_advanced/warnings/tex3d_composed_warnings.x3dv
 #   ... and consult output-short.txt output-verbose.txt output
+#
+# This bash script uses settings similar to bash strict mode, for similar reasons,
+# see http://redsymbol.net/articles/unofficial-bash-strict-mode/
 # ----------------------------------------------------------------------------
 
-# Disable heaptrc, to get shorter output and avoid reports of harmless leaks
+# Disable FPC heaptrc, to get shorter output and avoid reports of harmless leaks
 # occuring when ending program with Halt.
 # Useful in case you test debug builds of castle-model-viewer/castle-model-converter
 # (that have heaptrc compiled in).

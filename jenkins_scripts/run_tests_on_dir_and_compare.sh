@@ -1,10 +1,13 @@
 #!/bin/bash
 set -eu
 
+# ----------------------------------------------------------------------------
 # Build castle-model-viewer and castle-model-converter,
 # run various tests on models in directories given as arguments ($@),
 # compare with output stored in repo.
-
+#
+# This bash script uses settings similar to bash strict mode, for similar reasons,
+# see http://redsymbol.net/articles/unofficial-bash-strict-mode/
 # ----------------------------------------------------------------------------
 
 # run tests
