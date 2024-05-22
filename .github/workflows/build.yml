@@ -20,6 +20,12 @@ env:
   #release_tag: vX.Y.Z
   release_tag: v5.0.0
 
+  # Which Castle Game Engine tag/branch to use for building.
+  # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
+  # But for quick hotfix in exceptional situation, you may want to use "master"
+  # or any other branch/tag.
+  engine_tag: master
+
 defaults:
   run:
     shell: bash
@@ -28,11 +34,14 @@ jobs:
   build_docker:
     name: Build From Docker
     runs-on: ubuntu-latest
-    # We use a Docker container with cge-unstable, so it already contains
+
+    # We could use a Docker container with cge-unstable, so it already contains
     # CGE (with build tool) set up. This way we know we only use CGE that
     # passed automatic tests, we have castle-engine on the PATH, and things are easy.
+    #
+    # Later: But to make engine_tag configurable, we instead get CGE from GitHub.
     #container: kambi/castle-engine-cloud-builds-tools:cge-unstable
-    # TEMP for hotfix:
+
     container: kambi/castle-engine-cloud-builds-tools:cge-none
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +53,7 @@ jobs:
       - name: Castle Game Engine - Env PATH (non-Windows)
         run: echo "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
       - name: Castle Game Engine - Clone snapshot
-        run: git clone --depth 1 --single-branch --branch master https://github.com/castle-engine/castle-engine/
+        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
       - name: Castle Game Engine - Build
         run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
 
@@ -91,7 +100,7 @@ jobs:
       - name: Castle Game Engine - Env BUILD_TOOL
         run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
       - name: Castle Game Engine - Clone snapshot
-        run: git clone --depth 1 --single-branch --branch master https://github.com/castle-engine/castle-engine/
+        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
       - name: Castle Game Engine - Build
         run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
 
