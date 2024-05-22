@@ -52,7 +52,7 @@ jobs:
         run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
       - name: Castle Game Engine - Env PATH (non-Windows)
         run: echo "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone snapshot
+      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
         run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
       - name: Castle Game Engine - Build
         run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
@@ -99,7 +99,7 @@ jobs:
         run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
       - name: Castle Game Engine - Env BUILD_TOOL
         run: echo "BUILD_TOOL=$CASTLE_ENGINE_PATH/tools/build-tool/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone snapshot
+      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
         run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
       - name: Castle Game Engine - Build
         run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
