@@ -24,10 +24,12 @@ do_upload_one_platform ()
     --package-format=directory --verbose \
     --output=$UPLOAD_DIR
 
-  cp "manifest-${OS}-${CPU}.itch.toml" $UPLOAD_DIR/.itch.toml
+  local INSIDE_UPLOAD_DIR=$UPLOAD_DIR/castle-model-viewer-$VERSION-$OS-$CPU
+
+  cp "manifest-${OS}-${CPU}.itch.toml" $INSIDE_UPLOAD_DIR/.itch.toml
 
   butler push \
-    $UPLOAD_DIR $ITCH_IO_NAME:$OS-$CPU \
+    $INSIDE_UPLOAD_DIR $ITCH_IO_NAME:$OS-$CPU \
     --userversion "${VERSION}"
 }
 
