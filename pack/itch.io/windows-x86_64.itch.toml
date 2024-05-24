@@ -1,0 +1,11 @@
+[[actions]]
+name = "play"
+path = "castle-model-viewer/castle-model-viewer.exe"
+
+[[actions]]
+name = "manual"
+path = "https://castle-engine.io/castle-model-viewer"
+
+[[actions]]
+name = "forums"
+path = "https://castle-engine.io/talk.php"
