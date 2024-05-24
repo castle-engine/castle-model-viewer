@@ -13,26 +13,23 @@ do_upload_one_platform ()
   local OS=$1
   local CPU=$2
 
-  local UPLOAD_DIR_PLATFORM=$UPLOAD_DIR/$OS-$CPU
-
-  mkdir -p $UPLOAD_DIR_PLATFORM
+  UPLOAD_DIR=/tmp/upload_itch_io_unpacked_$$
+  rm -Rf $UPLOAD_DIR # make sure it is clean
+  mkdir -p $UPLOAD_DIR
 
   # We create a directory with release -- not packed into zip or tar.gz.
   # butler prefers to upload unpacked directories.
   # See https://itch.io/docs/butler/single-files.html
   castle-engine package --os=$OS --cpu=$CPU \
     --package-format=directory --verbose \
-    --output=$UPLOAD_DIR_PLATFORM
+    --output=$UPLOAD_DIR
 
-  cp $OS-$CPU'.itch.toml' $UPLOAD_DIR_PLATFORM/.itch.toml
+  cp "manifest-${OS}-${CPU}.itch.toml" $UPLOAD_DIR/.itch.toml
 
   butler push \
-    $UPLOAD_DIR_PLATFORM $ITCH_IO_NAME:$OS-$CPU \
+    $UPLOAD_DIR $ITCH_IO_NAME:$OS-$CPU \
     --userversion "${VERSION}"
 }
-
-UPLOAD_DIR=/tmp/upload_itch_io_unpacked_$$
-rm -Rf $UPLOAD_DIR # make sure it is clean
 
 VERSION=`castle-engine output version`
 echo "Uploading version ${VERSION} to itch.io"
