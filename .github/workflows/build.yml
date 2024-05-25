@@ -16,15 +16,14 @@ on: [push, pull_request]
 env:
   # To which GitHub release tag should we upload artifacts.
   # Can be "snapshot" or "vX.Y.Z" (latter when we make stable release).
-  #release_tag: snapshot
+  release_tag: snapshot
   #release_tag: vX.Y.Z
-  release_tag: v5.0.0
 
   # Which Castle Game Engine tag/branch to use for building.
   # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
   # But for quick hotfix in exceptional situation, you may want to use "master"
   # or any other branch/tag.
-  engine_tag: master
+  engine_tag: snapshot
 
 defaults:
   run:
