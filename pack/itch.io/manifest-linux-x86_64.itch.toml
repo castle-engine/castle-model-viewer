@@ -1,6 +1,6 @@
 [[actions]]
 name = "play"
-path = "castle-model-viewer/castle-model-viewer"
+path = "castle-model-viewer"
 
 [[actions]]
 name = "manual"
