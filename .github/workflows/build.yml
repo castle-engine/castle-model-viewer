@@ -45,7 +45,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Older version of this workflow used to clone CGE and build it.
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
         run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
