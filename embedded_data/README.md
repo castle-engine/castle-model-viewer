@@ -2,7 +2,7 @@
 
 To make distributing castle-model-viewer easy, for now we pack all the data inside the castle-model-viewer executable.
 
-So instead of a traditional `data/` subdirectory used in most Castle Game Engine applications ( https://castle-engine.io/manual_data_directory.php ), we have `embedded_data/` subdirectory, and we process files to Pascal using
+So instead of a traditional `data/` subdirectory used in most Castle Game Engine applications ( https://castle-engine.io/data ), we have `embedded_data/` subdirectory, and we process files to Pascal using
 
 - `file_to_pascal_string` (from https://github.com/pasdoc/pasdoc/tree/master/source/tools )
 
