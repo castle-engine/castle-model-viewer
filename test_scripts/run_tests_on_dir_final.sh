@@ -11,7 +11,7 @@ set -eu
 # ----------------------------------------------------------------------------
 
 # run tests
-jenkins_scripts/run_tests_on_dir.sh run_tests_output.txt run_tests_output_verbose.txt "$@"
+test_scripts/run_tests_on_dir.sh run_tests_output.txt run_tests_output_verbose.txt "$@"
 
 # remove OpenAL trash from outpt
 sed --in-place=.bak \
@@ -29,12 +29,3 @@ REPOSITORY_DIR="`pwd`"
 sed --in-place=.bak2 -e "s|${REPOSITORY_DIR}|DIR|g" run_tests_output.txt
 
 cat run_tests_output.txt
-
-# compare with last correct output
-#
-# TODO: -w added only temporarily, since "Possible reasons:" was for some time
-# with extra space in CGE repo, but in "run_tests_valid_output.txt" has
-# trimmed space. Once CGE updates, it should be everywhere without space,
-# and -w can be removed below.
-
-diff -wu run_tests_output.txt jenkins_scripts/run_tests_valid_output.txt

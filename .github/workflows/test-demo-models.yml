@@ -1,0 +1,46 @@
+# ----------------------------------------------------------------------------
+# GitHub Actions workflow to test correct output on demo models.
+# ----------------------------------------------------------------------------
+
+name: Test Demo Models
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Test Demo Models
+    runs-on: ubuntu-latest
+    container: kambi/castle-engine-cloud-builds-tools:cge-unstable
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Checkout demo-models
+      uses: actions/checkout@v4
+      with:
+        repository: castle-engine/demo-models
+        path: demo-models
+
+    - name: Build
+      run: make
+
+    - name: Run Tests
+      run: test_scripts/run_tests_on_dir_final.sh demo-models/
+
+    # We save output before comparing.
+    # This way we have it even when comparing fails.
+    # This is useful to later analyze, and to update test_scripts/run_tests_valid_output.txt .
+    - name: Archive Artifacts (logs)
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs
+        path: |
+          run_tests_output.txt
+          run_tests_output_verbose.txt
+        if-no-files-found: error
+
+    - name: Compare test with last known good output
+      run: diff -wu run_tests_output.txt test_scripts/run_tests_valid_output.txt

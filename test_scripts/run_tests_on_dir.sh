@@ -52,7 +52,7 @@ set -eu
 # Change LANG to something hardcoded,
 # because `sort' results are affected by the current locale (see man sort).
 # And we want them to be predictable, the same on every system,
-# to make comparing two outputs (like run_tests_on_dir_and_compare.sh does) reliable.
+# to make comparing two outputs (like run_tests_on_dir_final.sh does) reliable.
 export LANG=C
 export LC_COLLATE=C
 
@@ -73,7 +73,7 @@ set +e
 # The "find" output is run through sort and then xargs.
 # Otherwise, find prints files in an unpredictable order (from readdir),
 # which would make comparing two outputs from two different systems (like
-# run_tests_on_dir_and_compare.sh does) impossible.
+# run_tests_on_dir_final.sh does) impossible.
 # Fortunately, find + sort go very fast (compared to actual
 # run_test_on_model.sh time).
 
@@ -97,6 +97,6 @@ find "$@" \
                 -iname '*.starling-xml' ')' \
             -print0 ')' | \
 sort --zero-terminated | \
-xargs -0 --max-args=1 jenkins_scripts/run_test_on_model.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
+xargs -0 --max-args=1 test_scripts/run_test_on_model.sh "${OUTPUT_SHORT}" "${OUTPUT_VERBOSE}"
 
 set -e

@@ -10,7 +10,7 @@ set -eu
 # Tip: To test manually how it works on a single file, you can use this:
 #   $ cd castle-model-viewer/
 #   $ rm -f output-short.txt output-verbose.txt
-#   $ ./jenkins_scripts/run_test_on_model.sh output-short.txt output-verbose.txt ../demo-models/texturing_advanced/warnings/tex3d_composed_warnings.x3dv
+#   $ ./test_scripts/run_test_on_model.sh output-short.txt output-verbose.txt ../demo-models/texturing_advanced/warnings/tex3d_composed_warnings.x3dv
 #   ... and consult output-short.txt output-verbose.txt output
 #
 # This bash script uses settings similar to bash strict mode, for similar reasons,
