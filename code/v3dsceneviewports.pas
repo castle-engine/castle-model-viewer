@@ -1,5 +1,5 @@
 {
-  Copyright 2010-2023 Michalis Kamburelis.
+  Copyright 2010-2024 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -132,8 +132,6 @@ begin
     case ViewportsConfig of
       vc1:
         begin
-          { make sure glViewport is also restored }
-          RenderContext.Viewport := Window.Rect; // TODO: This is most probably useless now?
           for I := 0 to High(ExtraViewports) do
             Window.Controls.Remove(ExtraViewports[I]);
         end;
@@ -183,14 +181,14 @@ end;
 
 procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 var
-  W, H: Cardinal;
+  W, H: Single;
 begin
   case ViewportsConfig of
     vc1: ;
     vc2Horizontal:
       begin
-        W := Window.Width div 2;
-        H := Window.Height;
+        W := Window.Container.UnscaledWidth / 2;
+        H := Window.Container.UnscaledHeight;
 
         MainViewport.Anchor(hpLeft);
         MainViewport.Anchor(vpBottom);
@@ -204,8 +202,8 @@ begin
       end;
     vc4:
       begin
-        W := Window.Width div 2;
-        H := Window.Height div 2;
+        W := Window.Container.UnscaledWidth / 2;
+        H := Window.Container.UnscaledHeight / 2;
 
         MainViewport.Anchor(hpLeft);
         MainViewport.Anchor(vpTop);
@@ -315,10 +313,10 @@ const
   Visible: array [TViewportsConfig] of Integer = (0, 1, 3);
 begin
   if ViewportsConfig <> vc1 then
-    Container.RenderControl(Background, Container.Rect);
+    Container.RenderControl(Background, Container.PixelsRect);
   for I := 0 to Visible[ViewportsConfig] - 1 do
-    Container.RenderControl(ExtraViewports[I], Container.Rect);
-  Container.RenderControl(MainViewport, Container.Rect);
+    Container.RenderControl(ExtraViewports[I], Container.PixelsRect);
+  Container.RenderControl(MainViewport, Container.PixelsRect);
 end;
 
 procedure ViewportsSetTransparent(const Transparent: Boolean);
