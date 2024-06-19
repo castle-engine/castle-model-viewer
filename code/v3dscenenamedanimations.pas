@@ -305,7 +305,8 @@ begin
   inherited Create(AOwner);
 
   Scene := AScene;
-  Frame := true;
+  BorderColor := Gray;
+  Border.AllSides := 1;
   Padding := Margin;
   Spacing := 4;
 

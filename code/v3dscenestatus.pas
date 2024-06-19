@@ -74,7 +74,8 @@ begin
   FontSize := 15;
   CustomFont := TCastleFont.Create(Self);
   TCastleFont(CustomFont).Load(Font_Default3d_MonoB);
-  Frame := true;
+  BorderColor := Gray;
+  Border.AllSides := 1;
 end;
 
 procedure TStatusText.Render;
@@ -103,9 +104,9 @@ var
 begin
   inherited;
   CharWidth := Font.TextWidth('W');
-  if CharWidth > 0 then
+  if (CharWidth > 0) and (Container <> nil) then
     FMaxLineChars := Max(10, Floor(
-      (ContainerWidth - PaddingHorizontal * 2 - Translation.X * 2) / CharWidth)) else
+      (Container.PixelsWidth - PaddingHorizontal * 2 - Translation.X * 2) / CharWidth)) else
     FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 
