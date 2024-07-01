@@ -1,5 +1,5 @@
 {
-  Copyright 2004-2022 Michalis Kamburelis.
+  Copyright 2004-2024 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -346,7 +346,7 @@ var
   Item: TMenuItemRadio;
 begin
   if (ViewpointsRadioGroup <> nil) and
-     ViewpointsRadioGroup.Previous(Item) then
+     ViewpointsRadioGroup.Previous(Item, true) then
   begin
     BoundViewpoint := Item as TMenuItemViewpoint;
     JumpToViewpoint(Viewport, BoundViewpoint.Viewpoint);
@@ -358,7 +358,7 @@ var
   Item: TMenuItemRadio;
 begin
   if (ViewpointsRadioGroup <> nil) and
-     ViewpointsRadioGroup.Next(Item) then
+     ViewpointsRadioGroup.Next(Item, true) then
   begin
     BoundViewpoint := Item as TMenuItemViewpoint;
     JumpToViewpoint(Viewport, BoundViewpoint.Viewpoint);
