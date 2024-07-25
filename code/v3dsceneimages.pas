@@ -35,6 +35,8 @@ function Fly: TRGBAlphaImage;
 
 function Light_gizmo: TRGBAlphaImage;
 
+function Nav2d: TRGBAlphaImage;
+
 function Open: TRGBAlphaImage;
 
 function Screenshot: TRGBAlphaImage;
@@ -69,6 +71,7 @@ finalization
   FreeAndNil(FExamine);
   FreeAndNil(FFly);
   FreeAndNil(FLight_gizmo);
+  FreeAndNil(FNav2d);
   FreeAndNil(FOpen);
   FreeAndNil(FScreenshot);
   FreeAndNil(FWalk);

@@ -3702,6 +3702,8 @@ begin
   NavigationButtons[untFly].Image.OwnsImage := false;
   NavigationButtons[untWalk].Image.Image := V3DSceneImages.Walk;
   NavigationButtons[untWalk].Image.OwnsImage := false;
+  NavigationButtons[unt2D].Image.Image := V3DSceneImages.Nav2d;
+  NavigationButtons[unt2D].Image.OwnsImage := false;
 
   UpdateStatusToolbarVisible;
 
