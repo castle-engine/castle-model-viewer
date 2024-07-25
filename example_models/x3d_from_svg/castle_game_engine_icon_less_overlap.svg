@@ -12,7 +12,7 @@
    id="svg2"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="castle_game_engine_icon_less_overlap.svg"
-   inkscape:export-filename="/home/michalis/sources/castle-engine/castle-engine/doc/pasdoc/logo/castle_game_engine_icon.png"
+   inkscape:export-filename="castle_game_engine_icon.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -130,7 +130,7 @@
      id="towerupdark3"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="cccc"
-     inkscape:export-filename="/home/michalis/ownCloud/dev/castle-engine/polyline36.png"
+     inkscape:export-filename="polyline36.png"
      inkscape:export-xdpi="384"
      inkscape:export-ydpi="384" /><path
      transform="matrix(0.57926415,0,0,0.57926412,-51.844141,-11.063948)"
