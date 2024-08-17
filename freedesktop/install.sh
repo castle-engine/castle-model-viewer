@@ -26,6 +26,15 @@ install --mode 644 "$APP_NAME".svg "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
 install -d "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
 install --mode 644 "$APP_NAME".png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
 
+# Makes the system aware of new icons, otherwise new icons in ~/.local/share/icons
+# are not immediately visible, until relogin.
+# See https://portland.freedesktop.org/doc/xdg-icon-resource.html
+#
+# Note that we don't use "xdg-icon-resource install .." to install as it
+# doesn't seem to support SVG file types or --size scalable, according to docs,
+# and SVG is our primary icon format.
+xdg-icon-resource forceupdate
+
 # Is this needed?
 #if which update-icon-caches >/dev/null 2>&1 ; then update-icon-caches "$SHARE_PREFIX"/icons/hicolor/; fi
 
