@@ -17,7 +17,7 @@
     <dependency name="OggVorbis" /> <!-- read .ogg  -->
     <dependency name="Https" /> <!-- read https links -->
   </dependencies>
-  <version value="5.1.0" code="12" />
+  <version value="5.2.0" code="13" />
   <package>
     <include path="README.md" />
     <include path="COPYING.GPL2.txt" />
