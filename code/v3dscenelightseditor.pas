@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2023 Michalis Kamburelis.
+  Copyright 2006-2024 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -27,14 +27,16 @@ unit V3DSceneLightsEditor;
 
 interface
 
-uses Classes, CastleWindow, CastleViewport, CastleScene;
+uses Classes, CastleWindow, CastleViewport, CastleScene,
+  V3DSceneViewports;
 
 var
   MenuLightsEditor: TMenuItemChecked;
 
 function LightsEditorIsOpen: boolean;
 
-procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
+{ Show lights editor, with lights found in AMainViewport.MainScene. }
+procedure LightsEditorOpen(const AMainViewport: TMyViewport;
   const AWindow: TCastleWindow; const AWindowMarginTop: Single);
 procedure LightsEditorClose;
 
@@ -256,7 +258,7 @@ type
 var
   { Local copy of MainViewport and Window for lights editor.
     Both @nil when we're closed, never @nil when we're open. }
-  MainViewport: TCastleViewport;
+  MainViewport: TMyViewport;
   Window: TCastleWindow;
   WindowMarginTop: Single;
 
@@ -364,7 +366,7 @@ begin
   Gizmo.Exists := false; // initially not existing
 end;
 
-procedure LightsEditorOpen(const AMainViewport: TCastleViewport;
+procedure LightsEditorOpen(const AMainViewport: TMyViewport;
   const AWindow: TCastleWindow; const AWindowMarginTop: Single);
 begin
   if MainViewport = AMainViewport then Exit;
@@ -530,7 +532,7 @@ begin
   AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, RenderContext.GlobalAmbient);
   AmbientColorSlider.OnChange := @AmbientColorChanged;
 
-  MainViewport.Items.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
+  MainViewport.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
 
   AddTitle('Lights Editor:');
   for I := 0 to Lights.Count - 1 do

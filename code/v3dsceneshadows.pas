@@ -1,3 +1,26 @@
+{
+  Copyright 2006-2024 Michalis Kamburelis.
+
+  This file is part of "castle-model-viewer".
+
+  "castle-model-viewer" is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  "castle-model-viewer" is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with "castle-model-viewer"; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+
+  ----------------------------------------------------------------------------
+}
+
+{ Extra support for shadow volumes. }
 unit V3DSceneShadows;
 
 {$I v3dsceneconf.inc}
@@ -5,19 +28,14 @@ unit V3DSceneShadows;
 interface
 
 uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleViewport,
-  CastleRenderOptions;
-
-{ Compile also with CGE branches that don't yet have new-cameras work merged.
-  Once new-cameras merged -> master, we can remove this. }
-{$if not declared(TCastleAutoNavigationViewport)}
-  {$define TCastleAutoNavigationViewport:=TCastleViewport}
-{$endif}
+  CastleRenderOptions,
+  V3DSceneViewports;
 
 type
   { Takes care of setting shadow volume properties, and modifies a little
     shadow volume rendering to work nicely with all castle-model-viewer
     configurations (bump mapping, fill modes etc.) }
-  TV3DShadowsViewport = class(TCastleAutoNavigationViewport)
+  TV3DShadowsViewport = class(TMyViewport)
   protected
     procedure RenderOnePass(const Params: TRenderParams); override;
   end;
@@ -55,11 +73,11 @@ procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams);
 begin
   if Params.InShadow then
   begin
-    RenderOnePassShadowsBegin(Items.MainScene);
+    RenderOnePassShadowsBegin(MainScene);
     inherited;
   end else
   begin
-    RenderOnePassNoShadowsBegin(Items.MainScene);
+    RenderOnePassNoShadowsBegin(MainScene);
     inherited;
   end;
 end;

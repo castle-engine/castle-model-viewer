@@ -20,13 +20,15 @@
   ----------------------------------------------------------------------------
 }
 
-{ }
+{ Viewpoints (camera position/orientation) management, to switch between
+  all viewpoints in the loaded model. }
 unit V3DSceneViewpoints;
 
 interface
 
 uses CastleVectors, X3DNodes, CastleWindow, CastleUtils, Classes, CastleClassUtils,
-  CastleSceneCore, CastleScene, CastleViewport, CastleKeysMouse, V3DSceneCaptions;
+  CastleSceneCore, CastleScene, CastleViewport, CastleKeysMouse,
+  V3DSceneCaptions, V3DSceneViewports;
 
 type
   { Menu item referring to a viewpoint.
@@ -94,10 +96,10 @@ type
     { Jump to specific viewpoint, by order.
       This both updates the menu state (BoundViewpoint)
       and actually moves the camera (JumpToViewpoint). }
-    procedure Initial(const Viewport: TCastleViewport);
-    procedure Previous(const Viewport: TCastleViewport);
-    procedure Next(const Viewport: TCastleViewport);
-    procedure Final(const Viewport: TCastleViewport);
+    procedure Initial(const Viewport: TMyViewport);
+    procedure Previous(const Viewport: TMyViewport);
+    procedure Next(const Viewport: TMyViewport);
+    procedure Final(const Viewport: TMyViewport);
   end;
 
 var
@@ -115,7 +117,7 @@ procedure SetInitialViewpoint(Scene: TCastleScene;
 { Switch camera to given viewpoint. This only switches the 3D camera,
   does not update the "Viewpoints" menu state (for this, see
   TMenuViewpoints.BoundViewpoint). }
-procedure JumpToViewpoint(const Viewport: TCastleViewport;
+procedure JumpToViewpoint(const Viewport: TMyViewport;
   const Viewpoint: TAbstractViewpointNode);
 
 const
@@ -331,7 +333,7 @@ begin
   Result := nil;
 end;
 
-procedure TMenuViewpoints.Initial(const Viewport: TCastleViewport);
+procedure TMenuViewpoints.Initial(const Viewport: TMyViewport);
 begin
   if (ViewpointsRadioGroup <> nil) and
      (ViewpointsRadioGroup.Count <> 0) then
@@ -341,7 +343,7 @@ begin
   end;
 end;
 
-procedure TMenuViewpoints.Previous(const Viewport: TCastleViewport);
+procedure TMenuViewpoints.Previous(const Viewport: TMyViewport);
 var
   Item: TMenuItemRadio;
 begin
@@ -353,7 +355,7 @@ begin
   end;
 end;
 
-procedure TMenuViewpoints.Next(const Viewport: TCastleViewport);
+procedure TMenuViewpoints.Next(const Viewport: TMyViewport);
 var
   Item: TMenuItemRadio;
 begin
@@ -365,7 +367,7 @@ begin
   end;
 end;
 
-procedure TMenuViewpoints.Final(const Viewport: TCastleViewport);
+procedure TMenuViewpoints.Final(const Viewport: TMyViewport);
 begin
   if (ViewpointsRadioGroup <> nil) and
      (ViewpointsRadioGroup.Count <> 0) then
@@ -421,14 +423,14 @@ begin
   end;
 end;
 
-procedure JumpToViewpoint(const Viewport: TCastleViewport;
+procedure JumpToViewpoint(const Viewport: TMyViewport;
   const Viewpoint: TAbstractViewpointNode);
 var
   Pos, Dir, Up, GravityUp: TVector3;
   Scene: TCastleScene;
 begin
   StatusText.Flash('Switching to viewpoint: ' + NodeToCaption(Viewpoint));
-  Scene := Viewport.Items.MainScene;
+  Scene := Viewport.MainScene;
   if Viewpoint = Scene.ViewpointStack.Top then
   begin
     { Sending set_bind = true works fine if it's not current viewpoint,

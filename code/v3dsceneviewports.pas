@@ -27,18 +27,23 @@ unit V3DSceneViewports;
 
 interface
 
-uses CastleViewport, CastleWindow, CastleCameras,
+uses CastleViewport, CastleWindow, CastleCameras, CastleScene,
   V3DSceneNavigationTypes;
 
-{ Compile also with CGE branches that don't yet have new-cameras work merged.
-  Once new-cameras merged -> master, we can remove this. }
-{$if not declared(TCastleAutoNavigationViewport)}
-  {$define TCastleAutoNavigationViewport:=TCastleViewport}
-{$endif}
-
 type
+  TMyViewport = class(TCastleAutoNavigationViewport)
+  public
+    { The central scene that is always assigned, rendered
+      and contains the loaded model (or empty model, if nothing loaded).
+
+      This is equivalent to CGE Items.MainScene, but Items.MainScene is
+      a deprecated CGE thing that will be eventually removed. }
+    MainScene: TCastleScene;
+  end;
+
   TViewportsConfig = (vc1, vc2Horizontal, vc4);
-  TViewportClass = class of TCastleAutoNavigationViewport;
+  TViewportClass = class of TMyViewport;
+
 const
   ViewportsConfigNames: array [TViewportsConfig] of string =
   ('_1 Viewport',
@@ -49,19 +54,18 @@ const
 var
   ViewportsConfig: TViewportsConfig;
 
-  { Main TCastleViewport.
-    Set this before calling InitializeViewports. }
-  MainViewport: TCastleAutoNavigationViewport;
+  { Main viewport. Set this before calling InitializeViewports. }
+  MainViewport: TMyViewport;
 
   { Custom viewports, using the same Items as MainViewport.Items.
     Note that MainViewport is @italic(not listed here). }
-  ExtraViewports: array [0..2] of TCastleAutoNavigationViewport;
+  ExtraViewports: array [0..2] of TMyViewport;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindow; MainViewport: TCastleAutoNavigationViewport);
+  Window: TCastleWindow; MainViewport: TMyViewport);
 
 { Copy all Camera and Navigation settings from Source to Target. }
-procedure AssignCameraAndNavigation(const Target, Source: TCastleAutoNavigationViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TMyViewport);
 
 procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
 
@@ -72,6 +76,8 @@ procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
   Set default values for all internal navigation components in all ExtraViewports[...].
   and on MainViewport too. }
 procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass);
+
+procedure InitializeViewportsMainScene(const NewMainScene: TCastleScene);
 
 { Redraw all viewports (and background underneath).
   This renders viewports for the off-screen rendering. }
@@ -89,12 +95,13 @@ uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
 var
   Background: TCastleRectangleControl;
 
-procedure AssignCameraAndNavigation(const Target, Source: TCastleAutoNavigationViewport);
+procedure AssignCameraAndNavigation(const Target, Source: TMyViewport);
 var
   NavigationTypeStr: String;
 begin
   Target.NavigationType := Source.NavigationType;
 
+  {$warnings off} // consciously using deprecated Navigation, it makes sense for castle-model-viewer
   if (Target.Navigation <> nil) and
      (Source.Navigation <> nil) then
     Target.Navigation.Assign(Source.Navigation)
@@ -102,6 +109,7 @@ begin
   if (Target.Navigation <> nil) or
      (Source.Navigation <> nil) then
   begin
+  {$warnings on}
     WriteStr(NavigationTypeStr, Target.NavigationType);
     WritelnLog('Both Source and Target have the same NavigationType, but only one of them has non-nil Navigation', [
       NavigationTypeStr
@@ -112,7 +120,7 @@ begin
 end;
 
 procedure SetViewportsConfig(const Value: TViewportsConfig;
-  Window: TCastleWindow; MainViewport: TCastleAutoNavigationViewport);
+  Window: TCastleWindow; MainViewport: TMyViewport);
 
   procedure AddViewport(Viewport: TCastleViewport);
   begin
@@ -230,7 +238,7 @@ end;
 
 procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
-  procedure CoreSetNavigationType(const Viewport: TCastleAutoNavigationViewport;
+  procedure CoreSetNavigationType(const Viewport: TMyViewport;
     const Value: TUserNavigationType);
   begin
     case Value of
@@ -255,7 +263,7 @@ end;
 
 procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass);
 
-  procedure InitializeDefaultNavigation(const V: TCastleAutoNavigationViewport);
+  procedure InitializeDefaultNavigation(const V: TMyViewport);
   begin
     { This configuration of navigations somewhat corresponds to CGE editor
       navigations in castleviewport_design_navigation.inc .
@@ -290,10 +298,17 @@ begin
     ExtraViewports[I].Items.Remove(ExtraViewports[I].Camera);
     MainViewport.Items.Add(ExtraViewports[I].Camera);
     ExtraViewports[I].Items := MainViewport.Items;
+    ExtraViewports[I].MainScene := MainViewport.MainScene;
+
+    // Usign deprecated AutoCamera, castle-model-viewer needs this now to have
+    // X3D Viewpoint animation affect camera.
+    {$warnings off}
     { We will explicitly initialize camera and navigation.
       This also prevents the AutoCamera mechanism from overriding
       our camera set by AssignCameraAndNavigation. }
     ExtraViewports[I].AutoCamera := false;
+    {$warnings on}
+
     ExtraViewports[I].AutoNavigation := false;
 
     InitializeDefaultNavigation(ExtraViewports[I]);
@@ -304,6 +319,24 @@ begin
   Background := TCastleRectangleControl.Create(nil);
   Background.FullSize := true;
   Background.Color := Gray;
+end;
+
+procedure InitializeViewportsMainScene(const NewMainScene: TCastleScene);
+var
+  I: Integer;
+begin
+  MainViewport.MainScene := NewMainScene;
+  for I := 0 to High(ExtraViewports) do
+    ExtraViewports[I].MainScene := NewMainScene;
+
+  // change also MainViewport.Items, this is shared with all ExtraViewports
+  MainViewport.Items.Add(NewMainScene);
+  // Usign deprecated MainScene, castle-model-viewer needs this now to have X3D
+  // Viewpoint animation affect camera, to have X3D Background node affect
+  // background and likely more.
+  {$warnings off}
+  MainViewport.Items.MainScene := NewMainScene;
+  {$warnings on}
 end;
 
 procedure ViewportsRender(const Container: TCastleContainer);

@@ -4066,13 +4066,7 @@ begin
       Scene.CastGlobalLights := false;
 
       AttributesLoadFromConfig(Scene.RenderOptions);
-      MainViewport.Items.Add(Scene);
-      // Usign deprecated MainScene, castle-model-viewer needs this now to have X3D
-      // Viewpoint animation affect camera, to have X3D Background node affect
-      // background and likely more.
-      {$warnings off}
-      MainViewport.Items.MainScene := Scene;
-      {$warnings on}
+      InitializeViewportsMainScene(Scene);
 
       SceneBoundingBox := TBoundingBoxScene.Create(Scene);
       MainViewport.Items.Add(SceneBoundingBox);
