@@ -42,11 +42,14 @@ procedure RaytraceToWin(
 
 implementation
 
+// TODO: Using deprecated CastleWindowModes; we should migrate to use TCastleView
+{$warnings off}
 uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
   CastleGLUtils, CastleImages, CastleUtils, CastleMessages, CastleGLImages,
   CastleUriUtils, CastleKeysMouse, CastleRenderContext,
   CastleInternalTriangleOctree, CastleShapes,
   V3DSceneStatus, V3DSceneWindow;
+{$warnings on}
 
 { TODO: Copy from new CGE code, to make 5.2.0 compatible with engine 7.0-alpha.3.
   Remove when bumping version to 5.3.0. }
