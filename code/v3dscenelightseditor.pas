@@ -27,7 +27,7 @@ unit V3DSceneLightsEditor;
 
 interface
 
-uses Classes, CastleWindow, CastleViewport, CastleScene,
+uses Classes, CastleWindow, CastleViewport, CastleScene, CastleClassUtils,
   V3DSceneViewports;
 
 var
@@ -42,11 +42,14 @@ procedure LightsEditorClose;
 
 implementation
 
+// TODO: using deprecated CastleOnScreenMenu for UI
+{$warnings off}
 uses SysUtils, CastleColors,
   CastleVectors, X3DNodes, CastleOnScreenMenu, CastleBoxes, CastleTransform,
   CastleMessages, CastleUtils, CastleGLUtils, CastleUIControls,
   CastleRectangles, CastleControls, CastleRenderContext,
   V3DSceneImages, V3DSceneInternalScenes;
+{$warnings on}
 
 { TCastleOnScreenMenu descendants -------------------------------------------- }
 
@@ -266,8 +269,30 @@ var
   Gizmo: TInternalScene;
 
 procedure SetCurrentMenu(const NewValue: TCastleOnScreenMenu);
+
+  { Make NewItem the only instance of ReplaceClass in List.
+    Assumes that List may contain at most one instance of ReplaceClass.
+    Similar to deprecated in CGE TCastleObjectList.MakeSingle. }
+  procedure MakeSingle(const List: TInternalChildrenControls;
+    const ReplaceClass: TClass; const NewItem: TCastleUserInterface);
+  var
+    I: Integer;
+  begin
+    for I := 0 to List.Count - 1 do
+      if List[I] is ReplaceClass then
+      begin
+        List.Remove(List[I]);
+        if NewItem <> nil then
+          List.Insert(I, NewItem);
+        Exit;
+      end;
+
+    // eventually add NewItem at the end
+    List.Insert(List.Count, NewItem);
+  end;
+
 begin
-  Window.Controls.MakeSingle(TCastleOnScreenMenu, NewValue, true);
+  MakeSingle(Window.Controls, TCastleOnScreenMenu, NewValue);
 end;
 
 function LightsEditorIsOpen: boolean;
