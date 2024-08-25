@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2022 Michalis Kamburelis.
+  Copyright 2003-2024 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -45,7 +45,31 @@ implementation
 uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
   CastleGLUtils, CastleImages, CastleUtils, CastleMessages, CastleGLImages,
   CastleUriUtils, CastleKeysMouse, CastleRenderContext,
+  CastleInternalTriangleOctree, CastleShapes,
   V3DSceneStatus, V3DSceneWindow;
+
+{ TODO: Copy from new CGE code, to make 5.2.0 compatible with engine 7.0-alpha.3.
+  Remove when bumping version to 5.3.0. }
+{ Create spatial structure to resolve collisions in the given scene.
+  Caller is responsible for freeing the result. }
+function CreateOctreeVisibleTrianglesForScene(
+  const Scene: TCastleSceneCore): TTriangleOctree;
+var
+  ShapeList: TShapeList;
+  Shape: TShape;
+begin
+  Result := TTriangleOctree.Create(DefTriangleOctreeLimits, Scene.LocalBoundingBox);
+  try
+    Result.Triangles.Capacity := Scene.TrianglesCount;
+    ShapeList := Scene.Shapes.TraverseList(
+      { OnlyActive } true,
+      { OnlyVisible } true,
+      { OnlyCollidable } false
+    );
+    for Shape in ShapeList do
+      Shape.Triangulate({$ifdef FPC}@{$endif} Result.AddItemTriangle);
+  except Result.Free; raise end;
+end;
 
 const
   DefaultPrimarySamplesCount = 1;
@@ -251,6 +275,7 @@ var
   RayTracer: TRayTracer;
   StatusText: TRayTracerStatus;
   ImageControl: TRayTracerImage;
+  OctreeVisibleTriangles: TTriangleOctree;
 begin
   { get input from user }
   case MessageChoice(Window,
@@ -329,14 +354,15 @@ begin
 
         Although OctreeDynamicCollisions (usually already prepared for Scene,
         when CollisionChecking is active) has quite excellent performance,
-        and ray-tracer can work with it.
+        and ray-tracer could work with it too.
+
         But OctreeCollidableTriangles has only *collidable* geometry ---
         while we want only *visible* geometry for ray-tracer.
         When using Collision node, these may be two different things. }
-      Scene.Spatial := Scene.Spatial + [ssVisibleTriangles];
+      OctreeVisibleTriangles := CreateOctreeVisibleTrianglesForScene(Scene);
       try
         RayTracer.Image := CallData.Image;
-        RayTracer.Octree := Scene.InternalOctreeVisibleTriangles;
+        RayTracer.Octree := OctreeVisibleTriangles;
         RayTracer.CamPosition := CamPosition;
         RayTracer.CamDirection := CamDir;
         RayTracer.CamUp := CamUp;
@@ -346,7 +372,7 @@ begin
         RayTracer.PixelsMadeNotifier := @PixelsMadeNotify;
 
         RayTracer.ExecuteStats(StatusText.Stats);
-      finally Scene.Spatial := Scene.Spatial - [ssVisibleTriangles] end;
+      finally FreeAndNil(OctreeVisibleTriangles) end;
 
       StatusText.Stats.Append('');
       StatusText.Stats.Append('<font color="#FFFFFF">Press Escape to return to normal 3D view.</font>');
