@@ -29,7 +29,8 @@ interface
 
 uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
   CastleGLUtils, CastleViewport, Classes, CastleUIControls, CastleTimeUtils,
-  CastleControls, CastleInternalControlsImages, CastleGLImages, CastleKeysMouse;
+  CastleControls, CastleInternalControlsImages, CastleGLImages, CastleKeysMouse,
+  V3DSceneViewports;
 
 { Compile also with CGE branches that don't yet have new-cameras work merged.
   Once new-cameras merged -> master, we can remove this. }
@@ -39,7 +40,7 @@ uses SysUtils, CastleUtils, CastleWindow, CastleCameras, CastleVectors,
 
 { Call this once on created Viewport.
   This will take care of using proper Viewport.Navigation. }
-procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
+procedure InitNavigation(const Viewport: TMyViewport);
 
 type
   { Navigation types useful in castle-model-viewer, in order suitable for castle-model-viewer
@@ -104,6 +105,9 @@ var
   { Mouse look forced (independently of holding right mouse button) by menu item "Mouse Look". }
   PersistentMouseLook: Boolean;
 
+{ Copy NewNavigationType to all (existing) viewports. }
+procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
+
 implementation
 
 uses CastleParameters, CastleClassUtils, CastleImages,
@@ -112,7 +116,7 @@ uses CastleParameters, CastleClassUtils, CastleImages,
 
 var
   { Saved Viewport from InitNavigation. }
-  FViewport: TCastleAutoNavigationViewport;
+  FViewport: TMyViewport;
 
 procedure UpdateCameraNavigationTypeUI;
 var
@@ -127,7 +131,7 @@ begin
       NavigationButtons[NT].Pressed := NT = NavigationType;
 end;
 
-procedure InitNavigation(const Viewport: TCastleAutoNavigationViewport);
+procedure InitNavigation(const Viewport: TMyViewport);
 begin
   FViewport := Viewport;
   UpdateCameraNavigationTypeUI;
@@ -149,7 +153,13 @@ end;
 
 function Navigation: TCastleNavigation;
 begin
+  { Using deprecated FViewport.Navigation, this makes sense for castle-model-viewer.
+    TODO: TCastleAutoNavigationViewport should just move to this application,
+    non-deprecated?
+    It makes sense for X3D model viewers. }
+  {$warnings off}
   Result := FViewport.Navigation;
+  {$warnings on}
 end;
 
 function WalkNavigation: TCastleWalkNavigation;
@@ -345,6 +355,31 @@ begin
       end;
     end;
   end;
+end;
+
+procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
+
+  procedure CoreSetNavigationType(const Viewport: TMyViewport;
+    const Value: TUserNavigationType);
+  begin
+    case Value of
+      untExamine: Viewport.NavigationType := ntExamine;
+      untWalk: Viewport.NavigationType := ntWalk;
+      untFly: Viewport.NavigationType := ntFly;
+      unt2D: Viewport.NavigationType := nt2D;
+      untNone: Viewport.NavigationType := ntNone;
+      {$ifndef COMPILER_CASE_ANALYSIS}
+      else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
+      {$endif}
+    end;
+  end;
+
+var
+  I: Integer;
+begin
+  CoreSetNavigationType(MainViewport, NewNavigationType);
+  for I := 0 to High(ExtraViewports) do
+    CoreSetNavigationType(ExtraViewports[I], NewNavigationType);
 end;
 
 // initialization

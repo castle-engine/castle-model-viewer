@@ -20,15 +20,15 @@
   ----------------------------------------------------------------------------
 }
 
-{ }
+{ Manage all viewports (this application shows possibly multiple viewports,
+  if you use "Display -> 2/4 viewports" menu items). }
 unit V3DSceneViewports;
 
 {$I v3dsceneconf.inc}
 
 interface
 
-uses CastleViewport, CastleWindow, CastleCameras, CastleScene,
-  V3DSceneNavigationTypes;
+uses CastleViewport, CastleWindow, CastleCameras, CastleScene;
 
 type
   TMyViewport = class(TCastleAutoNavigationViewport)
@@ -68,9 +68,6 @@ procedure SetViewportsConfig(const Value: TViewportsConfig;
 procedure AssignCameraAndNavigation(const Target, Source: TMyViewport);
 
 procedure ResizeViewports(Window: TCastleWindow; MainViewport: TCastleViewport);
-
-{ Copy NewNavigationType to all (existing) viewports. }
-procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
 
 { Create ExtraViewports[...].
   Set default values for all internal navigation components in all ExtraViewports[...].
@@ -234,31 +231,6 @@ begin
         ExtraViewports[2].Height := H - 1;
       end;
   end;
-end;
-
-procedure SetNavigationType(const NewNavigationType: TUserNavigationType);
-
-  procedure CoreSetNavigationType(const Viewport: TMyViewport;
-    const Value: TUserNavigationType);
-  begin
-    case Value of
-      untExamine: Viewport.NavigationType := ntExamine;
-      untWalk: Viewport.NavigationType := ntWalk;
-      untFly: Viewport.NavigationType := ntFly;
-      unt2D: Viewport.NavigationType := nt2D;
-      untNone: Viewport.NavigationType := ntNone;
-      {$ifndef COMPILER_CASE_ANALYSIS}
-      else raise EInternalError.Create('CoreSetNavigationType NavigationType?');
-      {$endif}
-    end;
-  end;
-
-var
-  I: Integer;
-begin
-  CoreSetNavigationType(MainViewport, NewNavigationType);
-  for I := 0 to High(ExtraViewports) do
-    CoreSetNavigationType(ExtraViewports[I], NewNavigationType);
 end;
 
 procedure InitializeViewportsAndDefaultNavigation(ViewportClass: TViewportClass);
