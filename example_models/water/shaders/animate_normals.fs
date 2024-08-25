@@ -4,7 +4,9 @@
 
 varying vec4 water_vertex_object;
 uniform float time;
-uniform mat3 castle_NormalMatrix;
+
+// OpenGLES requires this, otherwise error: precision mismatch between shaders for uniform (named castle_NormalMatrix)
+uniform highp mat3 castle_NormalMatrix;
 
 // Declare snoise from noise3Dgrad.glsl .
 float snoise(vec3 v, out vec3 gradient);
@@ -18,7 +20,7 @@ float snoise(vec3 v, out vec3 gradient);
 
 vec3 simple_3d_noise(vec3 noise_input)
 {
-  vec3 result;
+  vec3 result = vec3(0.0);
 
   vec3 output1;
   snoise(noise_input, output1);
@@ -67,7 +69,7 @@ void PLUG_fragment_eye_space(const vec4 vertex_eye, inout vec3 normal_eye)
   /*
   normal_in_object_space = vec3(
     sin(water_vertex_object.x * 100.0),
-    frac(time),
+    fract(time),
     sin(water_vertex_object.z * 100.0));
   normal_in_object_space = normalize(normal_in_object_space);
   */
