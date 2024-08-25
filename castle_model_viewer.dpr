@@ -400,7 +400,7 @@ const
         end;
       end;
 
-      Result := SForCaption(Result, MaxLineChars);
+      Result := SForCaption(Result);
     end;
 
   var

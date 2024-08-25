@@ -31,7 +31,6 @@ uses CastleFonts, Classes, CastleUIControls, CastleTimeUtils,
 type
   TStatusText = class(TCastleLabel)
   private
-    FMaxLineChars: Cardinal;
     FlashTime, Time: TFloatTime;
     FlashText: string;
   protected
@@ -39,13 +38,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure Render; override;
-    procedure Resize; override;
     procedure Update(const SecondsPassed: Single;
       var HandleInput: boolean); override;
-
-    { How many characters can reasonably fit in a line for current window
-      width. }
-    property MaxLineChars: Cardinal read FMaxLineChars;
 
     { Show a message that will fadeout with time. }
     procedure Flash(const AText: string);
@@ -95,18 +89,6 @@ begin
       1 - (Time - FlashTime) / FlashDelay)) + '">' + FlashText + '</font>');
     Text.Append('');
   end;
-end;
-
-procedure TStatusText.Resize;
-var
-  CharWidth: Single;
-begin
-  inherited;
-  CharWidth := Font.TextWidth('W');
-  if CharWidth > 0 then
-    FMaxLineChars := Max(10, Floor(
-      (ContainerWidth - PaddingHorizontal * 2 - Translation.X * 2) / CharWidth)) else
-    FMaxLineChars := 10; // fallback in case we cannot calculate CharWidth
 end;
 
 procedure TStatusText.Flash(const AText: string);
