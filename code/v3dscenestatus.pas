@@ -68,7 +68,10 @@ begin
   FontSize := 15;
   CustomFont := TCastleFont.Create(Self);
   TCastleFont(CustomFont).Load(Font_Default3d_MonoB);
+  // TODO: remove Frame usage, we need parent UI with filling and border, and AutoSizeToChildren
+  {$warnings off}
   Frame := true;
+  {$warnings on}
 end;
 
 procedure TStatusText.Render;

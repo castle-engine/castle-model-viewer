@@ -305,7 +305,10 @@ begin
   inherited Create(AOwner);
 
   Scene := AScene;
+  // TODO: remove Frame usage, we need parent UI with filling and border, and AutoSizeToChildren
+  {$warnings off}
   Frame := true;
+  {$warnings on}
   Padding := Margin;
   Spacing := 4;
 
