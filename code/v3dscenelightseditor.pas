@@ -993,7 +993,7 @@ begin
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
-  IntensitySlider.Max := 1;
+  IntensitySlider.Max := 10;
   IntensitySlider.Value := Headlight.Intensity;
   IntensitySlider.OnChange := @IntensityChanged;
   Add('Intensity', IntensitySlider);
