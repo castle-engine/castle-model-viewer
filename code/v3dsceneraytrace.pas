@@ -51,29 +51,6 @@ uses SysUtils, Classes, CastleWindow, CastleRayTracer, CastleWindowModes,
   V3DSceneStatus, V3DSceneWindow;
 {$warnings on}
 
-{ TODO: Copy from new CGE code, to make 5.2.0 compatible with engine 7.0-alpha.3.
-  Remove when bumping version to 5.3.0. }
-{ Create spatial structure to resolve collisions in the given scene.
-  Caller is responsible for freeing the result. }
-function CreateOctreeVisibleTrianglesForScene(
-  const Scene: TCastleSceneCore): TTriangleOctree;
-var
-  ShapeList: TShapeList;
-  Shape: TShape;
-begin
-  Result := TTriangleOctree.Create(DefTriangleOctreeLimits, Scene.LocalBoundingBox);
-  try
-    Result.Triangles.Capacity := Scene.TrianglesCount;
-    ShapeList := Scene.Shapes.TraverseList(
-      { OnlyActive } true,
-      { OnlyVisible } true,
-      { OnlyCollidable } false
-    );
-    for Shape in ShapeList do
-      Shape.Triangulate({$ifdef FPC}@{$endif} Result.AddItemTriangle);
-  except Result.Free; raise end;
-end;
-
 const
   DefaultPrimarySamplesCount = 1;
   DefaultNonPrimarySamplesCount = 4;
