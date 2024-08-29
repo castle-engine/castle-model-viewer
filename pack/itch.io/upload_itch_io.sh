@@ -2,42 +2,29 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# -----------------------------------------------------------------
-# Prepare a release and upload for itch.io.
-# -----------------------------------------------------------------
+# -----------------------------------------------------------------------
+# Uploads Castle Model Viewer packages
+# to https://castle-engine.itch.io/castle-model-viewer .
+#
+# Uses itch.io command-line butler:
+# https://itch.io/docs/butler/installing.html
+# https://itch.io/docs/itch/installing/linux/ubuntu-and-debian.html
+# -----------------------------------------------------------------------
+
+source "${CASTLE_ENGINE_PATH}/../cge-www/pack/download_github.sh"
 
 ITCH_IO_NAME='castle-engine/castle-model-viewer'
+GITHUB_ORG_REPO='castle-engine/castle-model-viewer'
 
-do_upload_one_platform ()
-{
-  local OS=$1
-  local CPU=$2
+#VERSION=`castle-engine output version`
+VERSION=5.2.0
+echo "Uploading Castle Model Viewer version ${VERSION} to itch.io"
 
-  UPLOAD_DIR=/tmp/upload_itch_io_unpacked_$$
-  rm -Rf $UPLOAD_DIR # make sure it is clean
-  mkdir -p $UPLOAD_DIR
+MANIFESTS_PATH="`pwd`/"
 
-  # We create a directory with release -- not packed into zip or tar.gz.
-  # butler prefers to upload unpacked directories.
-  # See https://itch.io/docs/butler/single-files.html
-  castle-engine package --os=$OS --cpu=$CPU \
-    --package-format=directory --verbose \
-    --output=$UPLOAD_DIR
-
-  local INSIDE_UPLOAD_DIR=$UPLOAD_DIR/castle-model-viewer-$VERSION-$OS-$CPU
-
-  cp "manifest-${OS}-${CPU}.itch.toml" $INSIDE_UPLOAD_DIR/.itch.toml
-
-  butler push \
-    $INSIDE_UPLOAD_DIR $ITCH_IO_NAME:$OS-$CPU \
-    --userversion "${VERSION}"
-}
-
-VERSION=`castle-engine output version`
-echo "Uploading version ${VERSION} to itch.io"
-
-do_upload_one_platform linux x86_64
-do_upload_one_platform win64 x86_64
+do_upload_itch_io "${ITCH_IO_NAME}" "${MANIFESTS_PATH}"manifest-windows.itch.toml "${GITHUB_ORG_REPO}" "v${VERSION}" "castle-model-viewer-${VERSION}-win64-x86_64.zip"    $ITCH_IO_NAME:windows --userversion "${VERSION}"
+do_upload_itch_io "${ITCH_IO_NAME}" "${MANIFESTS_PATH}"manifest-unix.itch.toml    "${GITHUB_ORG_REPO}" "v${VERSION}" "castle-model-viewer-${VERSION}-linux-x86_64.tar.gz" $ITCH_IO_NAME:linux   --userversion "${VERSION}"
+do_upload_itch_io "${ITCH_IO_NAME}" "${MANIFESTS_PATH}"manifest-unix.itch.toml    "${GITHUB_ORG_REPO}" "v${VERSION}" "castle-model-viewer-${VERSION}-darwin-x86_64.zip"   $ITCH_IO_NAME:mac     --userversion "${VERSION}"
 
 echo 'Running "butler status ...":'
 butler status $ITCH_IO_NAME
