@@ -28,7 +28,7 @@ unit V3DSceneShadows;
 interface
 
 uses CastleWindow, CastleScene, CastleTransform, CastleVectors, CastleViewport,
-  CastleRenderOptions,
+  CastleRenderOptions, CastleUtils,
   V3DSceneViewports;
 
 type
@@ -37,7 +37,9 @@ type
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsViewport = class(TMyViewport)
   protected
-    procedure RenderOnePass(const Params: TRenderParams); override;
+    procedure RenderOnePass(const Params: TRenderParams;
+      const UsingBlending: Boolean;
+      const FilterShadowVolumesReceivers: TBooleanSet); override;
   end;
 
 var
@@ -56,7 +58,9 @@ begin
   Viewport.ShadowVolumesRender := ShadowVolumesRender;
 end;
 
-procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams);
+procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams;
+  const UsingBlending: Boolean;
+  const FilterShadowVolumesReceivers: TBooleanSet);
 
   procedure RenderOnePassShadowsBegin(Scene: TCastleScene);
   begin

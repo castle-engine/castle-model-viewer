@@ -201,7 +201,6 @@ type
   TV3DViewport = class(TV3DShadowsViewport)
   protected
     procedure RenderFromView3D(const Params: TRenderParams); override;
-    procedure RenderOnePass(const Params: TRenderParams); override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure BeforeRender; override;
@@ -687,33 +686,23 @@ begin
         SelectedItem^.World.Triangle,
         SelectedPointWorld
       );
-  end else
-  begin
-    SceneBoundingBox.Exists := false;
   end;
-end;
-
-procedure TV3DViewport.RenderOnePass(const Params: TRenderParams);
-begin
-  SceneBoundingBoxUpdate(Params.RenderingCamera);
-  inherited;
-  { RenderVisualizations are opaque, so they should be rendered here
-    to correctly mix with partially transparent 3D scenes.
-    Render as ShadowVolumesReceivers=true to make selected triangle
-    drawn last (on top), to be clearly and always visible. }
-  if (not Params.Transparent) and
-     (true in Params.ShadowVolumesReceivers) then
-    RenderVisualizations(Params.RenderingCamera);
 end;
 
 procedure TV3DViewport.RenderFromView3D(const Params: TRenderParams);
 begin
+  SceneBoundingBoxUpdate(Params.RenderingCamera);
+
   Scene.Visible := FillMode <> fmSilhouetteBorderEdges;
   SceneDebugEdges.Exists := FillMode = fmSilhouetteBorderEdges;
   if SceneDebugEdges.Exists then
     SceneDebugEdges.UpdateEdges(Scene);
   inherited;
-  { inherited will call RenderOnePass that will call RenderVisualizations }
+
+  { Draw visualizations after viewport contents, this is important for
+    "selected" visualization that doesn't use depth test and assumes it is
+    just drawn on top of everything. }
+  RenderVisualizations(Params.RenderingCamera);
 end;
 
 procedure TV3DViewport.BeforeRender;
