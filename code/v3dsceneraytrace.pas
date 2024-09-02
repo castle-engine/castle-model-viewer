@@ -287,7 +287,7 @@ begin
     CallData.Image := Window.SaveScreen;
 
     { switch to our mode }
-    SavedMode := TGLMode.CreateReset(Window, nil, nil, @NoClose);
+    SavedMode := TGLMode.CreateReset(Window);
 
     StatusText := TRayTracerStatus.Create(Window);
     Window.Controls.InsertFront(StatusText);

@@ -193,6 +193,8 @@ type
     class procedure ClickButtonScreenshot(Sender: TObject);
     class procedure ClickButtonAnimations(Sender: TObject);
     class procedure OnWarningHandle(const Category, S: string);
+    class procedure Press(const Sender: TCastleUserInterface;
+      const Event: TInputPressRelease; var Handled: boolean);
   end;
 
 { Custom viewport class ------------------------------------------------ }
@@ -203,6 +205,7 @@ type
     procedure RenderFromView3D(const Params: TRenderParams); override;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure Resize; override;
     procedure BeforeRender; override;
     procedure Render; override;
     function BaseLightsForRaytracer: TLightInstancesList;
@@ -241,6 +244,13 @@ begin
     Cursor := mcHand
   else
     Cursor := mcDefault;
+end;
+
+procedure TV3DViewport.Resize;
+begin
+  inherited;
+  // Call ResizeViewports to change size of all viewports, when container size changed
+  ResizeViewports(V3DSceneWindow.Window, MainViewport);
 end;
 
 { Helper functions ----------------------------------------------------------- }
@@ -768,7 +778,8 @@ begin
   SetViewpointForWholeScene(0, 1, true , true);
 end;
 
-procedure Press(Container: TCastleContainer; const Event: TInputPressRelease);
+class procedure THelper.Press(const Sender: TCastleUserInterface;
+  const Event: TInputPressRelease; var Handled: boolean);
 begin
   { Although some of these shortcuts are also assigned to menu items,
     catching them here is more reliable -- allows to handle also Ctrl+number
@@ -3702,11 +3713,6 @@ begin
   Window.Controls.InsertFront(NavigationUi);
 end;
 
-procedure Resize(Container: TCastleContainer);
-begin
-  ResizeViewports(V3DSceneWindow.Window, MainViewport);
-end;
-
 class procedure THelper.ClickButtonOpen(Sender: TObject);
 var
   Url: String;
@@ -4075,14 +4081,10 @@ begin
         Window.MainMenu := CreateMainMenu;
         Window.MainMenuVisible := not Param_HideMenu;
         Window.OnMenuClick := @MenuClick;
-        // castle-model-viewer uses deprecated OnXxx events.
-        // We should migrate to TCastleView -- but for now there's no significant
-        // reason to migrate, we can upgrade castle-model-viewer when necessary when
-        // CGE will remove it.
-        {$warnings off}
-        Window.OnResize := @Resize;
-        Window.OnPress := @Press;
-        {$warnings on}
+        { TODO: Use TCastleView to handle these events,
+          and inside that TCastleView should be a viewport.
+          Currently we abuse MainViewport for it. }
+        MainViewport.OnPress := {$ifdef FPC}@{$endif} THelper(nil).Press;
         Window.OnDropFiles := @DropFiles;
         Window.AutoRedisplay := false;
 
