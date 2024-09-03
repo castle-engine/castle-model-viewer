@@ -302,7 +302,8 @@ begin
       twice on Ctrl+R, since we rebuild the menu inside the menu handler).
       For now, just handle Escape and CtrlS specially on Mac OS X. }
     {$ifdef LCLCarbon}
-    Window.OnPress := @PressWorking;
+    {$fatal Compilation for LCL+Carbon is not supported now, since it's not tested.}
+    //Window.OnPress := @PressWorking; // this will not compile with latest CGE
     {$else}
     Window.MainMenu := MainMenuWorking;
     Window.OnMenuClick := @MenuClick;
@@ -364,7 +365,8 @@ begin
       Window.Invalidate;
       Window.Caption := 'castle-model-viewer - Ray Tracing - done';
       {$ifdef LCLCarbon}
-      Window.OnPress := @PressDone;
+      {$fatal Compilation for LCL+Carbon is not supported now, since it's not tested.}
+      //Window.OnPress := @PressDone;
       {$else}
       Window.MainMenu := MainMenuDone;
       {$endif}

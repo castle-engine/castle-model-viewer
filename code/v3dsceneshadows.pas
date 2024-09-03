@@ -38,6 +38,7 @@ type
   TV3DShadowsViewport = class(TMyViewport)
   protected
     procedure RenderOnePass(const Params: TRenderParams
+      {.$define CGE_NEW_ONE_PASS_RENDERING}
       {$ifdef CGE_NEW_ONE_PASS_RENDERING} ;
       const UsingBlending: Boolean;
       const FilterShadowVolumesReceivers: TBooleanSet
