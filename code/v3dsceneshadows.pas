@@ -37,12 +37,11 @@ type
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsViewport = class(TMyViewport)
   protected
-    // TODO: use this, once https://github.com/castle-engine/castle-engine/tree/optimize-shapes-collection merged
-    {$ifdef CGE_NEW_RENDER_ONE_PASS}
-    procedure RenderOnePass(const Params: TRenderParams;
+    procedure RenderOnePass(const Params: TRenderParams
+      {$ifdef CGE_NEW_ONE_PASS_RENDERING} ;
       const UsingBlending: Boolean;
-      const FilterShadowVolumesReceivers: TBooleanSet); override;
-    {$endif}
+      const FilterShadowVolumesReceivers: TBooleanSet
+      {$endif}); override;
   end;
 
 var
@@ -61,10 +60,11 @@ begin
   Viewport.ShadowVolumesRender := ShadowVolumesRender;
 end;
 
-{$ifdef CGE_NEW_RENDER_ONE_PASS}
-procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams;
+procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams
+  {$ifdef CGE_NEW_ONE_PASS_RENDERING} ;
   const UsingBlending: Boolean;
-  const FilterShadowVolumesReceivers: TBooleanSet);
+  const FilterShadowVolumesReceivers: TBooleanSet
+  {$endif});
 
   procedure RenderOnePassShadowsBegin(Scene: TCastleScene);
   begin
@@ -89,6 +89,5 @@ begin
     inherited;
   end;
 end;
-{$endif}
 
 end.
