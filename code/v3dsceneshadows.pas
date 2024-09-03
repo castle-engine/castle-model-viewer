@@ -37,12 +37,8 @@ type
     configurations (bump mapping, fill modes etc.) }
   TV3DShadowsViewport = class(TMyViewport)
   protected
-    procedure RenderOnePass(const Params: TRenderParams
-      {.$define CGE_NEW_ONE_PASS_RENDERING}
-      {$ifdef CGE_NEW_ONE_PASS_RENDERING} ;
-      const UsingBlending: Boolean;
-      const FilterShadowVolumesReceivers: TBooleanSet
-      {$endif}); override;
+    procedure RenderOnePass(const Params: TRenderParams;
+      const PassParams: TRenderOnePassParams); override;
   end;
 
 var
@@ -61,34 +57,16 @@ begin
   Viewport.ShadowVolumesRender := ShadowVolumesRender;
 end;
 
-procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams
-  {$ifdef CGE_NEW_ONE_PASS_RENDERING} ;
-  const UsingBlending: Boolean;
-  const FilterShadowVolumesReceivers: TBooleanSet
-  {$endif});
-
-  procedure RenderOnePassShadowsBegin(Scene: TCastleScene);
-  begin
-    { Thanks to using SolidShadowColor, shadow is visible
-      even when rmSolidColor is used }
-    Scene.RenderOptions.SolidColor := SolidShadowColor;
-  end;
-
-  procedure RenderOnePassNoShadowsBegin(Scene: TCastleScene);
-  begin
-    Scene.RenderOptions.SolidColor := SolidColor;
-  end;
-
+procedure TV3DShadowsViewport.RenderOnePass(const Params: TRenderParams;
+  const PassParams: TRenderOnePassParams);
 begin
-  if Params.InShadow then
-  begin
-    RenderOnePassShadowsBegin(MainScene);
-    inherited;
-  end else
-  begin
-    RenderOnePassNoShadowsBegin(MainScene);
-    inherited;
-  end;
+  { By tweaking SolidShadowColor, shadow is visible
+    even when rmSolidColor is used }
+  if PassParams.DisableShadowVolumeCastingLights then
+    MainScene.RenderOptions.SolidColor := SolidShadowColor
+  else
+    MainScene.RenderOptions.SolidColor := SolidColor;
+  inherited;
 end;
 
 end.
