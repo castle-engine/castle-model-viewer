@@ -169,33 +169,39 @@ var
 
   NavigationUi: TNavigationUi;
 
-{ Helper class ---------------------------------------------------------------
+{ TEventsHandler -------------------------------------------------------------
 
-  Some callbacks here must be methods (procedure of class),
-  so we use this dummy class to contain them. }
+  TODO: Change TEventsHandler to "TViewMain = class(TCastleView)",
+  as is standard in CGE applications. }
 
 type
-  THelper = class
-    class procedure OpenRecent(const Url: String);
-    class procedure GeometryChanged(Scene: TCastleSceneCore;
+  { Handle various events of the application. }
+  TEventsHandler = class(TComponent)
+  public
+    procedure OpenRecent(const Url: String);
+    procedure GeometryChanged(Scene: TCastleSceneCore;
       const SomeLocalGeometryChanged: boolean;
       OnlyShapeChanged: TShape);
-    class procedure ViewpointsChanged(Sender: TObject);
-    class procedure BoundViewpointChanged(Sender: TObject);
-    class procedure BoundNavigationInfoChanged(Sender: TObject);
-    class procedure PointingDeviceSensorsChange(Sender: TObject);
-    class procedure HeadlightOnChanged(Sender: TObject);
-    class procedure ClickButtonWarnings(Sender: TObject);
-    class procedure ClickButtonPatreon(Sender: TObject);
-    class procedure ClickNavigationTypeButton(Sender: TObject);
-    class procedure ClickButtonOpen(Sender: TObject);
-    class procedure ClickButtonCollisions(Sender: TObject);
-    class procedure ClickButtonScreenshot(Sender: TObject);
-    class procedure ClickButtonAnimations(Sender: TObject);
-    class procedure OnWarningHandle(const Category, S: string);
-    class procedure Press(const Sender: TCastleUserInterface;
+    procedure ViewpointsChanged(Sender: TObject);
+    procedure BoundViewpointChanged(Sender: TObject);
+    procedure BoundNavigationInfoChanged(Sender: TObject);
+    procedure PointingDeviceSensorsChange(Sender: TObject);
+    procedure HeadlightOnChanged(Sender: TObject);
+    procedure ClickButtonWarnings(Sender: TObject);
+    procedure ClickButtonPatreon(Sender: TObject);
+    procedure ClickNavigationTypeButton(Sender: TObject);
+    procedure ClickButtonOpen(Sender: TObject);
+    procedure ClickButtonCollisions(Sender: TObject);
+    procedure ClickButtonScreenshot(Sender: TObject);
+    procedure ClickButtonAnimations(Sender: TObject);
+    procedure OnWarningHandle(const Category, S: string);
+    procedure Press(const Sender: TCastleUserInterface;
       const Event: TInputPressRelease; var Handled: boolean);
+    procedure MenuClick(const MenuItem: TMenuItem);
   end;
+
+var
+  EventsHandler: TEventsHandler;
 
 { Custom viewport class ------------------------------------------------ }
 
@@ -778,7 +784,7 @@ begin
   SetViewpointForWholeScene(0, 1, true , true);
 end;
 
-class procedure THelper.Press(const Sender: TCastleUserInterface;
+procedure TEventsHandler.Press(const Sender: TCastleUserInterface;
   const Event: TInputPressRelease; var Handled: boolean);
 begin
   { Although some of these shortcuts are also assigned to menu items,
@@ -834,7 +840,7 @@ begin
   end;
 end;
 
-class procedure THelper.PointingDeviceSensorsChange(Sender: TObject);
+procedure TEventsHandler.PointingDeviceSensorsChange(Sender: TObject);
 begin
   { Our status text displays current sensors (under the mouse,
     and currently active (if any)), so we have to redisplay. }
@@ -857,12 +863,12 @@ begin
     Result := nil;
 end;
 
-class procedure THelper.ViewpointsChanged(Sender: TObject);
+procedure TEventsHandler.ViewpointsChanged(Sender: TObject);
 begin
   Viewpoints.Recalculate(Scene);
 end;
 
-class procedure THelper.BoundViewpointChanged(Sender: TObject);
+procedure TEventsHandler.BoundViewpointChanged(Sender: TObject);
 var
   V: TAbstractViewpointNode;
 begin
@@ -870,12 +876,12 @@ begin
   Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
 end;
 
-class procedure THelper.BoundNavigationInfoChanged(Sender: TObject);
+procedure TEventsHandler.BoundNavigationInfoChanged(Sender: TObject);
 begin
   UpdateCameraUI;
 end;
 
-class procedure THelper.HeadlightOnChanged(Sender: TObject);
+procedure TEventsHandler.HeadlightOnChanged(Sender: TObject);
 begin
   if MenuHeadlight <> nil then
     MenuHeadlight.Checked := Scene.HeadLightOn;
@@ -896,7 +902,7 @@ begin
     Window.Container.EventResize; { update ButtonWarnings.Left }
 end;
 
-class procedure THelper.OnWarningHandle(const Category, S: string);
+procedure TEventsHandler.OnWarningHandle(const Category, S: string);
 begin
   { It is possible that SceneWarnings = nil now,
     in case on macOS we use
@@ -1080,9 +1086,9 @@ begin
     SceneInitLights(Scene, NavigationNode);
 
     { update MenuHeadlight.Checked now, and make it always updated. }
-    THelper.HeadlightOnChanged(Scene);
+    EventsHandler.HeadlightOnChanged(Scene);
     Scene.OnHeadlightOnChanged :=
-      {$ifdef FPC}@{$endif} THelper(nil).HeadlightOnChanged;
+      {$ifdef FPC}@{$endif} EventsHandler.HeadlightOnChanged;
 
     NewCaption := Scene.Caption;
     if NewCaption = '' then
@@ -1095,11 +1101,11 @@ begin
     SceneOctreeCreate;
 
     Scene.OnGeometryChanged :=
-      {$ifdef FPC}@{$endif} THelper(nil).GeometryChanged;
+      {$ifdef FPC}@{$endif} EventsHandler.GeometryChanged;
     Scene.OnViewpointsChanged :=
-      {$ifdef FPC}@{$endif} THelper(nil).ViewpointsChanged;
+      {$ifdef FPC}@{$endif} EventsHandler.ViewpointsChanged;
     Scene.OnPointingDeviceSensorsChange :=
-      {$ifdef FPC}@{$endif} THelper(nil).PointingDeviceSensorsChange;
+      {$ifdef FPC}@{$endif} EventsHandler.PointingDeviceSensorsChange;
     Scene.ProcessEvents := ProcessEventsWanted;
 
     RefreshNamedAnimationsUi(Window, Scene, ToolbarPanel.EffectiveHeight);
@@ -1321,7 +1327,7 @@ begin
   finally FreeAndNil(Node) end;
 end;
 
-class procedure THelper.OpenRecent(const Url: String);
+procedure TEventsHandler.OpenRecent(const Url: String);
 begin
   LoadScene(Url);
 end;
@@ -1338,7 +1344,7 @@ begin
   end;
 end;
 
-class procedure THelper.GeometryChanged(Scene: TCastleSceneCore;
+procedure TEventsHandler.GeometryChanged(Scene: TCastleSceneCore;
   const SomeLocalGeometryChanged: boolean;
   OnlyShapeChanged: TShape);
 begin
@@ -1370,7 +1376,7 @@ begin
   end;
 end;
 
-class procedure THelper.ClickButtonWarnings(Sender: TObject);
+procedure TEventsHandler.ClickButtonWarnings(Sender: TObject);
 begin
   MessageReport(
     Format('%d warnings:', [SceneWarnings.Count]) + NL +
@@ -1384,7 +1390,7 @@ begin
   UpdateButtonWarnings;
 end;
 
-class procedure THelper.ClickButtonPatreon(Sender: TObject);
+procedure TEventsHandler.ClickButtonPatreon(Sender: TObject);
 begin
   if not OpenUrl(SupportUrl) then
     Window.MessageOk(SCannotOpenUrl, mtError);
@@ -1553,9 +1559,6 @@ end;
 
 { menu things ------------------------------------------------------------ }
 
-const
-  DisplayApplicationName = 'castle-model-viewer';
-
 procedure UpdateStatusToolbarVisible; forward;
 
 procedure ScreenShotImage(const Caption: string; const Transparency: boolean);
@@ -1647,7 +1650,7 @@ begin
   finally FreeAndNil(Image) end;
 end;
 
-procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
+procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
 
   procedure MakeGravityUp(const NewUp: TVector3);
   var
@@ -2415,8 +2418,8 @@ procedure MenuClick(Container: TCastleContainer; MenuItem: TMenuItem);
         Recalculate octree.
         GeometryChanged takes care of invalidating SelectedItem and such. }
       SceneOctreeCreate;
-      THelper.GeometryChanged(nil, true, nil);
-      THelper.ViewpointsChanged(Scene);
+      EventsHandler.GeometryChanged(nil, true, nil);
+      EventsHandler.ViewpointsChanged(Scene);
     end;
   end;
 *)
@@ -2874,7 +2877,7 @@ var
   C: Cardinal;
 begin
   case MenuItem.IntData of
-    10: THelper.ClickButtonOpen(nil);
+    10: ClickButtonOpen(nil);
     11: OpenSceneUrl;
     12: Window.Close;
     15: Reopen;
@@ -3060,7 +3063,7 @@ begin
          end;
     132: if not OpenUrl(ViewerUrl) then
            Window.MessageOk(SCannotOpenUrl, mtError);
-    134: THelper.ClickButtonPatreon(nil);
+    134: ClickButtonPatreon(nil);
 
     171: SelectedShowInformation;
     172: SelectedShowLightsInformation;
@@ -3624,39 +3627,39 @@ begin
     because we embed all images in castle-model-viewer binary. }
 
   ButtonOpen := UiOwner.FindRequiredComponent('ButtonOpen') as TCastleButton;
-  ButtonOpen.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonOpen;
+  ButtonOpen.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonOpen;
   ButtonOpen.Image.Image := V3DSceneImages.Open;
   ButtonOpen.Image.OwnsImage := false;
   ButtonOpen.MinImageHeight := MinImageHeight;
 
   ButtonCollisions := UiOwner.FindRequiredComponent('ButtonCollisions') as TCastleButton;
-  ButtonCollisions.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonCollisions;
+  ButtonCollisions.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonCollisions;
   ButtonCollisions.MinImageHeight := MinImageHeight;
   { When Scene = nil, make Pressed = true,
     because it means the Scene will be soon created with Scene.Collides = default true. }
   ButtonCollisions.Pressed := (Scene = nil) or Scene.Collides;
 
   ButtonScreenshot := UiOwner.FindRequiredComponent('ButtonScreenshot') as TCastleButton;
-  ButtonScreenshot.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonScreenshot;
+  ButtonScreenshot.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonScreenshot;
   ButtonScreenshot.Image.Image := V3DSceneImages.Screenshot;
   ButtonScreenshot.Image.OwnsImage := false;
   ButtonScreenshot.MinImageHeight := MinImageHeight;
 
   ButtonAnimations := UiOwner.FindRequiredComponent('ButtonAnimations') as TCastleButton;
-  ButtonAnimations.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonAnimations;
+  ButtonAnimations.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonAnimations;
   ButtonAnimations.Toggle := true;
   ButtonAnimations.Image.Image := V3DSceneImages.Animations;
   ButtonAnimations.Image.OwnsImage := false;
   ButtonAnimations.MinImageHeight := MinImageHeight;
 
   ButtonWarnings := UiOwner.FindRequiredComponent('ButtonWarnings') as TCastleButton;
-  ButtonWarnings.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonWarnings;
+  ButtonWarnings.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonWarnings;
   ButtonWarnings.Image.Image := Warning_icon;
   ButtonWarnings.Image.OwnsImage := false;
   ButtonWarnings.MinImageHeight := MinImageHeight;
 
   ButtonPatreon := UiOwner.FindRequiredComponent('ButtonPatreon') as TCastleButton;
-  ButtonPatreon.OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickButtonPatreon;
+  ButtonPatreon.OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickButtonPatreon;
   ButtonPatreon.CustomBackgroundNormal.Image := Castle_Game_Engine_Icon;
   ButtonPatreon.CustomBackgroundNormal.OwnsImage := false;
   ButtonPatreon.CustomBackgroundDisabled.Image := Castle_Game_Engine_Icon;
@@ -3690,7 +3693,7 @@ begin
     begin
       NavigationButtons[NT] := TNavigationTypeButton.Create(Application, NT);
       NavigationButtons[NT].Caption := NavigationNames[NT];
-      NavigationButtons[NT].OnClick := {$ifdef FPC}@{$endif} THelper(nil).ClickNavigationTypeButton;
+      NavigationButtons[NT].OnClick := {$ifdef FPC}@{$endif} EventsHandler.ClickNavigationTypeButton;
       NavigationButtons[NT].Toggle := true;
       NavigationButtons[NT].MinImageHeight := MinImageHeight;
       NavigationButtonsGroup.InsertFront(NavigationButtons[NT]);
@@ -3713,7 +3716,7 @@ begin
   Window.Controls.InsertFront(NavigationUi);
 end;
 
-class procedure THelper.ClickButtonOpen(Sender: TObject);
+procedure TEventsHandler.ClickButtonOpen(Sender: TObject);
 var
   Url: String;
 begin
@@ -3722,23 +3725,23 @@ begin
     LoadScene(Url);
 end;
 
-class procedure THelper.ClickNavigationTypeButton(Sender: TObject);
+procedure TEventsHandler.ClickNavigationTypeButton(Sender: TObject);
 begin
   SetNavigationType((Sender as TNavigationTypeButton).NavigationType);
   UpdateCameraUI;
 end;
 
-class procedure THelper.ClickButtonCollisions(Sender: TObject);
+procedure TEventsHandler.ClickButtonCollisions(Sender: TObject);
 begin
   SetCollisions(not Scene.Collides, true);
 end;
 
-class procedure THelper.ClickButtonScreenshot(Sender: TObject);
+procedure TEventsHandler.ClickButtonScreenshot(Sender: TObject);
 begin
   ScreenShotImage('Screenshot to Image', false);
 end;
 
-class procedure THelper.ClickButtonAnimations(Sender: TObject);
+procedure TEventsHandler.ClickButtonAnimations(Sender: TObject);
 begin
   ToggleNamedAnimationsUi;
 end;
@@ -3963,6 +3966,8 @@ begin
   ApplicationProperties.ApplicationName := 'castle-model-viewer';
   ApplicationProperties.Version := Version;
 
+  EventsHandler := TEventsHandler.Create(Application);
+
   // Initialize log as early as possible, but avoid messing --help/--version/--write output
   LogEnableStandardOutput := false;
   InitializeLog;
@@ -3997,7 +4002,7 @@ begin
 
   { initialize RecentMenu }
   RecentMenu := TWindowRecentFiles.Create(nil);
-  RecentMenu.OnOpenRecent := {$ifdef FPC}@{$endif} THelper(nil).OpenRecent;
+  RecentMenu.OnOpenRecent := {$ifdef FPC}@{$endif} EventsHandler.OpenRecent;
   RecentMenu.LoadFromConfig(UserConfig);
 
   { parse parameters }
@@ -4024,9 +4029,9 @@ begin
   MainViewport.AutoNavigation := true;
   Window.Controls.InsertBack(MainViewport);
   MainViewport.OnBoundViewpointChanged :=
-    {$ifdef FPC}@{$endif} THelper(nil).BoundViewpointChanged;
+    {$ifdef FPC}@{$endif} EventsHandler.BoundViewpointChanged;
   MainViewport.OnBoundNavigationInfoChanged :=
-    {$ifdef FPC}@{$endif} THelper(nil).BoundNavigationInfoChanged;
+    {$ifdef FPC}@{$endif} EventsHandler.BoundNavigationInfoChanged;
   { Note: MainViewport.InternalWalkNavigation
     will be adjusted later, by InitializeViewportsAndDefaultNavigation }
 
@@ -4040,7 +4045,7 @@ begin
   SceneWarnings := TSceneWarnings.Create;
   try
     ApplicationProperties.OnWarning.Add(
-      {$ifdef FPC}@{$endif} THelper(nil).OnWarningHandle);
+      {$ifdef FPC}@{$endif} EventsHandler.OnWarningHandle);
 
     if WasParam_Write then
     begin
@@ -4080,11 +4085,11 @@ begin
         Window.GtkIconName := 'castle-model-viewer';
         Window.MainMenu := CreateMainMenu;
         Window.MainMenuVisible := not Param_HideMenu;
-        Window.OnMenuClick := @MenuClick;
+        Window.OnMenuItemClick := {$ifdef FPC}@{$endif} EventsHandler.MenuClick;
         { TODO: Use TCastleView to handle these events,
           and inside that TCastleView should be a viewport.
           Currently we abuse MainViewport for it. }
-        MainViewport.OnPress := {$ifdef FPC}@{$endif} THelper(nil).Press;
+        MainViewport.OnPress := {$ifdef FPC}@{$endif} EventsHandler.Press;
         Window.OnDropFiles := @DropFiles;
         Window.AutoRedisplay := false;
 
