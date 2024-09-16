@@ -236,19 +236,25 @@ const
   ImgMargin = 8;
 var
   ButtonR, R: TFloatRectangle;
+  CachedUIScale: Float;
 begin
   ButtonR := RenderRect;
+  CachedUIScale := UIScale;  { make a UIScale() call only once }
 
   R := FloatRectangle(
-    WindowBorderMargin,
-    ButtonR.Bottom - ButtonBottomMargin - (ImageTooltip.Height + 2 * ImgMargin),
-    ImageTooltip.Width  + 2 * ImgMargin,
-    ImageTooltip.Height + 2 * ImgMargin);
+    WindowBorderMargin * CachedUIScale,
+    ButtonR.Bottom - (ButtonBottomMargin + (ImageTooltip.Height + 2 * ImgMargin)) * CachedUIScale,
+    (ImageTooltip.Width  + 2 * ImgMargin) * CachedUIScale,
+    (ImageTooltip.Height + 2 * ImgMargin) * CachedUIScale);
 
   Theme.Draw(R, tiTooltip);
-  ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin, R.Bottom + ImgMargin);
+  ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin * CachedUIScale, R.Bottom + ImgMargin * CachedUIScale,
+                                  ImageTooltip.Width * CachedUIScale,
+                                  ImageTooltip.Height * CachedUIScale);
   { we decrease R.Top to overdraw the tooltip image border }
-  ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) / 2, R.Top - 1);
+  ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) * CachedUIScale / 2, R.Top - 1,
+                                       ImageTooltipArrow.Width * CachedUIScale,
+                                       ImageTooltipArrow.Height * CachedUIScale);
 end;
 
 { TNavigationUi -------------------------------------------------------------- }
