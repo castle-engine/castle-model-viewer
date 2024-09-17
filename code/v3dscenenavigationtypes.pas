@@ -235,26 +235,29 @@ const
   ButtonBottomMargin = 16;
   ImgMargin = 8;
 var
-  ButtonR, R: TFloatRectangle;
-  CachedUIScale: Float;
+  ButtonR, TooltipFrameR, TooltipInsideFrameR, ImageTooltipArrowR: TFloatRectangle;
 begin
   ButtonR := RenderRect;
-  CachedUIScale := UIScale;  { make a UIScale() call only once }
 
-  R := FloatRectangle(
-    WindowBorderMargin * CachedUIScale,
-    ButtonR.Bottom - (ButtonBottomMargin + (ImageTooltip.Height + 2 * ImgMargin)) * CachedUIScale,
-    (ImageTooltip.Width  + 2 * ImgMargin) * CachedUIScale,
-    (ImageTooltip.Height + 2 * ImgMargin) * CachedUIScale);
+  TooltipFrameR := FloatRectangle(
+    WindowBorderMargin,
+    0, // vertical position will be adjusted below by aligning to ButtonR
+    ImageTooltip.Width  + 2 * ImgMargin,
+    ImageTooltip.Height + 2 * ImgMargin).
+    ScaleAround0(UIScale).
+    Align(vpTop, ButtonR, vpBottom, -ButtonBottomMargin * UIScale);
+  Theme.Draw(TooltipFrameR, tiTooltip);
 
-  Theme.Draw(R, tiTooltip);
-  ImageTooltip.DrawableImage.Draw(R.Left + ImgMargin * CachedUIScale, R.Bottom + ImgMargin * CachedUIScale,
-                                  ImageTooltip.Width * CachedUIScale,
-                                  ImageTooltip.Height * CachedUIScale);
-  { we decrease R.Top to overdraw the tooltip image border }
-  ImageTooltipArrow.DrawableImage.Draw(ButtonR.Left + (EffectiveWidth - ImageTooltipArrow.Width) * CachedUIScale / 2, R.Top - 1,
-                                       ImageTooltipArrow.Width * CachedUIScale,
-                                       ImageTooltipArrow.Height * CachedUIScale);
+  TooltipInsideFrameR := TooltipFrameR.Grow(-ImgMargin * UIScale);
+  ImageTooltip.DrawableImage.Draw(TooltipInsideFrameR);
+
+  ImageTooltipArrowR :=
+    FloatRectangle(ImageTooltipArrow.Image.Rect).
+    ScaleAround0(UIScale).
+    Align(hpMiddle, ButtonR, hpMiddle).
+    // we use -1 to overdraw the tooltip image border
+    Align(vpBottom, TooltipFrameR, vpTop, -1);
+  ImageTooltipArrow.DrawableImage.Draw(ImageTooltipArrowR);
 end;
 
 { TNavigationUi -------------------------------------------------------------- }
