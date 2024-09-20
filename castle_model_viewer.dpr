@@ -2702,8 +2702,13 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
   procedure SaveAs;
   var
     ProposedSaveName: string;
+    UrlProcessing: TUrlProcessing;
+    RootNodeCopy, RootNodeToSave: TX3DRootNode;
   begin
     ProposedSaveName := SceneUrl;
+    UrlProcessing := suNone;
+    //UrlProcessing := suCopyResourcesToSubdirectory; // TODO: get the value somehow
+    RootNodeCopy := nil;
 
     // if we cannot save to SceneUrl format, propose to save as X3D
     if not TFileFilterList.Matches(SaveNode_FileFilters, ProposedSaveName) then
@@ -2714,8 +2719,15 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif}
+        if UrlProcessing = suNone then
+          RootNodeToSave := Scene.RootNode
+        else begin
+          RootNodeCopy := Scene.RootNode.DeepCopy as TX3DRootNode;
+          ProcessUrls(RootNodeCopy, ProposedSaveName, UrlProcessing);
+          RootNodeToSave := RootNodeCopy;
+        end;
 
-        SaveNode(Scene.RootNode, ProposedSaveName, SaveGenerator,
+        SaveNode(RootNodeToSave, ProposedSaveName, SaveGenerator,
           ExtractURIName(SceneUrl));
 
       {$ifdef CATCH_EXCEPTIONS}
@@ -2727,6 +2739,8 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
         end;
       end;
       {$endif}
+      if RootNodeCopy <> nil then
+        FreeAndNil(RootNodeCopy);
     end;
   end;
 

@@ -13,6 +13,7 @@ automatic-windows-resources.res
 code/*.or
 code/*.compiled
 castle-engine-output
+backup/
 
 # secret files
 AndroidSigningProperties.txt

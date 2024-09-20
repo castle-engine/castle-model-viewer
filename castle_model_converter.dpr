@@ -164,9 +164,11 @@ var
   Node: TX3DRootNode;
   EventsHandler: TEventsHandler;
   OutputStream: TStream;
+  UrlProcessing: TUrlProcessing;
 begin
   ApplicationProperties.ApplicationName := 'castle-model-converter';
   ApplicationProperties.Version := Version;
+  UrlProcessing := suNone;  // TODO: get the value from parameters
 
   { parse command-line, calculating InputUrl and OutputUrl }
   Parameters.Parse(Options, @OptionProc, nil);
@@ -225,6 +227,9 @@ begin
           OutputStream := UrlSaveStream(OutputUrl)
         else
           OutputStream := StdOutStream;
+
+        if UrlProcessing <> suNone then
+           ProcessUrls(Node, OutputUrl, UrlProcessing);
 
         SaveNode(Node, OutputStream, OutputMimeType,
           { generator (metadata) } 'castle-model-converter, https://castle-engine.io/castle-model-converter',
