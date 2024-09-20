@@ -104,6 +104,7 @@ var
   SceneBoundingBox: TBoundingBoxScene;
   SceneDebugEdges: TDebugEdgesScene;
   SceneUrl: String;
+  SaveAsUrlProcessing: TUrlProcessing = suNone;
 
   SelectedItem: PTriangle;
   { SelectedPoint* always lies on SelectedItem item,
@@ -2702,12 +2703,9 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
   procedure SaveAs;
   var
     ProposedSaveName: string;
-    UrlProcessing: TUrlProcessing;
     RootNodeCopy, RootNodeToSave: TX3DRootNode;
   begin
     ProposedSaveName := SceneUrl;
-    UrlProcessing := suNone;
-    //UrlProcessing := suCopyResourcesToSubdirectory; // TODO: get the value somehow
     RootNodeCopy := nil;
 
     // if we cannot save to SceneUrl format, propose to save as X3D
@@ -2719,11 +2717,11 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       {$ifdef CATCH_EXCEPTIONS}
       try
       {$endif}
-        if UrlProcessing = suNone then
+        if SaveAsUrlProcessing = suNone then
           RootNodeToSave := Scene.RootNode
         else begin
           RootNodeCopy := Scene.RootNode.DeepCopy as TX3DRootNode;
-          ProcessUrls(RootNodeCopy, ProposedSaveName, UrlProcessing);
+          ProcessUrls(RootNodeCopy, ProposedSaveName, SaveAsUrlProcessing);
           RootNodeToSave := RootNodeCopy;
         end;
 
@@ -3204,6 +3202,7 @@ begin
     5000..5099: ColorSpace := TColorSpace(MenuItem.IntData - 5000);
     5100..5199: ToneMapping := TToneMapping(MenuItem.IntData - 5100);
     5200: GltfForcePhongMaterials := not GltfForcePhongMaterials;
+    5300..5399: SaveAsUrlProcessing := TUrlProcessing(MenuItem.IntData - 5300);
     4100: HideSelectedShape;
     4110: RevealAllHiddenShapes;
     else raise EInternalError.Create('not impl menu item');
@@ -3265,6 +3264,12 @@ const
     'Linear On Physical Materials (Gamma Correction = when PBR)',
     'Linear Always (Gamma Correction = Yes)'
   );
+  UrlProcessingNames: array [TUrlProcessing] of String = (
+    'None',
+    'Change to Relative Path',
+    'Embed Resources',
+    'Copy Resources to Subdirectory'
+  );
 
 var
   M, M2, M3: TMenu;
@@ -3278,6 +3283,9 @@ begin
     MenuReopen.Enabled := false;
     M.Append(MenuReopen);
     M.Append(TMenuItem.Create('_Save As...', 900, CtrlS));
+    M2 := TMenu.Create('URL Processing on Save');
+      M2.AppendRadioGroup(UrlProcessingNames, 5300, Ord(SaveAsUrlProcessing), true);
+      M.Append(M2);
     M.Append(TMenuSeparator.Create);
     M.Append(TMenuItem.Create('View _Warnings About Current Scene', 21));
     M.Append(TMenuSeparator.Create);
