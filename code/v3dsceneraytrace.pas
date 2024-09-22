@@ -159,27 +159,37 @@ end;
 
 { menu things ---------------------------------------------------------------- }
 
-{ Save rendered image. This may be called only when rendering is done. }
-procedure EventSave;
-var
-  D: PCallData;
-  SaveUrl: String;
-begin
-  D := PCallData(Window.UserData);
-  SaveUrl := ApplicationName + '_rt.png';
-  if Window.FileDialog('Save image', SaveUrl, false, SaveImage_FileFilters) then
-    SaveImage(D^.Image, SaveUrl);
-end;
+type
+  TMenuHandler = class
+  public
+    MainMenuDone, MainMenuWorking: TMenu;
+    constructor Create;
+    destructor Destroy; override;
+    procedure MenuClick(const Item: TMenuItem);
+  end;
 
-procedure EventEscape;
-var
-  D: PCallData;
-begin
-  D := PCallData(Window.UserData);
-  D^.Quit := true;
-end;
+procedure TMenuHandler.MenuClick(const Item: TMenuItem);
 
-procedure MenuClick(Container: TCastleContainer; Item: TMenuItem);
+  { Save rendered image. This may be called only when rendering is done. }
+  procedure EventSave;
+  var
+    D: PCallData;
+    SaveUrl: String;
+  begin
+    D := PCallData(Window.UserData);
+    SaveUrl := ApplicationName + '_rt.png';
+    if Window.FileDialog('Save image', SaveUrl, false, SaveImage_FileFilters) then
+      SaveImage(D^.Image, SaveUrl);
+  end;
+
+  procedure EventEscape;
+  var
+    D: PCallData;
+  begin
+    D := PCallData(Window.UserData);
+    D^.Quit := true;
+  end;
+
 begin
   case Item.IntData of
     10: EventSave;
@@ -187,26 +197,43 @@ begin
   end;
 end;
 
-function CreateMainMenuWorking: TMenu;
-var
-  M: TMenu;
+constructor TMenuHandler.Create;
+
+  function CreateMainMenuWorking: TMenu;
+  var
+    M: TMenu;
+  begin
+    Result := TMenu.Create('Raytracer working');
+    M := TMenu.Create('_Raytracer working');
+      M.Append(TMenuItem.Create('_Cancel', 20, CharEscape));
+      Result.Append(M);
+  end;
+
+  function CreateMainMenuDone: TMenu;
+  var
+    M: TMenu;
+  begin
+    Result := TMenu.Create('Raytracer done');
+    M := TMenu.Create('_Raytracer done');
+      M.Append(TMenuItem.Create('_Save output to file',   10, CtrlS));
+      M.Append(TMenuItem.Create('_Return to main screen', 20, CharEscape));
+      Result.Append(M);
+  end;
+
 begin
-  Result := TMenu.Create('Raytracer working');
-  M := TMenu.Create('_Raytracer working');
-    M.Append(TMenuItem.Create('_Cancel', 20, CharEscape));
-    Result.Append(M);
+  inherited;
+  MainMenuDone := CreateMainMenuDone;
+  MainMenuWorking := CreateMainMenuWorking;
 end;
 
-function CreateMainMenuDone: TMenu;
-var
-  M: TMenu;
+destructor TMenuHandler.Destroy;
 begin
-  Result := TMenu.Create('Raytracer done');
-  M := TMenu.Create('_Raytracer done');
-    M.Append(TMenuItem.Create('_Save output to file',   10, CtrlS));
-    M.Append(TMenuItem.Create('_Return to main screen', 20, CharEscape));
-    Result.Append(M);
+  FreeAndNil(MainMenuDone);
+  FreeAndNil(MainMenuWorking);
+  inherited;
 end;
+
+{ ----------------------------------------------------------------------------- }
 
 { TRayTracerStatus -------------------------------------------------------- }
 
@@ -252,11 +279,11 @@ var
   CallData: TCallData;
   RaytracerKind: TRaytracerKind;
   RaytraceDepth, PathtraceNonPrimarySamples: Cardinal;
-  MainMenuDone, MainMenuWorking: TMenu;
   RayTracer: TRayTracer;
   StatusText: TRayTracerStatus;
   ImageControl: TRayTracerImage;
   OctreeVisibleTriangles: TTriangleOctree;
+  MenuHandler: TMenuHandler;
 begin
   { get input from user }
   case MessageChoice(Window,
@@ -276,14 +303,12 @@ begin
       'How many samples (non-primary) per pixel ?',
       DefaultNonPrimarySamplesCount);
 
-  MainMenuDone := nil;
-  MainMenuWorking := nil;
   RayTracer := nil;
   CallData.Image := nil;
   SavedMode := nil;
+  MenuHandler := nil;
   try
-    MainMenuDone := CreateMainMenuDone;
-    MainMenuWorking := CreateMainMenuWorking;
+    MenuHandler := TMenuHandler.Create;
 
     CallData.Image := Window.SaveScreen;
 
@@ -298,8 +323,8 @@ begin
     Window.Controls.InsertBack(ImageControl);
 
     Window.UserData := @CallData;
-    Window.MainMenu := MainMenuWorking;
-    Window.OnMenuClick := @MenuClick;
+    Window.MainMenu := MenuHandler.MainMenuWorking;
+    Window.OnMenuItemClick := {$ifdef FPC}@{$endif} MenuHandler.MenuClick;
     CallData.Quit := false;
 
     try
@@ -356,7 +381,7 @@ begin
         because of RowsShowCount mechanism). }
       Window.Invalidate;
       Window.Caption := 'castle-model-viewer - Ray Tracing - done';
-      Window.MainMenu := MainMenuDone;
+      Window.MainMenu := MenuHandler.MainMenuDone;
       repeat Application.ProcessMessage(true, true) until CallData.Quit;
 
     except on BreakRaytracing do ; end;
@@ -364,9 +389,14 @@ begin
     FreeAndNil(SavedMode);
     FreeAndNil(StatusText);
     FreeAndNil(CallData.Image);
-    FreeAndNil(MainMenuWorking);
-    FreeAndNil(MainMenuDone);
     FreeAndNil(RayTracer);
+    { Freeing SavedMode should have restored original Window.MainMenu
+      at this point. If not, then "FreeAndNil(MenuHandler)" would be a problem,
+      as we'd free a menu that is still used, TCastleWindow is not prepared
+      for this. }
+    Assert(Window.MainMenu <> MenuHandler.MainMenuDone);
+    Assert(Window.MainMenu <> MenuHandler.MainMenuWorking);
+    FreeAndNil(MenuHandler);
   end;
 end;
 
