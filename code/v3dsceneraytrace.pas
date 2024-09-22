@@ -24,6 +24,20 @@
   in TCastleWindow window. }
 unit V3DSceneRaytrace;
 
+{ Lazarus Carbon widgetset
+  (used if you define CASTLE_WINDOW_FORM backend on macOS
+  and use LCL widgetset = Carbon) would not handle MainMenu changes nicely
+  (it would fire ray-tracing twice on Ctrl+R, since we rebuild
+  the menu inside the menu handler).
+
+  Just disable this combination now:
+  - Carbon is deprecated anyway, Cocoa should be used.
+  - And CASTLE_WINDOW_COCOA is the recommended and default backend on macOS,
+    without even needing LCL at all. }
+{$ifdef LCLCarbon}
+  {$fatal Compilation with LCL + Carbon is not supported now. Use LCL + Cocoa or use (default on macOS) Castle Game Engine CASTLE_WINDOW_COCOA backend.}
+{$endif}
+
 interface
 
 uses CastleVectors, X3DNodes, CastleColors, CastleProjection,
@@ -173,19 +187,6 @@ begin
   end;
 end;
 
-{$ifdef LCLCarbon}
-procedure PressWorking(Container: TCastleContainer; const Event: TInputPressRelease);
-begin
-  if Event.IsKey(CharEscape) then EventEscape;
-end;
-
-procedure PressDone(Container: TCastleContainer; const Event: TInputPressRelease);
-begin
-  if Event.IsKey(CtrlS) then EventSave;
-  if Event.IsKey(CharEscape) then EventEscape;
-end;
-{$endif}
-
 function CreateMainMenuWorking: TMenu;
 var
   M: TMenu;
@@ -297,17 +298,8 @@ begin
     Window.Controls.InsertBack(ImageControl);
 
     Window.UserData := @CallData;
-    { Lazarus Carbon widgetset (used by CastleWindow LCL backend on Mac OS X)
-      doesn't handle MainMenu changes nicely (it would fire ray-tracing
-      twice on Ctrl+R, since we rebuild the menu inside the menu handler).
-      For now, just handle Escape and CtrlS specially on Mac OS X. }
-    {$ifdef LCLCarbon}
-    {$fatal Compilation for LCL+Carbon is not supported now, since it's not tested.}
-    //Window.OnPress := @PressWorking; // this will not compile with latest CGE
-    {$else}
     Window.MainMenu := MainMenuWorking;
     Window.OnMenuClick := @MenuClick;
-    {$endif}
     CallData.Quit := false;
 
     try
@@ -364,12 +356,7 @@ begin
         because of RowsShowCount mechanism). }
       Window.Invalidate;
       Window.Caption := 'castle-model-viewer - Ray Tracing - done';
-      {$ifdef LCLCarbon}
-      {$fatal Compilation for LCL+Carbon is not supported now, since it's not tested.}
-      //Window.OnPress := @PressDone;
-      {$else}
       Window.MainMenu := MainMenuDone;
-      {$endif}
       repeat Application.ProcessMessage(true, true) until CallData.Quit;
 
     except on BreakRaytracing do ; end;
