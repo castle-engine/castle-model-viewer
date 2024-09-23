@@ -3266,7 +3266,8 @@ const
   );
   UrlProcessingNames: array [TUrlProcessing] of String = (
     'None',
-    'Change to Relative Path',
+    'Change Castle Data to Relative Path',
+    'Change All Paths to Relative Path',
     'Embed Resources',
     'Copy Resources to Subdirectory'
   );
