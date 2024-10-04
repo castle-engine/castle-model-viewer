@@ -816,7 +816,8 @@ begin
   end;
 
   { Support selecting item by ctrl + right button click. }
-  if Event.IsMouseButton(buttonRight) and (mkCtrl in Window.Pressed.Modifiers) then
+  if Event.IsMouseButton(buttonRight) and
+     (mkCtrl in Window.Container.Pressed.Modifiers) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
