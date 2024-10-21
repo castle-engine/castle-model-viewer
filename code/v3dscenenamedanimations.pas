@@ -183,7 +183,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui: TButtonAnimation;
   begin
     Ui := TButtonAnimation.Create(Self);
-    Ui.Caption := Format('%s (%f)', [
+    Ui.Caption := FormatDot('%s (%f)', [
       SForCaption(AnimationName),
       Scene.AnimationDuration(AnimationName)
     ]);
