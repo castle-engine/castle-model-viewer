@@ -1362,6 +1362,7 @@ begin
       transformation possibly changed. So world coordinates of this triangle
       are different. }
     SelectedItem^.UpdateWorld;
+    // update to SelectedItem^.UpdateSceneSpace for new
 
     { Also SelectedPointWorld changed now. To apply the change, convert
       SelectedPointLocal to world coords by new transform.
