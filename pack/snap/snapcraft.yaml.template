@@ -1,19 +1,24 @@
-# TODO: this downloads master of cge,castle-model-viewer.
-# Use tags instead to build precise version.
+# Template for snapcraft.yaml file.
+# Use by executing ./make_snap.sh .
+# See docs: https://snapcraft.io/docs .
 
 name: castle-model-viewer
 
 # The base snap is the execution environment for this snap.
-base: core20
+#
+# Using core22 as recommended now ( https://snapcraft.io/docs/base-snaps ),
+# it has FPC 3.2.2 we need ( https://packages.ubuntu.com/jammy/fpc ).
+base: core22
 
 version: '${SNAP_VERSION}'
-summary: Viewer for 3D and 2D models - glTF, X3D, VRML, Spine JSON and more # 79 char long summary
+summary: Viewer for 3D and 2D models - glTF, X3D, VRML, IFC, Spine JSON and more # 79 char long summary
 description: |
   Viewer for all 3D and 2D models suported by Castle Game Engine:
 
   - glTF,
   - X3D,
   - VRML,
+  - IFC,
   - Collada,
   - 3DS,
   - MD3,
@@ -35,12 +40,17 @@ apps:
   castle-model-viewer:
     command: usr/bin/castle-model-viewer
     plugs:
+      # See https://snapcraft.io/docs/games-interfaces
       - x11
       - opengl
       - audio-playback
       - home
       - removable-media
-      # support all desktop versions on X, see https://forum.snapcraft.io/t/the-desktop-interfaces/2042 , as we initialize OpenGL using glX
+      # Support all desktop versions on X, as we initialize OpenGL using glX.
+      # See
+      # https://snapcraft.io/docs/desktop-interfaces
+      # https://forum.snapcraft.io/t/the-desktop-interfaces/2042
+      # https://forum.snapcraft.io/t/desktop-interfaces-moving-forward/1652
       - desktop
       - desktop-legacy
       - unity7
@@ -51,42 +61,53 @@ apps:
       - removable-media
 
 parts:
-  # FPC part. We need FPC to compile CGE build tool and castle-model-viewer.
+  # Build custom FPC version.
+  # Unnecessary now, as core22 has FPC we need.
   #
-  # It would be easier to get FPC from Ubuntu packages, by dependency in CGE:
-  # build-packages:
-  #   - fpc
-  #
-  # Unfortuntely, Ubuntu core20 has too old FPC (3.0.4), https://packages.ubuntu.com/focal/fpc
-  # Newer Ubuntu has good FPC (>= 3.0.2), but there's no core22 yet,
-  # and we cannot use "impish" or "21.10" for base of Snap.
-  #
-  # So instead we get FPC DEB from Lazarus.
-  # Various other solutions are possible (like get FPC from source and compile,
-  # using https://gitlab.com/freepascal.org/fpc/source/ and source-tag:release_3_2_2).
-  fpc:
-    plugin: nil
-    override-build: |
-      wget https://sourceforge.net/projects/lazarus/files/Lazarus%20Linux%20amd64%20DEB/Lazarus%202.2.0/fpc-laz_3.2.2-210709_amd64.deb
-      sudo apt-get install -f ./fpc-laz_3.2.2-210709_amd64.deb
-    build-packages:
-      - wget
+  # # FPC part. We need FPC to compile CGE build tool and castle-model-viewer.
+  # #
+  # # Unfortuntely, Ubuntu core20 has too old FPC (3.0.4), https://packages.ubuntu.com/focal/fpc
+  # # Newer Ubuntu has good FPC (>= 3.0.2), but there's no core22 yet,
+  # # and we cannot use "impish" or "21.10" for base of Snap.
+  # #
+  # # So instead we get FPC DEB from Lazarus.
+  # # Various other solutions are possible (like get FPC from source and compile,
+  # # using https://gitlab.com/freepascal.org/fpc/source/ and source-tag:release_3_2_2).
+  # fpc:
+  #   plugin: nil
+  #   override-build: |
+  #     wget https://sourceforge.net/projects/lazarus/files/Lazarus%20Linux%20amd64%20DEB/Lazarus%202.2.0/fpc-laz_3.2.2-210709_amd64.deb
+  #     sudo apt-get install -f ./fpc-laz_3.2.2-210709_amd64.deb
+  #   build-packages:
+  #     - wget
 
   # CGE part. We need CGE build tool and sources to later build castle-model-viewer.
   castle-engine:
-    # Specify after, otherwise parts execute in any order. See https://snapcraft.io/docs/parts-lifecycle#heading--step-dependencies
-    after:
-      - fpc
+    # Unnecessary now, as core22 has FPC we need.
+    # # Specify "after", otherwise parts execute in any order. See https://snapcraft.io/docs/parts-lifecycle#heading--step-dependencies
+    # after:
+    #   - fpc
     build-packages:
       - libgl-dev
+      - fpc
     source: https://github.com/castle-engine/castle-engine/
     source-type: git
+    # TODO: this downloads master of cge,castle-model-viewer.
+    # Use tags instead to build precise version.
+
     # See 'snapcraft plugins'
     # https://snapcraft.io/docs/make-plugin
     plugin: nil
     override-build: |
       # Copy, while sources are clean.
       cp -Rf . $SNAPCRAFT_PART_INSTALL/cge-source
+
+      # Remove Android .so, to avoid later warnings like
+      # Unable to determine library dependencies for 'cge-source/tools/build-tool/data/android/integrated-services/png/app/src/main/jniLibs/armeabi-v7a/libpng.so'        not a dynamic executable
+      find \
+        $SNAPCRAFT_PART_INSTALL/cge-source/tools/build-tool/data/android/integrated-services/ \
+        -iname *.so \
+        -execdir rm -f {} \;
 
       tools/build-tool/castle-engine_compile.sh
 
@@ -100,7 +121,8 @@ parts:
       - cge-source/*
     # No point in priming (copying to final snap) CGE sources or build tool, would only take up disk space
     # TODO: looks like it didn't help, they are still in installed snap in /snap/castle-model-viewer/current/ .
-    prime: []
+    # TODO: causes /root/stage/cge-source/.git: No such file or directory ?
+    #prime: []
 
   # Actual castle-model-viewer application part.
   castle-model-viewer:
@@ -111,6 +133,8 @@ parts:
     build-packages:
       - libgl-dev
       - libgtk2.0-dev
+      # For xdg-icon-resource
+      - xdg-utils
     # Make $CASTLE_ENGINE_PATH point to CGE source at building.
     build-environment:
       - CASTLE_ENGINE_PATH: "$SNAPCRAFT_STAGE/cge-source"

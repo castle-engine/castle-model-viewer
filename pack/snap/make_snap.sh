@@ -8,11 +8,10 @@ mkdir snap/
 # rm -f snap/*~
 
 VERSION=`castle-engine output version`
-sed -e 's|${SNAP_VERSION}|'${VERSION}'|' snap/snapcraft.yaml.template
+sed -e 's|${SNAP_VERSION}|'${VERSION}'|' snapcraft.yaml.template > snap/snapcraft.yaml
 
-snapcraft
+# See https://snapcraft.io/docs/snapcraft-overview
+# about --debug .
+snapcraft --debug
 
 ls -Flah castle-model-viewer_*.snap
-
-echo 'To install run:'
-echo 'sudo snap install --devmode castle-model-viewer_*_amd64.snap'
