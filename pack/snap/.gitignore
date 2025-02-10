@@ -1,1 +1,3 @@
 *.snap
+# snapcraft.yaml is auto-generated from snapcraft.yaml.template
+snap/snapcraft.yaml
