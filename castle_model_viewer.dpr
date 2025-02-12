@@ -699,7 +699,7 @@ begin
         We only transform selected stuff into scene coordinate-system. }
       RenderSelected(
         TShape(SelectedItem^.Shape).BoundingBox,
-        SelectedItem^.World.Triangle,
+        SelectedItem^.SceneSpace.Triangle,
         SelectedPointWorld
       );
   end;
@@ -1361,7 +1361,7 @@ begin
     { We can keep SelectedItem, but we have to take into account that it's
       transformation possibly changed. So world coordinates of this triangle
       are different. }
-    SelectedItem^.UpdateWorld;
+    SelectedItem^.UpdateSceneSpace;
     // update to SelectedItem^.UpdateSceneSpace for new
 
     { Also SelectedPointWorld changed now. To apply the change, convert
@@ -1769,7 +1769,7 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
              'Node''s bounding box is %s. ',
            [
              SelectedPointWorld.ToString,
-             SelectedItem^.World.Triangle.ToString,
+             SelectedItem^.SceneSpace.Triangle.ToString,
              SelectedGeometry.X3DName,
              SelectedShape.OriginalGeometry.X3DType,
              SelectedGeometry.X3DType,
@@ -1857,7 +1857,7 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
          if ShadowingItem <> nil then
          begin
           s := s + Format('no, this light is blocked by triangle %s from shape %s.',
-            [ ShadowingItem^.World.Triangle.ToString,
+            [ ShadowingItem^.SceneSpace.Triangle.ToString,
               TShape(ShadowingItem^.Shape).NiceName ])
          end else
           s := s + 'yes, no object blocks this light, it shines on selected point.';
