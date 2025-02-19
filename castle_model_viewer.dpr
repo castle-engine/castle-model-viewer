@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2024 Michalis Kamburelis.
+  Copyright 2002-2025 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -367,6 +367,21 @@ end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
 
+{ TVector3Helper ------------------------------------------------------------- }
+
+type
+  TVector3Helper = record helper for TVector3
+    function ToStringShort: String;
+  end;
+
+function TVector3Helper.ToStringShort: String;
+begin
+  Result :=
+    FloatToStrDisplay(X, 2) + ' ' +
+    FloatToStrDisplay(Y, 2) + ' ' +
+    FloatToStrDisplay(Z, 2);
+end;
+
 { TExtendedStatusText -------------------------------------------------------- }
 
 type
@@ -499,16 +514,28 @@ begin
   Text.Append(S); }
 
   MainViewport.Camera.GetWorldView(Pos, Dir, Up);
-  Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
-    [ ValueColor, Pos.ToString,
-      ValueColor, Dir.ToString,
-      ValueColor, Up.ToString ]));
+  Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>', [
+    { Reasons for using ToStringShort instead of ToString:
+      1. Looks easier for human eye, which is important here, as this is
+         a status text.
+      2. More precision *usually* doesn't matter.
+      3. TODO: (this reason should disappear eventually) More digits
+         uncover occasional issue in CGE that we still have to investigate,
+         sometimes the numbers "shake" a bit even when not doing anything.
+         We eliminated the TCastleExamineNavigation.Update/Motion from suspects,
+         something else is recalculating camera vectors and causing slight
+         changes sometimes? }
+    ValueColor, Pos.ToStringShort,
+    ValueColor, Dir.ToStringShort,
+    ValueColor, Up.ToStringShort
+  ]));
 
   if WalkNavigation <> nil then
   begin
-    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, WalkNavigation.PreferredHeight,
-        ValueColor, CurrentAboveHeight(WalkNavigation) ]));
+    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)', [
+      ValueColor, WalkNavigation.PreferredHeight,
+      ValueColor, CurrentAboveHeight(WalkNavigation)
+    ]));
   end;
 
   { if SceneLightsCount = 0 then

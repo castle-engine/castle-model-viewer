@@ -14,3 +14,5 @@
     {$endif}
   {$endif}
 {$endif}
+
+{$modeswitch advancedrecords}
