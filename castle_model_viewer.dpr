@@ -1659,7 +1659,7 @@ begin
       { Without protocol, ScreenShotNameUrlPrefix is treated like relative
         filename now. So make sure to convert %20 to spaces,
         to later save screenshot with spaces when scene file had spaces. }
-      ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneUrl)))
+      ScreenShotNameUrlPrefix := UrlDecode(DeleteURIExt(ExtractURIName(SceneUrl)))
     else
       ScreenShotNameUrlPrefix := 'castle-model-viewer_screenshot';
     { We use FileNameAutoInc with 2 params,
