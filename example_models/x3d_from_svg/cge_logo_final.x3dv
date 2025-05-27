@@ -5,8 +5,6 @@ PROFILE Interchange
 # only then our layer movement in Z is not a problem.
 #
 # Copied from cge_logo_fixed_z.x3d, because bindable nodes in Inline are not taken into account.
-# Also this way we can route MyViewpoint.cameraInverseMatrix to shader.
-#
 DEF MyViewpoint OrthoViewpoint {
   position 0.03612445 -0.03612445 10
   centerOfRotation 0.03612445 -0.03612445 0
@@ -26,17 +24,20 @@ NavigationInfo {
 # See https://castle-engine.io/shaders .
 DEF CutCircleEffect Effect {
   language "GLSL"
-  inputOnly SFMatrix4f cameraInverseMatrix
+  shaderLibraries "castle-shader:/EyeWorldSpace.glsl"
   parts [
     EffectPart {
       type "FRAGMENT"
       url "data:text/plain,
-      uniform mat4 cameraInverseMatrix;
+      // Forward declaration
+      vec4 position_eye_to_world_space(vec4 position_eye);
+
+      // Check vertex position, discard if outside the circle.
       void PLUG_fragment_eye_space(
         const vec4 vertex_eye,
         inout vec3 normal_eye)
       {
-        vec4 vertex_world = cameraInverseMatrix * vertex_eye;
+        vec4 vertex_world = position_eye_to_world_space(vertex_eye);
         const float circle_radius = 0.035;
         const vec2 circle_middle = vec2(0.035, -0.037);
         if (distance(vertex_world.xy, circle_middle) > circle_radius) {
@@ -47,7 +48,5 @@ DEF CutCircleEffect Effect {
     }
   ]
 }
-
-ROUTE MyViewpoint.cameraInverseMatrix TO CutCircleEffect.cameraInverseMatrix
 
 Inline { url "cge_logo_fixed_z.x3d" }
