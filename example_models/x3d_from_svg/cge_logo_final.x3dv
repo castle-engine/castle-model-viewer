@@ -23,7 +23,7 @@ NavigationInfo {
 
 # Shader effect that will affect rendering in cge_logo_fixed_z.x3d .
 # This allows to cut a circular view .
-# See https://castle-engine.io/compositing_shaders.php .
+# See https://castle-engine.io/shaders .
 DEF CutCircleEffect Effect {
   language "GLSL"
   inputOnly SFMatrix4f cameraInverseMatrix
