@@ -150,11 +150,11 @@ jobs:
       matrix:
         arch: [armv7l, aarch64]
         include:
-        # Raspberry Pi 32-bit (Arm), bullseye (older version, used on Raspberry Pi 4 by default)
+        # Raspberry Pi 32-bit (Arm)
         - arch: armv7l
           cpu: cortex-a7
-          base_image: dietpi:rpi_armv7_bullseye
-        # Raspberry Pi 64-bit (Aarch64), latest (bookworm)
+          base_image: raspios_lite:latest
+        # Raspberry Pi 64-bit (Aarch64)
         - arch: aarch64
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
