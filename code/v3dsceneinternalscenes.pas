@@ -163,7 +163,7 @@ begin
   BorderMatchingLines.Mode := lmPair;
 
   BorderMatchingMaterial := TMaterialNode.Create;
-  BorderMatchingMaterial.EmissiveColor := Vector3(0, 1, 0);
+  BorderMatchingMaterial.EmissiveColor := Vector3(1, 1, 1);
 
   BorderMatchingAppearance := TAppearanceNode.Create;
   BorderMatchingAppearance.Material := BorderMatchingMaterial;
@@ -210,6 +210,16 @@ begin
   BorderCoord.FdPoint.Items.Clear;
   BorderMatchingCoord.FdPoint.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
+
+  { Make sure DetectedWholeSceneManifold is calculated, to update
+    border edges Triangles[1] values, which are used to determine
+    how each border edge is rendered.
+
+    Testcase when this is needed: open in Castle Model Viewer a model
+    without light source casting shadow volumes, and (without using menu item
+    "Help -> 2 Manifold Info...") switch to
+    "View -> Fill Mode -> Silhouette and Border Edges". }
+  SourceScene.DetectedWholeSceneManifold;
 
   ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
   for Shape in ShapeList do
@@ -321,9 +331,15 @@ var
     V0 := ShapeTransform.MultPoint(EdgeV0^);
     V1 := ShapeTransform.MultPoint(EdgeV1^);
 
-    { Note: This really makes sense only if you comment out 1 line in
+    { Note: To have all edges properly marked as BorderMatchingCoord /
+      BorderCoord, comment out 1 line in
       TCastleSceneCore.CalculateDetectedWholeSceneManifold to force detect
-      all matches for border edges. }
+      all matches for border edges.
+
+      By default, the detection stops at first border edge that doesn't have
+      a neighbor. So some edges will go to BorderCoord, even if they could
+      go into BorderMatchingCoord, if only you have at least one edge in
+      BorderCoord. }
     if EdgePtr^.Triangles[1] = High(Cardinal) then
       BorderMatchingCoord.FdPoint.Items.AddRange([V0, V1])
     else
