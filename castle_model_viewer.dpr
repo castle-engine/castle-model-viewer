@@ -2869,13 +2869,13 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       NL, [
         ManifoldEdges,
         BorderEdges,
-        BoolToStr(Scene.DetectedWholeSceneManifold, true)
+        BoolToStr(Scene.InternalDetectedWholeSceneManifold, true)
       ]);
 
     if BorderEdges = 0 then
       Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because all shapes are 2-manifold.'
     else
-    if Scene.DetectedWholeSceneManifold then
+    if Scene.InternalDetectedWholeSceneManifold then
       Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because whole scene is 2-manifold (even if not all shapes are 2-manifold).'
     else
       Result := Result + 'Conclusion: this scene is NOT a valid shadow caster for shadow volumes, it is not 2-manifold.';

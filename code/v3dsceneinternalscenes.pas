@@ -211,7 +211,7 @@ begin
   BorderMatchingCoord.FdPoint.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
 
-  { Make sure DetectedWholeSceneManifold is calculated, to update
+  { Make sure InternalDetectedWholeSceneManifold is calculated, to update
     border edges Triangles[1] values, which are used to determine
     how each border edge is rendered.
 
@@ -219,7 +219,7 @@ begin
     without light source casting shadow volumes, and (without using menu item
     "Help -> 2 Manifold Info...") switch to
     "View -> Fill Mode -> Silhouette and Border Edges". }
-  SourceScene.DetectedWholeSceneManifold;
+  SourceScene.InternalDetectedWholeSceneManifold;
 
   ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
   for Shape in ShapeList do
