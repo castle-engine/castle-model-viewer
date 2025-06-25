@@ -179,6 +179,7 @@ begin
   // calculate SilhouetteLines, SilhouetteMaterial, SilhouetteAppearance, SilhouetteCoord
 
   SilhouetteLines := TLineSetNode.Create;
+  SilhouetteLines.Mode := lmPair;
 
   SilhouetteMaterial := TMaterialNode.Create;
   SilhouetteMaterial.EmissiveColor := Vector3(1, 1, 0);
