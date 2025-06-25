@@ -2857,14 +2857,28 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
     Result := Result + NL;
   end;
 
-  function ManifoldEdgesInfo(const Scene: TCastleScene): string;
+  function ManifoldInfo(const Scene: TCastleScene): string;
   var
     ManifoldEdges, BorderEdges: Cardinal;
   begin
     Scene.EdgesCount(ManifoldEdges, BorderEdges);
-    Result := Format('Edges detection: all edges split into %d manifold edges and %d border edges. Remember that for shadow volumes, only the shapes that are perfect manifold (have zero border edges) can cast shadows.',
-      [ManifoldEdges, BorderEdges]);
-    Scene.FreeResources([frShadowVolume]);
+    Result := Format(
+      'Detected manifold edges: %d.' + NL +
+      'Detected border edges: %d.' + NL +
+      'Detected "whole scene is 2-manifold, but not all shapes are 2-manifold": %s.' + NL +
+      NL, [
+        ManifoldEdges,
+        BorderEdges,
+        BoolToStr(Scene.DetectedWholeSceneManifold, true)
+      ]);
+
+    if BorderEdges = 0 then
+      Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because all shapes are 2-manifold.'
+    else
+    if Scene.DetectedWholeSceneManifold then
+      Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because whole scene is 2-manifold (even if not all shapes are 2-manifold).'
+    else
+      Result := Result + 'Conclusion: this scene is NOT a valid shadow caster for shadow volumes, it is not 2-manifold.';
   end;
 
   procedure HideSelectedShape;
@@ -3062,7 +3076,7 @@ begin
            PersistentMouseLook := not PersistentMouseLook;
            UpdateCameraUI;
          end;
-    129: MessageReport(ManifoldEdgesInfo(Scene));
+    129: MessageReport(ManifoldInfo(Scene));
 
     131: begin
            MessageReport(
@@ -3560,7 +3574,7 @@ begin
     Result.Append(M);
   M := TMenu.Create('_Help');
     M.Append(TMenuItem.Create('Scene Information',                  121));
-    M.Append(TMenuItem.Create('Manifold Edges Information',         129));
+    M.Append(TMenuItem.Create('2-Manifold Information (Shadow Volumes Casting)', 129));
     MenuSelectedInfo :=
       TMenuItem.Create('Selected Object Information',               171);
     M.Append(MenuSelectedInfo);
