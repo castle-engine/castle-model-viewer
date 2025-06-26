@@ -211,6 +211,11 @@ begin
   BorderMatchingCoord.FdPoint.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
 
+  WholeSceneManifoldDetectionForceAllEdges := true;
+  { Force recalculation of manifold/border edges,
+    to make them with WholeSceneManifoldDetectionForceAllEdges=true. }
+  SourceScene.ChangedAll;
+
   { Make sure InternalDetectedWholeSceneManifold is calculated, to update
     border edges Triangles[1] values, which are used to determine
     how each border edge is rendered.
@@ -220,6 +225,9 @@ begin
     "Help -> 2 Manifold Info...") switch to
     "View -> Fill Mode -> Silhouette and Border Edges". }
   SourceScene.InternalDetectedWholeSceneManifold;
+
+  // restore WholeSceneManifoldDetectionForceAllEdges
+  WholeSceneManifoldDetectionForceAllEdges := false;
 
   ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
   for Shape in ShapeList do
@@ -331,15 +339,6 @@ var
     V0 := ShapeTransform.MultPoint(EdgeV0^);
     V1 := ShapeTransform.MultPoint(EdgeV1^);
 
-    { Note: To have all edges properly marked as BorderMatchingCoord /
-      BorderCoord, comment out 1 line in
-      TCastleSceneCore.CalculateDetectedWholeSceneManifold to force detect
-      all matches for border edges.
-
-      By default, the detection stops at first border edge that doesn't have
-      a neighbor. So some edges will go to BorderCoord, even if they could
-      go into BorderMatchingCoord, if only you have at least one edge in
-      BorderCoord. }
     if EdgePtr^.Triangles[1] = High(Cardinal) then
       BorderMatchingCoord.FdPoint.Items.AddRange([V0, V1])
     else
