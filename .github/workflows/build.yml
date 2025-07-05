@@ -206,6 +206,38 @@ jobs:
             *.tar.gz
           #if-no-files-found: error
 
+  # Build also with Delphi, just to make sure it goes OK.
+  # We don't build releases with Delphi, but wemake sure that if someone downloads
+  # sources -- they can build with Delphi as well as with FPC.
+  build_delphi:
+    name: Build Using Delphi
+    strategy:
+      matrix:
+        host-label: [
+          delphi_10_2,
+          delphi_12_2
+        ]
+
+    runs-on: ${{ matrix.host-label }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Castle Game Engine
+      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
+        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Env PATH (Windows, with ;)
+        run: echo "PATH=$PATH;$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
+      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
+        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
+      - name: Castle Game Engine - Build
+        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+
+      - name: Delphi Build (Win32)
+        run: castle-engine compile --compiler=delphi --os=win32 --cpu=i386
+      - name: Delphi Build (Win64)
+        run: castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
+
   release:
     name: Release
     runs-on: ubuntu-latest
