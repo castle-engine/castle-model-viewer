@@ -106,7 +106,7 @@ begin
   inherited;
   if (FlashText <> '') and (FlashTime + FlashDelay > Time) then
     VisibleChange([chRender]);
-  Time += SecondsPassed;
+  Time := Time + SecondsPassed;
 end;
 
 end.

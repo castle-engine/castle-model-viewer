@@ -285,6 +285,10 @@ var
   OctreeVisibleTriangles: TTriangleOctree;
   MenuHandler: TMenuHandler;
 begin
+  // silence spurious Delphi warnings
+  RaytracerKind := rtkClassic;
+  PathtraceNonPrimarySamples := 0;
+
   { get input from user }
   case MessageChoice(Window,
       'Which ray tracer do you want to use?',

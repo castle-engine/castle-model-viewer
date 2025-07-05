@@ -110,9 +110,9 @@ end;
 procedure TOctreeDisplay.AddDisplayStatus(var S: string);
 begin
   if Whole then
-    S += Format(', Octree %s display: whole', [Name]) else
+    S := S + Format(', Octree %s display: whole', [Name]) else
   if Depth <> -1 then
-    S += Format(', Octree %s display: depth %d', [Name, Depth]);
+    S := S + Format(', Octree %s display: depth %d', [Name, Depth]);
 end;
 
 { ---------------------------------------------------------------------------- }

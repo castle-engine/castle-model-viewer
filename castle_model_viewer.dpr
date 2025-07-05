@@ -54,7 +54,7 @@ program castle_model_viewer;
 {$define CATCH_EXCEPTIONS}
 
 uses SysUtils, Math, Classes,
-  {$ifndef VER3_0} OpenSSLSockets, {$endif}
+  {$ifdef FPC} {$ifndef VER3_0} OpenSSLSockets, {$endif} {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties, CastleParameters, CastleCameras,
@@ -360,9 +360,9 @@ end;
 
 procedure ToggleNamedAnimationsUi;
 begin
-  NamedAnimationsUiExists := not NamedAnimationsUiExists;
-  MenuNamedAnimations.Checked := NamedAnimationsUiExists;
-  ButtonAnimations.Pressed := NamedAnimationsUiExists;
+  SetNamedAnimationsUiExists(not GetNamedAnimationsUiExists);
+  MenuNamedAnimations.Checked := GetNamedAnimationsUiExists;
+  ButtonAnimations.Pressed := GetNamedAnimationsUiExists;
 end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
@@ -610,6 +610,8 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
   begin
     if not HasWalkFrustum then
       Exit;
+
+    SavedDepthTest := false; // silence spurious Delphi warning
 
     if AlwaysVisible then
     begin
@@ -3477,7 +3479,7 @@ begin
     M.Append(MenuCollisions);
     Result.Append(M);
   M := TMenu.Create('_Animation');
-    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, CtrlA, NamedAnimationsUiExists, false);
+    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, CtrlA, GetNamedAnimationsUiExists, false);
     M.Append(MenuNamedAnimations);
     M.Append(TMenuSeparator.Create);
     MenuAnimationTimePlaying := TMenuItemChecked.Create(

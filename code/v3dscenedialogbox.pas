@@ -31,10 +31,12 @@ implementation
 
 uses SysUtils, Classes,
   CastleWindow, CastleUIControls, CastleControls, CastleComponentSerialize,
-  CastleKeysMouse, CastleUIState, CastleStringUtils;
+  CastleKeysMouse, CastleUIState, CastleStringUtils,
+  { Necessary for Delphi to define LineEnding. }
+  CastleUtils;
 
 type
-  TStateDialogBox = class(TUIState)
+  TStateDialogBox = class(TCastleView)
   strict private
     FButtonClicked: Boolean;
     LabelMessage: TCastleLabel;
@@ -94,9 +96,9 @@ begin
   LabelMessage := UiOwner.FindRequiredComponent('LabelMessage') as TCastleLabel;
   LabelMessage.Caption := Message;
   ButtonOK := UiOwner.FindRequiredComponent('ButtonOK') as TCastleButton;
-  ButtonOK.OnClick := @ClickOK;
+  ButtonOK.OnClick := {$ifdef FPC}@{$endif} ClickOK;
   ButtonCopyClipboard := UiOwner.FindRequiredComponent('ButtonCopyClipboard') as TCastleButton;
-  ButtonCopyClipboard.OnClick := @ClickCopyClipboard;
+  ButtonCopyClipboard.OnClick := {$ifdef FPC}@{$endif} ClickCopyClipboard;
 
   InsertFront(Ui);
 end;

@@ -162,8 +162,8 @@ function TMenuViewpoints.AddViewpoint(
   begin
     if ItemIndex < 10 then
       Result := '_';
-    Result += IntToStr(ItemIndex) + ': ';
-    Result += SQuoteMenuEntryCaption(NodeToCaption(Node));
+    Result := Result + IntToStr(ItemIndex) + ': ';
+    Result := Result + SQuoteMenuEntryCaption(NodeToCaption(Node));
   end;
 
   { Scan ParentInfo information for TViewpointGroupNode.
@@ -272,7 +272,7 @@ begin
     SceneBoundViewpoint := Scene.ViewpointStack.Top;
     AddViewpointGroups := TX3DNodeList.Create(false);
 
-    Scene.RootNode.Traverse(TAbstractViewpointNode, @AddViewpoint);
+    Scene.RootNode.Traverse(TAbstractViewpointNode, {$ifdef FPC}@{$endif} AddViewpoint);
 
     SceneBoundViewpoint := nil; //< just for safety
     FreeAndNil(AddViewpointGroups);

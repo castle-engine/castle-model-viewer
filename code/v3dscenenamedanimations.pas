@@ -36,9 +36,11 @@ procedure RefreshNamedAnimationsUi(const Window: TCastleWindow;
 function GetNamedAnimationsUiExists: Boolean;
 procedure SetNamedAnimationsUiExists(const Value: Boolean);
 
+{ Not possible with Delphi
 property NamedAnimationsUiExists: Boolean
   read GetNamedAnimationsUiExists
   write SetNamedAnimationsUiExists;
+}
 
 implementation
 
@@ -98,10 +100,10 @@ begin
   if FTimeSensor <> Value then
   begin
     if FTimeSensor <> nil then
-      FTimeSensor.RemoveDestructionNotification(@TimeSensorDestruction);
+      FTimeSensor.RemoveDestructionNotification({$ifdef FPC}@{$endif} TimeSensorDestruction);
     FTimeSensor := Value;
     if FTimeSensor <> nil then
-      FTimeSensor.AddDestructionNotification(@TimeSensorDestruction);
+      FTimeSensor.AddDestructionNotification({$ifdef FPC}@{$endif} TimeSensorDestruction);
   end;
 end;
 
@@ -136,7 +138,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui := TCastleCheckbox.Create(Self);
     Ui.Caption := 'Loop';
     Ui.Checked := Loop;
-    Ui.OnChange := @ChangeCheckboxLoop;
+    Ui.OnChange := {$ifdef FPC}@{$endif} ChangeCheckboxLoop;
     Ui.TextColor := White;
     Ui.CheckboxColor := White;
     InsertFront(Ui);
@@ -149,7 +151,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui := TCastleCheckbox.Create(Self);
     Ui.Caption := 'Forward';
     Ui.Checked := Forward;
-    Ui.OnChange := @ChangeCheckboxForward;
+    Ui.OnChange := {$ifdef FPC}@{$endif} ChangeCheckboxForward;
     Ui.TextColor := White;
     Ui.CheckboxColor := White;
     InsertFront(Ui);
@@ -162,7 +164,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Ui := TCastleCheckbox.Create(Self);
     Ui.Caption := 'Enable Multiple Simultaneous Animations';
     Ui.Checked := MultipleAnimations;
-    Ui.OnChange := @ChangeCheckboxMultipleAnimations;
+    Ui.OnChange := {$ifdef FPC}@{$endif} ChangeCheckboxMultipleAnimations;
     Ui.TextColor := White;
     Ui.CheckboxColor := White;
     InsertFront(Ui);
@@ -189,7 +191,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     ]);
     Ui.TimeSensor := TimeSensor;
     Ui.AnimationName := AnimationName;
-    Ui.OnClick := @ClickAnimation;
+    Ui.OnClick := {$ifdef FPC}@{$endif} ClickAnimation;
     AnimationsScrollGroup.InsertFront(Ui);
   end;
 
@@ -217,7 +219,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
   begin
     Ui := TCastleButton.Create(Self);
     Ui.Caption := 'Stop Animation';
-    Ui.OnClick := @ClickStopAnimation;
+    Ui.OnClick := {$ifdef FPC}@{$endif} ClickStopAnimation;
     InsertFront(Ui);
   end;
 
@@ -227,7 +229,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
   begin
     Ui := TCastleButton.Create(Self);
     Ui.Caption := 'Reset Animation State';
-    Ui.OnClick := @ClickResetAnimationState;
+    Ui.OnClick := {$ifdef FPC}@{$endif} ClickResetAnimationState;
     InsertFront(Ui);
   end;
 
@@ -249,7 +251,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     Slider.Min := 0;
     Slider.Max := 5;
     Slider.Value := Transition;
-    Slider.OnChange := @ChangeSliderTransition;
+    Slider.OnChange := {$ifdef FPC}@{$endif} ChangeSliderTransition;
     LabelAndSlider.InsertFront(Slider);
 
     InsertFront(LabelAndSlider);
@@ -279,7 +281,7 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
       Slider.Value := Scene.TimePlayingSpeed
     else
       Slider.Value := 1;
-    Slider.OnChange := @ChangeSliderSpeed;
+    Slider.OnChange := {$ifdef FPC}@{$endif} ChangeSliderSpeed;
     LabelAndSlider.InsertFront(Slider);
 
     InsertFront(LabelAndSlider);
