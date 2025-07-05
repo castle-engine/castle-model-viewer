@@ -41,6 +41,8 @@ Compile by:
 
 - Or use [Lazarus](https://www.lazarus-ide.org/). Open in Lazarus `castle_model_viewer.lpi` file and compile / run from Lazarus. Make sure to first register [CGE Lazarus packages](https://castle-engine.io/lazarus).
 
+- Or use [Delphi](https://castle-engine.io/delphi). Open in Delphi project `castle_model_viewer.dproj` file and compile / run from Delphi. See [CGE and Delphi](https://castle-engine.io/delphi) documentation for details.
+
 ## License
 
 GNU GPL >= 2.

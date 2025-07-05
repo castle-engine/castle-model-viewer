@@ -23,6 +23,8 @@
 { Anti-aliasing UI. }
 unit V3DSceneAntiAliasing;
 
+{$I v3dsceneconf.inc}
+
 interface
 
 uses CastleWindow;

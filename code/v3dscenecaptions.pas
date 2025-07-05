@@ -23,6 +23,8 @@
 { Utility for captions. }
 unit V3DSceneCaptions;
 
+{$I v3dsceneconf.inc}
+
 interface
 
 const
