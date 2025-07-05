@@ -241,8 +241,15 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+
     # Only upload release if all builds, on all runners, succeeded.
-    needs: [build_docker, build_runner_native, build_arm_runner]
+    #
+    # Note that build_delphi is not strictly necessary as dependency here
+    # (since it doesn't make any artifacts, it's just a test that compilation
+    # goes OK) but we still want failure there to cause workflow failure,
+    # so that we have to fix it.
+    needs: [build_docker, build_runner_native, build_arm_runner, build_delphi]
+
     steps:
     - name: Download packaged releases
       uses: actions/download-artifact@v4
