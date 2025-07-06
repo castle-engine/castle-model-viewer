@@ -933,6 +933,8 @@ begin
 end;
 
 procedure TEventsHandler.OnWarningHandle(const Category, S: string);
+const
+  MaxWarnings = 1000;
 begin
   { It is possible that SceneWarnings = nil now,
     in case on macOS we use
@@ -942,10 +944,20 @@ begin
     The ButtonWarnings is invalid (already freed) at this point too. }
   if SceneWarnings <> nil then
   begin
-    if Category <> '' then
-      SceneWarnings.Add(Category + ': ' + S)
-    else
-      SceneWarnings.Add(S);
+    if SceneWarnings.Count < MaxWarnings then
+    begin
+      if Category <> '' then
+        SceneWarnings.Add(Category + ': ' + S)
+      else
+        SceneWarnings.Add(S);
+
+      if SceneWarnings.Count = MaxWarnings then
+      begin
+        SceneWarnings.Add(Format('The scene has caused %d warnings. Consult the log file ( https://castle-engine.io/log ) to access all warnings.', [
+          MaxWarnings
+        ]));
+      end;
+    end;
     UpdateButtonWarnings;
   end;
 
