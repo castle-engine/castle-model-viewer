@@ -212,19 +212,23 @@ begin
   SilhouetteCoord.FdPoint.Items.Clear;
 
   WholeSceneManifoldDetectionForceAllEdges := true;
-  { Force recalculation of manifold/border edges,
-    to make them with WholeSceneManifoldDetectionForceAllEdges=true. }
-  SourceScene.ChangedAll;
 
-  { Make sure InternalDetectedWholeSceneManifold is calculated, to update
-    border edges Triangles[1] values, which are used to determine
-    how each border edge is rendered.
+  { Make sure InternalDetectedWholeSceneManifold is calculated,
 
-    Testcase when this is needed: open in Castle Model Viewer a model
-    without light source casting shadow volumes, and (without using menu item
-    "Help -> 2 Manifold Info...") switch to
-    "View -> Fill Mode -> Silhouette and Border Edges". }
-  SourceScene.InternalDetectedWholeSceneManifold;
+    1.To update border edges Triangles[1] values, which are used to determine
+      how each border edge is rendered.
+
+      Otherwise we could have them not calculated at all.
+      Testcase when this is needed: open in Castle Model Viewer a model
+      without light source casting shadow volumes, and (without using menu item
+      "Help -> 2 Manifold Info...") switch to
+      "View -> Fill Mode -> Silhouette and Border Edges".
+
+    2.Also to force recalculating with new
+      WholeSceneManifoldDetectionForceAllEdges value.
+      We need to recalculate with WholeSceneManifoldDetectionForceAllEdges=true
+      to show blue vs white colors correctly. }
+  SourceScene.InternalDetectedWholeSceneManifold(true);
 
   // restore WholeSceneManifoldDetectionForceAllEdges
   WholeSceneManifoldDetectionForceAllEdges := false;
