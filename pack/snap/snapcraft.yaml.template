@@ -107,9 +107,9 @@ parts:
       cp -Rf . $SNAPCRAFT_PART_INSTALL/cge-source
 
       # Remove Android .so, to avoid later warnings like
-      # Unable to determine library dependencies for 'cge-source/tools/build-tool/data/android/integrated-services/png/app/src/main/jniLibs/armeabi-v7a/libpng.so'        not a dynamic executable
+      # Unable to determine library dependencies for 'cge-source/tools/build-tool/data/android/services/png/app/src/main/jniLibs/armeabi-v7a/libpng.so'        not a dynamic executable
       find \
-        $SNAPCRAFT_PART_INSTALL/cge-source/tools/build-tool/data/android/integrated-services/ \
+        $SNAPCRAFT_PART_INSTALL/cge-source/tools/build-tool/data/android/services/ \
         -iname *.so \
         -execdir rm -f {} \;
 
