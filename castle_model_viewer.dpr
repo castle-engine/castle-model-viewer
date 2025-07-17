@@ -2043,12 +2043,22 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       Exit;
     end;
 
-    MatInfo := SelectedItem^.State.MaterialInfo;
-    if MatInfo = nil then
+    { We check "missing material" by looking at
+      Appearance and Appearance.Material.
+      Note: Looking at "SelectedItem^.State.MaterialInfo = nil"
+      would not be correct, as we now have TAppearanceNode.InternalInternalFallbackMaterialInfo
+      which means we may have MaterialInfo <> nil even
+      if Appearance.Material = nil. }
+    if (SelectedItem^.State.ShapeNode <> nil) and // X3D or VRML 2.0
+       ( (SelectedItem^.State.Appearance = nil) or
+         (SelectedItem^.State.Appearance.Material = nil) ) then
     begin
       Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
       Exit;
     end;
+
+    MatInfo := SelectedItem^.State.MaterialInfo;
+    Check(MatInfo <> nil, 'Appearance.Material <> nil, so MaterialInfo should not be nil');
 
     Color := MatInfo.EmissiveColor;
     if Window.ColorDialog(Color) then
@@ -2066,12 +2076,18 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       Exit;
     end;
 
-    MatInfo := SelectedItem^.State.MaterialInfo;
-    if MatInfo = nil then
+    { Same comment as in ChangeMaterialEmissiveColor:
+      Checking here "SelectedItem^.State.MaterialInfo = nil" would not be useful. }
+    if (SelectedItem^.State.ShapeNode <> nil) and // X3D or VRML 2.0
+       ( (SelectedItem^.State.Appearance = nil) or
+         (SelectedItem^.State.Appearance.Material = nil) ) then
     begin
       Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
       Exit;
     end;
+
+    MatInfo := SelectedItem^.State.MaterialInfo;
+    Check(MatInfo <> nil, 'Appearance.Material <> nil, so MaterialInfo should not be nil');
 
     Color := MatInfo.MainColor;
     if Window.ColorDialog(Color) then
