@@ -47,7 +47,7 @@ jobs:
 
     container: kambi/castle-engine-cloud-builds-tools:cge-none
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
@@ -99,7 +99,7 @@ jobs:
         ]
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
@@ -159,7 +159,7 @@ jobs:
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pguyot/arm-runner-action@v2
         with:
           base_image: ${{ matrix.base_image }}
@@ -221,7 +221,7 @@ jobs:
     runs-on: ${{ matrix.host-label }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
@@ -273,7 +273,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Update Release Tag
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
