@@ -252,7 +252,7 @@ jobs:
 
     steps:
     - name: Download packaged releases
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         merge-multiple: true
     - name: List downloaded files
