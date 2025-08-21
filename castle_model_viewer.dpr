@@ -1030,12 +1030,14 @@ type
   automatically based on box. }
 procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
   const Navigation: TCastleNavigation;
-  const Box: TBox3D);
+  const Scene: TCastleSceneCore);
 const
   WorldBoxSizeToRadius = 0.005;
 var
+  Box: TBox3D;
   Radius: Single;
 begin
+  Box := Scene.LocalBoundingBox;
   Radius := Box.AverageSize(false, 1.0) * WorldBoxSizeToRadius;
   { Make Radius at most DefaultCameraRadius?
     Commented out, not necessary and could be troublesome -- we want the autocalculate
@@ -1043,11 +1045,22 @@ begin
   // MaxVar(Radius, DefaultCameraRadius);
   if Navigation <> nil then
     Navigation.Radius := Radius;
-  Camera.ProjectionNear := Radius * RadiusToProjectionNear;
-  WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
-    Radius,
-    Camera.ProjectionNear
-  ]);
+
+  if (Scene.ViewpointStack.Top <> nil) and
+     (Scene.ViewpointStack.Top.NearDistance > 0) then
+  begin
+    WritelnLog('Auto-calculated Radius %.8f, not changing ProjectionNear %.8f set by Viewpoint.NearDistance', [
+      Radius,
+      Camera.ProjectionNear
+    ]);
+  end else
+  begin
+    Camera.ProjectionNear := Radius * RadiusToProjectionNear;
+    WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
+      Radius,
+      Camera.ProjectionNear
+    ]);
+  end;
 end;
 
 { Calls FreeScene and then inits "scene global variables".
@@ -1119,7 +1132,7 @@ begin
       before AssignCameraAndNavigation for other viewports (as they will copy us).
       CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
       automatically based on box. }
-    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene.LocalBoundingBox);
+    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
