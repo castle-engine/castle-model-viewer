@@ -473,7 +473,7 @@ begin
     Floats[I].Min := Range.Data[0][I];
     Floats[I].Max := Range.Data[1][I];
     Floats[I].Value := AValue[I];
-    Floats[I].OnChange := @ChildSliderChanged;
+    Floats[I].OnChange := {$ifdef FPC}@{$endif} ChildSliderChanged;
   end;
 end;
 
@@ -555,9 +555,10 @@ begin
   Lights := TX3DNodeList.Create(false);
 
   AmbientColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, RenderContext.GlobalAmbient);
-  AmbientColorSlider.OnChange := @AmbientColorChanged;
+  AmbientColorSlider.OnChange := {$ifdef FPC}@{$endif} AmbientColorChanged;
 
-  MainViewport.MainScene.RootNode.EnumerateNodes(TAbstractLightNode, @AddLight, false);
+  MainViewport.MainScene.RootNode.EnumerateNodes(TAbstractLightNode,
+    {$ifdef FPC}@{$endif} AddLight, false);
 
   AddTitle('Lights Editor:');
   for I := 0 to Lights.Count - 1 do
@@ -565,13 +566,13 @@ begin
     Light := Lights[I] as TAbstractLightNode;
     LightEditButton := TCastleOnScreenMenuItem.Create(Self);
     LightEditButton.Tag := I;
-    LightEditButton.OnClick := @ClickEditLight;
+    LightEditButton.OnClick := {$ifdef FPC}@{$endif} ClickEditLight;
     LightEditButton.Caption := Format('Edit %d: %s', [I, Light.NiceName]);
     Add(LightEditButton);
   end;
   AmbientColorSlider.AddToMenu(Self, 'Global Ambient Light', 'Red', 'Green', 'Blue');
-  Add('Edit Headlight', @ClickEditHeadlight);
-  Add('Close Lights Editor', @ClickClose);
+  Add('Edit Headlight', {$ifdef FPC}@{$endif} ClickEditHeadlight);
+  Add('Close Lights Editor', {$ifdef FPC}@{$endif} ClickClose);
 end;
 
 destructor TLightsMenu.Destroy;
@@ -587,13 +588,13 @@ begin
   if Lights <> nil then
   begin
     for I := 0 to Lights.Count - 1 do
-      Lights[I].RemoveDestructionNotification(@DestructionNotification);
+      Lights[I].RemoveDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
   end;
   FreeAndNil(Lights);
 
   if Headlight <> nil then
   begin
-    Headlight.RemoveDestructionNotification(@DestructionNotification);
+    Headlight.RemoveDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
     Headlight := nil;
   end;
 
@@ -613,12 +614,12 @@ begin
   begin
     for I := 0 to Lights.Count - 1 do
       if Node <> Lights[I] then
-        Lights[I].RemoveDestructionNotification(@DestructionNotification);
+        Lights[I].RemoveDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
     Lights.Clear;
   end;
 
   if (Headlight <> nil) and (Node <> Headlight) then
-    Headlight.RemoveDestructionNotification(@DestructionNotification);
+    Headlight.RemoveDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
   Headlight := nil;
 
   { At one point I tried here to return to LightsMenu,
@@ -640,7 +641,7 @@ begin
   if Lights.IndexOf(Node) = -1 then
   begin
     Lights.Add(Node);
-    Node.AddDestructionNotification(@DestructionNotification);
+    Node.AddDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
   end;
 end;
 
@@ -682,9 +683,9 @@ begin
   if Headlight <> NewHeadlight then
   begin
     if Headlight <> nil then
-      Headlight.RemoveDestructionNotification(@DestructionNotification);
+      Headlight.RemoveDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
     Headlight := NewHeadlight;
-    Headlight.AddDestructionNotification(@DestructionNotification);
+    Headlight.AddDestructionNotification({$ifdef FPC}@{$endif} DestructionNotification);
   end;
 end;
 
@@ -714,24 +715,24 @@ begin
   Light := ALight;
 
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Light.Color);
-  ColorSlider.OnChange := @ColorChanged;
+  ColorSlider.OnChange := {$ifdef FPC}@{$endif} ColorChanged;
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 10;
   IntensitySlider.Value := Light.Intensity;
-  IntensitySlider.OnChange := @IntensityChanged;
+  IntensitySlider.OnChange := {$ifdef FPC}@{$endif} IntensityChanged;
 
   AmbientIntensitySlider := TCastleFloatSlider.Create(Self);
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Light.AmbientIntensity;
-  AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
+  AmbientIntensitySlider.OnChange := {$ifdef FPC}@{$endif} AmbientIntensityChanged;
 
   OnToggle := TCastleOnScreenMenuItemToggle.Create(Self);
   OnToggle.Caption := 'On';
   OnToggle.Checked := Light.IsOn;
-  OnToggle.OnClick := @ClickOn;
+  OnToggle.OnClick := {$ifdef FPC}@{$endif} ClickOn;
 
   AddTitle('Edit ' + Light.NiceName + ':');
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
@@ -742,7 +743,7 @@ end;
 
 procedure TLightMenu.AfterCreate;
 begin
-  Add('Back to Lights Menu', @ClickBack);
+  Add('Back to Lights Menu', {$ifdef FPC}@{$endif} ClickBack);
 end;
 
 procedure TLightMenu.ColorChanged(Sender: TObject);
@@ -789,10 +790,10 @@ begin
     which is uncomfortable (works Ok, but not nice for user). }
   Box := ViewportLargerBox(MainViewport);
   LocationSlider := TMenuVector3Sliders.Create(Self, Box, Light.ProjectionWorldLocation);
-  LocationSlider.OnChange := @LocationChanged;
+  LocationSlider.OnChange := {$ifdef FPC}@{$endif} LocationChanged;
 
   LocationSlider.AddToMenu(Self, 'Location', 'X', 'Y', 'Z');
-  Add('Shadows Settings...', @ClickShadowsMenu);
+  Add('Shadows Settings...', {$ifdef FPC}@{$endif} ClickShadowsMenu);
 
   Gizmo.Exists := true;
   Gizmo.Translation := Light.ProjectionWorldLocation;
@@ -851,7 +852,7 @@ begin
 
   AttenuationSlider := TMenuVector3Sliders.Create(Self,
     AttenuationRange, Light.Attenuation);
-  AttenuationSlider.OnChange := @AttenuationChanged;
+  AttenuationSlider.OnChange := {$ifdef FPC}@{$endif} AttenuationChanged;
 
   AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
 end;
@@ -872,15 +873,15 @@ begin
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.FdCutOffAngle.Value;
-  CutOffAngleSlider.OnChange := @CutOffAngleChanged;
+  CutOffAngleSlider.OnChange := {$ifdef FPC}@{$endif} CutOffAngleChanged;
 
   DropOffRateSlider := TCastleFloatSlider.Create(Self);
   DropOffRateSlider.Min := 0;
   DropOffRateSlider.Max := 1;
   DropOffRateSlider.Value := Light.FdDropOffRate.Value;
-  DropOffRateSlider.OnChange := @DropOffRateChanged;
+  DropOffRateSlider.OnChange := {$ifdef FPC}@{$endif} DropOffRateChanged;
 
-  Add('Direction ...', @ClickDirection);
+  Add('Direction ...', {$ifdef FPC}@{$endif} ClickDirection);
   Add('Cut Off Angle', CutOffAngleSlider);
   Add('Drop Off Rate', DropOffRateSlider);
 end;
@@ -917,15 +918,15 @@ begin
   CutOffAngleSlider.Min := 0.01;
   CutOffAngleSlider.Max := Pi/2;
   CutOffAngleSlider.Value := Light.CutOffAngle;
-  CutOffAngleSlider.OnChange := @CutOffAngleChanged;
+  CutOffAngleSlider.OnChange := {$ifdef FPC}@{$endif} CutOffAngleChanged;
 
   BeamWidthSlider := TCastleFloatSlider.Create(Self);
   BeamWidthSlider.Min := 0.01;
   BeamWidthSlider.Max := Pi/2;
   BeamWidthSlider.Value := Light.BeamWidth;
-  BeamWidthSlider.OnChange := @BeamWidthChanged;
+  BeamWidthSlider.OnChange := {$ifdef FPC}@{$endif} BeamWidthChanged;
 
-  Add('Direction ...', @ClickDirection);
+  Add('Direction ...', {$ifdef FPC}@{$endif} ClickDirection);
   Add('Cut Off Angle', CutOffAngleSlider);
   Add('Beam Width', BeamWidthSlider);
 end;
@@ -957,7 +958,7 @@ constructor TDirectionalLightMenu.Create(AOwner: TComponent; ALight: TAbstractDi
 begin
   inherited Create(AOwner, ALight);
   Light := ALight;
-  Add('Direction ...', @ClickDirection);
+  Add('Direction ...', {$ifdef FPC}@{$endif} ClickDirection);
 end;
 
 procedure TDirectionalLightMenu.ClickDirection(Sender: TObject);
@@ -984,18 +985,18 @@ begin
   AmbientIntensitySlider.Min := 0;
   AmbientIntensitySlider.Max := 1;
   AmbientIntensitySlider.Value := Headlight.AmbientIntensity;
-  AmbientIntensitySlider.OnChange := @AmbientIntensityChanged;
+  AmbientIntensitySlider.OnChange := {$ifdef FPC}@{$endif} AmbientIntensityChanged;
   Add('Ambient Intensity', AmbientIntensitySlider);
 
   ColorSlider := TMenuVector3Sliders.Create(Self, 0, 1, Headlight.Color);
-  ColorSlider.OnChange := @ColorChanged;
+  ColorSlider.OnChange := {$ifdef FPC}@{$endif} ColorChanged;
   ColorSlider.AddToMenu(Self, '', 'Red', 'Green', 'Blue');
 
   IntensitySlider := TCastleFloatSlider.Create(Self);
   IntensitySlider.Min := 0;
   IntensitySlider.Max := 10;
   IntensitySlider.Value := Headlight.Intensity;
-  IntensitySlider.OnChange := @IntensityChanged;
+  IntensitySlider.OnChange := {$ifdef FPC}@{$endif} IntensityChanged;
   Add('Intensity', IntensitySlider);
 
   if Headlight is TAbstractPositionalLightNode then
@@ -1007,11 +1008,11 @@ begin
 
     AttenuationSlider := TMenuVector3Sliders.Create(Self, AttenuationRange,
       TAbstractPositionalLightNode(Headlight).Attenuation);
-    AttenuationSlider.OnChange := @AttenuationChanged;
+    AttenuationSlider.OnChange := {$ifdef FPC}@{$endif} AttenuationChanged;
     AttenuationSlider.AddToMenu(Self, 'Attenuation', 'Constant' , 'Linear', 'Quadratic');
   end;
 
-  Add('Back to Lights Menu', @ClickBack);
+  Add('Back to Lights Menu', {$ifdef FPC}@{$endif} ClickBack);
 end;
 
 procedure THeadLightMenu.ClickBack(Sender: TObject);
@@ -1056,35 +1057,35 @@ begin
   ShadowsToggle := TCastleOnScreenMenuItemToggle.Create(Self);
   ShadowsToggle.Caption := '        Enable';
   ShadowsToggle.Checked := Light.Shadows;
-  ShadowsToggle.OnClick := @ClickShadows;
+  ShadowsToggle.OnClick := {$ifdef FPC}@{$endif} ClickShadows;
 
   ShadowVolumesToggle := TCastleOnScreenMenuItemToggle.Create(Self);
   ShadowVolumesToggle.Caption :='        Off In Shadows';
   ShadowVolumesToggle.Checked := Light.ShadowVolumes;
-  ShadowVolumesToggle.OnClick := @ClickShadowVolumes;
+  ShadowVolumesToggle.OnClick := {$ifdef FPC}@{$endif} ClickShadowVolumes;
 
   ShadowVolumesMainToggle := TCastleOnScreenMenuItemToggle.Create(Self);
   ShadowVolumesMainToggle.Caption := '        Main (Determines Shadows)';
   ShadowVolumesMainToggle.Checked := Light.ShadowVolumesMain;
-  ShadowVolumesMainToggle.OnClick := @ClickShadowVolumesMain;
+  ShadowVolumesMainToggle.OnClick := {$ifdef FPC}@{$endif} ClickShadowVolumesMain;
 
   SliderMapSizeExponent := TCastle2ExponentSlider.Create(Self);
   SliderMapSizeExponent.Min := 4;
   SliderMapSizeExponent.Max := 13;
   SliderMapSizeExponent.Value := MapSizeExponent;
-  SliderMapSizeExponent.OnChange := @MapSizeExponentChanged;
+  SliderMapSizeExponent.OnChange := {$ifdef FPC}@{$endif} MapSizeExponentChanged;
 
   SliderMapBias := TCastleFloatSlider.Create(Self);
   SliderMapBias.Min := 0.0;
   SliderMapBias.Max := 10.0;
   SliderMapBias.Value := MapBias;
-  SliderMapBias.OnChange := @MapBiasChanged;
+  SliderMapBias.OnChange := {$ifdef FPC}@{$endif} MapBiasChanged;
 
   SliderMapScale := TCastleFloatSlider.Create(Self);
   SliderMapScale.Min := 0.0;
   SliderMapScale.Max := 10.0;
   SliderMapScale.Value := MapScale;
-  SliderMapScale.OnChange := @MapScaleChanged;
+  SliderMapScale.OnChange := {$ifdef FPC}@{$endif} MapScaleChanged;
 
   CurrentProjectionLabel := TCastleLabel.Create(Self);
   CurrentProjectionLabel.Color := Vector4(0.7, 0.7, 0.7, 1);
@@ -1098,14 +1099,14 @@ begin
   Add('        Map Size', SliderMapSizeExponent);
   Add('        Map Bias (adjust to polygons slope)', SliderMapBias);
   Add('        Map Scale (adjust to polygons slope)', SliderMapScale);
-  Add('        Recalculate Projection Parameters', @ClickRecalculateProjection);
+  Add('        Recalculate Projection Parameters', {$ifdef FPC}@{$endif} ClickRecalculateProjection);
   Add(CurrentProjectionLabel);
-  Add('        Copy "Current projection for shadow maps" as X3D to clipboard', @ClickProjectionX3dToClipboard);
+  Add('        Copy "Current projection for shadow maps" as X3D to clipboard', {$ifdef FPC}@{$endif} ClickProjectionX3dToClipboard);
 end;
 
 procedure TShadowsMenu.AfterCreate;
 begin
-  Add('Back', @ClickBack);
+  Add('Back', {$ifdef FPC}@{$endif} ClickBack);
 
   { We need to call it, to let OnScreenMenu calculate correct size.
     But we cannot call it from constructor,
@@ -1323,6 +1324,7 @@ begin
   ]));
 end;
 
+initialization
 finalization
   { free if it exists at the end }
   FreeAndNil(LightsMenu);

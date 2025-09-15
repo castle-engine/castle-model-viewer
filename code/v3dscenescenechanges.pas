@@ -60,42 +60,45 @@ uses SysUtils, X3DFields;
 type
   TSceneChangesDo = class
   public
-    class procedure NoNormal_Indexed_1(node: TX3DNode);
-    class procedure NoNormal_ComposedGeometryNode(node: TX3DNode);
-    class procedure NoNormal_ElevationGrid(node: TX3DNode);
+    procedure NoNormal_Indexed_1(node: TX3DNode);
+    procedure NoNormal_ComposedGeometryNode(node: TX3DNode);
+    procedure NoNormal_ElevationGrid(node: TX3DNode);
 
-    class procedure NoSolid_ShapeHints(node: TX3DNode);
-    class procedure NoSolid_AbstractGeometry(Node: TX3DNode);
+    procedure NoSolid_ShapeHints(node: TX3DNode);
+    procedure NoSolid_AbstractGeometry(Node: TX3DNode);
 
-    class procedure NoConvex_ShapeHints(node: TX3DNode);
-    class procedure NoConvex_AbstractGeometry(node: TX3DNode);
+    procedure NoConvex_ShapeHints(node: TX3DNode);
+    procedure NoConvex_AbstractGeometry(node: TX3DNode);
 
-    class procedure ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
+    procedure ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
   end;
 
-class procedure TSceneChangesDo.NoNormal_Indexed_1(node: TX3DNode);
+var
+  SceneChangesDo: TSceneChangesDo;
+
+procedure TSceneChangesDo.NoNormal_Indexed_1(node: TX3DNode);
 begin
   (Node as TAbstractIndexedNode_1).FdNormalIndex.Items.Clear;
 end;
 
-class procedure TSceneChangesDo.NoNormal_ComposedGeometryNode(node: TX3DNode);
+procedure TSceneChangesDo.NoNormal_ComposedGeometryNode(node: TX3DNode);
 begin
   (Node as TAbstractComposedGeometryNode).FdNormal.Value := nil;
 end;
 
-class procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
+procedure TSceneChangesDo.NoNormal_ElevationGrid(node: TX3DNode);
 begin
   (Node as TElevationGridNode).FdNormal.Value := nil;
 end;
 
-class procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
+procedure TSceneChangesDo.NoSolid_ShapeHints(node: TX3DNode);
 begin
   {$warnings off} // using deprecated to support VRML 1
   (Node as TShapeHintsNode_1).FdShapeType.Value := SHTYPE_UNKNOWN;
   {$warnings on}
 end;
 
-class procedure TSceneChangesDo.NoSolid_AbstractGeometry(Node: TX3DNode);
+procedure TSceneChangesDo.NoSolid_AbstractGeometry(Node: TX3DNode);
 var
   F: TSFBool;
 begin
@@ -107,14 +110,14 @@ begin
   if F <> nil then F.Value := false;
 end;
 
-class procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
+procedure TSceneChangesDo.NoConvex_ShapeHints(node: TX3DNode);
 begin
   {$warnings off} // using deprecated to support VRML 1
   (Node as TShapeHintsNode_1).FdFaceType.Value := FACETYPE_UNKNOWN;
   {$warnings on}
 end;
 
-class procedure TSceneChangesDo.NoConvex_AbstractGeometry(node: TX3DNode);
+procedure TSceneChangesDo.NoConvex_AbstractGeometry(node: TX3DNode);
 var
   F: TSFBool;
 begin
@@ -122,7 +125,7 @@ begin
   if F <> nil then F.Value := false;
 end;
 
-class procedure TSceneChangesDo.ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
+procedure TSceneChangesDo.ConvertInlines(ParentNode: TX3DNode; var Node: TX3DNode);
 var
   InlineNode: TInlineNode;
   NewGroup: TGroupNode;
@@ -166,7 +169,7 @@ begin
   Helper := TRemoveNodeClassHelper.Create;
   try
     Helper.NodeClassToRemove := NodeClass;
-    RootNode.EnumerateReplaceChildren(@Helper.DoIt);
+    RootNode.EnumerateReplaceChildren({$ifdef FPC}@{$endif} Helper.DoIt);
   finally Helper.Free end;
 end;
 
@@ -175,11 +178,11 @@ end;
 procedure SceneChange_NoNormals(Node: TX3DRootNode);
 begin
   Node.EnumerateNodes(TAbstractIndexedNode_1,
-    @TSceneChangesDo(nil).NoNormal_Indexed_1, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoNormal_Indexed_1, false);
   Node.EnumerateNodes(TAbstractComposedGeometryNode,
-    @TSceneChangesDo(nil).NoNormal_ComposedGeometryNode, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoNormal_ComposedGeometryNode, false);
   Node.EnumerateNodes(TElevationGridNode,
-    @TSceneChangesDo(nil).NoNormal_ElevationGrid, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoNormal_ElevationGrid, false);
 
   { Do this at the end.
     Note that for VRML >= 2.0, most of the Normal nodes were already removed
@@ -191,9 +194,9 @@ end;
 procedure SceneChange_NoSolidObjects(Node: TX3DRootNode);
 begin
   Node.EnumerateNodes(TShapeHintsNode_1,
-    @TSceneChangesDo(nil).NoSolid_ShapeHints, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoSolid_ShapeHints, false);
   Node.EnumerateNodes(TAbstractGeometryNode,
-    @TSceneChangesDo(nil).NoSolid_AbstractGeometry, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoSolid_AbstractGeometry, false);
 end;
 
 procedure SceneChange_NoConvexFaces(Node: TX3DRootNode);
@@ -201,9 +204,9 @@ var
   SH: TShapeHintsNode_1;
 begin
   Node.EnumerateNodes(TShapeHintsNode_1,
-    @TSceneChangesDo(nil).NoConvex_ShapeHints, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoConvex_ShapeHints, false);
   Node.EnumerateNodes(TAbstractGeometryNode,
-    @TSceneChangesDo(nil).NoConvex_AbstractGeometry, false);
+    {$ifdef FPC}@{$endif} SceneChangesDo.NoConvex_AbstractGeometry, false);
 
   { To VRML 1, add ShapeHints node with FACETYPE_UNKNOWN. }
   if Node.HasForceVersion and
@@ -219,28 +222,21 @@ end;
 
 procedure SceneChange_ConvertInlines(Node: TX3DRootNode);
 begin
-  Node.EnumerateReplaceChildren(@TSceneChangesDo(nil).ConvertInlines);
+  Node.EnumerateReplaceChildren({$ifdef FPC}@{$endif} SceneChangesDo.ConvertInlines);
 end;
 
 { ChangeScene --------------------------------------------------------------- }
 
-type
-  TSceneChangeFunction = procedure (Node: TX3DRootNode);
-const
-  SCFunctions: array[TSceneChange]of TSceneChangeFunction =
-  ( @SceneChange_NoNormals,
-    @SceneChange_NoSolidObjects,
-    @SceneChange_NoConvexFaces,
-    @SceneChange_ConvertInlines
-  );
-
 procedure ChangeNode(SceneChanges: TSceneChanges; Node: TX3DRootNode);
-var
-  SC: TSceneChange;
 begin
-  for SC := Low(SC) to High(SC) do
-    if SC in SceneChanges then
-      SCFunctions[SC](Node);
+  if scNoNormals in SceneChanges then
+    SceneChange_NoNormals(Node);
+  if scNoSolidObjects in SceneChanges then
+    SceneChange_NoSolidObjects(Node);
+  if scNoConvexFaces in SceneChanges then
+    SceneChange_NoConvexFaces(Node);
+  if scConvertInlines in SceneChanges then
+    SceneChange_ConvertInlines(Node);
 end;
 
 procedure ChangeScene(SceneChanges: TSceneChanges; Scene: TCastleScene);
@@ -255,4 +251,8 @@ begin
   end;
 end;
 
+initialization
+  SceneChangesDo := TSceneChangesDo.Create;
+finalization
+  FreeAndNil(SceneChangesDo);
 end.

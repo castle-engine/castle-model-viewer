@@ -23,6 +23,8 @@
 { Anti-aliasing UI. }
 unit V3DSceneAntiAliasing;
 
+{$I v3dsceneconf.inc}
+
 interface
 
 uses CastleWindow;
@@ -74,6 +76,6 @@ begin
 end;
 
 initialization
-  UserConfig.AddLoadListener(@TConfigOptions(nil).LoadFromConfig);
-  UserConfig.AddSaveListener(@TConfigOptions(nil).SaveToConfig);
+  UserConfig.AddLoadListener({$ifdef FPC}@{$endif} TConfigOptions {$ifdef FPC}(nil){$endif}.LoadFromConfig);
+  UserConfig.AddSaveListener({$ifdef FPC}@{$endif} TConfigOptions {$ifdef FPC}(nil){$endif}.SaveToConfig);
 end.

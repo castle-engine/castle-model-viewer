@@ -14,7 +14,7 @@ $(APP_NAME).svg: $(APP_ICON)
 	cp -f $< $@
 
 $(APP_NAME).png: $(APP_ICON)
-	inkscape --export-width=48 --export-height=48 $< --export-png=$@
+	inkscape --export-width=48 --export-height=48 $< --export-filename=$@
 
 $(APP_NAME).icns: $(APP_ICON)
 	../../scripts/svg_to_icns.sh $< $@

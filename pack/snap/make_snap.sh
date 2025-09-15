@@ -1,12 +1,17 @@
 #!/bin/bash
 set -eu
 
-# snapcraft warns about snapcraft.yaml~ otherwise.
-rm -f snap/*~
+rm -Rf snap/
+mkdir snap/
+# Old: snapcraft warns about snapcraft.yaml~ otherwise.
+# Not useful anymore, as we create clean snap/ directory.
+# rm -f snap/*~
 
-snapcraft
+VERSION=`castle-engine output version`
+sed -e 's|${SNAP_VERSION}|'${VERSION}'|' snapcraft.yaml.template > snap/snapcraft.yaml
+
+# See https://snapcraft.io/docs/snapcraft-overview
+# about --debug .
+snapcraft --debug
 
 ls -Flah castle-model-viewer_*.snap
-
-echo 'To install run:'
-echo 'sudo snap install --devmode castle-model-viewer_4.1.0_amd64.snap'

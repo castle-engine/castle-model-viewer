@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     container: kambi/castle-engine-cloud-builds-tools:cge-unstable
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Checkout demo-models
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: castle-engine/demo-models
         path: demo-models

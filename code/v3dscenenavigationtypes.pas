@@ -315,8 +315,7 @@ begin
   begin
     WalkNav := TCastleWalkNavigation(Navigation);
 
-    { Update WalkNav.MouseLook based on right mouse button pressed and PersistentMouseLook.
-      This is similar to CGE examples/fps_game/ . }
+    { Update WalkNav.MouseLook based on right mouse button pressed and PersistentMouseLook. }
     WalkNav.MouseLook := (
       PersistentMouseLook or
       (buttonRight in Container.MousePressed) );

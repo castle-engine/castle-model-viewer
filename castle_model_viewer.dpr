@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2024 Michalis Kamburelis.
+  Copyright 2002-2025 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -54,7 +54,7 @@ program castle_model_viewer;
 {$define CATCH_EXCEPTIONS}
 
 uses SysUtils, Math, Classes,
-  {$ifndef VER3_0} OpenSSLSockets, {$endif}
+  {$ifdef FPC} {$ifndef VER3_0} OpenSSLSockets, {$endif} {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties, CastleParameters, CastleCameras,
@@ -361,12 +361,27 @@ end;
 
 procedure ToggleNamedAnimationsUi;
 begin
-  NamedAnimationsUiExists := not NamedAnimationsUiExists;
-  MenuNamedAnimations.Checked := NamedAnimationsUiExists;
-  ButtonAnimations.Pressed := NamedAnimationsUiExists;
+  SetNamedAnimationsUiExists(not GetNamedAnimationsUiExists);
+  MenuNamedAnimations.Checked := GetNamedAnimationsUiExists;
+  ButtonAnimations.Pressed := GetNamedAnimationsUiExists;
 end;
 
 function ViewpointNode: TAbstractViewpointNode; forward;
+
+{ TVector3Helper ------------------------------------------------------------- }
+
+type
+  TVector3Helper = record helper for TVector3
+    function ToStringShort: String;
+  end;
+
+function TVector3Helper.ToStringShort: String;
+begin
+  Result :=
+    FloatToStrDisplay(X, 2) + ' ' +
+    FloatToStrDisplay(Y, 2) + ' ' +
+    FloatToStrDisplay(Z, 2);
+end;
 
 { TExtendedStatusText -------------------------------------------------------- }
 
@@ -500,16 +515,28 @@ begin
   Text.Append(S); }
 
   MainViewport.Camera.GetWorldView(Pos, Dir, Up);
-  Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>',
-    [ ValueColor, Pos.ToString,
-      ValueColor, Dir.ToString,
-      ValueColor, Up.ToString ]));
+  Text.Append(Format('Camera: pos <font color="#%s">%s</font>, dir <font color="#%s">%s</font>, up <font color="#%s">%s</font>', [
+    { Reasons for using ToStringShort instead of ToString:
+      1. Looks easier for human eye, which is important here, as this is
+         a status text.
+      2. More precision *usually* doesn't matter.
+      3. TODO: (this reason should disappear eventually) More digits
+         uncover occasional issue in CGE that we still have to investigate,
+         sometimes the numbers "shake" a bit even when not doing anything.
+         We eliminated the TCastleExamineNavigation.Update/Motion from suspects,
+         something else is recalculating camera vectors and causing slight
+         changes sometimes? }
+    ValueColor, Pos.ToStringShort,
+    ValueColor, Dir.ToStringShort,
+    ValueColor, Up.ToStringShort
+  ]));
 
   if WalkNavigation <> nil then
   begin
-    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)',
-      [ ValueColor, WalkNavigation.PreferredHeight,
-        ValueColor, CurrentAboveHeight(WalkNavigation) ]));
+    Text.Append(Format('Avatar height: <font color="#%s">%f</font> (last height above the ground: <font color="#%s">%s</font>)', [
+      ValueColor, WalkNavigation.PreferredHeight,
+      ValueColor, CurrentAboveHeight(WalkNavigation)
+    ]));
   end;
 
   { if SceneLightsCount = 0 then
@@ -584,6 +611,8 @@ procedure RenderVisualizations(const RenderingCamera: TRenderingCamera);
   begin
     if not HasWalkFrustum then
       Exit;
+
+    SavedDepthTest := false; // silence spurious Delphi warning
 
     if AlwaysVisible then
     begin
@@ -700,7 +729,7 @@ begin
         We only transform selected stuff into scene coordinate-system. }
       RenderSelected(
         TShape(SelectedItem^.Shape).BoundingBox,
-        SelectedItem^.World.Triangle,
+        SelectedItem^.SceneSpace.Triangle,
         SelectedPointWorld
       );
   end;
@@ -817,7 +846,8 @@ begin
   end;
 
   { Support selecting item by ctrl + right button click. }
-  if Event.IsMouseButton(buttonRight) and (mkCtrl in Window.Pressed.Modifiers) then
+  if Event.IsMouseButton(buttonRight) and
+     (mkCtrl in Window.Container.Pressed.Modifiers) then
   begin
     SelectedItem := Scene.PointingDeviceOverItem;
     SelectedPointWorld := Scene.PointingDeviceOverPoint;
@@ -904,6 +934,8 @@ begin
 end;
 
 procedure TEventsHandler.OnWarningHandle(const Category, S: string);
+const
+  MaxWarnings = 1000;
 begin
   { It is possible that SceneWarnings = nil now,
     in case on macOS we use
@@ -913,10 +945,20 @@ begin
     The ButtonWarnings is invalid (already freed) at this point too. }
   if SceneWarnings <> nil then
   begin
-    if Category <> '' then
-      SceneWarnings.Add(Category + ': ' + S)
-    else
-      SceneWarnings.Add(S);
+    if SceneWarnings.Count < MaxWarnings then
+    begin
+      if Category <> '' then
+        SceneWarnings.Add(Category + ': ' + S)
+      else
+        SceneWarnings.Add(S);
+
+      if SceneWarnings.Count = MaxWarnings then
+      begin
+        SceneWarnings.Add(Format('The scene has caused %d warnings. Consult the log file ( https://castle-engine.io/log ) to access all warnings.', [
+          MaxWarnings
+        ]));
+      end;
+    end;
     UpdateButtonWarnings;
   end;
 
@@ -989,12 +1031,14 @@ type
   automatically based on box. }
 procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
   const Navigation: TCastleNavigation;
-  const Box: TBox3D);
+  const Scene: TCastleSceneCore);
 const
   WorldBoxSizeToRadius = 0.005;
 var
+  Box: TBox3D;
   Radius: Single;
 begin
+  Box := Scene.LocalBoundingBox;
   Radius := Box.AverageSize(false, 1.0) * WorldBoxSizeToRadius;
   { Make Radius at most DefaultCameraRadius?
     Commented out, not necessary and could be troublesome -- we want the autocalculate
@@ -1002,11 +1046,22 @@ begin
   // MaxVar(Radius, DefaultCameraRadius);
   if Navigation <> nil then
     Navigation.Radius := Radius;
-  Camera.ProjectionNear := Radius * RadiusToProjectionNear;
-  WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
-    Radius,
-    Camera.ProjectionNear
-  ]);
+
+  if (Scene.ViewpointStack.Top <> nil) and
+     (Scene.ViewpointStack.Top.NearDistance > 0) then
+  begin
+    WritelnLog('Auto-calculated Radius %.8f, not changing ProjectionNear %.8f set by Viewpoint.NearDistance', [
+      Radius,
+      Camera.ProjectionNear
+    ]);
+  end else
+  begin
+    Camera.ProjectionNear := Radius * RadiusToProjectionNear;
+    WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
+      Radius,
+      Camera.ProjectionNear
+    ]);
+  end;
 end;
 
 { Calls FreeScene and then inits "scene global variables".
@@ -1078,7 +1133,7 @@ begin
       before AssignCameraAndNavigation for other viewports (as they will copy us).
       CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
       automatically based on box. }
-    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene.LocalBoundingBox);
+    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
@@ -1361,7 +1416,8 @@ begin
     { We can keep SelectedItem, but we have to take into account that it's
       transformation possibly changed. So world coordinates of this triangle
       are different. }
-    SelectedItem^.UpdateWorld;
+    SelectedItem^.UpdateSceneSpace;
+    // update to SelectedItem^.UpdateSceneSpace for new
 
     { Also SelectedPointWorld changed now. To apply the change, convert
       SelectedPointLocal to world coords by new transform.
@@ -1631,7 +1687,7 @@ begin
       { Without protocol, ScreenShotNameUrlPrefix is treated like relative
         filename now. So make sure to convert %20 to spaces,
         to later save screenshot with spaces when scene file had spaces. }
-      ScreenShotNameUrlPrefix := InternalUriUnescape(DeleteURIExt(ExtractURIName(SceneUrl)))
+      ScreenShotNameUrlPrefix := UrlDecode(DeleteURIExt(ExtractURIName(SceneUrl)))
     else
       ScreenShotNameUrlPrefix := 'castle-model-viewer_screenshot';
     { We use FileNameAutoInc with 2 params,
@@ -1768,7 +1824,7 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
              'Node''s bounding box is %s. ',
            [
              SelectedPointWorld.ToString,
-             SelectedItem^.World.Triangle.ToString,
+             SelectedItem^.SceneSpace.Triangle.ToString,
              SelectedGeometry.X3DName,
              SelectedShape.OriginalGeometry.X3DType,
              SelectedGeometry.X3DType,
@@ -1856,7 +1912,7 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
          if ShadowingItem <> nil then
          begin
           s := s + Format('no, this light is blocked by triangle %s from shape %s.',
-            [ ShadowingItem^.World.Triangle.ToString,
+            [ ShadowingItem^.SceneSpace.Triangle.ToString,
               TShape(ShadowingItem^.Shape).NiceName ])
          end else
           s := s + 'yes, no object blocks this light, it shines on selected point.';
@@ -2001,12 +2057,22 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       Exit;
     end;
 
-    MatInfo := SelectedItem^.State.MaterialInfo;
-    if MatInfo = nil then
+    { We check "missing material" by looking at
+      Appearance and Appearance.Material.
+      Note: Looking at "SelectedItem^.State.MaterialInfo = nil"
+      would not be correct, as we now have TAppearanceNode.InternalInternalFallbackMaterialInfo
+      which means we may have MaterialInfo <> nil even
+      if Appearance.Material = nil. }
+    if (SelectedItem^.State.ShapeNode <> nil) and // X3D or VRML 2.0
+       ( (SelectedItem^.State.Appearance = nil) or
+         (SelectedItem^.State.Appearance.Material = nil) ) then
     begin
       Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
       Exit;
     end;
+
+    MatInfo := SelectedItem^.State.MaterialInfo;
+    Check(MatInfo <> nil, 'Appearance.Material <> nil, so MaterialInfo should not be nil');
 
     Color := MatInfo.EmissiveColor;
     if Window.ColorDialog(Color) then
@@ -2024,12 +2090,18 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       Exit;
     end;
 
-    MatInfo := SelectedItem^.State.MaterialInfo;
-    if MatInfo = nil then
+    { Same comment as in ChangeMaterialEmissiveColor:
+      Checking here "SelectedItem^.State.MaterialInfo = nil" would not be useful. }
+    if (SelectedItem^.State.ShapeNode <> nil) and // X3D or VRML 2.0
+       ( (SelectedItem^.State.Appearance = nil) or
+         (SelectedItem^.State.Appearance.Material = nil) ) then
     begin
       Window.MessageOK('No material assigned to this shape. Create a new material using one of "Reset To Default ... Material" menu items.', mtError);
       Exit;
     end;
+
+    MatInfo := SelectedItem^.State.MaterialInfo;
+    Check(MatInfo <> nil, 'Appearance.Material <> nil, so MaterialInfo should not be nil');
 
     Color := MatInfo.MainColor;
     if Window.ColorDialog(Color) then
@@ -2840,14 +2912,28 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
     Result := Result + NL;
   end;
 
-  function ManifoldEdgesInfo(const Scene: TCastleScene): string;
+  function ManifoldInfo(const Scene: TCastleScene): string;
   var
     ManifoldEdges, BorderEdges: Cardinal;
   begin
     Scene.EdgesCount(ManifoldEdges, BorderEdges);
-    Result := Format('Edges detection: all edges split into %d manifold edges and %d border edges. Remember that for shadow volumes, only the shapes that are perfect manifold (have zero border edges) can cast shadows.',
-      [ManifoldEdges, BorderEdges]);
-    Scene.FreeResources([frShadowVolume]);
+    Result := Format(
+      'Detected manifold edges: %d.' + NL +
+      'Detected border edges: %d.' + NL +
+      'Detected "whole scene is 2-manifold, but not all shapes are 2-manifold": %s.' + NL +
+      NL, [
+        ManifoldEdges,
+        BorderEdges,
+        BoolToStr(Scene.InternalDetectedWholeSceneManifold, true)
+      ]);
+
+    if BorderEdges = 0 then
+      Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because all shapes are 2-manifold.'
+    else
+    if Scene.InternalDetectedWholeSceneManifold then
+      Result := Result + 'Conclusion: this scene is a VALID shadow caster for shadow volumes, because whole scene is 2-manifold (even if not all shapes are 2-manifold).'
+    else
+      Result := Result + 'Conclusion: this scene is NOT a valid shadow caster for shadow volumes, it is not 2-manifold.';
   end;
 
   procedure HideSelectedShape;
@@ -3045,7 +3131,7 @@ begin
            PersistentMouseLook := not PersistentMouseLook;
            UpdateCameraUI;
          end;
-    129: MessageReport(ManifoldEdgesInfo(Scene));
+    129: MessageReport(ManifoldInfo(Scene));
 
     131: begin
            MessageReport(
@@ -3457,7 +3543,7 @@ begin
     M.Append(MenuCollisions);
     Result.Append(M);
   M := TMenu.Create('_Animation');
-    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, CtrlA, NamedAnimationsUiExists, false);
+    MenuNamedAnimations := TMenuItemChecked.Create('Animations Panel', 230, CtrlA, GetNamedAnimationsUiExists, false);
     M.Append(MenuNamedAnimations);
     M.Append(TMenuSeparator.Create);
     MenuAnimationTimePlaying := TMenuItemChecked.Create(
@@ -3554,7 +3640,7 @@ begin
     Result.Append(M);
   M := TMenu.Create('_Help');
     M.Append(TMenuItem.Create('Scene Information',                  121));
-    M.Append(TMenuItem.Create('Manifold Edges Information',         129));
+    M.Append(TMenuItem.Create('2-Manifold Information (Shadow Volumes Casting)', 129));
     MenuSelectedInfo :=
       TMenuItem.Create('Selected Object Information',               171);
     M.Append(MenuSelectedInfo);
@@ -3882,11 +3968,11 @@ begin
             OptionDescription('-H / --hide-extras', 'Do not show anything extra (like status text or toolbar or bounding box) when program starts. Show only the loaded model.') + NL +
             OptionDescription('--hide-menu', 'Hide menu bar.') + NL +
             OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions to X3D. Particularly useful when combined with --write, to have X3D valid in all browsers (but less functional).')  + NL +
-            OptionDescription('--screenshot TIME IMAGE-FILE-NAME', 'Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load at command-line too, otherwise we''ll just make a screenshot of the default black scene.')  + NL +
-            OptionDescription('--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME', 'Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP. Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).')  + NL +
+            OptionDescription('--screenshot TIME IMAGE-FILE-NAME', 'Take a screenshot of the loaded scene at given TIME, and save it to IMAGE-FILE-NAME. You most definitely want to pass 3D model file to load' + ' at command-line too, otherwise we''ll just make a screenshot of the default black scene.')  + NL +
+            OptionDescription('--screenshot-range TIME-BEGIN TIME-STEP FRAMES-COUNT FILE-NAME', 'Take a FRAMES-COUNT number of screenshots from TIME-BEGIN by step TIME-STEP.' + ' Save them to a single movie file (like .avi) (ffmpeg must be installed and available on $PATH for this) or to a sequence of image files (FILE-NAME must then be specified like image@counter(4).png).')  + NL +
             OptionDescription('--screenshot-transparent', 'Screenshots background is transparent. Useful only together with --screenshot-range or --screenshot options.')  + NL +
             OptionDescription('--viewpoint NAME', 'Use the viewpoint with given name or index as initial. Especially useful to make a screenshot from given viewpoint.')  + NL +
-            OptionDescription('--anti-alias AMOUNT', 'Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default. Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.')  + NL +
+            OptionDescription('--anti-alias AMOUNT', 'Use full-screen anti-aliasing. Argument AMOUNT is an integer >= 0. Exact 0 means "no anti-aliasing", this is the default.' + ' Each successive integer generally makes method one step better. Especially useful to make a screenshot with anti-aliasing quality.')  + NL +
             OptionDescription('--project DIR', 'Point to Castle Game Engine project directory (or CastleEngineManifest.xml file) to resolve the "castle-data:/" URLs in files.')  + NL +
             NL +
             'Sound options:' + NL +

@@ -48,8 +48,8 @@ type
 
   TDebugEdgesScene = class(TInternalScene)
   strict private
-    BorderLines, SilhouetteLines: TLineSetNode;
-    BorderCoord, SilhouetteCoord: TCoordinateNode;
+    BorderLines, BorderMatchingLines, SilhouetteLines: TLineSetNode;
+    BorderCoord, BorderMatchingCoord, SilhouetteCoord: TCoordinateNode;
     procedure AddSilhouetteEdges(const ObserverPos: TVector4;
       const ShapeTransform: TMatrix4;
       const ShapeShadowVolumes: TShapeShadowVolumes);
@@ -128,14 +128,17 @@ constructor TDebugEdgesScene.Create(AOwner: TComponent);
 var
   Root: TX3DRootNode;
   Shape: TShapeNode;
-  BorderAppearance, SilhouetteAppearance: TAppearanceNode;
-  BorderMaterial, SilhouetteMaterial: TMaterialNode;
+  BorderAppearance,  BorderMatchingAppearance, SilhouetteAppearance: TAppearanceNode;
+  BorderMaterial,  BorderMatchingMaterial, SilhouetteMaterial: TMaterialNode;
 begin
   inherited;
 
   Root := TX3DRootNode.Create;
 
+  // calculate BorderLines, BorderMaterial, BorderAppearance, BorderCoord
+
   BorderLines := TLineSetNode.Create;
+  BorderLines.Mode := lmPair;
 
   BorderMaterial := TMaterialNode.Create;
   BorderMaterial.EmissiveColor := Vector3(0, 0, 1);
@@ -154,7 +157,29 @@ begin
   BorderCoord := TCoordinateNode.Create;
   BorderLines.Coord := BorderCoord;
 
+  // calculate BorderMatchingLines, BorderMatchingMaterial, BorderMatchingAppearance, BorderMatchingCoord
+
+  BorderMatchingLines := TLineSetNode.Create;
+  BorderMatchingLines.Mode := lmPair;
+
+  BorderMatchingMaterial := TMaterialNode.Create;
+  BorderMatchingMaterial.EmissiveColor := Vector3(1, 1, 1);
+
+  BorderMatchingAppearance := TAppearanceNode.Create;
+  BorderMatchingAppearance.Material := BorderMatchingMaterial;
+
+  Shape := TShapeNode.Create;
+  Shape.Geometry := BorderMatchingLines;
+  Shape.Appearance := BorderMatchingAppearance;
+  Root.AddChildren(Shape);
+
+  BorderMatchingCoord := TCoordinateNode.Create;
+  BorderMatchingLines.Coord := BorderMatchingCoord;
+
+  // calculate SilhouetteLines, SilhouetteMaterial, SilhouetteAppearance, SilhouetteCoord
+
   SilhouetteLines := TLineSetNode.Create;
+  SilhouetteLines.Mode := lmPair;
 
   SilhouetteMaterial := TMaterialNode.Create;
   SilhouetteMaterial.EmissiveColor := Vector3(1, 1, 0);
@@ -182,10 +207,31 @@ begin
   if World.MainCamera = nil then Exit;
   ObserverPos := Vector4(World.MainCamera.Translation, 1);
 
-  BorderLines.FdVertexCount.Items.Clear;
   BorderCoord.FdPoint.Items.Clear;
-  SilhouetteLines.FdVertexCount.Items.Clear;
+  BorderMatchingCoord.FdPoint.Items.Clear;
   SilhouetteCoord.FdPoint.Items.Clear;
+
+  WholeSceneManifoldDetectionForceAllEdges := true;
+
+  { Make sure InternalDetectedWholeSceneManifold is calculated,
+
+    1.To update border edges Triangles[1] values, which are used to determine
+      how each border edge is rendered.
+
+      Otherwise we could have them not calculated at all.
+      Testcase when this is needed: open in Castle Model Viewer a model
+      without light source casting shadow volumes, and (without using menu item
+      "Help -> 2 Manifold Info...") switch to
+      "View -> Fill Mode -> Silhouette and Border Edges".
+
+    2.Also to force recalculating with new
+      WholeSceneManifoldDetectionForceAllEdges value.
+      We need to recalculate with WholeSceneManifoldDetectionForceAllEdges=true
+      to show blue vs white colors correctly. }
+  SourceScene.InternalDetectedWholeSceneManifold(true);
+
+  // restore WholeSceneManifoldDetectionForceAllEdges
+  WholeSceneManifoldDetectionForceAllEdges := false;
 
   ShapeList := SourceScene.Shapes.TraverseList({ OnlyActive } true, { OnlyVisible } true);
   for Shape in ShapeList do
@@ -207,7 +253,7 @@ procedure TDebugEdgesScene.AddSilhouetteEdges(const ObserverPos: TVector4;
 
 var
   Triangles: TTriangle3List;
-  EdgePtr: PManifoldEdge;
+  EdgePtr: PEdge;
 
   procedure RenderEdge(
     const P0Index, P1Index: Cardinal);
@@ -216,7 +262,7 @@ var
     EdgeV0, EdgeV1: PVector3;
     TrianglePtr: PTriangle3;
   begin
-    TrianglePtr := Triangles.Ptr(EdgePtr^.Triangles[0]);
+    TrianglePtr := PTriangle3(Triangles.Ptr(EdgePtr^.Triangles[0]));
     EdgeV0 := @TrianglePtr^.Data[(EdgePtr^.VertexIndex + P0Index) mod 3];
     EdgeV1 := @TrianglePtr^.Data[(EdgePtr^.VertexIndex + P1Index) mod 3];
 
@@ -224,7 +270,6 @@ var
     V1 := ShapeTransform.MultPoint(EdgeV1^);
 
     SilhouetteCoord.FdPoint.Items.AddRange([V0, V1]);
-    SilhouetteLines.FdVertexCount.Items.Add(2);
   end;
 
   function PlaneSide(const T: TTriangle3): boolean;
@@ -246,7 +291,7 @@ var
   TrianglePtr: PTriangle3;
   PlaneSide0, PlaneSide1: boolean;
   TrianglesPlaneSide: TBooleanList;
-  Edges: TManifoldEdgeList;
+  Edges: TEdgeList;
 begin
   Triangles := ShapeShadowVolumes.TrianglesListShadowCasters;
   Edges := ShapeShadowVolumes.ManifoldEdges;
@@ -263,7 +308,7 @@ begin
     end;
 
     { for each edge, possibly render it's shadow quad }
-    EdgePtr := PManifoldEdge(Edges.L);
+    EdgePtr := PEdge(Edges.L);
     for I := 0 to Edges.Count - 1 do
     begin
       PlaneSide0 := TrianglesPlaneSide.L[EdgePtr^.Triangles[0]];
@@ -283,7 +328,7 @@ procedure TDebugEdgesScene.AddBorderEdges(
   const ShapeShadowVolumes: TShapeShadowVolumes);
 var
   Triangles: TTriangle3List;
-  EdgePtr: PBorderEdge;
+  EdgePtr: PEdge;
 
   procedure RenderEdge;
   var
@@ -291,26 +336,28 @@ var
     EdgeV0, EdgeV1: PVector3;
     TrianglePtr: PTriangle3;
   begin
-    TrianglePtr := Triangles.Ptr(EdgePtr^.TriangleIndex);
+    TrianglePtr := PTriangle3(Triangles.Ptr(EdgePtr^.Triangles[0]));
     EdgeV0 := @TrianglePtr^.Data[(EdgePtr^.VertexIndex + 0) mod 3];
     EdgeV1 := @TrianglePtr^.Data[(EdgePtr^.VertexIndex + 1) mod 3];
 
     V0 := ShapeTransform.MultPoint(EdgeV0^);
     V1 := ShapeTransform.MultPoint(EdgeV1^);
 
-    BorderCoord.FdPoint.Items.AddRange([V0, V1]);
-    BorderLines.FdVertexCount.Items.Add(2);
+    if EdgePtr^.Triangles[1] = High(Cardinal) then
+      BorderMatchingCoord.FdPoint.Items.AddRange([V0, V1])
+    else
+      BorderCoord.FdPoint.Items.AddRange([V0, V1]);
   end;
 
 var
   I: Integer;
-  Edges: TBorderEdgeList;
+  Edges: TEdgeList;
 begin
   Triangles := ShapeShadowVolumes.TrianglesListShadowCasters;
   Edges := ShapeShadowVolumes.BorderEdges;
 
   { for each edge, render it }
-  EdgePtr := PBorderEdge(Edges.L);
+  EdgePtr := PEdge(Edges.L);
   for I := 0 to Edges.Count - 1 do
   begin
     RenderEdge;

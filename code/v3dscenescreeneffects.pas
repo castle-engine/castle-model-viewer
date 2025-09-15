@@ -150,7 +150,7 @@ begin
     for I := Low(TScreenEffectsControlIndex) to High(TScreenEffectsControlIndex) do
     begin
       Nodes[SE, I] := LoadX3DClassicFromString(ScreenEffectsInfo[SE].Node, '');
-      Nodes[SE, I].KeepExistingBegin;
+      Nodes[SE, I].WaitForRelease;
       if ScreenEffectsInfo[SE].Exponent <> 0 then
       begin
         ExponentField := Nodes[SE, I].FindNode(TComposedShaderNode, 'MyShader').Field('exponent', true) as TSFFloat;
@@ -168,8 +168,7 @@ begin
   for SE := Low(SE) to High(SE) do
     for I := Low(TScreenEffectsControlIndex) to High(TScreenEffectsControlIndex) do
     begin
-      Nodes[SE, I].KeepExistingEnd;
-      FreeIfUnusedAndNil(Nodes[SE, I]);
+      NodeRelease(Nodes[SE, I]);
     end;
   inherited;
 end;

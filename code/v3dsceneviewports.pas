@@ -84,7 +84,8 @@ procedure ViewportsSetTransparent(const Transparent: Boolean);
 
 implementation
 
-uses CastleVectors, SysUtils, CastleUtils, CastleUIControls, CastleControls,
+uses TypInfo, SysUtils,
+  CastleVectors, CastleUtils, CastleUIControls, CastleControls,
   CastleGLUtils, CastleColors, CastleLog, CastleRenderContext, CastleKeysMouse;
 
 { global routines ------------------------------------------------------------ }
@@ -107,7 +108,7 @@ begin
      (Source.Navigation <> nil) then
   begin
   {$warnings on}
-    WriteStr(NavigationTypeStr, Target.NavigationType);
+    NavigationTypeStr := GetEnumName(TypeInfo(TNavigationType), Ord(Target.NavigationType));
     WritelnLog('Both Source and Target have the same NavigationType, but only one of them has non-nil Navigation', [
       NavigationTypeStr
     ]);
@@ -342,6 +343,7 @@ begin
   FreeAndNil(Background);
 end;
 
+initialization
 finalization
   DoFinalization;
 end.

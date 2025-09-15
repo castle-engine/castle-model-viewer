@@ -42,7 +42,7 @@ And having these 12 fonts was problematic in CGE, esp. since we made our default
 
 The "significantly longer compilation" is a more severe problem than it sounds:
 
-- In case of FPC, if the `castle_base.lpk` would contain all 12 fonts, it would make the bug https://gitlab.com/freepascal.org/fpc/source/-/issues/40164 more critical. Unfortunately, CGE developers using Lazarus have to recompile `castle_base.lpk` from scratch quite often due to that FPC bug, and having 12 fonts would the waiting time worse.
+- In case of FPC, if the `castle_engine_base.lpk` would contain all 12 fonts, it would make the bug https://gitlab.com/freepascal.org/fpc/source/-/issues/40164 more critical. Unfortunately, CGE developers using Lazarus have to recompile `castle_engine_base.lpk` from scratch quite often due to that FPC bug, and having 12 fonts would make the waiting time worse.
 
 - In case of Delphi, if the Delphi package would contain 12 fonts, the compilation for _Linux 64_ would crash from time to time with "out of memory" exception.
 

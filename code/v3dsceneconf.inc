@@ -13,4 +13,11 @@
       {$define COMPILER_CASE_ANALYSIS}
     {$endif}
   {$endif}
+
+  {$modeswitch advancedrecords}
+{$else}
+  { Delphi reports some things that are known to be harmless in our case. }
+  {$warn COMPARING_SIGNED_UNSIGNED off}
+  {$warn COMBINING_SIGNED_UNSIGNED off}
 {$endif}
+

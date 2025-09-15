@@ -89,7 +89,7 @@ type
     procedure EndCapture(Success: boolean); override;
   end;
 
-  TScreenShotList = class(specialize TObjectList<TScreenShot>)
+  TScreenShotList = class({$ifdef FPC}specialize{$endif} TObjectList<TScreenShot>)
   private
     ScreenShotCounter: Cardinal;
   public

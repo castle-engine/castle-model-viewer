@@ -47,7 +47,7 @@ jobs:
 
     container: kambi/castle-engine-cloud-builds-tools:cge-none
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
@@ -91,10 +91,15 @@ jobs:
     name: Build on Native Runner (target OS/CPU = source OS/CPU)
     strategy:
       matrix:
-        runner: [macos_x64, raspberry_pi_64, raspberry_pi_32]
+        runner: [
+          macos_x64
+          # We use arm-runner for Raspberry Pi builds now, to not have costs of maintaining our own runners.
+          # raspberry_pi_64,
+          # raspberry_pi_32
+        ]
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Setup Castle Game Engine
       - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
@@ -138,14 +143,116 @@ jobs:
             *.tar.gz
           #if-no-files-found: error
 
+  build_arm_runner:
+    name: Build on ARM Runner (for Raspberry Pi)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [armv7l, aarch64]
+        include:
+        # Raspberry Pi 32-bit (Arm)
+        - arch: armv7l
+          cpu: cortex-a7
+          base_image: raspios_lite:latest
+        # Raspberry Pi 64-bit (Aarch64)
+        - arch: aarch64
+          cpu: cortex-a53
+          base_image: raspios_lite_arm64:latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pguyot/arm-runner-action@v2
+        with:
+          base_image: ${{ matrix.base_image }}
+          cpu: ${{ matrix.cpu }}
+          shell: /bin/bash -eo pipefail
+          image_additional_mb: 6000
+          # Avoids the need for copy_artifact_path later.
+          bind_mount_repository: true
+          commands: |
+            # Useful string to grep logs, because log of script execution is somewhat buried in the middle of pguyot/arm-runner-action log
+            echo 'CGE script starts here'
+
+            # Show system info
+            uname -a
+
+            # Install FPC and other Linux dependencies
+            sudo apt-get update
+            sudo apt-get --no-install-recommends -y install libgl-dev fpc git make unzip sed zip
+
+            # Check versions (and availability) of our requirements early
+            fpc -iV
+            make --version
+            sed --version
+
+            # Setup Castle Game Engine
+            ARM_RUNNER_WORKSPACE=`pwd`
+            export "CASTLE_ENGINE_PATH=$ARM_RUNNER_WORKSPACE/castle-engine"
+            export "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/"
+            git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
+            cd $CASTLE_ENGINE_PATH/tools/build-tool/
+            ./castle-engine_compile.sh
+            cd $ARM_RUNNER_WORKSPACE
+
+            # Package application
+            castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
+            castle-engine package
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: raspberry-pi-${{ matrix.arch }}-build
+          path: |
+            *.zip
+            *.tar.gz
+          #if-no-files-found: error
+
+  # Build also with Delphi, just to make sure it goes OK.
+  # We don't build releases with Delphi, but wemake sure that if someone downloads
+  # sources -- they can build with Delphi as well as with FPC.
+  build_delphi:
+    name: Build Using Delphi
+    strategy:
+      matrix:
+        host-label: [
+          delphi_10_2,
+          delphi_12_2
+        ]
+
+    runs-on: ${{ matrix.host-label }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Setup Castle Game Engine
+      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
+        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
+      - name: Castle Game Engine - Env PATH (Windows, with ;)
+        run: echo "PATH=$PATH;$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
+      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
+        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
+      - name: Castle Game Engine - Build
+        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+
+      - name: Delphi Build (Win32)
+        run: castle-engine compile --compiler=delphi --os=win32 --cpu=i386
+      - name: Delphi Build (Win64)
+        run: castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
+
   release:
     name: Release
     runs-on: ubuntu-latest
+
     # Only upload release if all builds, on all runners, succeeded.
-    needs: [build_docker, build_runner_native]
+    #
+    # Note that build_delphi is not strictly necessary as dependency here
+    # (since it doesn't make any artifacts, it's just a test that compilation
+    # goes OK) but we still want failure there to cause workflow failure,
+    # so that we have to fix it.
+    needs: [build_docker, build_runner_native, build_arm_runner, build_delphi]
+
     steps:
     - name: Download packaged releases
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         merge-multiple: true
     - name: List downloaded files
@@ -166,7 +273,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Update Release Tag
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
