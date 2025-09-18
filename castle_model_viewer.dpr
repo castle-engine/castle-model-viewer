@@ -54,7 +54,6 @@ program castle_model_viewer;
 {$define CATCH_EXCEPTIONS}
 
 uses SysUtils, Math, Classes,
-  {$ifdef FPC} {$ifndef VER3_0} OpenSSLSockets, {$endif} {$endif}
   { CGE units }
   CastleUtils, CastleVectors, CastleBoxes, CastleClassUtils,
   CastleTriangles, CastleApplicationProperties, CastleParameters, CastleCameras,
@@ -70,7 +69,7 @@ uses SysUtils, Math, Classes,
   CastleInternalBaseTriangleOctree, CastleFileFilters,
   X3DLoadInternalUtils, CastleSceneCore, X3DCameraUtils,
   CastleRenderOptions, CastleShapes, CastleViewport,
-  CastleInternalRenderer,
+  CastleInternalRenderer, CastleHttps,
   { castle-model-viewer-specific units: }
   V3DSceneTextureFilters, V3DSceneLights, V3DSceneRaytrace,
   V3DSceneNavigationTypes, V3DSceneSceneChanges, V3DSceneBGColors, V3DSceneViewpoints,

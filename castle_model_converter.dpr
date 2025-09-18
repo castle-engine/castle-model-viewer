@@ -43,8 +43,8 @@
 program castle_model_converter;
 
 uses SysUtils, Classes,
-  {$ifndef VER3_0} OpenSSLSockets, {$endif}
-  CastleUtils, CastleClassUtils, X3DNodes, X3DLoad, CastleParameters, CastleDownload,
+  CastleHttps, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
+  CastleParameters, CastleDownload,
   CastleFilesUtils, CastleUriUtils, CastleApplicationProperties, CastleLog,
   X3DLoadInternalUtils, X3DFields,
   V3DSceneVersion;
