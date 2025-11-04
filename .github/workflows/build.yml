@@ -20,14 +20,14 @@ on:
 env:
   # To which GitHub release tag should we upload artifacts.
   # Can be "snapshot" or "vX.Y.Z" (latter when we make stable release).
-  release_tag: snapshot
+  release_tag: with-skin-node
   #release_tag: vX.Y.Z
 
   # Which Castle Game Engine tag/branch to use for building.
   # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
   # But for quick hotfix in exceptional situation, you may want to use "master"
   # or any other branch/tag.
-  engine_tag: snapshot
+  engine_tag: always-fast-transform
 
 defaults:
   run:
@@ -263,7 +263,7 @@ jobs:
       run: gh auth status
     # Releases files in the GitHub release.
     - name: Release Artifacts
-      if: ${{ github.ref == 'refs/heads/master' }}
+      if: ${{ github.ref == 'refs/heads/with-skin-node' }}
       run: gh release --repo ${{ github.repository }} upload ${{ env.release_tag }} --clobber *.zip *.tar.gz
       env:
         GH_TOKEN: ${{ github.token }}
