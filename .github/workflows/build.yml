@@ -20,7 +20,7 @@ on:
 env:
   # To which GitHub release tag should we upload artifacts.
   # Can be "snapshot" or "vX.Y.Z" (latter when we make stable release).
-  release_tag: with-skin-node
+  release_tag: with-skin-node-prerelease
   #release_tag: vX.Y.Z
 
   # Which Castle Game Engine tag/branch to use for building.
