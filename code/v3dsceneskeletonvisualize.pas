@@ -1,5 +1,5 @@
 {
-  Copyright 2006-2022 Michalis Kamburelis.
+  Copyright 2006-2025 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -28,9 +28,10 @@ unit V3DSceneSkeletonVisualize;
 
 interface
 
-uses X3DNodes;
+uses X3DNodes, CastleSceneCore;
 
 type
+  { Visualize skeleton inside TSkinNode or THAnimHumanoidNode. }
   TSkeletonVisualize = class
   strict private
     { Assigned only between JointVisualizationBegin/End.
@@ -39,34 +40,43 @@ type
     SphereGeometry: TSphereNode;
     SphereAppearance: TAppearanceNode;
     SphereMaterial: TMaterialNode;
+    FontStyle: TFontStyleNode;
     { @groupEnd }
     procedure VisualizeHumanoid(Node: TX3DNode);
-    procedure VisualizeTransformation(Node: TX3DNode);
-    procedure JointVisualizationBegin;
-    procedure JointVisualizationEnd;
+    procedure VisualizeHAnimJoint(Node: TX3DNode);
+    procedure VisualizeSkin(Node: TX3DNode);
+    procedure VisualizeTransformInSkin(Node: TX3DNode);
+    procedure JointVisualizationBegin(const Scene: TCastleSceneCore);
+    procedure JointVisualizationEnd(const Scene: TCastleSceneCore);
     { In case of H-Anim Joint, it is relative to humanoid root,
       and so should be placed in humanoid root.
       In case of other transformations, they are relative to parent transformation,
       and so should be placed in parent transformation. }
     function JointVisualization(const Joint: TX3DNode): TTransformNode;
+    procedure MakeShapeTransparent(const Shape: TShapeNode);
   public
-    { Set before using VisualizeXxx }
+    { Set before using VisualizeAllHumanoids or VisualizeAllSkins. }
     JointVisualizationSize: Single;
-    { Informatio available after using VisualizeAllHumanoids. }
-    HumanoidsProcessed: Cardinal;
+
+    { Information available after using VisualizeAllHumanoids or VisualizeAllSkins.
+      @groupBegin }
+    SkinsProcessed: Cardinal;
     JointsProcessed: Cardinal;
+    { @groupEnd }
+
     { Show H-Anim Humanoid joints. }
-    procedure VisualizeAllHumanoids(const Node: TX3DNode);
-    { Show all transformations. }
-    procedure VisualizeAllTransformations(const Node: TX3DNode);
+    procedure VisualizeAllHumanoids(const Scene: TCastleSceneCore);
+
+    { Show Skin joints. }
+    procedure VisualizeAllSkins(const Scene: TCastleSceneCore);
   end;
 
 implementation
 
-uses SysUtils,
+uses SysUtils, Math,
   CastleUtils, X3DFields, CastleStringUtils;
 
-procedure TSkeletonVisualize.JointVisualizationBegin;
+procedure TSkeletonVisualize.JointVisualizationBegin(const Scene: TCastleSceneCore);
 const
   MatName = 'HumanoidJointVisualizeMat';
 begin
@@ -86,25 +96,56 @@ begin
   SphereMaterial := TMaterialNode.Create(MatName);
   SphereMaterial.FdTransparency.Value := 0.3;
   SphereAppearance.FdMaterial.Value := SphereMaterial;
+
+  FontStyle := TFontStyleNode.Create;
+  FontStyle.Size := JointVisualizationSize;
+
+  Scene.BeginChangesSchedule;
 end;
 
-procedure TSkeletonVisualize.JointVisualizationEnd;
+procedure TSkeletonVisualize.JointVisualizationEnd(const Scene: TCastleSceneCore);
 begin
   SphereShape.FreeIfUnused;
   SphereShape := nil;
+
+  FontStyle.FreeIfUnused;
+  FontStyle := nil;
+
+  Scene.EndChangesSchedule;
+end;
+
+procedure TSkeletonVisualize.MakeShapeTransparent(const Shape: TShapeNode);
+var
+  MatInfo: TMaterialInfo;
+begin
+  // create Shape.Appearance if necessary
+  if Shape.Appearance = nil then
+    Shape.Appearance := TAppearanceNode.Create;
+  Assert(Shape.Appearance <> nil);
+  Shape.Appearance.AlphaMode := amBlend;
+
+  // create Shape.Appearance.Material if necessary
+  if Shape.Appearance.Material = nil then
+    Shape.Appearance.Material := TMaterialNode.Create;
+  Assert(Shape.Appearance.Material <> nil);
+
+  // make transparency at least 0.5
+  MatInfo := Shape.Appearance.Material.MaterialInfo;
+  Assert(MatInfo <> nil);
+  MatInfo.Transparency := Max(0.5, MatInfo.Transparency);
 end;
 
 function TSkeletonVisualize.JointVisualization(const Joint: TX3DNode): TTransformNode;
 var
   TextShape: TShapeNode;
   TextGeometry: TTextNode;
-  FontStyle: TFontStyleNode;
   CenterRoute: TX3DRoute;
   JointCenter: TSFVec3f;
   JointName: String;
 begin
   { Handle Joint being of THAnimJointNode or TTransformNode.
-    TODO: Abstract this using TTransformFunctionality in CGE. }
+    Note: Not using TTransformFunctionality, as we need to differentiate
+    name getting anyway. }
   if Joint is THAnimJointNode then
   begin
     JointCenter := THAnimJointNode(Joint).FdCenter;
@@ -131,8 +172,6 @@ begin
   TextGeometry.SetText([JointName]);
   TextShape.Geometry := TextGeometry;
 
-  FontStyle := TFontStyleNode.Create;
-  FontStyle.Size := JointVisualizationSize;
   TextGeometry.FontStyle := FontStyle;
 
   Result.AddChildren(SphereShape);
@@ -149,82 +188,108 @@ begin
 end;
 
 procedure TSkeletonVisualize.VisualizeHumanoid(Node: TX3DNode);
-
-  { Change shape's material to be transparent.
-    This doesn't guarantee that material is changed, as we don't want to
-    change the way shape is displayed (so we don't add Appearance
-    or Material if they didn't exist etc.) }
-  procedure MakeShapeTransparent(const Shape: TShapeNode);
-  var
-    Mat: TMaterialNode;
-  begin
-    if Shape.Appearance <> nil then
-    begin
-      if (Shape.Appearance.FdMaterial.Value <> nil) and
-         (Shape.Appearance.FdMaterial.Value is TMaterialNode) then
-      begin
-        Mat := TMaterialNode(Shape.Appearance.FdMaterial.Value);
-        if Mat.FdTransparency.Value = 0 then
-          Mat.FdTransparency.Value := 0.5;
-      end;
-    end;
-  end;
-
 var
   HumanoidNode: THAnimHumanoidNode;
-  Joint: THAnimJointNode;
-  JointVis: TTransformNode;
   I: Integer;
 begin
   HumanoidNode := Node as THAnimHumanoidNode;
-  Inc(HumanoidsProcessed);
+  Inc(SkinsProcessed);
 
   { make all existing skin shapes transparent.
     This helps to see joints and their names through }
   for I := 0 to HumanoidNode.FdSkin.Count - 1 do
     if HumanoidNode.FdSkin[I] is TShapeNode then
       MakeShapeTransparent(TShapeNode(HumanoidNode.FdSkin[I]));
-
-  { for each joint, add it's visualization }
-  for I := 0 to HumanoidNode.FdJoints.Count - 1 do
-    if HumanoidNode.FdJoints[I] is THAnimJointNode then
-    begin
-      Joint := THAnimJointNode(HumanoidNode.FdJoints[I]);
-      JointVis := JointVisualization(Joint);
-      HumanoidNode.FdSkin.Add(JointVis);
-    end;
 end;
 
-procedure TSkeletonVisualize.VisualizeAllHumanoids(const Node: TX3DNode);
+procedure TSkeletonVisualize.VisualizeHAnimJoint(Node: TX3DNode);
+var
+  Joint: THAnimJointNode;
+  JointVis: TTransformNode;
 begin
-  JointVisualizationBegin;
-  try
-    Node.EnumerateNodes(THAnimHumanoidNode,
-      {$ifdef FPC}@{$endif} VisualizeHumanoid, false);
-  finally JointVisualizationEnd end;
+  Joint := Node as THAnimJointNode;
+
+  // avoid processing the same Joint many times
+  if Joint.MetadataBoolean['JointVisualization'] then
+    Exit;
+  Joint.MetadataBoolean['JointVisualization'] := true;
+
+  if Joint.Humanoid = nil then
+    Exit; // cannot visualize, joint not part of HAnimHumanoid
+
+  JointVis := JointVisualization(Joint);
+  Joint.Humanoid.FdSkin.Add(JointVis);
 end;
 
+procedure TSkeletonVisualize.VisualizeAllHumanoids(const Scene: TCastleSceneCore);
+begin
+  JointVisualizationBegin(Scene);
+  try
+    Scene.RootNode.EnumerateNodes(THAnimHumanoidNode,
+      {$ifdef FPC}@{$endif} VisualizeHumanoid, false);
 
-procedure TSkeletonVisualize.VisualizeTransformation(Node: TX3DNode);
+    { Note: Don't depend on HumanoidNode.FdJoints list for this,
+      as it became optional around X3D 4.1.
+      So we need EnumerateNodes call for THAnimJointNode. }
+    Scene.RootNode.EnumerateNodes(THAnimJointNode,
+      {$ifdef FPC}@{$endif} VisualizeHAnimJoint, false);
+
+    if (SkinsProcessed <> 0) or (JointsProcessed <> 0) then
+      Scene.ChangedAll;
+  finally JointVisualizationEnd(Scene) end;
+end;
+
+procedure TSkeletonVisualize.VisualizeTransformInSkin(Node: TX3DNode);
 var
   Joint, JointVis: TTransformNode;
 begin
+  Joint := Node as TTransformNode;
+
   // ignore adding debug visualization to debug visualization
-  if IsPrefix('JointVisualization', Node.X3DName, false) then
+  if IsPrefix('JointVisualization', Joint.X3DName, false) then
     Exit;
 
-  Joint := Node as TTransformNode;
+  // avoid processing the same Joint many times, e.g. because it's in both Skin.skeleton and Skin.joints
+  if Joint.MetadataBoolean['JointVisualization'] then
+    Exit;
+  Joint.MetadataBoolean['JointVisualization'] := true;
+
   JointVis := JointVisualization(Joint);
   Joint.AddChildren(JointVis);
 end;
 
-procedure TSkeletonVisualize.VisualizeAllTransformations(const Node: TX3DNode);
+procedure TSkeletonVisualize.VisualizeSkin(Node: TX3DNode);
+var
+  SkinNode: TSkinNode;
+  I: Integer;
 begin
-  JointVisualizationBegin;
+  SkinNode := Node as TSkinNode;
+  Inc(SkinsProcessed);
+
+  for I := 0 to SkinNode.FdShapes.Count - 1 do
+    if SkinNode.FdShapes[I] is TShapeNode then
+      MakeShapeTransparent(TShapeNode(SkinNode.FdShapes[I]));
+
+  for I := 0 to SkinNode.FdJoints.Count - 1 do
+    if SkinNode.FdJoints[I] is TTransformNode then
+      VisualizeTransformInSkin(SkinNode.FdJoints[I]);
+end;
+
+procedure TSkeletonVisualize.VisualizeAllSkins(const Scene: TCastleSceneCore);
+begin
+  JointVisualizationBegin(Scene);
   try
-    Node.EnumerateNodes(TTransformNode,
-      {$ifdef FPC}@{$endif} VisualizeTransformation, false);
-  finally JointVisualizationEnd end;
+    Scene.RootNode.EnumerateNodes(TSkinNode,
+      {$ifdef FPC}@{$endif} VisualizeSkin, false);
+
+    // No need to search for TTransformNode, VisualizeSkin will iterate over joints.
+    // This is in contrast to VisualizeAllHumanoids, where we need to search
+    // for THAnimJointNode.
+
+    // make sure to call ChangedAll
+    if (SkinsProcessed <> 0) or (JointsProcessed <> 0) then
+      Scene.ChangedAll;
+  finally JointVisualizationEnd(Scene) end;
 end;
 
 end.

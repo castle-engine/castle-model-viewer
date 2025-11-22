@@ -2739,13 +2739,11 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
         Vis.JointVisualizationSize) then
       begin
-        Vis.VisualizeAllHumanoids(Scene.RootNode);
-        MessageOK(Window, Format('%d H-Anim Humanoids (%d Joints inside) processed.', [
-          Vis.HumanoidsProcessed,
+        Vis.VisualizeAllHumanoids(Scene);
+        MessageOK(Window, Format('Processed %d H-Anim Humanoid nodes.' + NL + '%d joints (HAnimJoint nodes) inside (that have not been processed before).', [
+          Vis.SkinsProcessed,
           Vis.JointsProcessed
         ]));
-        if Vis.HumanoidsProcessed <> 0 then
-          Scene.ChangedAll;
       end;
     finally FreeAndNil(Vis) end;
   end;
@@ -2760,12 +2758,11 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       if MessageInputQuery(Window, 'Joint Visualization Size (default based on scene size):',
         Vis.JointVisualizationSize) then
       begin
-        Vis.VisualizeAllTransformations(Scene.RootNode);
-        MessageOK(Window, Format('%d Joints processed.', [
+        Vis.VisualizeAllSkins(Scene);
+        MessageOK(Window, Format('Processed %d Skin nodes.' + NL + '%d joints (Transform nodes) inside (that have not been processed before).', [
+          Vis.SkinsProcessed,
           Vis.JointsProcessed
         ]));
-        if Vis.JointsProcessed <> 0 then
-          Scene.ChangedAll;
       end;
     finally FreeAndNil(Vis) end;
   end;
@@ -3577,7 +3574,7 @@ begin
       'non-convex (forces faces to be triangulated carefully)', 33));
     M.Append(TMenuItem.Create('Convert Inline to Group (pulls external content into this model)', 33000));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('Add Joints Visualization ...', 45));
+    M.Append(TMenuItem.Create('Add Skin Joints Visualization ...', 45));
     M.Append(TMenuItem.Create('Add H-Anim Joints Visualization ...', 42));
     Result.Append(M);
   M := TMenu.Create('_Clipboard');
