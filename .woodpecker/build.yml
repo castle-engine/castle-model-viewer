@@ -1,0 +1,18 @@
+# -------------------------------------------------------------------
+# Woodpecker CI configuration to build this application.
+#
+# Using Codeberg CI. See
+# - https://docs.codeberg.org/ci/
+# - https://woodpecker-ci.org/docs/usage/intro
+# -------------------------------------------------------------------
+
+when:
+  - event: [push, pull_request]
+
+steps:
+  - name: Build
+    # Use CGE Docker image https://castle-engine.io/docker
+    image: kambi/castle-engine-cloud-builds-tools:cge-unstable
+    commands:
+      - castle-engine compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
+      - castle-engine package --os=linux --cpu=x86_64
