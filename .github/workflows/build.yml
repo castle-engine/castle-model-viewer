@@ -140,10 +140,14 @@ jobs:
         - arch: raspberry-pi-32
           cpu: cortex-a7
           base_image: raspios_lite:latest
+          build_os: linux
+          build_cpu: arm
         # Raspberry Pi 64-bit (Aarch64)
         - arch: raspberry-pi-64
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
+          build_os: linux
+          build_cpu: aarch64
     steps:
       - uses: actions/checkout@v6
         with:
