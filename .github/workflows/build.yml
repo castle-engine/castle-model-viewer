@@ -23,12 +23,6 @@ env:
   release_tag: snapshot
   #release_tag: vX.Y.Z
 
-  # Which Castle Game Engine tag/branch to use for building.
-  # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
-  # But for quick hotfix in exceptional situation, you may want to use "master"
-  # or any other branch/tag.
-  engine_tag: snapshot
-
 defaults:
   run:
     shell: bash
@@ -37,27 +31,9 @@ jobs:
   build_docker:
     name: Build From Docker
     runs-on: ubuntu-latest
-
-    # We could use a Docker container with cge-unstable, so it already contains
-    # CGE (with build tool) set up. This way we know we only use CGE that
-    # passed automatic tests, we have castle-engine on the PATH, and things are easy.
-    #
-    # Later: But to make engine_tag configurable, we instead get CGE from GitHub.
-    #container: kambi/castle-engine-cloud-builds-tools:cge-unstable
-
-    container: kambi/castle-engine-cloud-builds-tools:cge-none
+    container: kambi/castle-engine-cloud-builds-tools:cge-unstable
     steps:
       - uses: actions/checkout@v6
-
-      # Setup Castle Game Engine
-      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
-        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Env PATH (non-Windows)
-        run: echo "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
-        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
-      - name: Castle Game Engine - Build
-        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
 
       # Package application:
       # - castle-model-converter first, it will be packaged in castle-model-viewer CastleEngineManifest.xml
@@ -92,33 +68,41 @@ jobs:
     strategy:
       matrix:
         runner: [
-          macos_x64
-          # We use arm-runner for Raspberry Pi builds now, to not have costs of maintaining our own runners.
-          # raspberry_pi_64,
-          # raspberry_pi_32
+          macos-latest,
+          macos-15-intel # last macOS with Intel
         ]
+        include:
+        - runner: macos-latest
+          build_os: darwin
+          build_cpu: aarch64
+          is_macos: true
+        - runner: macos-15-intel
+          build_os: darwin
+          build_cpu: x86_64
+          is_macos: true
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          path: app
 
-      # Setup Castle Game Engine
-      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
-        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Env PATH (non-Windows)
-        run: echo "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
-        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
-      - name: Castle Game Engine - Build
-        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+      # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
+      - name: Setup Castle Game Engine
+        run: |
+          git clone https://github.com/castle-engine/castle-build-ci.git \
+            --depth=1 --single-branch --branch=master
+          castle-build-ci/install_dependencies_github_hosted_runner
+          castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
 
       # Package application
       - name: Package (non macOS)
-        if: ${{ matrix.runner != 'macos_x64' }}
+        if: ${{ matrix.is_macos != 'true' }}
         run: |
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package
+
       - name: Package (macOS)
-        if: ${{ matrix.runner == 'macos_x64' }}
+        if: ${{ matrix.is_macos == 'true' }}
         # Special order for macOS:
         # - First compile and package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
@@ -130,7 +114,7 @@ jobs:
 
           cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
           VERSION=`castle-engine output version`
-          ZIPNAME=castle-model-viewer-"${VERSION}"-darwin-x86_64.zip
+          ZIPNAME=castle-model-viewer-"${VERSION}"-${{ matrix.build_os }}-${{ matrix.build_cpu }}.zip
           zip -r "${ZIPNAME}" castle-model-viewer.app/
           echo "Packed to ${ZIPNAME}"
 
@@ -148,18 +132,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [armv7l, aarch64]
+        arch: [raspberry-pi-32, raspberry-pi-64]
         include:
         # Raspberry Pi 32-bit (Arm)
-        - arch: armv7l
+        - arch: raspberry-pi-32
           cpu: cortex-a7
           base_image: raspios_lite:latest
         # Raspberry Pi 64-bit (Aarch64)
-        - arch: aarch64
+        - arch: raspberry-pi-64
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          path: app
       - uses: pguyot/arm-runner-action@v2
         with:
           base_image: ${{ matrix.base_image }}
@@ -172,28 +158,24 @@ jobs:
             # Useful string to grep logs, because log of script execution is somewhat buried in the middle of pguyot/arm-runner-action log
             echo 'CGE script starts here'
 
-            # Show system info
-            uname -a
-
-            # Install FPC and other Linux dependencies
+            # Install Linux dependencies
             sudo apt-get update
-            sudo apt-get --no-install-recommends -y install libgl-dev fpc git make unzip sed zip
+            sudo apt-get --no-install-recommends -y install libgl-dev git make unzip sed zip
+
+            # Install FPC and CGE
+            git clone https://github.com/castle-engine/castle-build-ci.git \
+              --depth=1 --single-branch --branch=master
+            castle-build-ci/install_dependencies_github_hosted_runner
+            castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
+            source setup_castle_engine_env.sh
 
             # Check versions (and availability) of our requirements early
             fpc -iV
             make --version
             sed --version
 
-            # Setup Castle Game Engine
-            ARM_RUNNER_WORKSPACE=`pwd`
-            export "CASTLE_ENGINE_PATH=$ARM_RUNNER_WORKSPACE/castle-engine"
-            export "PATH=$PATH:$CASTLE_ENGINE_PATH/tools/build-tool/"
-            git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
-            cd $CASTLE_ENGINE_PATH/tools/build-tool/
-            ./castle-engine_compile.sh
-            cd $ARM_RUNNER_WORKSPACE
-
             # Package application
+            cd app/
             castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
             castle-engine package
 
@@ -217,9 +199,11 @@ jobs:
           delphi_10_2,
           delphi_12_2
         ]
-
     runs-on: ${{ matrix.host-label }}
-
+    env:
+      # Which Castle Game Engine tag/branch to use for building.
+      # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
+      engine_tag: snapshot
     steps:
       - uses: actions/checkout@v6
 
