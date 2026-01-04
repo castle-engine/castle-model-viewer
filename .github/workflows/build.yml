@@ -96,19 +96,21 @@ jobs:
 
       # Package application
       - name: Package (non macOS)
-        if: ${{ matrix.is_macos != 'true' }}
+        if: ${{ ! matrix.is_macos }}
         run: |
+          cd app/
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package
 
       - name: Package (macOS)
-        if: ${{ matrix.is_macos == 'true' }}
+        if: ${{ matrix.is_macos }}
         # Special order for macOS:
         # - First compile and package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
         # - zip it manually
         # (TODO: we could add file to zip created by initial "package" instead?)
         run: |
+          cd app/
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --package-format=mac-app-bundle
 
@@ -123,8 +125,8 @@ jobs:
         with:
           name: ${{ matrix.runner }}-build
           path: |
-            *.zip
-            *.tar.gz
+            app/*.zip
+            app/*.tar.gz
           #if-no-files-found: error
 
   build_arm_runner:
@@ -184,8 +186,8 @@ jobs:
         with:
           name: raspberry-pi-${{ matrix.arch }}-build
           path: |
-            *.zip
-            *.tar.gz
+            app/*.zip
+            app/*.tar.gz
           #if-no-files-found: error
 
   # Build also with Delphi, just to make sure it goes OK.
