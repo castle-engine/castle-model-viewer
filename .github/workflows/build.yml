@@ -91,7 +91,7 @@ jobs:
         run: |
           git clone https://github.com/castle-engine/castle-build-ci.git \
             --depth=1 --single-branch --branch=master
-          castle-build-ci/install_dependencies_github_hosted_runner
+          castle-build-ci/install_dependencies_hosted_runner
           castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
 
       # Package application
@@ -171,7 +171,7 @@ jobs:
             # Install FPC and CGE
             git clone https://github.com/castle-engine/castle-build-ci.git \
               --depth=1 --single-branch --branch=master
-            castle-build-ci/install_dependencies_github_hosted_runner
+            castle-build-ci/install_dependencies_hosted_runner
             castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
             source setup_castle_engine_env.sh
 
