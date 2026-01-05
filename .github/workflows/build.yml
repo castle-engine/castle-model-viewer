@@ -73,32 +73,26 @@ jobs:
         ]
         include:
         - runner: macos-latest
-          build_os: darwin
-          build_cpu: aarch64
           is_macos: true
         - runner: macos-15-intel
-          build_os: darwin
-          build_cpu: x86_64
           is_macos: true
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          path: app
 
       # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
       - name: Setup Castle Game Engine
         run: |
+          cd /tmp/ # temporary directory, to be separate from the current project files
           git clone https://github.com/castle-engine/castle-build-ci.git \
             --depth=1 --single-branch --branch=master
-          castle-build-ci/install_dependencies_hosted_runner
-          castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
+          castle-build-ci/install_dependencies
+          castle-build-ci/setup_castle_engine
 
       # Package application
       - name: Package (non macOS)
         if: ${{ ! matrix.is_macos }}
         run: |
-          cd app/
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package
 
@@ -110,7 +104,6 @@ jobs:
         # - zip it manually
         # (TODO: we could add file to zip created by initial "package" instead?)
         run: |
-          cd app/
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --package-format=mac-app-bundle
 
@@ -125,9 +118,9 @@ jobs:
         with:
           name: ${{ matrix.runner }}-build
           path: |
-            app/*.zip
-            app/*.tar.gz
-          #if-no-files-found: error
+            *.zip
+            *.tar.gz
+          if-no-files-found: error
 
   build_arm_runner:
     name: Build on ARM Runner (for Raspberry Pi)
@@ -140,18 +133,12 @@ jobs:
         - arch: raspberry-pi-32
           cpu: cortex-a7
           base_image: raspios_lite:latest
-          build_os: linux
-          build_cpu: arm
         # Raspberry Pi 64-bit (Aarch64)
         - arch: raspberry-pi-64
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
-          build_os: linux
-          build_cpu: aarch64
     steps:
       - uses: actions/checkout@v6
-        with:
-          path: app
       - uses: pguyot/arm-runner-action@v2
         with:
           base_image: ${{ matrix.base_image }}
@@ -169,11 +156,13 @@ jobs:
             sudo apt-get --no-install-recommends -y install libgl-dev git make unzip sed zip
 
             # Install FPC and CGE
+            pushd /tmp/
             git clone https://github.com/castle-engine/castle-build-ci.git \
               --depth=1 --single-branch --branch=master
-            castle-build-ci/install_dependencies_hosted_runner
-            castle-build-ci/setup_castle_engine ${{ matrix.build_os }} ${{ matrix.build_cpu }}
+            castle-build-ci/install_dependencies
+            castle-build-ci/setup_castle_engine
             source setup_castle_engine_env.sh
+            popd
 
             # Check versions (and availability) of our requirements early
             fpc -iV
@@ -181,7 +170,6 @@ jobs:
             sed --version
 
             # Package application
-            cd app/
             castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
             castle-engine package
 
@@ -190,9 +178,9 @@ jobs:
         with:
           name: raspberry-pi-${{ matrix.arch }}-build
           path: |
-            app/*.zip
-            app/*.tar.gz
-          #if-no-files-found: error
+            *.zip
+            *.tar.gz
+          if-no-files-found: error
 
   # Build also with Delphi, just to make sure it goes OK.
   # We don't build releases with Delphi, but wemake sure that if someone downloads
