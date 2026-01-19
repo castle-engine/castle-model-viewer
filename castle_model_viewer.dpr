@@ -3141,7 +3141,8 @@ begin
              'See ' + ViewerUrl + ' .' + NL +
              NL +
              'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
-             'Compiled with ' + SCompilerDescription + '.');
+             'Compiled with ' + SCompilerDescription + '.' + NL +
+             'Window backend: ' + Application.BackendName);
          end;
     132: if not OpenUrl(ViewerUrl) then
            Window.MessageOk(SCannotOpenUrl, mtError);
