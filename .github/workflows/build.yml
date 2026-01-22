@@ -1,11 +1,19 @@
 # ----------------------------------------------------------------------------
-# GitHub Actions workflow to build and package the project using Castle Game Engine.
+# GitHub Actions workflow to build and package this project
+# using Castle Game Engine.
+#
 # Details:
+#
 # - Builds and packages: creates release packages (zip,tar.gz)
-#   for all interesting platforms.
-#   Some of them use our self-hosted runners, some use Docker on GH-hosted runners.
+#   for all platforms we support.
+#
+# - Tests compilation in some ways we don't need for releasing,
+#   but still we support (in case devs want to build this application in these
+#   ways): Delphi, Lazarus using lazbuild (not using CGE build tool + FPC).
+#
 # - Uploads the release packages as GitHub release of "snapshot" tag,
 #   https://github.com/castle-engine/castle-model-viewer/releases/tag/snapshot
+#
 # - Updates the "snapshot" tag to point to the build commit.
 # ----------------------------------------------------------------------------
 
@@ -194,22 +202,17 @@ jobs:
           delphi_12_2
         ]
     runs-on: ${{ matrix.host-label }}
-    env:
-      # Which Castle Game Engine tag/branch to use for building.
-      # This *should* be "snapshot", which is our latest CGE that passed automatic tests.
-      engine_tag: snapshot
     steps:
       - uses: actions/checkout@v6
 
-      # Setup Castle Game Engine
-      - name: Castle Game Engine - Env CASTLE_ENGINE_PATH
-        run: echo "CASTLE_ENGINE_PATH=$GITHUB_WORKSPACE/castle-engine" >> $GITHUB_ENV
-      - name: Castle Game Engine - Env PATH (Windows, with ;)
-        run: echo "PATH=$PATH;$CASTLE_ENGINE_PATH/tools/build-tool/" >> $GITHUB_ENV
-      - name: Castle Game Engine - Clone ${{ env.engine_tag }}
-        run: git clone --depth 1 --single-branch --branch ${{ env.engine_tag }} https://github.com/castle-engine/castle-engine/
-      - name: Castle Game Engine - Build
-        run: cd $CASTLE_ENGINE_PATH/tools/build-tool/ && ./castle-engine_compile.sh
+      # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
+      - name: Setup Castle Game Engine
+        run: |
+          cd /tmp/ # temporary directory, to be separate from the current project files
+          git clone https://github.com/castle-engine/castle-build-ci.git \
+            --depth=1 --single-branch --branch=master
+          castle-build-ci/install_dependencies
+          castle-build-ci/setup_castle_engine
 
       - name: Delphi Build (Win32)
         run: castle-engine compile --compiler=delphi --os=win32 --cpu=i386
