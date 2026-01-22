@@ -206,12 +206,17 @@ jobs:
       - uses: actions/checkout@v6
 
       # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
+      #
+      # See https://yaml-multiline.info/ why we write multi-line like this.
+      # Because of Windows CRLF and bash expecting LF, we cannot just use regular
+      # multi-line string.
+      # We use > and && to concatenate commands.
+      # We also use - to chomp final CRLF which would also trip bash.
       - name: Setup Castle Game Engine
-        run: |
-          cd /tmp/ # temporary directory, to be separate from the current project files
-          git clone https://github.com/castle-engine/castle-build-ci.git \
-            --depth=1 --single-branch --branch=master
-          castle-build-ci/install_dependencies
+        run: >-
+          cd /tmp/ &&
+          git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
+          castle-build-ci/install_dependencies &&
           castle-build-ci/setup_castle_engine
 
       - name: Delphi Build (Win32)
