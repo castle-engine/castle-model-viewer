@@ -223,8 +223,13 @@ jobs:
       # this is self-hosted runner ->
       # 1. no permissions for castle-build-ci/install_dependencies ,
       # 2. and the dependencies should be already there.
+      #
+      # Also, because this is not ephemeral runner and workspace may
+      # contain leftovers from previous run, we do cleanup at start
+      # by "rm -Rf castle-build-ci/".
       - name: Setup Castle Game Engine
         run: >-
+          rm -Rf castle-build-ci/ &&
           git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
           castle-build-ci/setup_castle_engine
 
