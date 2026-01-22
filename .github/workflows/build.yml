@@ -239,6 +239,10 @@ jobs:
           --depth=1 --single-branch --branch=master
         castle-build-ci/install_dependencies
         castle-build-ci/setup_castle_engine --install-lazarus=true
+    - name: Build engine packages using Lazarus
+      run: |
+        lazbuild $CASTLE_ENGINE_PATH/packages/lazarus/castle_engine_base.lpk
+        lazbuild $CASTLE_ENGINE_PATH/packages/lazarus/castle_engine_window.lpk
     - name: Build using Lazarus
       run: lazbuild castle_model_viewer.lpi
 
