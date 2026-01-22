@@ -218,10 +218,14 @@ jobs:
       # multi-line string.
       # We use > and && to concatenate commands.
       # We also use - to chomp final CRLF which would also trip bash.
+      #
+      # Note that we don't execute castle-build-ci/install_dependencies ,
+      # this is self-hosted runner ->
+      # 1. no permissions for castle-build-ci/install_dependencies ,
+      # 2. and the dependencies should be already there.
       - name: Setup Castle Game Engine
         run: >-
           git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
-          castle-build-ci/install_dependencies &&
           castle-build-ci/setup_castle_engine
 
       - name: Delphi Build (Win32)
