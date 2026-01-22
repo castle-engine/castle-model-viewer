@@ -204,8 +204,14 @@ jobs:
     runs-on: ${{ matrix.host-label }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Use subdirectory, to not collide with castle-build-ci
+          # in subdirectory too.
+          # Usually we just put castle-build-ci in /tmp/, but this is not
+          # ephemeral runner.
+          path: app
 
-      # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
+      # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE.
       #
       # See https://yaml-multiline.info/ why we write multi-line like this.
       # Because of Windows CRLF and bash expecting LF, we cannot just use regular
@@ -214,15 +220,14 @@ jobs:
       # We also use - to chomp final CRLF which would also trip bash.
       - name: Setup Castle Game Engine
         run: >-
-          cd /tmp/ &&
           git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
           castle-build-ci/install_dependencies &&
           castle-build-ci/setup_castle_engine
 
       - name: Delphi Build (Win32)
-        run: castle-engine compile --compiler=delphi --os=win32 --cpu=i386
+        run: cd app && castle-engine compile --compiler=delphi --os=win32 --cpu=i386
       - name: Delphi Build (Win64)
-        run: castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
+        run: cd app && castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
 
   # Build using Lazarus LPI, just to test it is OK.
   # We don't actually release such version -- you don't need Lazarus
