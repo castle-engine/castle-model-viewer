@@ -216,6 +216,32 @@ jobs:
       - name: Delphi Build (Win64)
         run: castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
 
+  # Build using Lazarus LPI, just to test it is OK.
+  # We don't actually release such version -- you don't need Lazarus
+  # (only compiler, like FPC or Delphi) to build CGE applications.
+  test_lazarus:
+    name: Test Lazarus Compilation
+    strategy:
+      matrix:
+        runner: [
+          ubuntu-latest,
+          windows-latest,
+          macos-15-intel,
+          macos-latest
+        ]
+    runs-on: ${{ matrix.runner }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup Castle Game Engine
+      run: |
+        cd /tmp/ # temporary directory, to be separate from the current project files
+        git clone https://github.com/castle-engine/castle-build-ci.git \
+          --depth=1 --single-branch --branch=master
+        castle-build-ci/install_dependencies
+        castle-build-ci/setup_castle_engine --install-lazarus=true
+    - name: Build using Lazarus
+      run: lazbuild castle_model_viewer.lpi
+
   release:
     name: Release
     runs-on: ubuntu-latest
