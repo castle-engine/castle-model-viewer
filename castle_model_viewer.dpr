@@ -3119,14 +3119,14 @@ begin
 
     131: begin
            MessageReport(
-             'viewer for all 3D and 2D model formats supported by Castle Game Engine.' + NL +
+             'Viewer for all 3D and 2D model formats supported by Castle Game Engine.' + NL +
              NL +
              'Supported formats:' + NL +
              '- glTF 2.0' + NL +
              '- X3D' + NL +
              '- VRML 2.0 (aka VRML 97) and 1.0' + NL +
              '- Spine JSON' + NL +
-             '- Sprite sheets in Starling and Cocos2d formats' + NL +
+             '- Sprite sheets (Castle Game Engine, Starling, Cocos2d formats)' + NL +
              '- castle-anim-frames' + NL +
              '- OpenInventor (IV)' + NL +
              '- 3DS' + NL +
@@ -3136,13 +3136,13 @@ begin
              '- STL' + NL +
              NL +
              'Version ' + Version + '.' + NL +
-             'By Michalis Kamburelis.' + NL +
-             NL +
              'See ' + ViewerUrl + ' .' + NL +
              NL +
              'Created using Castle Game Engine ( https://castle-engine.io/ ) version ' + CastleEngineVersion + '.' + NL +
              'Compiled with ' + SCompilerDescription + '.' + NL +
-             'Window backend: ' + Application.BackendName);
+             'Window backend: ' + Application.BackendName + '.' + NL +
+             NL +
+             'Copyright: Michalis Kamburelis and Castle Game Engine developers.');
          end;
     132: if not OpenUrl(ViewerUrl) then
            Window.MessageOk(SCannotOpenUrl, mtError);
