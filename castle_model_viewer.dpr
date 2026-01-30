@@ -4196,8 +4196,16 @@ begin
         Window.Open(@RetryOpen);
 
         if WasParam_SceneUrl then
-          LoadScene(Param_SceneUrl)
-        else
+        begin
+          { on macOS, when opening model by double-clicking from editor,
+            we get both
+            - OnDropFiles with this file (this is called 1st),
+            - and also with get the model from Parameters[1].
+            Processing Param_SceneUrl in this case would be wasteful, we'd open
+            the same model again, wasting opening time. }
+          if Param_SceneUrl <> SceneUrl then
+            LoadScene(Param_SceneUrl);
+        end else
           LoadWelcomeScene;
 
         if MakingScreenShot then
