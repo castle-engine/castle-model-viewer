@@ -12,14 +12,13 @@ set -euo pipefail
 # Options:
 # $1 is bundle directory (like "castle-model-viewer.app")
 # $2 is main executable name (like "castle-model-viewer")
-# $3 is additional executable name in ${BUNDLE}/Contents/MacOS/
-#    (like "castle-model-converter"), omit this parameter if none.
+# $3 (optional) is additional executable name in ${BUNDLE}/Contents/MacOS/
+#    (like "castle-model-converter"). Just omit this parameter if none such exists.
 # ------------------------------------------------------------------------------
 
 BUNDLE="$1"
 MAIN_EXE="$2"
-ADDITIONAL_EXE="$3:-"
-shift 3
+ADDITIONAL_EXE="${3:-}"
 
 echo '-------------------------------'
 echo 'Checking is our APPLE_IDENTITY valid (should be in the keychain):'
