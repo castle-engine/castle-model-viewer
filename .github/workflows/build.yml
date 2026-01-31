@@ -82,8 +82,12 @@ jobs:
         include:
         - runner: macos-latest
           is_macos: true
+          build_os: darwin
+          build_cpu: aarch64
         - runner: macos-15-intel
           is_macos: true
+          build_os: darwin
+          build_cpu: x86_64
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
