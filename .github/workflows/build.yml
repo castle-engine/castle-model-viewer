@@ -172,6 +172,14 @@ jobs:
 
       # Notarize it, following
       # https://developer.apple.com/documentation/security/customizing-the-notarization-workflow?language=objc
+      #
+      # Note that Apple notarization process is seriously FUBAR.
+      # We need to create a zip with app bundle (because "notarytool submit"
+      # wants zip, not app bundle),
+      # but then we need to "staple" the app bundle (*not* zip),
+      # so only later we can make proper release zip.
+      # Their docs explicitly confirm that this brain-damaged approach
+      # is the only way, everyone needs to zip twice...
       - name: Notarize (macOS)
         if: ${{ matrix.is_macos }}
         env:
@@ -179,12 +187,14 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          xcrun notarytool submit castle-model-viewer.app \
+          # create temporary zip for notarization submission
+          zip -r castle-model-viewer-notarize.zip castle-model-viewer.app/
+          xcrun notarytool submit castle-model-viewer-notarize.zip \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
             --wait
-          xcrun stapler staple castle-model-viewer.app
+          xcrun stapler staple castle-model-viewer.app/
 
       - name: Package To Zip (macOS)
         if: ${{ matrix.is_macos }}
