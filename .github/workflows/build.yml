@@ -113,89 +113,32 @@ jobs:
         # Special order for macOS:
         # - First compile and package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
-        # - zip it manually (after signing).
+        #
+        # We will zip it manually (after signing and notarization),
+        # so we don't do "castle-engine package" for macOS at any point.
         run: |
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --package-format=mac-app-bundle
           cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
 
-      # Follow https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
-      # to sign macOS application
-      - name: Install the Apple certificate and provisioning profiles (macOS)
+      - name: Sign and Notarize (macOS)
         if: ${{ matrix.is_macos }}
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.APPLE_P12_PASSWORD }}
-          # provisioning (only for mobile targets, not for macOS)
-          #BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_BUILD_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          # provisioning (only for mobile targets, not for macOS)
-          #PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          # provisioning (only for mobile targets, not for macOS)
-          #echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # apply provisioning profile (only for mobile targets, not for macOS)
-          #mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          #cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      # Sign the app bundle, following
-      # https://developer.apple.com/documentation/xcode/creating-distribution-signed-code-for-the-mac
-      - name: Sign (macOS)
-        if: ${{ matrix.is_macos }}
-        env:
+          # for codesigning
           APPLE_IDENTITY: ${{ vars.APPLE_IDENTITY }}
-        run: |
-          security find-identity -p codesigning -v
-          codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
-          # command below should sign the main executable
-          codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "castle-model-viewer.app"
-          codesign -d -vv "castle-model-viewer.app"
-          codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
-          codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-viewer"
-
-      # Notarize it, following
-      # https://developer.apple.com/documentation/security/customizing-the-notarization-workflow?language=objc
-      #
-      # Note that Apple notarization process is seriously FUBAR.
-      # We need to create a zip with app bundle (because "notarytool submit"
-      # wants zip, not app bundle),
-      # but then we need to "staple" the app bundle (*not* zip),
-      # so only later we can make proper release zip.
-      # Their docs explicitly confirm that this brain-damaged approach
-      # is the only way, everyone needs to zip twice...
-      - name: Notarize (macOS)
-        if: ${{ matrix.is_macos }}
-        env:
+          APPLE_BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_BUILD_CERTIFICATE_BASE64 }}
+          APPLE_P12_PASSWORD: ${{ secrets.APPLE_P12_PASSWORD }}
+          APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          # for notarization
           APPLE_ID: ${{ vars.APPLE_ID }}
-          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
           APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
-          # create temporary zip for notarization submission
-          zip -r castle-model-viewer-notarize.zip castle-model-viewer.app/
-          xcrun notarytool submit castle-model-viewer-notarize.zip \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" \
-            --wait
-          xcrun stapler staple castle-model-viewer.app/
-          rm -f castle-model-viewer-notarize.zip
+          pack/macos/setup_signing
+          pack/macos/sign_notarize_bundle \
+            castle-model-viewer.app \
+            castle-model-viewer \
+            castle-model-converter
 
       - name: Package To Zip (macOS)
         if: ${{ matrix.is_macos }}
