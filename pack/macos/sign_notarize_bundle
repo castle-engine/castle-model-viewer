@@ -1,0 +1,76 @@
+#!/bin/bash
+set -euo pipefail
+
+# ------------------------------------------------------------------------------
+# Sign and notarize the app bundle.
+#
+# Codesigning follows
+# https://developer.apple.com/documentation/xcode/creating-distribution-signed-code-for-the-mac
+# Notarization follows
+# https://developer.apple.com/documentation/security/customizing-the-notarization-workflow?language=objc
+#
+# Options:
+# $1 is bundle directory (like "castle-model-viewer.app")
+# $2 is main executable name (like "castle-model-viewer")
+# $3 is additional executable name in ${BUNDLE}/Contents/MacOS/
+#    (like "castle-model-converter"), omit this parameter if none.
+# ------------------------------------------------------------------------------
+
+BUNDLE="$1"
+MAIN_EXE="$2"
+ADDITIONAL_EXE="$3:-"
+shift 3
+
+echo '-------------------------------'
+echo 'Checking is our APPLE_IDENTITY valid (should be in the keychain):'
+security find-identity -p codesigning -v
+if ! grep --fixed-strings "$APPLE_IDENTITY" <(security find-identity -p codesigning -v); then
+  echo 'ERROR: APPLE_IDENTITY not found in the keychain!'
+  exit 1
+fi
+
+echo '-------------------------------'
+echo 'Signing the app bundle:'
+if [ -n "$ADDITIONAL_EXE" ]; then
+  codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "${BUNDLE}/Contents/MacOS/${ADDITIONAL_EXE}"
+fi
+# command below should sign the main executable
+codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "${BUNDLE}"
+
+echo '-------------------------------'
+echo 'Checking validity of the signed app bundle (without --deep):'
+codesign -d -vv "${BUNDLE}"
+codesign -d -vv "${BUNDLE}/Contents/MacOS/${MAIN_EXE}"
+if [ -n "$ADDITIONAL_EXE" ]; then
+  codesign -d -vv "${BUNDLE}/Contents/MacOS/${ADDITIONAL_EXE}"
+fi
+
+echo '-------------------------------'
+echo 'Checking validity of the signed app bundle (with --deep):'
+codesign -d -vv --deep "${BUNDLE}"
+
+# Note that Apple notarization process is seriously FUBAR.
+# We need to create a temporay zip with app bundle (because "notarytool submit"
+# wants zip, not app bundle),
+# but then we need to "staple" the app bundle (*not* zip),
+# and only later we can make proper release zip.
+
+echo '-------------------------------'
+echo 'Notarizing the app bundle:'
+
+# create temporary zip for notarization submission
+# Note: This could exclude, in the future, application data.
+# Notarization only actually looks at executables in the application bundle,
+# though we have to "staple" whole bundle.
+rm -f temp-notarize.zip
+zip -r temp-notarize.zip ${BUNDLE}/
+xcrun notarytool submit temp-notarize.zip \
+  --apple-id "$APPLE_ID" \
+  --password "$APPLE_APP_PASSWORD" \
+  --team-id "$APPLE_TEAM_ID" \
+  --wait
+rm -f temp-notarize.zip
+
+echo '-------------------------------'
+echo 'Stapling the app bundle:'
+xcrun stapler staple ${BUNDLE}
