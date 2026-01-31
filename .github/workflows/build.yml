@@ -135,10 +135,11 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
           /tmp/castle-build-ci/apple/setup_signing
+          /tmp/castle-build-ci/apple/sign_executable \
+            castle-model-viewer.app/Contents/MacOS/castle-model-converter
           /tmp/castle-build-ci/apple/sign_notarize_bundle \
             castle-model-viewer.app \
-            castle-model-viewer \
-            castle-model-converter
+            castle-model-viewer
 
       - name: Package To Zip (macOS)
         if: ${{ matrix.is_macos }}
