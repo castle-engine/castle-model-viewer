@@ -134,8 +134,8 @@ jobs:
           APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
-          pack/macos/setup_signing
-          pack/macos/sign_notarize_bundle \
+          /tmp/castle-build-ci/apple/setup_signing
+          /tmp/castle-build-ci/apple/sign_notarize_bundle \
             castle-model-viewer.app \
             castle-model-viewer \
             castle-model-converter
