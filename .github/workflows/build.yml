@@ -108,18 +108,64 @@ jobs:
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package
 
-      - name: Package (macOS)
+      - name: Build (macOS)
         if: ${{ matrix.is_macos }}
         # Special order for macOS:
         # - First compile and package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
-        # - zip it manually
-        # (TODO: we could add file to zip created by initial "package" instead?)
+        # - zip it manually (after signing).
         run: |
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --package-format=mac-app-bundle
-
           cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
+
+      # Follow https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
+      # to sign macOS application
+      - name: Install the Apple certificate and provisioning profiles (macOS)
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.APPLE_BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile (for mobile targets)
+          #mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          #cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+          # Follow
+          # https://developer.apple.com/documentation/xcode/creating-distribution-signed-code-for-the-mac
+
+      - name: Sign (macOS)
+        run: |
+          security find-identity -p codesigning -v
+          codesign -s "Developer ID Application" --timestamp -o runtime "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
+          codesign -s "Developer ID Application" --timestamp -o runtime "castle-model-viewer.app"
+          codesign -d -vv "castle-model-viewer.app"
+          codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
+          codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-viewer"
+
+      - name: Package To Zip (macOS)
+        if: ${{ matrix.is_macos }}
+        run: |
           VERSION=`castle-engine output version`
           ZIPNAME=castle-model-viewer-"${VERSION}"-${{ matrix.build_os }}-${{ matrix.build_cpu }}.zip
           zip -r "${ZIPNAME}" castle-model-viewer.app/
