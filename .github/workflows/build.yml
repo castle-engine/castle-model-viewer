@@ -160,7 +160,7 @@ jobs:
       - name: Sign (macOS)
         if: ${{ matrix.is_macos }}
         env:
-          APPLE_IDENTITY: "Developer ID Application: MICHALIS KAMBURELIS (HJ95YRBGJZ)"
+          APPLE_IDENTITY: ${{ vars.APPLE_IDENTITY }}
         run: |
           security find-identity -p codesigning -v
           codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
@@ -183,9 +183,9 @@ jobs:
       - name: Notarize (macOS)
         if: ${{ matrix.is_macos }}
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID: ${{ vars.APPLE_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
         run: |
           # create temporary zip for notarization submission
           zip -r castle-model-viewer-notarize.zip castle-model-viewer.app/
@@ -195,6 +195,7 @@ jobs:
             --team-id "$APPLE_TEAM_ID" \
             --wait
           xcrun stapler staple castle-model-viewer.app/
+          rm -f castle-model-viewer-notarize.zip
 
       - name: Package To Zip (macOS)
         if: ${{ matrix.is_macos }}
