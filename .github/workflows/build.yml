@@ -151,10 +151,12 @@ jobs:
           # https://developer.apple.com/documentation/xcode/creating-distribution-signed-code-for-the-mac
 
       - name: Sign (macOS)
+        env:
+          APPLE_IDENTITY: "Developer ID Application: MICHALIS KAMBURELIS (HJ95YRBGJZ)"
         run: |
           security find-identity -p codesigning -v
-          codesign -s "Developer ID Application" --timestamp -o runtime "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
-          codesign -s "Developer ID Application" --timestamp -o runtime "castle-model-viewer.app"
+          codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
+          codesign -s "$APPLE_IDENTITY" --timestamp -o runtime "castle-model-viewer.app"
           codesign -d -vv "castle-model-viewer.app"
           codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-converter"
           codesign -d -vv "castle-model-viewer.app/Contents/MacOS/castle-model-viewer"
