@@ -35,7 +35,7 @@ This parameter is optional. If not provided, the output is written to the _stand
 
 == Examples
 
-```bash
+```shell
 # Convert glTF to X3D
 castle-model-converter input.gltf output.x3d
 
