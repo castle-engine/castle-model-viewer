@@ -111,7 +111,7 @@ jobs:
         run: |
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --package-format=mac-app-bundle
-          cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
+          cp castle-model-converter "`castle-engine output caption`.app/Contents/MacOS/"
 
       - name: Sign and Notarize (macOS)
         if: ${{ runner.os == 'macOS' }}
@@ -128,7 +128,7 @@ jobs:
         run: |
           /tmp/castle-build-ci/apple/setup_signing
           /tmp/castle-build-ci/apple/sign_executable \
-            castle-model-viewer.app/Contents/MacOS/castle-model-converter
+            "`castle-engine output caption`.app/Contents/MacOS/castle-model-converter"
           /tmp/castle-build-ci/apple/sign_notarize_bundle \
             "`castle-engine output caption`.app" \
             "`castle-engine output executable-name`"
