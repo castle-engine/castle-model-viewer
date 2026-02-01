@@ -79,15 +79,6 @@ jobs:
           macos-latest,
           macos-15-intel # last macOS with Intel
         ]
-        include:
-        - runner: macos-latest
-          is_macos: true
-          build_os: darwin
-          build_cpu: aarch64
-        - runner: macos-15-intel
-          is_macos: true
-          build_os: darwin
-          build_cpu: x86_64
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
@@ -99,17 +90,18 @@ jobs:
           git clone https://github.com/castle-engine/castle-build-ci.git \
             --depth=1 --single-branch --branch=master
           castle-build-ci/install_dependencies
-          castle-build-ci/setup_castle_engine
+          # Remove --castle-engine-version=master, once proper version in CGE snapshot
+          castle-build-ci/setup_castle_engine --castle-engine-version=master
 
       # Package application
       - name: Package (non macOS)
-        if: ${{ ! matrix.is_macos }}
+        if: ${{ ! runner.os == 'macOS' }}
         run: |
           castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package
 
-      - name: Build (macOS)
-        if: ${{ matrix.is_macos }}
+      - name: Package to Bundle (macOS)
+        if: ${{ runner.os == 'macOS' }}
         # Special order for macOS:
         # - First compile and package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
@@ -122,7 +114,7 @@ jobs:
           cp castle-model-converter castle-model-viewer.app/Contents/MacOS/
 
       - name: Sign and Notarize (macOS)
-        if: ${{ matrix.is_macos }}
+        if: ${{ runner.os == 'macOS' }}
         env:
           # for codesigning
           APPLE_IDENTITY: ${{ vars.APPLE_IDENTITY }}
@@ -138,16 +130,13 @@ jobs:
           /tmp/castle-build-ci/apple/sign_executable \
             castle-model-viewer.app/Contents/MacOS/castle-model-converter
           /tmp/castle-build-ci/apple/sign_notarize_bundle \
-            castle-model-viewer.app \
-            castle-model-viewer
+            "`castle-engine output caption`.app" \
+            "`castle-engine output executable-name`"
 
-      - name: Package To Zip (macOS)
-        if: ${{ matrix.is_macos }}
+      - name: Package to Zip (macOS)
+        if: ${{ runner.os == 'macOS' }}
         run: |
-          VERSION=`castle-engine output version`
-          ZIPNAME=castle-model-viewer-"${VERSION}"-${{ matrix.build_os }}-${{ matrix.build_cpu }}.zip
-          zip -r "${ZIPNAME}" castle-model-viewer.app/
-          echo "Packed to ${ZIPNAME}"
+          zip -r "`castle-engine output package-name`" "`castle-engine output caption`.app/"
 
       - name: Archive Artifacts
         uses: actions/upload-artifact@v6
