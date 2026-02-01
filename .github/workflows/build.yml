@@ -90,8 +90,7 @@ jobs:
           git clone https://github.com/castle-engine/castle-build-ci.git \
             --depth=1 --single-branch --branch=master
           castle-build-ci/install_dependencies
-          # TODO: Remove --castle-engine-version=master, once proper version in CGE snapshot
-          castle-build-ci/setup_castle_engine --castle-engine-version=master
+          castle-build-ci/setup_castle_engine
 
       # Package application
       - name: Package (non macOS)
