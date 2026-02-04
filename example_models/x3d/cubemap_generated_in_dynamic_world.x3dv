@@ -1,23 +1,6 @@
 #X3D V3.2 utf8
 PROFILE Interchange
 
-EXTERNPROTO KambiAppearance [
-  inputOutput SFNode material
-  inputOutput SFNode texture
-  inputOutput SFNode textureTransform
-  inputOutput SFNode fillProperties
-  inputOutput SFNode lineProperties
-  inputOutput SFNode metadata
-  inputOutput MFNode shaders
-  inputOutput SFNode normalMap
-  inputOutput SFNode heightMap
-  inputOutput SFFloat heightMapScale
-  inputOutput SFNode blendMode
-  inputOutput SFBool shadowCaster
-] [ "urn:castle-engine.io:node:KambiAppearance",
-    "https://castle-engine.io/fallback_prototypes.x3dv#KambiAppearance"
-]
-
 EXTERNPROTO EditableTransformXZ [
   inputOutput MFNode children
   inputOutput SFVec3f translation
@@ -47,7 +30,7 @@ EXTERNPROTO Teapot [
 EditableTransformXZ {
   translation -1.5 1 2.5
   children Shape {
-    appearance KambiAppearance {
+    appearance Appearance {
       material Material { }
       texture DEF GenTex1 GeneratedCubeMapTexture {
         update "ALWAYS"
@@ -73,7 +56,7 @@ EditableTransformXZ {
   translation -2 2 -2.5
   scale 1 1 1
   children Shape {
-    appearance KambiAppearance {
+    appearance Appearance {
       material Material { }
       texture MultiTexture {
         texture [

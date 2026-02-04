@@ -1,23 +1,6 @@
 #X3D V3.2 utf8
 PROFILE Interchange
 
-EXTERNPROTO KambiAppearance [
-  inputOutput SFNode material
-  inputOutput SFNode texture
-  inputOutput SFNode textureTransform
-  inputOutput SFNode fillProperties
-  inputOutput SFNode lineProperties
-  inputOutput SFNode metadata
-  inputOutput MFNode shaders
-  inputOutput SFNode normalMap
-  inputOutput SFNode heightMap
-  inputOutput SFFloat heightMapScale
-  inputOutput SFNode blendMode
-  inputOutput SFBool shadowCaster
-] [ "urn:castle-engine.io:node:KambiAppearance",
-    "https://castle-engine.io/fallback_prototypes.x3dv#KambiAppearance"
-]
-
 Inline { url "test_world.x3d" }
 
 NavigationInfo {

@@ -20,7 +20,7 @@ PROTO ViewportInfo [
             children Transform {
               translation -0.1 0.07 -0.2
               children Shape {
-                appearance KambiAppearance {
+                appearance Appearance {
                   material Material { diffuseColor IS textColor }
                   shadowCaster FALSE
                 }
