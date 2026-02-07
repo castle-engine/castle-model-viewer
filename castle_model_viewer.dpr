@@ -1365,6 +1365,7 @@ procedure WriteModel(const ASceneUrl: String;
 var
   Node: TX3DRootNode;
   OutputMime: String;
+  SaveOptions: TCastleSceneSaveOptions;
 begin
   Node := LoadNode(ASceneUrl);
   try
@@ -1377,7 +1378,12 @@ begin
       else raise EInternalError.Create('Saving Encoding?');
       {$endif}
     end;
-    SaveNode(Node, StdOutStream, OutputMime, SaveGenerator, ExtractURIName(ASceneUrl));
+    SaveOptions := TCastleSceneSaveOptions.Create(nil);
+    try
+      SaveOptions.Generator := SaveGenerator;
+      SaveOptions.Source := ExtractURIName(ASceneUrl);
+      SaveNode(Node, StdOutStream, OutputMime, SaveOptions);
+    finally FreeAndNil(SaveOptions) end;
   finally FreeAndNil(Node) end;
 end;
 
@@ -2770,6 +2776,7 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
   procedure SaveAs;
   var
     ProposedSaveName: string;
+    SaveOptions: TCastleSceneSaveOptions;
   begin
     ProposedSaveName := SceneUrl;
 
@@ -2783,8 +2790,13 @@ procedure TEventsHandler.MenuClick(const MenuItem: TMenuItem);
       try
       {$endif}
 
-        SaveNode(Scene.RootNode, ProposedSaveName, SaveGenerator,
-          ExtractURIName(SceneUrl));
+        SaveOptions := TCastleSceneSaveOptions.Create(nil);
+        try
+          SaveOptions.Generator := SaveGenerator;
+          SaveOptions.Source := ExtractURIName(SceneUrl);
+          SaveNode(Scene.RootNode, ProposedSaveName, SaveOptions);
+        finally FreeAndNil(SaveOptions) end;
+
 
       {$ifdef CATCH_EXCEPTIONS}
       except

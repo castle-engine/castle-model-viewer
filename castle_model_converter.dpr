@@ -164,6 +164,7 @@ var
   Node: TX3DRootNode;
   EventsHandler: TEventsHandler;
   OutputStream: TStream;
+  SaveOptions: TCastleSceneSaveOptions;
 begin
   ApplicationProperties.ApplicationName := 'castle-model-converter';
   ApplicationProperties.Version := Version;
@@ -226,9 +227,12 @@ begin
         else
           OutputStream := StdOutStream;
 
-        SaveNode(Node, OutputStream, OutputMimeType,
-          { generator (metadata) } 'castle-model-converter, https://castle-engine.io/castle-model-converter',
-          { source (metadata) } ExtractURIName(InputUrl));
+        SaveOptions := TCastleSceneSaveOptions.Create(nil);
+        try
+          SaveOptions.Generator := 'castle-model-converter, https://castle-engine.io/castle-model-converter';
+          SaveOptions.Source := ExtractURIName(InputUrl);
+          SaveNode(Node, OutputStream, OutputMimeType, SaveOptions);
+        finally FreeAndNil(SaveOptions) end;
 
         if OutputStream <> StdOutStream then
           FreeAndNil(OutputStream);
