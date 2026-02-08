@@ -4091,6 +4091,12 @@ begin
   Theme.ImagesPersistent[tiButtonDisabled].OwnsImage := false;
   Theme.ImagesPersistent[tiButtonDisabled].ProtectedSides.AllSides := 2;
 
+  { for a cross-platform application (suitable also for mobile),
+    this is too early to access files, as we're before Application.OnInitialize.
+    But this is desktop-only application, so it's safe.
+    Setting this avoids warnings in log. }
+  ApplicationProperties._FileAccessSafe := true;
+
   UserConfig.Load;
 
   SoundEngine.DistanceModel := dmLinear; // corresponds to X3D spec closely
