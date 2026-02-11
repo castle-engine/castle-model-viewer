@@ -29,7 +29,7 @@
   the castle-model-viewer source code isn't the best place to study.
   It's long and uses some obscure CGE features sometimes.
   Look instead at Castle Game Engine examples and manual:
-  https://castle-engine.io/manual_intro.php .
+  https://castle-engine.io/manual .
 }
 
 program castle_model_viewer;
