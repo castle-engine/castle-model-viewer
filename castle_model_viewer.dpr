@@ -3198,6 +3198,9 @@ begin
 
   //  225: PrecalculateAnimationFromEvents;
 
+    226: Scene.RenderOptions.SkinnedAnimationShaders :=
+      not Scene.RenderOptions.SkinnedAnimationShaders;
+
     22800: Scene.AnimateSkipTicks := 0;
     22810: Scene.AnimateSkipTicks := 1;
     22820: Scene.AnimateSkipTicks := 2;
@@ -3543,6 +3546,8 @@ begin
     M.Append(TMenuItem.Create('Optimize 1 (Skip Updating for 1 Frame Between)', 22810));
     M.Append(TMenuItem.Create('Optimize 2 (Skip Updating for 2 Frames Between)', 22820));
     // M.Append(TMenuItem.Create('Precalculate Animation from VRML/X3D Events ...', 225));
+    M.Append(TMenuSeparator.Create);
+    M.Append(TMenuItemChecked.Create('Enable Skinned Animation on GPU Shaders', 226, Scene.RenderOptions.SkinnedAnimationShaders, true));
     Result.Append(M);
   M := TMenu.Create('_Edit');
     MenuHideSelectedShape :=
