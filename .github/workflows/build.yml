@@ -63,7 +63,7 @@ jobs:
           castle-engine compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --os=linux --cpu=x86_64
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: windows-linux-builds
           path: |
@@ -138,7 +138,7 @@ jobs:
           zip -r "`castle-engine output package-name`" "`castle-engine output caption`.app/"
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.runner }}-build
           path: |
@@ -198,7 +198,7 @@ jobs:
             castle-engine package
 
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: raspberry-pi-${{ matrix.arch }}-build
           path: |
