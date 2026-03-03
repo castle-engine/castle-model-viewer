@@ -298,7 +298,7 @@ jobs:
 
     steps:
     - name: Download packaged releases
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         merge-multiple: true
     - name: List downloaded files
