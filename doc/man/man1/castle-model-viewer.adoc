@@ -15,7 +15,7 @@ castle-model-viewer - Viewer for 3D and 2D models, like glTF, X3D, VRML and more
 
 == Description
 
-*castle-model-viewer* is a viewer for 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, MD3, OBJ, STL, Collada, Spine JSON, sprite sheets and more.
+*castle-model-viewer* is a viewer for 3D and 2D model formats supported by Castle Game Engine: glTF, X3D, VRML, MD3, OBJ, STL, PLY, Collada, Spine JSON, sprite sheets and more.
 
 Supports viewing the scene in the "Examine" mode and walking in the virtual world with collision detection and gravity. Many 3D graphic effects are available like mirrors, shadows, shaders. We can also convert between some model formats.
 

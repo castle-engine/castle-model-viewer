@@ -3146,6 +3146,7 @@ begin
              '- Wavefront OBJ' + NL +
              '- Collada' + NL +
              '- STL' + NL +
+             '- PLY' + NL +
              NL +
              'Version ' + Version + '.' + NL +
              'See ' + ViewerUrl + ' .' + NL +

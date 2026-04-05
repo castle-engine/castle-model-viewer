@@ -16,6 +16,7 @@ Supported formats:
 - Wavefront OBJ
 - Collada
 - STL
+- PLY
 
 See also [Castle Game Engine model formats](https://castle-engine.io/creating_data_model_formats.php).
 
