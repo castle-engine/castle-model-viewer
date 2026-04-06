@@ -22,7 +22,7 @@
 
 { Model viewer for all scene formats supported by Castle Game Engine
   (glTF, X3D, Spine JSON, sprite sheets... ).
-  See https://castle-engine.io/creating_data_model_formats.php for a list of supported formats.
+  See https://castle-engine.io/model_formats for a list of supported formats.
   See https://castle-engine.io/castle-model-viewer for user documentation.
 
   Note: If you want to learn how to use "Castle Game Engine",
