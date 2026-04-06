@@ -11,7 +11,7 @@ They show [various supported 3D and 2D data formats](https://castle-engine.io/cr
 
 ## More
 
-See the [demo models](https://castle-engine.io/demo_models.php) which contain much more models that demonstrate our features. You can just [clone demo-models from GitHub](https://github.com/castle-engine/demo-models).
+See the [demo models](https://castle-engine.io/demo_models) which contain much more models that demonstrate our features. You can just [clone demo-models from GitHub](https://github.com/castle-engine/demo-models).
 
 ## License
 
