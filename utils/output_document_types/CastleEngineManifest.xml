@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="output_document_types"
+  standalone_source="output_document_types.dpr">
+  <data exists="false" />
+  <compiler_options>
+    <defines>
+      <define>CASTLE_INTERNAL_EXPOSE_MODEL_FORMATS</define>
+    </defines>
+  </compiler_options>
+</project>

@@ -1,0 +1,1 @@
+## Generate piece of CastleEngineManifest.xml to register supported model formats
