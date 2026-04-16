@@ -1,5 +1,5 @@
 {
-  Copyright 2019-2023 Michalis Kamburelis.
+  Copyright 2019-2026 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
@@ -36,7 +36,7 @@ uses SysUtils, Classes,
   CastleUtils;
 
 type
-  TStateDialogBox = class(TCastleView)
+  TViewDialogBox = class(TCastleView)
   strict private
     FButtonClicked: Boolean;
     LabelMessage: TCastleLabel;
@@ -52,17 +52,17 @@ type
     property ButtonClicked: Boolean read FButtonClicked;
   end;
 
-procedure TStateDialogBox.ClickOK(Sender: TObject);
+procedure TViewDialogBox.ClickOK(Sender: TObject);
 begin
   FButtonClicked := true;
 end;
 
-procedure TStateDialogBox.ClickCopyClipboard(Sender: TObject);
+procedure TViewDialogBox.ClickCopyClipboard(Sender: TObject);
 begin
   Clipboard.AsText := LabelMessage.Caption;
 end;
 
-function TStateDialogBox.Press(const Event: TInputPressRelease): boolean;
+function TViewDialogBox.Press(const Event: TInputPressRelease): boolean;
 begin
   Result := inherited;
   if Result then Exit;
@@ -80,7 +80,7 @@ begin
   end;
 end;
 
-procedure TStateDialogBox.Start;
+procedure TViewDialogBox.Start;
 var
   UiOwner: TComponent;
   Ui: TCastleUserInterface;
@@ -106,14 +106,14 @@ end;
 procedure WindowMessageOK(const S: String);
 var
   Window: TCastleWindow;
-  StateDialogBox: TStateDialogBox;
+  StateDialogBox: TViewDialogBox;
 begin
   Window := TCastleWindow.Create(nil);
   try
     Window.Open;
 
-    { add TStateDialogBox instance to window }
-    StateDialogBox := TStateDialogBox.Create(Window);
+    { add TViewDialogBox instance to window }
+    StateDialogBox := TViewDialogBox.Create(Window);
     StateDialogBox.Message := S;
     Window.Container.View := StateDialogBox;
 
@@ -121,10 +121,8 @@ begin
           (not StateDialogBox.ButtonClicked) do
       Application.ProcessAllMessages;
 
-    { Call StateDialogBox.Stop when Window is still assigned,
-      otherwise TStateDialogBox.Container would turn into invalid value.
-      TODO: TCastleView should be ready for the container being freed while it works. }
-    Window.Container.View := nil;
+    { Freeing the window will also free Container, which will stop
+      the view TViewDialogBox. So we don't really need to do anything here. }
   finally FreeAndNil(Window) end;
 end;
 
