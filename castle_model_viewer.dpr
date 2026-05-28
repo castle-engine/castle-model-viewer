@@ -1,5 +1,5 @@
 {
-  Copyright 2002-2025 Michalis Kamburelis.
+  Copyright 2002-2026 Michalis Kamburelis.
 
   This file is part of "castle-model-viewer".
 
