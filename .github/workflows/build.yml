@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     container: kambi/castle-engine-cloud-builds-tools:cge-unstable
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Package application:
       # - castle-model-converter first, it will be packaged in castle-model-viewer CastleEngineManifest.xml
@@ -81,7 +81,7 @@ jobs:
         ]
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE
       - name: Setup Castle Game Engine
@@ -162,7 +162,7 @@ jobs:
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pguyot/arm-runner-action@v2
         with:
           base_image: ${{ matrix.base_image }}
@@ -219,7 +219,7 @@ jobs:
         ]
     runs-on: ${{ matrix.host-label }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Use subdirectory, to not collide with castle-build-ci
           # in subdirectory too.
@@ -275,7 +275,7 @@ jobs:
         ]
     runs-on: ${{ matrix.runner }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Setup Castle Game Engine
       run: |
         cd /tmp/ # temporary directory, to be separate from the current project files
@@ -325,7 +325,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Update Release Tag
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
