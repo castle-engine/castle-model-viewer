@@ -249,10 +249,16 @@ jobs:
           git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
           castle-build-ci/setup_castle_engine
 
+      # Calling with --use-delphi-dcc, as this way we pass Castle Game Engine
+      # unit paths to dcc. The "msbuild" way of building Delphi projects
+      # (without --use-delphi-dcc) requires that Delphi knows paths to CGE,
+      # either from Delphi settings (but we don't configure Delphi like this on
+      # our runners), or from the DPROJ information.
+
       - name: Delphi Build (Win32)
-        run: cd app && castle-engine compile --compiler=delphi --os=win32 --cpu=i386
+        run: cd app && castle-engine compile --use-delphi-dcc --compiler=delphi --os=win32 --cpu=i386
       - name: Delphi Build (Win64)
-        run: cd app && castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
+        run: cd app && castle-engine compile --use-delphi-dcc --compiler=delphi --os=win64 --cpu=x86_64
 
   # Build using Lazarus LPI, just to test it is OK.
   # We don't actually release such version -- you don't need Lazarus
