@@ -98,6 +98,7 @@ begin
           OptionDescription('--no-x3d-extensions', 'Do not use Castle Game Engine extensions. This will output file valid in all X3D browsers (but maybe with some CGE-specific features missing).') +NL+
           OptionDescription('--enable-downloads', 'Enable (blocking) downloads from the net, e.g. to download a texture or Inlined model referenced by htt(s) protocol).') +NL+
           OptionDescription('--validate', 'Only validate the input, without any output (the output URL is not allowed in this case). Moreover, if there will be any warning or error, we will exit with non-zero status (by default, only errors cause non-zero status).') +NL+
+          OptionDescription('-i / --identify', 'Print information about the input model, like its X3D version and used extensions. This is useful to check if the model will work in all X3D browsers or only in Castle Game Engine.') +NL+
           OptionDescription('--stdin-url', 'If input URL is "-", then we read file contents from the standard input. In this case, you can use this option to provide a "pretend" URL for the input. We will use it to resolve relative URLs inside the input (e.g. to glTF binary blobs) and to guess the input file type. Default is "stdin.x3dv" in current directory, so we assume it is X3D (classic encoded), and resolve with respect to the current directory.') +NL+
           OptionDescription('--stdout-url', 'If output URL is "-", then we write file contents to the standard output. In this case, you can use this option to provide a "pretend" URL for the output. We will use it to determine the output file type, e.g. "out.x3d" to output X3D XML encoding or "out.x3dv" to output X3D classic encoding.') +NL+
           OptionDescription('--float-precision DIGITS', 'Number of digits after the decimal point when writing floating-point numbers. Default is to write all possibly relevant digits. Specify any value >= 0 to use this number of digits.') +NL+
@@ -218,7 +219,7 @@ begin
         Writeln('      ', Extensions[I]);
     end else
     begin
-      Writeln('  Models does not use any X3D extensions.');
+      Writeln('  Model does not use any X3D extensions.');
       Writeln('    This model should work in any X3D browser.');
     end;
   finally FreeAndNil(Extensions) end;
