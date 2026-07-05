@@ -1,5 +1,5 @@
 {
-  Copyright 2003-2024 Michalis Kamburelis.
+  Copyright 2003-2026 Michalis Kamburelis.
 
   This file is part of "Castle Game Engine".
 
@@ -42,7 +42,7 @@
 
 program castle_model_converter;
 
-uses SysUtils, Classes,
+uses SysUtils, Classes, StrUtils,
   CastleHttps, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
   CastleParameters, CastleDownload,
   CastleFilesUtils, CastleUriUtils, CastleApplicationProperties, CastleLog,
@@ -51,12 +51,13 @@ uses SysUtils, Classes,
 
 var
   Validate: Boolean = false;
+  Identify: Boolean = false;
   StdInUrl: String = 'stdin.x3dv';
   StdOutUrl: String = 'stdout.x3dv';
   OutputX3dEncoding: String = '';
 
 const
-  Options: array [0..9] of TOption =
+  Options: array [0..10] of TOption =
   (
     (Short: 'h'; Long: 'help'; Argument: oaNone),
     (Short: 'v'; Long: 'version'; Argument: oaNone),
@@ -67,7 +68,8 @@ const
     (Short:  #0; Long: 'validate'; Argument: oaNone),
     (Short:  #0; Long: 'stdin-url'; Argument: oaRequired),
     (Short:  #0; Long: 'stdout-url'; Argument: oaRequired),
-    (Short:  #0; Long: 'float-precision'; Argument: oaRequired)
+    (Short:  #0; Long: 'float-precision'; Argument: oaRequired),
+    (Short: 'i'; Long: 'identify'; Argument: oaNone)
   );
 
 procedure OptionProc(OptionNum: Integer; HasArgument: boolean;
@@ -127,6 +129,7 @@ begin
         else
           FloatOutputFormat := '%.' + IntToStr(FloatPrecision) + 'f';
       end;
+    10:Identify := true;
     else raise EInternalError.Create('OptionProc');
   end;
 end;
@@ -156,6 +159,69 @@ begin
         because LoadNode does AbsoluteUri at start. } StdInUrl,
       { MimeType } UriMimeType(StdInUrl));
   finally FreeAndNil(Stream) end;
+end;
+
+type
+  { Gather extension names from all nodes enumerated using @link(Node). }
+  TGetExtensionsHelper = class
+    ExtensionNames: TStringList;
+    procedure Node(Node: TX3DNode);
+  end;
+
+procedure TGetExtensionsHelper.Node(Node: TX3DNode);
+begin
+  Node.GetExtensions(ExtensionNames);
+end;
+
+procedure DoIdentify(const Node: TX3DRootNode; const NodeUrl: String);
+var
+  Extensions: TStringList;
+  Helper: TGetExtensionsHelper;
+  MimeType, VersionPrefix, VersionStr: String;
+  I: Integer;
+begin
+  Writeln(NodeUrl, ':');
+
+  if NodeUrl = '-' then
+    MimeType := UriMimeType(StdInUrl)
+  else
+    MimeType := UriMimeType(NodeUrl);
+  Writeln('  Mime Type: ', MimeType);
+
+  if Node.HasForceVersion then
+  begin
+    VersionPrefix := IfThen(Node.ForceVersion.Major <= 2, 'VRML', 'X3D');
+    VersionStr := Format('%s %d.%d', [
+      VersionPrefix,
+      Node.ForceVersion.Major,
+      Node.ForceVersion.Minor
+    ]);
+    Writeln('  Loaded as ', VersionStr);
+  end;
+
+  Extensions := TStringList.Create;
+  try
+    Extensions.Sorted := true;
+    Extensions.Duplicates := dupIgnore;
+    Helper := TGetExtensionsHelper.Create;
+    try
+      Helper.ExtensionNames := Extensions;
+      Node.EnumerateNodes(TX3DNode, {$ifdef FPC}@{$endif} Helper.Node, false);
+    finally FreeAndNil(Helper) end;
+
+    if Extensions.Count > 0 then
+    begin
+      Writeln('  Model uses X3D extensions.');
+      Writeln('    This model may require Castle Game Engine / Castle Model Viewer and not work in other X3D browsers.');
+      Writeln(Format('    Extensions used (%d):', [Extensions.Count]));
+      for I := 0 to Extensions.Count - 1 do
+        Writeln('      ', Extensions[I]);
+    end else
+    begin
+      Writeln('  Models does not use any X3D extensions.');
+      Writeln('    This model should work in any X3D browser.');
+    end;
+  finally FreeAndNil(Extensions) end;
 end;
 
 procedure Run;
@@ -194,6 +260,10 @@ begin
       Node := LoadNodeStandardInput
     else
       Node := LoadNode(InputUrl);
+
+    // do --identify, if requested
+    if Identify then
+      DoIdentify(Node, InputUrl);
 
     // calculate OutputMimeType
     if OutputUrl = '-' then
