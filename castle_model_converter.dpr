@@ -42,6 +42,8 @@
 
 program castle_model_converter;
 
+{$ifdef MSWINDOWS} {$apptype CONSOLE} {$endif}
+
 uses SysUtils, Classes, StrUtils,
   CastleHttps, CastleUtils, CastleClassUtils, X3DNodes, X3DLoad,
   CastleParameters, CastleDownload,
@@ -254,7 +256,7 @@ begin
 
   EventsHandler := TEventsHandler.Create;
   try
-    ApplicationProperties.OnWarning.Add(@EventsHandler.HandleWarning);
+    ApplicationProperties.OnWarning.Add({$ifdef FPC}@{$endif} EventsHandler.HandleWarning);
 
     // load the model, thus calculating Node
     if InputUrl = '-' then
