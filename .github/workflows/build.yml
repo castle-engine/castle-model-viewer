@@ -250,8 +250,12 @@ jobs:
           castle-build-ci/setup_castle_engine
       - name: Delphi Build (Win32)
         run: cd app && castle-engine compile --compiler=delphi --os=win32 --cpu=i386
+      - name: Delphi Build Converter (Win32)
+        run: cd app && castle-engine compile --compiler=delphi --os=win32 --cpu=i386 --manifest-name=CastleEngineManifest.converter.xml
       - name: Delphi Build (Win64)
         run: cd app && castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64
+      - name: Delphi Build Converter (Win64)
+        run: cd app && castle-engine compile --compiler=delphi --os=win64 --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
 
   # Build using Lazarus LPI, just to test it is OK.
   # We don't actually release such version -- you don't need Lazarus
