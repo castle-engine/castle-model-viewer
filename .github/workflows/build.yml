@@ -126,7 +126,7 @@ jobs:
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
           /tmp/castle-build-ci/apple/setup_signing
-          /tmp/castle-build-ci/apple/sign_executable \
+          /tmp/castle-build-ci/apple/sign_executables \
             "`castle-engine output caption`.app/Contents/MacOS/castle-model-converter"
           /tmp/castle-build-ci/apple/sign_notarize_bundle \
             "`castle-engine output caption`.app" \
