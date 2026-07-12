@@ -35,7 +35,18 @@ defaults:
   run:
     shell: bash
 
+# We need "id-token: write, contents: read" to allow Azure federated login.
+# Some jobs will need "contents: write" to allow uploading artifacts.
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
+  # Test build in Docker.
+  # This does not archive artifacts anymore (because Windows builds
+  # need to be signed in Windows runner, in the future they may also need InnoSetup).
+  # It is only useful as a test, of this project and of our Docker image
+  # having cross-compile tools.
   build_docker:
     name: Build From Docker
     runs-on: ubuntu-latest
@@ -62,23 +73,46 @@ jobs:
           make clean
           castle-engine compile --os=linux --cpu=x86_64 --manifest-name=CastleEngineManifest.converter.xml
           castle-engine package --os=linux --cpu=x86_64
-      - name: Archive Artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: windows-linux-builds
-          path: |
-            *.zip
-            *.tar.gz
-          #if-no-files-found: error
 
+  # Build on a few runners with native OS/CPU (not cross-compiling, not in Docker).
   build_runner_native:
     name: Build on Native Runner (target OS/CPU = source OS/CPU)
     strategy:
       matrix:
-        runner: [
-          macos-latest,
-          macos-15-intel # last macOS with Intel
+        # Names correspond to target OS/CPU as called by FPC and CGE.
+        job-name: [
+          darwin-x86_64,
+          darwin-aarch64,
+          win32-i386,
+          win64-x86_64,
+          linux-x86_64
         ]
+        include:
+          - job-name: darwin-x86_64
+            runner: macos-15-intel # last macOS with Intel
+            build_os: darwin
+            build_cpu: x86_64
+
+          - job-name: darwin-aarch64
+            runner: macos-latest
+            build_os: darwin
+            build_cpu: aarch64
+
+          - job-name: win32-i386
+            runner: windows-latest
+            build_os: win32
+            build_cpu: i386
+
+          - job-name: win64-x86_64
+            runner: windows-latest
+            build_os: win64
+            build_cpu: x86_64
+
+          - job-name: linux-x86_64
+            runner: ubuntu-latest
+            build_os: linux
+            build_cpu: x86_64
+
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
@@ -90,26 +124,52 @@ jobs:
           git clone https://github.com/castle-engine/castle-build-ci.git \
             --depth=1 --single-branch --branch=master
           castle-build-ci/install_dependencies
-          castle-build-ci/setup_castle_engine
+          castle-build-ci/setup_castle_engine --os=${{ matrix.build_os }} --cpu=${{ matrix.build_cpu }}
 
-      # Package application
-      - name: Package (non macOS)
-        if: ${{ ! runner.os == 'macOS' }}
+      # Compile application (separate from packaging,
+      # to allow later signing before packaging on macOS and Windows)
+      - name: Compile
         run: |
-          castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
-          castle-engine package
+          castle-engine compile --manifest-name=CastleEngineManifest.converter.xml --os=${{ matrix.build_os }} --cpu=${{ matrix.build_cpu }}
+          castle-engine compile --os=${{ matrix.build_os }} --cpu=${{ matrix.build_cpu }}
+
+      # Sign for Windows, see castle-build-ci/windows/README.md for details.
+      - name: Azure Login (Windows)
+        if: ${{ runner.os == 'Windows' && github.ref == 'refs/heads/master' }}
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign (Windows)
+        if: ${{ runner.os == 'Windows' && github.ref == 'refs/heads/master' }}
+        env:
+          AZURE_ENDPOINT: ${{ vars.AZURE_ENDPOINT }}
+          AZURE_CODESIGNING_ACCOUNT_NAME: ${{ vars.AZURE_CODESIGNING_ACCOUNT_NAME }}
+          AZURE_CERTIFICATE_PROFILE_NAME: ${{ vars.AZURE_CERTIFICATE_PROFILE_NAME }}
+        run: |
+          export AZURE_SIGNING_CLIENT_PARENT="$RUNNER_TEMP/sign-tools/"
+          /tmp/castle-build-ci/windows/setup_signing
+          /tmp/castle-build-ci/windows/sign_executables \
+            "$(castle-engine output executable-name).exe" \
+            "$(castle-engine output --manifest-name=CastleEngineManifest.converter.xml executable-name).exe"
+
+      - name: Package (not macOS)
+        if: ${{ runner.os != 'macOS' }}
+        run: castle-engine package --assume-compiled --os=${{ matrix.build_os }} --cpu=${{ matrix.build_cpu }}
 
       - name: Package to Bundle (macOS)
         if: ${{ runner.os == 'macOS' }}
         # Special order for macOS:
-        # - First compile and package castle-model-viewer, it will be a bundle.
+        # - First package castle-model-viewer, it will be a bundle.
         # - Add 2nd exe "castle-model-converter" to the bundle.
         #
         # We will zip it manually (after signing and notarization),
-        # so we don't do "castle-engine package" for macOS at any point.
+        # so we don't do plain "castle-engine package" (to zip) for macOS
+        # at any point.
         run: |
-          castle-engine compile --manifest-name=CastleEngineManifest.converter.xml
-          castle-engine package --package-format=mac-app-bundle
+          castle-engine package --package-format=mac-app-bundle --assume-compiled --os=${{ matrix.build_os }} --cpu=${{ matrix.build_cpu }}
           cp castle-model-converter "`castle-engine output caption`.app/Contents/MacOS/"
 
       - name: Sign and Notarize (macOS)
@@ -140,12 +200,13 @@ jobs:
       - name: Archive Artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.runner }}-build
+          name: ${{ matrix.job-name }}-build
           path: |
             *.zip
             *.tar.gz
           if-no-files-found: error
 
+  # Raspberry Pi builds are special, using pguyot/arm-runner-action
   build_arm_runner:
     name: Build on ARM Runner (for Raspberry Pi)
     runs-on: ubuntu-latest
@@ -207,7 +268,7 @@ jobs:
           if-no-files-found: error
 
   # Build also with Delphi, just to make sure it goes OK.
-  # We don't build releases with Delphi, but wemake sure that if someone downloads
+  # We don't build releases with Delphi, but we make sure that if someone downloads
   # sources -- they can build with Delphi as well as with FPC.
   build_delphi:
     name: Build Using Delphi
@@ -227,13 +288,16 @@ jobs:
           # ephemeral runner.
           path: app
 
+      # To write multi-line scripts in steps below,
+      # we have to set SHELLOPTS=igncr, otherwise Cygwin/MinGW bash
+      # fails because GitHub Actions create temp scripts with CRLF
+      # line endings.
+      # See https://github.com/cygwinports/bash for docs of "igncr".
+      - name: Make bash multi-line scripts execute OK on Windows
+        if: ${{ runner.os == 'Windows' }}
+        run: echo "SHELLOPTS=igncr" >> $GITHUB_ENV
+
       # Use https://github.com/castle-engine/castle-build-ci to get FPC and CGE.
-      #
-      # See https://yaml-multiline.info/ why we write multi-line like this.
-      # Because of Windows CRLF and bash expecting LF, we cannot just use regular
-      # multi-line string.
-      # We use > and && to concatenate commands.
-      # We also use - to chomp final CRLF which would also trip bash.
       #
       # Note that we don't execute castle-build-ci/install_dependencies ,
       # this is self-hosted runner ->
@@ -244,9 +308,9 @@ jobs:
       # contain leftovers from previous run, we do cleanup at start
       # by "rm -Rf castle-build-ci/".
       - name: Setup Castle Game Engine
-        run: >-
-          rm -Rf castle-build-ci/ &&
-          git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master &&
+        run: |
+          rm -Rf castle-build-ci/
+          git clone https://github.com/castle-engine/castle-build-ci.git --depth=1 --single-branch --branch=master
           castle-build-ci/setup_castle_engine
       - name: Delphi Build (Win32)
         run: cd app && castle-engine compile --compiler=delphi --os=win32 --cpu=i386
@@ -290,15 +354,20 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-
     # Only upload release if all builds, on all runners, succeeded.
     #
-    # Note that build_delphi is not strictly necessary as dependency here
-    # (since it doesn't make any artifacts, it's just a test that compilation
-    # goes OK) but we still want failure there to cause workflow failure,
-    # so that we have to fix it.
-    needs: [build_docker, build_runner_native, build_arm_runner, build_delphi]
-
+    # Note that some things below (that don't make artifacts) are not strictly
+    # necessary as dependency here but we still want failure there to
+    # cause workflow failure, so that we have to fix it.
+    needs: [
+      build_docker,
+      build_runner_native,
+      build_arm_runner,
+      build_delphi,
+      test_lazarus
+    ]
+    permissions:
+      contents: write
     steps:
     - name: Download packaged releases
       uses: actions/download-artifact@v8
@@ -321,6 +390,8 @@ jobs:
     name: Update Release Tag (make release tag point to the build commit on master branch)
     runs-on: ubuntu-latest
     needs: [release]
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v7
     - name: Update Release Tag
