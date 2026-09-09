@@ -8,6 +8,10 @@
     <icon path="windows/castle-model-viewer.ico" />
     <icon path="freedesktop/castle-model-viewer.svg" />
     <icon path="freedesktop/castle-model-viewer_1024.png" />
+    <!-- Note that we don't provide icns version (for macOS bundle).
+      When building for macOS (also needs source platform to be macOS),
+      we will generate the .icns file from the 1024x1024 PNG source.
+    -->
   </icons>
   <dependencies>
     <dependency name="Zlib" /> <!-- read .gz -->
