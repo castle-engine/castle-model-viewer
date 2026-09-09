@@ -20,6 +20,3 @@ $(APP_NAME)_512.png: $(APP_NAME).svg
 	inkscape --export-width=512 --export-height=512 $< --export-filename=$@
 $(APP_NAME)_1024.png: $(APP_NAME).svg
 	inkscape --export-width=1024 --export-height=1024 $< --export-filename=$@
-
-$(APP_NAME).icns: $(APP_NAME).svg
-	TODO/svg_to_icns.sh $< $@
