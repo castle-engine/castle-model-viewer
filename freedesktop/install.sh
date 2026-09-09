@@ -21,10 +21,12 @@ update-mime-database "$SHARE_PREFIX"/mime
 install -d "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
 install --mode 644 "$APP_NAME".svg "$SHARE_PREFIX"/icons/hicolor/scalable/apps/
 
-# Install also 48x48 PNG version, this helps nautilus to display icon
+# Install also PNG versions, this helps nautilus to display icon
 # properly on the desktop.
 install -d "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
-install --mode 644 "$APP_NAME".png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/
+install -d "$SHARE_PREFIX"/icons/hicolor/512x512/apps/
+install --mode 644 "$APP_NAME"_48.png "$SHARE_PREFIX"/icons/hicolor/48x48/apps/"$APP_NAME".png
+install --mode 644 "$APP_NAME"_512.png "$SHARE_PREFIX"/icons/hicolor/512x512/apps/"$APP_NAME".png
 
 # Makes the system aware of new icons, otherwise new icons in ~/.local/share/icons
 # are not immediately visible, until relogin.
