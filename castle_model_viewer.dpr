@@ -1026,37 +1026,66 @@ type
   Navigation may be @nil.
 
   CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
-  automatically based on box. }
+  automatically based on box. It only sets radius based on
+  X3D NavigationInfo.AvatarSize[0]. }
 procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
   const Navigation: TCastleNavigation;
   const Scene: TCastleSceneCore);
-const
-  WorldBoxSizeToRadius = 0.005;
+
+  function BestRadius: Single;
+  const
+    WorldBoxSizeToRadius = 0.005;
+  var
+    NavigationNode: TNavigationInfoNode;
+    Box: TBox3D;
+    BoxSize: Single;
+  begin
+    NavigationNode := Scene.NavigationInfoStack.Top;
+    { Use NavigationInfo.AvatarSize[0], or auto-calculate based on box size. }
+    if (NavigationNode <> nil) and
+       (NavigationNode.FdAvatarSize.Count >= 1) then
+    begin
+      Result := NavigationNode.FdAvatarSize.Items[0];
+      WritelnLog('Camera Radius: %.8f (from NavigationInfo.AvatarSize[0])', [Result]);
+    end else
+    begin
+      Box := Scene.LocalBoundingBox;
+      BoxSize := Box.AverageSize(false, 1.0);
+      Result := BoxSize * WorldBoxSizeToRadius;
+
+      { Make Radius at most DefaultCameraRadius?
+        Commented out, not necessary and could be troublesome -- we want the autocalculate
+        it to be have good near (good near clipping plane) and good depth precision. }
+      // MaxVar(Radius, DefaultCameraRadius);
+
+      WritelnLog('Camera Radius: %.8f (auto-calculated from average box size %.8f)', [
+        Result,
+        BoxSize
+      ]);
+    end;
+  end;
+
 var
-  Box: TBox3D;
   Radius: Single;
 begin
-  Box := Scene.LocalBoundingBox;
-  Radius := Box.AverageSize(false, 1.0) * WorldBoxSizeToRadius;
-  { Make Radius at most DefaultCameraRadius?
-    Commented out, not necessary and could be troublesome -- we want the autocalculate
-    it to be have good near (good near clipping plane) and good depth precision. }
-  // MaxVar(Radius, DefaultCameraRadius);
+  Radius := BestRadius;
   if Navigation <> nil then
     Navigation.Radius := Radius;
 
   if (Scene.ViewpointStack.Top <> nil) and
      (Scene.ViewpointStack.Top.NearDistance > 0) then
   begin
-    WritelnLog('Auto-calculated Radius %.8f, not changing ProjectionNear %.8f set by Viewpoint.NearDistance', [
-      Radius,
+    { Not changing Camera.ProjectionNear in this case, it should already
+      be based on Viewpoint.NearDistance. }
+    if not SameValue(Camera.ProjectionNear, Scene.ViewpointStack.Top.NearDistance) then
+      WritelnWarning('Camera.ProjectionNear (differs from Viewpoint.NearDistance');
+    WritelnLog('Projection Near: %.8f (from Viewpoint.NearDistance)', [
       Camera.ProjectionNear
     ]);
   end else
   begin
     Camera.ProjectionNear := Radius * RadiusToProjectionNear;
-    WritelnLog('Auto-calculated Radius %.8f, ProjectionNear %.8f', [
-      Radius,
+    WritelnLog('Projection Near: %.8f (auto-calculated from Radius)', [
       Camera.ProjectionNear
     ]);
   end;
