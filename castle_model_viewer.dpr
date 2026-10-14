@@ -1020,14 +1020,25 @@ type
   TLoadSceneOption = (lsoCommandLineCustomization);
   TLoadSceneOptions = set of TLoadSceneOption;
 
-{ Set proper Camera.ProjectionNear and Navigation.Radius based on predicted
-  bounding box we need to display.
+{ Set proper Camera.ProjectionNear and Navigation.Radius based on the scene
+  bounding box.
 
   Navigation may be @nil.
 
-  CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
-  automatically based on box. It only sets radius based on
-  X3D NavigationInfo.AvatarSize[0]. }
+  CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9
+  ( https://github.com/castle-engine/castle-engine/commit/050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 )
+  no longer does it automatically based on box.
+  CGE only
+  - sets radius based on X3D NavigationInfo.AvatarSize[0].
+  - sets projection near based on X3D Viewpoint.NearDistance.
+
+  This routine updates the Camera.ProjectionNear and Navigation.Radius
+  based on the bounding box of the scene.
+  If present, the X3D values of NavigationInfo.AvatarSize[0] and
+  Viewpoint.NearDistance are still honored.
+  ( Note that mere presence of NavigationInfo node means that
+  NavigationInfo.AvatarSize[0], default 0.25 in X3D, is used. )
+}
 procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
   const Navigation: TCastleNavigation;
   const Scene: TCastleSceneCore);
@@ -1043,7 +1054,9 @@ procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
     NavigationNode := Scene.NavigationInfoStack.Top;
     { Use NavigationInfo.AvatarSize[0], or auto-calculate based on box size. }
     if (NavigationNode <> nil) and
-       (NavigationNode.FdAvatarSize.Count >= 1) then
+       (NavigationNode.FdAvatarSize.Count >= 1) and
+       // just like TCastleSceneCore.SensibleCameraRadius, check radius > 0
+       (NavigationNode.FdAvatarSize.Items[0] > 0) then
     begin
       Result := NavigationNode.FdAvatarSize.Items[0];
       WritelnLog('Camera Radius: %.8f (from NavigationInfo.AvatarSize[0])', [Result]);
