@@ -1020,113 +1020,6 @@ type
   TLoadSceneOption = (lsoCommandLineCustomization);
   TLoadSceneOptions = set of TLoadSceneOption;
 
-{ Set proper Camera.ProjectionNear and Navigation.Radius based on the scene
-  bounding box.
-
-  Navigation may be @nil.
-
-  CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9
-  ( https://github.com/castle-engine/castle-engine/commit/050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 )
-  no longer does it automatically based on box.
-  CGE only
-  - sets radius based on X3D NavigationInfo.AvatarSize[0].
-  - sets projection near based on X3D Viewpoint.NearDistance.
-
-  This routine updates the Camera.ProjectionNear and Navigation.Radius
-  based on the bounding box of the scene.
-  If present, the X3D values of NavigationInfo.AvatarSize[0] and
-  Viewpoint.NearDistance are still honored.
-  ( Note that mere presence of NavigationInfo node means that
-  NavigationInfo.AvatarSize[0], default 0.25 in X3D, is used as the radius.
-  The projection near derived from it is capped, so it's at most
-  DefaultCameraRadius * RadiusToProjectionNear. )
-}
-procedure UpdateRadiusProjectionNear(const Camera: TCastleCamera;
-  const Navigation: TCastleNavigation;
-  const Scene: TCastleSceneCore);
-
-  function BestRadius(out RadiusFromNavigationInfo: Boolean): Single;
-  const
-    WorldBoxSizeToRadius = 0.005;
-  var
-    NavigationNode: TNavigationInfoNode;
-    Box: TBox3D;
-    BoxSize: Single;
-  begin
-    NavigationNode := Scene.NavigationInfoStack.Top;
-    { Use NavigationInfo.AvatarSize[0], or auto-calculate based on box size. }
-    if (NavigationNode <> nil) and
-       (NavigationNode.FdAvatarSize.Count >= 1) and
-       // just like TCastleSceneCore.SensibleCameraRadius, check radius > 0
-       (NavigationNode.FdAvatarSize.Items[0] > 0) then
-    begin
-      Result := NavigationNode.FdAvatarSize.Items[0];
-      RadiusFromNavigationInfo := true;
-      WritelnLog('Camera Radius: %.8f (from NavigationInfo.AvatarSize[0])', [Result]);
-    end else
-    begin
-      Box := Scene.LocalBoundingBox;
-      BoxSize := Box.AverageSize(false, 1.0);
-      Result := BoxSize * WorldBoxSizeToRadius;
-      RadiusFromNavigationInfo := false;
-      WritelnLog('Camera Radius: %.8f (auto-calculated from average box size %.8f)', [
-        Result,
-        BoxSize
-      ]);
-    end;
-  end;
-
-var
-  Radius: Single;
-  RadiusFromNavigationInfo: Boolean;
-begin
-  Radius := BestRadius(RadiusFromNavigationInfo);
-  if Navigation <> nil then
-    Navigation.Radius := Radius;
-
-  if (Scene.ViewpointStack.Top <> nil) and
-     (Scene.ViewpointStack.Top.NearDistance > 0) then
-  begin
-    { Not changing Camera.ProjectionNear in this case, it should already
-      be based on Viewpoint.NearDistance. }
-    if not SameValue(Camera.ProjectionNear, Scene.ViewpointStack.Top.NearDistance) then
-      WritelnWarning('Camera.ProjectionNear (differs from Viewpoint.NearDistance');
-    WritelnLog('Projection Near: %.8f (from Viewpoint.NearDistance)', [
-      Camera.ProjectionNear
-    ]);
-  end else
-  if not RadiusFromNavigationInfo then
-  begin
-    Camera.ProjectionNear := Radius * RadiusToProjectionNear;
-    WritelnLog('Projection Near: %.8f (auto-calculated from Radius)', [
-      Camera.ProjectionNear
-    ]);
-  end else
-  begin
-    { Just like TCastleSceneCore.InternalUpdateCamera:
-
-      Projection near must be always smaller than Radius,
-      so we use below "Radius * RadiusToProjectionNear".
-      Moreover, we allow "DefaultCameraRadius * RadiusToProjectionNear"
-      to make the result even smaller: this way merely adding
-      NavigationInfo node to the scene, with or without default avatarSize,
-      will not cause ProjectionNear to be larger (which could clip some geometry).
-
-      We do this capping only when RadiusFromNavigationInfo = true.
-      This way, when radius is large because scene is large
-      (radius did not come from NavigationInfo.avatarSize),
-      then projection near will also remain large (so keep z-depth precision).
-    }
-    Camera.ProjectionNear := Min(
-      Radius * RadiusToProjectionNear,
-      DefaultCameraRadius * RadiusToProjectionNear
-    );
-    WritelnLog('Projection Near: %.8f (auto-calculated from Radius, and Radius from NavigationInfo)', [
-      Camera.ProjectionNear
-    ]);
-  end;
-end;
-
 { Calls FreeScene and then inits "scene global variables".
 
   Camera settings for scene are inited from VRML/X3D defaults and
@@ -1193,10 +1086,9 @@ begin
     // UpdateCameraUI, called below, will make UI reflect current navigation
 
     { Set proper Camera.ProjectionNear and Navigation.Radius,
-      before AssignCameraAndNavigation for other viewports (as they will copy us).
-      CGE since commit 050dc126a4f0ac0a0211d929f1e1f8d7f96a88f9 no longer does it
-      automatically based on box. }
-    UpdateRadiusProjectionNear(MainViewport.Camera, Navigation, Scene);
+      before AssignCameraAndNavigation for other viewports (as they will copy us). }
+    Scene.RadiusProjectionNearFromSize(
+      Scene.WorldBoundingBox, MainViewport.Camera, Navigation);
 
     for I := 0 to High(ExtraViewports) do
       AssignCameraAndNavigation(ExtraViewports[I], MainViewport);
