@@ -903,6 +903,13 @@ var
 begin
   V := Scene.ViewpointStack.Top;
   Viewpoints.BoundViewpoint := Viewpoints.ItemOf(V);
+
+  { MainViewport.AutoCamera causes Scene.InternalUpdateCamera when
+    bound viewpoint changes, which resets Camera.ProjectionNear.
+    Calculate it again based on scene size, like in LoadSceneCore.
+    Testcase: demo-models/navigation/viewpoints_tiny_model_near.x3dv }
+  Scene.RadiusProjectionNearFromSize(
+    Scene.WorldBoundingBox, MainViewport.Camera, Navigation);
 end;
 
 procedure TEventsHandler.BoundNavigationInfoChanged(Sender: TObject);
