@@ -55,7 +55,7 @@ const
 
 var
   Loop: boolean = true;
-  Forward: boolean = true;
+  Reverse: boolean = false;
   MultipleAnimations: boolean = false;
   Transition: Single = 0;
 
@@ -120,7 +120,7 @@ type
     procedure Resize; override;
     procedure Update(const SecondsPassed: Single; var HandleInput: boolean); override;
     procedure ChangeCheckboxLoop(Sender: TObject);
-    procedure ChangeCheckboxForward(Sender: TObject);
+    procedure ChangeCheckboxReverse(Sender: TObject);
     procedure ChangeSliderTransition(Sender: TObject);
     procedure ChangeSliderSpeed(Sender: TObject);
     procedure ChangeCheckboxMultipleAnimations(Sender: TObject);
@@ -144,14 +144,14 @@ constructor TNamedAnimationsUi.Create(const AOwner: TComponent; const AScene: TC
     InsertFront(Ui);
   end;
 
-  procedure AppendForward;
+  procedure AppendReverse;
   var
     Ui: TCastleCheckbox;
   begin
     Ui := TCastleCheckbox.Create(Self);
-    Ui.Caption := 'Forward';
-    Ui.Checked := Forward;
-    Ui.OnChange := {$ifdef FPC}@{$endif} ChangeCheckboxForward;
+    Ui.Caption := 'Reverse';
+    Ui.Checked := Reverse;
+    Ui.OnChange := {$ifdef FPC}@{$endif} ChangeCheckboxReverse;
     Ui.TextColor := White;
     Ui.CheckboxColor := White;
     InsertFront(Ui);
@@ -317,7 +317,7 @@ begin
   if Scene <> nil then
   begin
     AppendLoop;
-    AppendForward;
+    AppendReverse;
     AppendMultipleAnimations;
     AppendTransition;
     AppendSpeed;
@@ -420,14 +420,14 @@ begin
     if TimeSensor.IsActive then
       TimeSensor.Stop
     else
-      TimeSensor.Start(Loop, Forward);
+      TimeSensor.Start(Loop, { AFractionIncreasing } not Reverse);
   end else
   begin
     Params := TPlayAnimationParameters.Create;
     try
       Params.Name := AnimationName;
       Params.Loop := Loop;
-      Params.Forward := Forward;
+      Params.Reverse := Reverse;
       Params.TransitionDuration := Transition;
       if not Scene.PlayAnimation(Params) then
         WritelnWarning('Named Animations', Format('Animation "%s" no longer exists, it was removed from scene since loading',
@@ -445,14 +445,14 @@ begin
     Scene.CurrentAnimation.Loop := Loop;
 end;
 
-procedure TNamedAnimationsUi.ChangeCheckboxForward(Sender: TObject);
+procedure TNamedAnimationsUi.ChangeCheckboxReverse(Sender: TObject);
 begin
   inherited;
   // change future animations
-  Forward := (Sender as TCastleCheckbox).Checked;
+  Reverse := (Sender as TCastleCheckbox).Checked;
   // also change currently playing animation, if any
   if Scene.CurrentAnimation <> nil then
-    Scene.CurrentAnimation.FractionIncreasing := Forward;
+    Scene.CurrentAnimation.Reverse := Reverse;
 end;
 
 procedure TNamedAnimationsUi.ChangeSliderTransition(Sender: TObject);
