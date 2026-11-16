@@ -209,7 +209,17 @@ jobs:
   # Raspberry Pi builds are special, using pguyot/arm-runner-action
   build_arm_runner:
     name: Build on ARM Runner (for Raspberry Pi)
-    runs-on: ubuntu-latest
+
+    # Just like CGE:
+    # Not ubuntu-latest (Ubuntu 26.04 now), because pguyot/arm-runner-action@v2
+    # (v2.6.5) fails there: it tries to install qemu-user-static, which is only
+    # a virtual package in Ubuntu 26.04 ("has no installation candidate").
+    # Fixed upstream in https://github.com/pguyot/arm-runner-action/commit/5439f417 ,
+    # but not released yet.
+    # TODO: Go back to ubuntu-latest once a release includes it.
+    runs-on: ubuntu-24.04
+    # runs-on: ubuntu-latest
+
     strategy:
       matrix:
         arch: [raspberry-pi-32, raspberry-pi-64]
