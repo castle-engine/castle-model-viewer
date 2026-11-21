@@ -3323,7 +3323,7 @@ begin
   M := TMenu.Create('_File');
     M.Append(TMenuItem.Create('_Open ...',         10, CtrlO));
     M.Append(TMenuItem.Create('_Open URL ...',     11, CtrlL));
-    MenuReopen := TMenuItem.Create('_Reopen',      15);
+    MenuReopen := TMenuItem.Create('_Reopen',      15, CtrlR);
     MenuReopen.Enabled := false;
     M.Append(MenuReopen);
     M.Append(TMenuItem.Create('_Save As...', 900, CtrlS));
@@ -3592,7 +3592,7 @@ begin
     M.Append(TMenuItemChecked.Create('Show Controls on Screenshots', 570,
       ControlsOnScreenshot, true));
     M.Append(TMenuSeparator.Create);
-    M.Append(TMenuItem.Create('_Raytrace !',                   125, CtrlR));
+    M.Append(TMenuItem.Create('_Raytrace !', 125));
     Result.Append(M);
   M := TMenu.Create('_Help');
     M.Append(TMenuItem.Create('Scene Information',                  121));
